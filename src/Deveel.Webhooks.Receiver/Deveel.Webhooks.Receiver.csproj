@@ -11,7 +11,7 @@
     <PackageLicenseFile>EULA.md</PackageLicenseFile>
     <PackageIcon>deveel-logo.png</PackageIcon>
     <PackageIconUrl />
-    <RepositoryUrl>https://github.com/deveel/deveel.fx</RepositoryUrl>
+    <RepositoryUrl>https://github.com/deveel/deveel.webhooks</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageTags>webhook receiver http</PackageTags>
   </PropertyGroup>

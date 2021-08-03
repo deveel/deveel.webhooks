@@ -11,7 +11,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Deveel.Service.Webhooks", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Deveel.Webhooks.MongoDb", "src\Deveel.Service.Webhooks.MongoDb\Deveel.Webhooks.MongoDb.csproj", "{64F25904-ABB2-439F-AF16-0D5C0903E850}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Deveel.Events.Webhooks.XUnit", "test\Deveel.Events.Webhooks.XUnit\Deveel.Events.Webhooks.XUnit.csproj", "{CF170566-4653-4E7A-AC54-5A1F7594B71F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Deveel.Webhooks.XUnit", "test\Deveel.Events.Webhooks.XUnit\Deveel.Webhooks.XUnit.csproj", "{CF170566-4653-4E7A-AC54-5A1F7594B71F}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Deveel.Webhooks.Receiver", "src\Deveel.Webhooks.Receiver\Deveel.Webhooks.Receiver.csproj", "{954A1901-CD16-4DD0-A6F3-D0D7E7F1B9A4}"
 EndProject

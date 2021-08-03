@@ -31,4 +31,5 @@ jobs:
       run: dotnet pack -c Release --no-restore --no-build --include-symbols --version-suffix $GITHUB_RUN_ID --output ./nuget
 
     - name: Push Packages to GitHub NuGet
-      run: dotnet nuget push ./nuget/**/*.nupkg --skip-duplicate --api-key ${{secrets.GITHUB_TOKEN}} --source "Deveel GitHub"
+      
+      run: dotnet nuget push ./nuget/**/*.nupkg --skip-duplicate --api-key ${{secrets.DEVEEL_GITHUB_TOKEN}} --source "Deveel GitHub"

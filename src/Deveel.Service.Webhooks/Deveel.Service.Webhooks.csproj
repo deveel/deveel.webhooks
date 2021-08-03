@@ -1,0 +1,42 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <RootNamespace>Deveel</RootNamespace>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <Authors>Antonello Provenzano</Authors>
+    <Company>Deveel</Company>
+    <Description>Abstractions and default services for the management and delivery of Webhooks</Description>
+    <Copyright>(C) 2020-2021 Deveel</Copyright>
+    <PackageLicenseFile>EULA.md</PackageLicenseFile>
+    <PackageProjectUrl>https://deveel.com</PackageProjectUrl>
+    <PackageIcon>deveel-logo.png</PackageIcon>
+    <RepositoryUrl>https://github.com/deveel/deveel.webhooks</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>webhook event schema management</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\..\deveel-logo.png">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+    <None Include="..\..\EULA.md">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="3.1.17" />
+    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="3.1.17" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="Polly" Version="7.2.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Deveel.Service.Webhooks.Core\Deveel.Service.Webhooks.Core.csproj" />
+  </ItemGroup>
+
+</Project>

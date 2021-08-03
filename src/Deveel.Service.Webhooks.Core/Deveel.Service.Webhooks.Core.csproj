@@ -1,0 +1,40 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <RootNamespace>Deveel</RootNamespace>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <Authors>Antonello Provenzano</Authors>
+    <Company>Deveel</Company>
+    <Description>Abstractions and utilities for the service management of webhooks senders</Description>
+    <Copyright>(C) 2020-2021 Deveel</Copyright>
+    <PackageLicenseFile>EULA.md</PackageLicenseFile>
+    <PackageIcon>deveel-logo.png</PackageIcon>
+    <RepositoryUrl>https://github.com/deveel/deveel.webhooks</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>events webhooks abstractions core</PackageTags>
+    <PackageProjectUrl>https://deveel.com</PackageProjectUrl>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\..\deveel-logo.png">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+    <None Include="..\..\EULA.md">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Deveel.Data.Core" Version="1.0.0-1078116372" />
+    <PackageReference Include="Deveel.Events.Service.Core" Version="1.0.0-1078116372" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Deveel.Webhooks.Model\Deveel.Webhooks.Model.csproj" />
+  </ItemGroup>
+
+</Project>

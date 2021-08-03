@@ -1,0 +1,39 @@
+﻿using System;
+using System.Collections.Generic;
+
+using Deveel.Data;
+using Deveel.Webhooks;
+
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
+using MongoDB.Bson.Serialization.Options;
+
+namespace Deveel.Events {
+	class WebhookSubscriptionDocument : IWebhookSubscription, IMongoDocument {
+		string IEntity.Id => Id.Equals(ObjectId.Empty) ? null : Id.ToString();
+
+		[BsonId]
+		public ObjectId Id { get; set; }
+
+		public string Name { get; set; }
+
+		public string DestinationUrl { get; set; }
+
+		public string Secret { get; set; }
+
+		public bool IsActive { get; set; }
+
+		public int RetryCount { get; set; }
+
+		public IDictionary<string, string> Headers { get; set; }
+
+		public string EventType { get; set; }
+
+		IEnumerable<string> IEventSubscription.FilterExpressions => Filters;
+
+		public IList<string> Filters { get; set; }
+
+		[BsonDictionaryOptions(DictionaryRepresentation.ArrayOfDocuments)]
+		public IDictionary<string, object> Metadata { get; set; }
+	}
+}

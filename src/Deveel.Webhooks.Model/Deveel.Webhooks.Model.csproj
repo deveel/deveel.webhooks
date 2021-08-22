@@ -29,7 +29,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Deveel.Events.Model" Version="1.0.0-1078116372" />
+    <PackageReference Include="Deveel.Events.Model" Version="1.0.0-1156517612" />
   </ItemGroup>
 
 </Project>

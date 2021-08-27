@@ -44,7 +44,8 @@ namespace Deveel.Webhooks {
 					var webhook = await CreateWebhook(subscription, eventInfo, cancellationToken);
 
 					try {
-						if (await filterEvaluator.MatchesAsync(subscription.Filter, webhook, cancellationToken)) {
+						if (subscription.Filter == null ||
+							await filterEvaluator.MatchesAsync(subscription.Filter, webhook, cancellationToken)) {
 							logger.LogInformation("Delivering webhook for event {EventType} to subscription {SubscriptionId} of Tenant {TenantId}",
 								eventInfo.EventType, subscription.Id, tenantId);
 

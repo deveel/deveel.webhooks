@@ -108,6 +108,29 @@ namespace Deveel.Webhooks {
 
 		[Fact]
 		[Trait("Category", "Webhooks")]
+		public async Task DeliverWebhookWithoutFilter() {
+			var subscriptionId = await CreateSubscriptionAsync("Data Created", "data.created", null);
+			var notification = new Event("data.created", new {
+				creationTime = DateTimeOffset.UtcNow,
+				type = "test"
+			});
+
+			var result = await notifier.NotifyAsync(tenantId, notification, CancellationToken.None);
+
+			Assert.NotNull(result);
+			Assert.NotEmpty(result);
+			Assert.Equal(subscriptionId, result.First().Webhook.SubscriptionId);
+			Assert.True(result[subscriptionId].Successful);
+			Assert.Single(result[subscriptionId].Attempts);
+
+			Assert.NotNull(lastWebhook);
+			Assert.Equal("data.created", lastWebhook.EventType);
+			Assert.Equal(notification.Id, lastWebhook.EventId);
+			Assert.Equal(notification.TimeStamp, lastWebhook.TimeStamp);
+		}
+
+		[Fact]
+		[Trait("Category", "Webhooks")]
 		public async Task DeliverSignedWebhookFromEvent() {
 			validateSignature = true;
 

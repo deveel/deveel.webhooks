@@ -50,6 +50,9 @@ namespace Deveel.Webhooks {
 				throw new NotSupportedException($"Filter of type {filter.GetType()} is not supported");
 			}
 
+			if (evalFilter == null)
+				return Task.FromResult(false);
+
 			var result = evalFilter(webhook);
 
 			return Task.FromResult(result);

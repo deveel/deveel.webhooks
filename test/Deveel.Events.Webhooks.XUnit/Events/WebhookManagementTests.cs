@@ -79,7 +79,9 @@ namespace Deveel.Webhooks {
 			Assert.Equal(subscriptionId, subscription.Id);
 			Assert.Contains("test.event", subscription.EventTypes);
 			Assert.NotNull(subscription.Filter);
-			Assert.Equal("*", subscription.Filter);
+
+			var filters = Assert.IsAssignableFrom<IList<string>>(subscription.Filter);
+			Assert.Contains("*", filters);
 		}
 
 		[Fact]

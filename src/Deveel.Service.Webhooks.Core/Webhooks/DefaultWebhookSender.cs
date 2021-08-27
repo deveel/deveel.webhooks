@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net;
 using System.Net.Http;
 using System.Security.Cryptography;
 using System.Text;
@@ -58,8 +59,9 @@ namespace Deveel.Webhooks {
 				signature = BitConverter.ToString(sha256);
 			}
 
-			if (deliveryOptions.SignatureLocation == WebhookSignatureLocation.Header) request.Headers.Add(deliveryOptions.HeaderName, $"sha256={signature}");
-			else if (deliveryOptions.SignatureLocation == WebhookSignatureLocation.QueryString) {
+			if (deliveryOptions.SignatureLocation == WebhookSignatureLocation.Header) {
+				request.Headers.Add(deliveryOptions.HeaderName, $"sha256={signature}");
+			} else if (deliveryOptions.SignatureLocation == WebhookSignatureLocation.QueryString) {
 				var originalUrl = new UriBuilder(request.RequestUri);
 				var queryString = new StringBuilder(originalUrl.Query);
 				if (queryString.Length > 0)
@@ -96,7 +98,7 @@ namespace Deveel.Webhooks {
 		public virtual Task<WebhookPayload> GetWebhookPayloadAsync(IWebhook webhook) {
 			return Task.FromResult(new WebhookPayload {
 				WebhookName = webhook.Name,
-				EventType = webhook.Type,
+				EventType = webhook.EventType,
 				EventId = webhook.Id,
 				TimeStamp = webhook.TimeStamp,
 				Data = GetExtensionData(webhook.Data)
@@ -148,18 +150,25 @@ namespace Deveel.Webhooks {
 				.WaitAndRetryAsync(waitTimes);
 
 			var captured = await policy.ExecuteAndCaptureAsync(async () => {
-				var attempt = result.StartNew();
+				var attempt = new WebhookDeliveryAttempt();
+				
 
 				try {
 					var request = await BuildRequestAsync(webhook);
 					var response = await SendHttpRequest(request);
 
-					attempt.Finish((int)response.StatusCode, response.ReasonPhrase);
+					if (response.StatusCode == HttpStatusCode.RequestTimeout) {
+						attempt.Timeout();
+					} else {
+						attempt.Finish((int)response.StatusCode, response.ReasonPhrase);
+					}
 
 					response.EnsureSuccessStatusCode();
 				} catch (TimeoutException) {
 					attempt.Timeout();
 					throw;
+				} finally {
+					result.AddAttempt(attempt);
 				}
 			});
 

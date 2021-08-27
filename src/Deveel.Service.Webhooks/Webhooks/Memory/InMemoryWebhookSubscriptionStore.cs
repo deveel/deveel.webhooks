@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -13,6 +14,18 @@ namespace Deveel.Webhooks.Memory {
 		}
 
 		public InMemoryWebhookSubscriptionStore(IStoreState<InMemoryWebhookSubscription> state) : base(state) {
+		}
+
+		public Task<IList<IWebhookSubscription>> GetByEventTypeAsync(string eventType, CancellationToken cancellationToken) {
+			ThrowIfDisposed();
+			cancellationToken.ThrowIfCancellationRequested();
+
+			var result = Entities
+				.Where(x => x.EventTypes.Any(x => x == eventType))
+				.Cast<IWebhookSubscription>()
+				.ToList();
+
+			return Task.FromResult<IList<IWebhookSubscription>>(result);
 		}
 
 		public Task<PaginatedResult<IWebhookSubscription>> GetPageByMetadataAsync(string key, object value, PageRequest page, CancellationToken cancellationToken) {

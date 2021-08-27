@@ -1,37 +1,36 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace Deveel.Webhooks {
-	public sealed class WebhookNotificationResult : IEnumerable<KeyValuePair<string, WebhookDeliveryResult>> {
+	public sealed class WebhookNotificationResult : IEnumerable<WebhookDeliveryResult> {
+		private readonly List<WebhookDeliveryResult> deliveryResults;
+
 		public WebhookNotificationResult() {
-			SubscriptionResults = new Dictionary<string, WebhookDeliveryResult>();
+			deliveryResults = new List<WebhookDeliveryResult>();
 		}
 
-		public WebhookNotificationResult(IDictionary<string, WebhookDeliveryResult> source) {
-			SubscriptionResults = new Dictionary<string, WebhookDeliveryResult>(source);
+		public void AddDelivery(WebhookDeliveryResult result) {
+			lock(this) {
+				deliveryResults.Add(result);
+			}
 		}
-
-		public IDictionary<string, WebhookDeliveryResult> SubscriptionResults { get; set; }
 
 		public bool HasSuccessful => Successful?.Any() ?? false;
 
-		public IEnumerable<KeyValuePair<string, WebhookDeliveryResult>> Successful
-			=> SubscriptionResults?.Where(x => x.Value.Successful);
+		public IEnumerable<WebhookDeliveryResult> Successful
+			=> deliveryResults.Where(x => x.Successful);
 
 		public bool HasFailed => Failed?.Any() ?? false;
 
-		public IEnumerable<KeyValuePair<string, WebhookDeliveryResult>> Failed
-			=> SubscriptionResults?.Where(x => !x.Value.Successful);
+		public IEnumerable<WebhookDeliveryResult> Failed
+			=> deliveryResults.Where(x => !x.Successful);
 
-		public bool IsEmpty => SubscriptionResults?.Count == 0;
+		public bool IsEmpty => deliveryResults.Count == 0;
 
-		public IEnumerable<string> SubscriptionIds => SubscriptionResults?.Keys;
+		public WebhookDeliveryResult this[string subscriptionId] => deliveryResults.ToDictionary(x => x.Webhook.SubscriptionId, y => y)[subscriptionId];
 
-		public WebhookDeliveryResult this[string subscriptionId] => SubscriptionResults[subscriptionId];
-
-		public IEnumerator<KeyValuePair<string, WebhookDeliveryResult>> GetEnumerator() => SubscriptionResults?.GetEnumerator();
+		public IEnumerator<WebhookDeliveryResult> GetEnumerator() => deliveryResults.GetEnumerator();
 
 		IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 	}

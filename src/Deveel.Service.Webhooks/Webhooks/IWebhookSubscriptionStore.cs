@@ -12,5 +12,7 @@ namespace Deveel.Webhooks {
 		Task<bool> MetadataExistsAsync(string key, object value, CancellationToken cancellationToken);
 
 		Task SetStateAsync(IWebhookSubscription subscription, bool active, CancellationToken cancellationToken);
+
+		Task<IList<IWebhookSubscription>> GetByEventTypeAsync(string eventType, CancellationToken cancellationToken);
 	}
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -14,5 +15,8 @@ namespace Deveel.Events {
 		public static Task<bool> MetadataExistsAsync<TSubscription>(this IWebhookSubscriptionStoreProvider provider, string tenantId, string key, object value, CancellationToken cancellationToken)
 			where TSubscription : class, IWebhookSubscription
 			=> provider.GetStore(tenantId).MetadataExistsAsync(key, value, cancellationToken);
+
+		public static Task<IList<IWebhookSubscription>> GetByEventTypeAsync(this IWebhookSubscriptionStoreProvider provider, string tenantId, string eventType, CancellationToken cancellationToken)
+			=> provider.GetStore(tenantId).GetByEventTypeAsync(eventType, cancellationToken);
 	}
 }

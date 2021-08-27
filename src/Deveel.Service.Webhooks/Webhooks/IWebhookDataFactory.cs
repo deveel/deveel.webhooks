@@ -8,6 +8,6 @@ namespace Deveel.Webhooks {
 	public interface IWebhookDataFactory {
 		bool AppliesTo(string eventType);
 
-		Task<object> CreateDataAsync(IEvent @event, CancellationToken cancellationToken);
+		Task<object> CreateDataAsync(EventInfo eventInfo, CancellationToken cancellationToken);
 	}
 }

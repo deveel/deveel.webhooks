@@ -4,8 +4,12 @@ using System.Collections.Generic;
 using Deveel.Events;
 
 namespace Deveel.Webhooks {
-	public interface IWebhookSubscription : IEventSubscription {
+	public interface IWebhookSubscription {
+		string Id { get; }
+
 		string Name { get; }
+
+		string[] EventTypes { get; }
 
 		string DestinationUrl { get; }
 
@@ -14,6 +18,8 @@ namespace Deveel.Webhooks {
 		bool IsActive { get; }
 
 		int RetryCount { get; }
+
+		object Filter { get; }
 
 		IDictionary<string, string> Headers { get; }
 

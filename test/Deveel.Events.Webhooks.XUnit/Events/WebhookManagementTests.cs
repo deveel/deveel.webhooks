@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 using Deveel.Data;
 using Deveel.Events;
+using Deveel.Filters;
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -20,7 +21,7 @@ namespace Deveel.Webhooks {
 	public class WebhookManagementTests : IDisposable {
 		private MongoDbRunner mongoDbCluster;
 		private readonly string tenantId = Guid.NewGuid().ToString();
-		private IWebhookManager webhookManager;
+		private IWebhookSubscriptionManager webhookManager;
 		private readonly IStoreProvider<IWebhookSubscription> storeProvider;
 
 		private readonly IWebhookSubscriptionFactory subscriptionFactory;
@@ -33,17 +34,18 @@ namespace Deveel.Webhooks {
 				buidler.Configure(options => {
 					options.Delivery.SignWebhooks = true;
 				})
-				.AddMongoDb(options => {
+				.UseMongoDbStorage(options => {
 					options.CollectionName = "webhooks_subscription";
 					options.DatabaseName = "webhooks";
 					options.ConnectionString = mongoDbCluster.ConnectionString;
-				});
+				})
+				.UseDefaultFilterEvaluator();
 			})
 				.AddTestHttpClient();
 
 			var provider = services.BuildServiceProvider();
 
-			webhookManager = provider.GetService<IWebhookManager>();
+			webhookManager = provider.GetService<IWebhookSubscriptionManager>();
 			storeProvider = provider.GetRequiredService<IWebhookSubscriptionStoreProvider>();
 			subscriptionFactory = provider.GetRequiredService<IWebhookSubscriptionFactory>();
 		}
@@ -61,23 +63,23 @@ namespace Deveel.Webhooks {
 			var subscription = await storeProvider.FindByIdAsync(tenantId, subscriptionId);
 
 			Assert.NotNull(subscription);
-			Assert.Equal("test.event", subscription.EventType);
+			Assert.Contains("test.event", subscription.EventTypes);
 		}
 
 		[Fact]
 		public async Task GetExistingSubscription() {
 			var subscriptionId = await CreateSubscription(new WebhookSubscriptionInfo("test.event", "https://callback.test.io/webhook") {
-				FilterExpressions = new List<string> { "*" },
+				Filter = "*" ,
 				Name = "Test Callback"
 			});
 
 			var subscription = await webhookManager.GetSubscriptionAsync(tenantId, subscriptionId, CancellationToken.None);
 
 			Assert.NotNull(subscription);
-			Assert.Equal(subscriptionId, subscription.SubscriptionId);
-			Assert.Equal("test.event", subscription.EventType);
-			Assert.NotNull(subscription.FilterExpressions);
-			Assert.NotEmpty(subscription.FilterExpressions);
+			Assert.Equal(subscriptionId, subscription.Id);
+			Assert.Contains("test.event", subscription.EventTypes);
+			Assert.NotNull(subscription.Filter);
+			Assert.Equal("*", subscription.Filter);
 		}
 
 		[Fact]
@@ -91,12 +93,12 @@ namespace Deveel.Webhooks {
 		[Fact]
 		public async Task GetPageOfSubscriptions() {
 			var subscriptionId1 = await CreateSubscription(new WebhookSubscriptionInfo("test.event", "https://callback.test.io/webhook") {
-				FilterExpressions = new List<string> { "*" },
+				Filter =  "*" ,
 				Name = "Test Callback"
 			});
 
 			var subscriptionId2 = await CreateSubscription(new WebhookSubscriptionInfo("test.otherEvent", "https://callback.test.io/webhook") {
-				FilterExpressions = new List<string> { "*" },
+				Filter =  "*" ,
 				Name = "Second Test Callback"
 			});
 
@@ -106,14 +108,14 @@ namespace Deveel.Webhooks {
 			Assert.NotEmpty(result.Items);
 			Assert.Equal(2, result.TotalItems);
 			Assert.Equal(1, result.TotalPages);
-			Assert.Equal(subscriptionId1, result.Items.ElementAt(0).SubscriptionId);
-			Assert.Equal(subscriptionId2, result.Items.ElementAt(1).SubscriptionId);
+			Assert.Equal(subscriptionId1, result.Items.ElementAt(0).Id);
+			Assert.Equal(subscriptionId2, result.Items.ElementAt(1).Id);
 		}
 
 		[Fact]
 		public async Task GetPageOfSubscriptionsByMeta() {
 			var subscriptionId1 = await CreateSubscription(new WebhookSubscriptionInfo("test.event", "https://callback.test.io/webhook") {
-				FilterExpressions = new List<string> { "*" },
+				Filter = "*" ,
 				Name = "Test Callback",
 				Metadata = new Dictionary<string, object> {
 					{ "tag", "foo" }
@@ -121,12 +123,16 @@ namespace Deveel.Webhooks {
 			});
 
 			var subscriptionId2 = await CreateSubscription(new WebhookSubscriptionInfo("test.otherEvent", "https://callback.test.io/webhook") {
-				FilterExpressions = new List<string> { "*" },
+				Filter =  "*" ,
 				Name = "Second Test Callback",
 				Metadata = new Dictionary<string, object> {
 					{ "tag", "bar" }
 				}
 			});
+
+			var page = new PageRequest(1, 10) {
+				Filters = new[] { Filter.Equal("meta.tag", "bar") }
+			};
 
 			var result = await webhookManager.GetSubscriptionsByMetadataAsync(tenantId, "tag", "bar", new PageRequest(1, 10), default);
 
@@ -134,7 +140,7 @@ namespace Deveel.Webhooks {
 			Assert.NotEmpty(result.Items);
 			Assert.Equal(1, result.TotalItems);
 			Assert.Equal(1, result.TotalPages);
-			Assert.Equal(subscriptionId2, result.Items.ElementAt(0).SubscriptionId);
+			Assert.Equal(subscriptionId2, result.Items.ElementAt(0).Id);
 		}
 
 

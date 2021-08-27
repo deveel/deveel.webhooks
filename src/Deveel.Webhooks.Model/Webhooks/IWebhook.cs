@@ -4,7 +4,9 @@ using System.Collections.Generic;
 using Deveel.Events;
 
 namespace Deveel.Webhooks {
-	public interface IWebhook : IEvent {
+	public interface IWebhook {
+		string Id { get; }
+
 		string Name { get; }
 
 		string SubscriptionId { get; }
@@ -14,5 +16,11 @@ namespace Deveel.Webhooks {
 		string Secret { get; }
 
 		IDictionary<string, string> Headers { get; }
+
+		DateTimeOffset TimeStamp { get; }
+
+		string EventType { get; }
+
+		object Data { get; }
 	}
 }

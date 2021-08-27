@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 
 namespace Deveel.Webhooks.Memory {
-	public class InMemoryWebhookSubscription : IWebhookSubscription {
+	public class InMemoryWebhookSubscription : IWebhookSubscription, IEntity {
 		public string Name { get; set; }
 
 		public string DestinationUrl { get; set; }
@@ -17,9 +17,11 @@ namespace Deveel.Webhooks.Memory {
 
 		public IDictionary<string, object> Metadata { get; set; }
 
-		public string EventType { get; set; }
+		public string[] EventTypes { get; set; }
 
-		public IEnumerable<string> FilterExpressions { get; set; }
+		public string Filter { get; set; }
+
+		object IWebhookSubscription.Filter => Filter;
 
 		public string Id { get; set; }
 	}

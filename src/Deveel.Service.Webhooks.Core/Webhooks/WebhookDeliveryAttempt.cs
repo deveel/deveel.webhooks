@@ -1,8 +1,13 @@
 ﻿using System;
+using System.Diagnostics;
 
 namespace Deveel.Webhooks {
 	public sealed class WebhookDeliveryAttempt {
-		internal WebhookDeliveryAttempt() {
+		private readonly Stopwatch stopwatch;
+
+		public WebhookDeliveryAttempt() {
+			stopwatch = new Stopwatch();
+			stopwatch.Start();
 			StartedAt = DateTimeOffset.UtcNow;
 		}
 
@@ -21,14 +26,18 @@ namespace Deveel.Webhooks {
 		public bool HasTimedOut { get; private set; }
 
 		public void Finish(int statusCode, string message) {
+			stopwatch.Stop();
+
 			ResponseStatusCode = statusCode;
 			ResponseMessage = message;
-			EndedAt = DateTimeOffset.UtcNow;
+			EndedAt = StartedAt.Add(stopwatch.Elapsed);
 		}
 
 		public void Timeout() {
+			stopwatch.Stop();
+
 			HasTimedOut = true;
-			EndedAt = DateTimeOffset.UtcNow;
+			EndedAt = StartedAt.Add(stopwatch.Elapsed);
 		}
 	}
 }

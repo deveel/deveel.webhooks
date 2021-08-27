@@ -1,11 +1,10 @@
 ﻿using System;
 
 using Deveel.Data;
-using Deveel.Webhooks;
 
 using Microsoft.Extensions.Options;
 
-namespace Deveel.Events {
+namespace Deveel.Webhooks {
 	class MongoDbWebhookSubscriptionStoreProvider : MongoDbStoreProviderBase<WebhookSubscriptionDocument>,
 														   IWebhookSubscriptionStoreProvider {
 		public MongoDbWebhookSubscriptionStoreProvider(MongoDbOptions<WebhookSubscriptionDocument> baseOptions) : base(baseOptions) {
@@ -14,15 +13,15 @@ namespace Deveel.Events {
 		public MongoDbWebhookSubscriptionStoreProvider(IOptions<MongoDbOptions<WebhookSubscriptionDocument>> baseOptions) : base(baseOptions) {
 		}
 
-		protected override MongoDbEntityStore<WebhookSubscriptionDocument> CreateStore(MongoDbOptions<WebhookSubscriptionDocument> options) 
+		protected override MongoDbEntityStore<WebhookSubscriptionDocument> CreateStore(MongoDbOptions<WebhookSubscriptionDocument> options)
 			=> new MongoDbWebhookSubscriptionStrore(options);
 
 		public new MongoDbWebhookSubscriptionStrore GetStore(string appId) => (MongoDbWebhookSubscriptionStrore)base.GetStore(appId);
 
-		IWebhookSubscriptionStore IWebhookSubscriptionStoreProvider.GetStore(string appId) 
+		IWebhookSubscriptionStore IWebhookSubscriptionStoreProvider.GetStore(string appId)
 			=> GetStore(appId);
 
-		IStore<IWebhookSubscription> IStoreProvider<IWebhookSubscription>.GetStore(string tenantId) 
+		IStore<IWebhookSubscription> IStoreProvider<IWebhookSubscription>.GetStore(string tenantId)
 			=> GetStore(tenantId);
 	}
 }

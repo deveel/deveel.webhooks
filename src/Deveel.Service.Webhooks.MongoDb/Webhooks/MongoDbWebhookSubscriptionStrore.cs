@@ -5,13 +5,12 @@ using System.Threading;
 using System.Threading.Tasks;
 
 using Deveel.Data;
-using Deveel.Webhooks;
 
 using Microsoft.Extensions.Options;
 
 using MongoDB.Driver;
 
-namespace Deveel.Events {
+namespace Deveel.Webhooks {
 	class MongoDbWebhookSubscriptionStrore : MongoDbEntityStore<WebhookSubscriptionDocument, IWebhookSubscription>,
 													IWebhookSubscriptionStore {
 		public MongoDbWebhookSubscriptionStrore(IOptions<MongoDbOptions<WebhookSubscriptionDocument>> options) : base(options) {
@@ -20,17 +19,27 @@ namespace Deveel.Events {
 		public MongoDbWebhookSubscriptionStrore(MongoDbOptions<WebhookSubscriptionDocument> options) : base(options) {
 		}
 
-		public async Task<IList<WebhookSubscriptionDocument>> FilterAsync(IEvent @event, CancellationToken cancellationToken) {
+		public async Task<IList<WebhookSubscriptionDocument>> GetByEventTypeAsync(string eventType, CancellationToken cancellationToken) {
 			ThrowIfDisposed();
 			cancellationToken.ThrowIfCancellationRequested();
 
-			var subscriptions = await FindAllAsync(x => x.EventType == @event.Type, cancellationToken);
+			var filter = Builders<WebhookSubscriptionDocument>.Filter
+				.AnyEq(doc => doc.EventTypes, eventType);
+			var result = await Collection.FindAsync(filter, cancellationToken: cancellationToken);
 
-			return subscriptions.Where(x => x.Matches(@event)).ToList();
+			return await result.ToListAsync();
 		}
 
+		async Task<IList<IWebhookSubscription>> IWebhookSubscriptionStore.GetByEventTypeAsync(string eventType, CancellationToken cancellationToken) {
+			var result = await GetByEventTypeAsync(eventType, cancellationToken);
+			return result.Cast<IWebhookSubscription>().ToList();
+		}
+
+
 		public Task<PaginatedResult<WebhookSubscriptionDocument>> GetPageByMetadataAsync(string key, object value, PageRequest page, CancellationToken cancellationToken) {
-			return GetPageAsync(Builders<WebhookSubscriptionDocument>.Filter.ElemMatch(doc => doc.Metadata, item => item.Key == key && item.Value == value), page, cancellationToken);
+			var filter = Builders<WebhookSubscriptionDocument>.Filter
+				.ElemMatch(doc => doc.Metadata, item => item.Key == key && item.Value == value);
+			return GetPageAsync(filter, page, cancellationToken);
 		}
 
 		public Task<bool> MetadataExistsAsync(string key, object value, CancellationToken cancellationToken)
@@ -50,7 +59,7 @@ namespace Deveel.Events {
 			return result.CastTo<IWebhookSubscription>();
 		}
 
-		Task IWebhookSubscriptionStore.SetStateAsync(IWebhookSubscription subscription, bool active, CancellationToken cancellationToken) 
-			=>  SetStateAsync(Assert(subscription), active, cancellationToken);
+		Task IWebhookSubscriptionStore.SetStateAsync(IWebhookSubscription subscription, bool active, CancellationToken cancellationToken)
+			=> SetStateAsync(Assert(subscription), active, cancellationToken);
 	}
 }

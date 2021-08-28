@@ -7,7 +7,7 @@ using Deveel.Filters;
 
 namespace Deveel.Webhooks {
 	public sealed class MongoDbWebhookSubscriptionFactory : IWebhookSubscriptionFactory {
-		public IWebhookSubscription CreateSubscription(WebhookSubscriptionInfo subscriptionInfo) {
+		public IWebhookSubscription Create(WebhookSubscriptionInfo subscriptionInfo) {
 			return new WebhookSubscriptionDocument {
 				Name = subscriptionInfo.Name,
 				EventTypes = subscriptionInfo.EventTypes?.ToList(),

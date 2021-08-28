@@ -19,7 +19,7 @@ namespace Deveel.Webhooks.Memory {
 
 		public string[] EventTypes { get; set; }
 
-		public IList<InMemoryWebhookFilter> Filters { get; set; }
+		public IList<WebhookFilter> Filters { get; set; }
 
 		IEnumerable<IWebhookFilter> IWebhookSubscription.Filters => Filters;
 

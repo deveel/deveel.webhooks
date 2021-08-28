@@ -23,5 +23,8 @@ namespace Deveel.Webhooks {
 
 		IStore<IWebhookSubscription> IStoreProvider<IWebhookSubscription>.GetStore(string tenantId)
 			=> GetStore(tenantId);
+
+		IWebhookSubscriptionStore<IWebhookSubscription> IWebhookSubscriptionStoreProvider<IWebhookSubscription>.GetStore(string tenantId)
+			=> GetStore(tenantId);
 	}
 }

@@ -14,6 +14,10 @@ namespace Deveel.Webhooks.Memory {
 		protected override InMemoryStore<InMemoryWebhookSubscription> CreateStore(IStoreState<InMemoryWebhookSubscription> state) 
 			=> new InMemoryWebhookSubscriptionStore(state);
 
-		IWebhookSubscriptionStore IWebhookSubscriptionStoreProvider.GetStore(string tenantId) => (IWebhookSubscriptionStore)GetStore(tenantId);
+		IWebhookSubscriptionStore IWebhookSubscriptionStoreProvider.GetStore(string tenantId) 
+			=> (IWebhookSubscriptionStore)GetStore(tenantId);
+
+		IWebhookSubscriptionStore<IWebhookSubscription> IWebhookSubscriptionStoreProvider<IWebhookSubscription>.GetStore(string tenantId)
+			=> (IWebhookSubscriptionStore<IWebhookSubscription>)GetStore(tenantId);
 	}
 }

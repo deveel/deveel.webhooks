@@ -3,7 +3,7 @@
 using Deveel.Data;
 
 namespace Deveel.Webhooks {
-	public interface IWebhookSubscriptionStoreProvider : IStoreProvider<IWebhookSubscription> {
+	public interface IWebhookSubscriptionStoreProvider : IWebhookSubscriptionStoreProvider<IWebhookSubscription> {
 		new IWebhookSubscriptionStore GetStore(string tenantId);
 	}
 }

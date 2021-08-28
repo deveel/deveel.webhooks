@@ -30,7 +30,7 @@ namespace Deveel.Webhooks {
 			return await result.ToListAsync();
 		}
 
-		async Task<IList<IWebhookSubscription>> IWebhookSubscriptionStore.GetByEventTypeAsync(string eventType, CancellationToken cancellationToken) {
+		async Task<IList<IWebhookSubscription>> IWebhookSubscriptionStore<IWebhookSubscription>.GetByEventTypeAsync(string eventType, CancellationToken cancellationToken) {
 			var result = await GetByEventTypeAsync(eventType, cancellationToken);
 			return result.Cast<IWebhookSubscription>().ToList();
 		}
@@ -54,12 +54,12 @@ namespace Deveel.Webhooks {
 			return Task.CompletedTask;
 		}
 
-		async Task<PaginatedResult<IWebhookSubscription>> IWebhookSubscriptionStore.GetPageByMetadataAsync(string key, object value, PageRequest page, CancellationToken cancellationToken) {
+		async Task<PaginatedResult<IWebhookSubscription>> IWebhookSubscriptionStore<IWebhookSubscription>.GetPageByMetadataAsync(string key, object value, PageRequest page, CancellationToken cancellationToken) {
 			var result = await GetPageByMetadataAsync(key, value, page, cancellationToken);
 			return result.CastTo<IWebhookSubscription>();
 		}
 
-		Task IWebhookSubscriptionStore.SetStateAsync(IWebhookSubscription subscription, bool active, CancellationToken cancellationToken)
+		Task IWebhookSubscriptionStore<IWebhookSubscription>.SetStateAsync(IWebhookSubscription subscription, bool active, CancellationToken cancellationToken)
 			=> SetStateAsync(Assert(subscription), active, cancellationToken);
 	}
 }

@@ -6,7 +6,7 @@ using Deveel.Filters;
 
 namespace Deveel.Webhooks.Memory {
 	class WebhookSubscriptionObjectFactory : IWebhookSubscriptionFactory {
-		public IWebhookSubscription CreateSubscription(WebhookSubscriptionInfo subscriptionInfo) {
+		public IWebhookSubscription Create(WebhookSubscriptionInfo subscriptionInfo) {
 			return new InMemoryWebhookSubscription {
 				Name = subscriptionInfo.Name,
 				DestinationUrl = subscriptionInfo.DestinationUrl.ToString(),
@@ -20,11 +20,7 @@ namespace Deveel.Webhooks.Memory {
 			};
 		}
 
-		private static InMemoryWebhookFilter GetFilter(IWebhookFilter filter)
-			=> new InMemoryWebhookFilter {
-				Provider = filter.Provider,
-				Expression = filter.Expression,
-				ExpressionFormat = filter.ExpressionFormat
-			};
+		private static WebhookFilter GetFilter(IWebhookFilter filter)
+			=> new WebhookFilter(filter.Provider, filter.Expression, filter.ExpressionFormat);
 	}
 }

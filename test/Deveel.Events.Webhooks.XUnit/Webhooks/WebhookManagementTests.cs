@@ -51,7 +51,7 @@ namespace Deveel.Webhooks {
 		}
 
 		private async Task<string> CreateSubscription(WebhookSubscriptionInfo subscriptionInfo) {
-			var subscription = subscriptionFactory.CreateSubscription(subscriptionInfo);
+			var subscription = subscriptionFactory.Create(subscriptionInfo);
 			return await storeProvider.CreateAsync(tenantId, subscription);
 		}
 

@@ -22,7 +22,8 @@ namespace Deveel.Webhooks {
 					if (evalFilter == null) {
 						evalFilter = compiled;
 					} else {
-						evalFilter = hook => evalFilter(hook) && compiled(hook);
+						var prev = (Func<IWebhook, bool>) evalFilter.Clone();
+						evalFilter = hook => prev(hook) && compiled(hook);
 					}
 				}
 
@@ -61,7 +62,8 @@ namespace Deveel.Webhooks {
 					if (evalFilter == null) {
 						evalFilter = compiled;
 					} else {
-						evalFilter = hook => evalFilter(hook) && compiled(hook);
+						var prev = (Func<IWebhook, bool>)evalFilter.Clone();
+						evalFilter = hook => prev(hook) && compiled(hook);
 					}
 				}
 			} else {

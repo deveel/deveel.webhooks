@@ -66,7 +66,7 @@ namespace Deveel.Webhooks {
 			notifier = provider.GetService<IWebhookNotifier>();
 		}
 
-		private Task<string> CreateSubscriptionAsync(string name, string eventType, string filter) {
+		private Task<string> CreateSubscriptionAsync(string name, string eventType, object filter) {
 			return CreateSubscriptionAsync(new WebhookSubscriptionInfo(eventType, "https://callback.example.com/webhook") {
 				Name = name,
 				RetryCount = 3,
@@ -87,7 +87,7 @@ namespace Deveel.Webhooks {
 		[Trait("Category", "Webhooks")]
 		public async Task DeliverWebhookFromEvent() {
 			var subscriptionId = await CreateSubscriptionAsync("Data Created", "data.created", "hook.data.data_type == \"test-data\"");
-			var notification = new Event("data.created", new {
+			var notification = new EventInfo("data.created", new {
 				creationTime = DateTimeOffset.UtcNow,
 				type = "test"
 			});
@@ -105,6 +105,30 @@ namespace Deveel.Webhooks {
 			Assert.Equal(notification.Id, lastWebhook.EventId);
 			Assert.Equal(notification.TimeStamp, lastWebhook.TimeStamp);
 		}
+
+		[Fact]
+		[Trait("Category", "Webhooks")]
+		public async Task DeliverWebhookWithMultipleFiltersFromEvent() {
+			var subscriptionId = await CreateSubscriptionAsync("Data Created", "data.created", new string[] { "hook.data.data_type == \"test-data\"", "hook.data.creator.user_name == \"antonello\"" });
+			var notification = new EventInfo("data.created", new {
+				creationTime = DateTimeOffset.UtcNow,
+				type = "test"
+			});
+
+			var result = await notifier.NotifyAsync(tenantId, notification, CancellationToken.None);
+
+			Assert.NotNull(result);
+			Assert.NotEmpty(result);
+			Assert.Equal(subscriptionId, result.First().Webhook.SubscriptionId);
+			Assert.True(result[subscriptionId].Successful);
+			Assert.Single(result[subscriptionId].Attempts);
+
+			Assert.NotNull(lastWebhook);
+			Assert.Equal("data.created", lastWebhook.EventType);
+			Assert.Equal(notification.Id, lastWebhook.EventId);
+			Assert.Equal(notification.TimeStamp, lastWebhook.TimeStamp);
+		}
+
 
 		[Fact]
 		[Trait("Category", "Webhooks")]

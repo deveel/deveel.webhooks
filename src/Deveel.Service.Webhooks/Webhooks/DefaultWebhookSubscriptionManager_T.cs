@@ -8,7 +8,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 
 namespace Deveel.Webhooks {
-	public class DefaultWebhookSubscriptionManager<TSubscription> : IWebhookSubscriptionManager
+	public class DefaultWebhookSubscriptionManager<TSubscription> : IWebhookSubscriptionManager<TSubscription>
 		where TSubscription : class, IWebhookSubscription {
 		private readonly IWebhookSubscriptionFactory<TSubscription> subscriptionFactory;
 		private readonly IWebhookSubscriptionStoreProvider<TSubscription> subscriptionStore;
@@ -125,7 +125,7 @@ namespace Deveel.Webhooks {
 		public virtual Task<bool> EnableSubscriptionAsync(string tenantId, string subscriptionId, CancellationToken cancellationToken)
 			=> SetStateAsync(tenantId, subscriptionId, true, cancellationToken);
 
-		public virtual async Task<IWebhookSubscription> GetSubscriptionAsync(string tenantId, string subscriptionId, CancellationToken cancellationToken) {
+		public virtual async Task<TSubscription> GetSubscriptionAsync(string tenantId, string subscriptionId, CancellationToken cancellationToken) {
 			try {
 				return await subscriptionStore.FindByIdAsync(tenantId, subscriptionId, cancellationToken);
 			} catch (Exception ex) {
@@ -135,10 +135,9 @@ namespace Deveel.Webhooks {
 			}
 		}
 
-		public virtual async Task<PaginatedResult<IWebhookSubscription>> GetSubscriptionsAsync(string tenantId, PageRequest page, CancellationToken cancellationToken) {
+		public virtual async Task<PaginatedResult<TSubscription>> GetSubscriptionsAsync(string tenantId, PageRequest page, CancellationToken cancellationToken) {
 			try {
-				var result = await subscriptionStore.GetPageAsync(tenantId, page, cancellationToken);
-				return result.CastTo<IWebhookSubscription>();
+				return await subscriptionStore.GetPageAsync(tenantId, page, cancellationToken);
 			} catch (Exception ex) {
 				Logger.LogError(ex, "Error while retrieving a page of subscriptions for tenant {TenantId}", tenantId);
 				throw;

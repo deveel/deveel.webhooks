@@ -114,36 +114,36 @@ namespace Deveel.Webhooks {
 			Assert.Equal(subscriptionId2, result.Items.ElementAt(1).Id);
 		}
 
-		[Fact]
-		public async Task GetPageOfSubscriptionsByMeta() {
-			await CreateSubscription(new WebhookSubscriptionInfo("test.event", "https://callback.test.io/webhook") {
-				Filter = WebhookFilter.DefaultWildcard ,
-				Name = "Test Callback",
-				Metadata = new Dictionary<string, object> {
-					{ "tag", "foo" }
-				}
-			});
+		//[Fact]
+		//public async Task GetPageOfSubscriptionsByMeta() {
+		//	await CreateSubscription(new WebhookSubscriptionInfo("test.event", "https://callback.test.io/webhook") {
+		//		Filter = WebhookFilter.DefaultWildcard ,
+		//		Name = "Test Callback",
+		//		Metadata = new Dictionary<string, object> {
+		//			{ "tag", "foo" }
+		//		}
+		//	});
 
-			var subscriptionId2 = await CreateSubscription(new WebhookSubscriptionInfo("test.otherEvent", "https://callback.test.io/webhook") {
-				Filter = WebhookFilter.DefaultWildcard,
-				Name = "Second Test Callback",
-				Metadata = new Dictionary<string, object> {
-					{ "tag", "bar" }
-				}
-			});
+		//	var subscriptionId2 = await CreateSubscription(new WebhookSubscriptionInfo("test.otherEvent", "https://callback.test.io/webhook") {
+		//		Filter = WebhookFilter.DefaultWildcard,
+		//		Name = "Second Test Callback",
+		//		Metadata = new Dictionary<string, object> {
+		//			{ "tag", "bar" }
+		//		}
+		//	});
 
-			var page = new PageRequest(1, 10) {
-				Filters = new[] { Filter.Equal("meta.tag", "bar") }
-			};
+		//	var page = new PageRequest(1, 10) {
+		//		Filters = new[] { Filter.Equal("meta.tag", "bar") }
+		//	};
 
-			var result = await webhookManager.GetSubscriptionsByMetadataAsync(tenantId, "tag", "bar", new PageRequest(1, 10), default);
+		//	var result = await webhookManager.GetSubscriptionsByMetadataAsync(tenantId, "tag", "bar", new PageRequest(1, 10), default);
 
-			Assert.NotNull(result);
-			Assert.NotEmpty(result.Items);
-			Assert.Equal(1, result.TotalItems);
-			Assert.Equal(1, result.TotalPages);
-			Assert.Equal(subscriptionId2, result.Items.ElementAt(0).Id);
-		}
+		//	Assert.NotNull(result);
+		//	Assert.NotEmpty(result.Items);
+		//	Assert.Equal(1, result.TotalItems);
+		//	Assert.Equal(1, result.TotalPages);
+		//	Assert.Equal(subscriptionId2, result.Items.ElementAt(0).Id);
+		//}
 
 
 		public void Dispose() {

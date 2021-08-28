@@ -19,7 +19,7 @@ namespace Deveel.Webhooks {
 
 		int RetryCount { get; }
 
-		object Filter { get; }
+		IEnumerable<IWebhookFilter> Filters { get; }
 
 		IDictionary<string, string> Headers { get; }
 

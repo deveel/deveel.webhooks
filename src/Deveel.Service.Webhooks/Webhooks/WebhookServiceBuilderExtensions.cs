@@ -9,6 +9,8 @@ using Deveel.Webhooks.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
+using PhoneNumbers;
+
 namespace Deveel.Webhooks {
 	public static class WebhookServiceBuilderExtensions {
 		private static IWebhookServiceBuilder Use<TService, TImplementation>(this IWebhookServiceBuilder builder, ServiceLifetime lifetime = ServiceLifetime.Scoped)
@@ -65,6 +67,20 @@ namespace Deveel.Webhooks {
 		public static IWebhookServiceBuilder UseFilterEvaluator<TEvaluator>(this IWebhookServiceBuilder builder)
 			where TEvaluator : class, IWebhookFilterEvaluator 
 			=> builder.Use<IWebhookFilterEvaluator, TEvaluator>();
+
+		public static IWebhookServiceBuilder UseFilterProviderRegistry<TRegistry>(this IWebhookServiceBuilder builder)
+			where TRegistry : class, IWebhookFilterProviderRegistry
+			=> builder.Use<IWebhookFilterProviderRegistry, TRegistry>();
+
+		public static IWebhookServiceBuilder UseDefaultFilterProviderRegistry(this IWebhookServiceBuilder builder)
+			=> builder.UseFilterProviderRegistry<DefaultWebhookFilterProviderRegistry>();
+
+		public static IWebhookServiceBuilder AddFilterProvider<TProvider>(this IWebhookServiceBuilder builder, ServiceLifetime lifetime = ServiceLifetime.Scoped)
+			where TProvider : class, IWebhookFilterProvider {
+			builder.Configure(services => services.Add(new ServiceDescriptor(typeof(IWebhookFilterProvider), typeof(TProvider), lifetime)));
+			builder.Configure(services => services.Add(new ServiceDescriptor(typeof(TProvider), typeof(TProvider), lifetime)));
+			return builder;
+		}
 		
 		public static IWebhookServiceBuilder UseSubscriptionResolver<TResolver>(this IWebhookServiceBuilder builder)
 			where TResolver : class, IWebhookSubscriptionResolver 

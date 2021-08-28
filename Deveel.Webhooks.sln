@@ -5,8 +5,6 @@ VisualStudioVersion = 16.0.31515.178
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Deveel.Webhooks.Model", "src\Deveel.Webhooks.Model\Deveel.Webhooks.Model.csproj", "{9D710920-2A08-466C-94F0-3FD90E752A20}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Deveel.Service.Webhooks.Core", "src\Deveel.Service.Webhooks.Core\Deveel.Service.Webhooks.Core.csproj", "{40FB4AC1-2B86-4B0F-BBB6-B7339C086B6A}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Deveel.Service.Webhooks", "src\Deveel.Service.Webhooks\Deveel.Service.Webhooks.csproj", "{B8EC04E9-906F-42D5-BCC0-F26287DFC90F}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Deveel.Webhooks.MongoDb", "src\Deveel.Service.Webhooks.MongoDb\Deveel.Webhooks.MongoDb.csproj", "{64F25904-ABB2-439F-AF16-0D5C0903E850}"
@@ -14,6 +12,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Deveel.Webhooks.XUnit", "test\Deveel.Events.Webhooks.XUnit\Deveel.Webhooks.XUnit.csproj", "{CF170566-4653-4E7A-AC54-5A1F7594B71F}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Deveel.Webhooks.Receiver", "src\Deveel.Webhooks.Receiver\Deveel.Webhooks.Receiver.csproj", "{954A1901-CD16-4DD0-A6F3-D0D7E7F1B9A4}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Deveel.Webhooks", "src\Deveel.Webhooks\Deveel.Webhooks.csproj", "{6435EBAE-5E0A-446D-B4E4-D75FE89DFC99}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -25,10 +25,6 @@ Global
 		{9D710920-2A08-466C-94F0-3FD90E752A20}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9D710920-2A08-466C-94F0-3FD90E752A20}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9D710920-2A08-466C-94F0-3FD90E752A20}.Release|Any CPU.Build.0 = Release|Any CPU
-		{40FB4AC1-2B86-4B0F-BBB6-B7339C086B6A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{40FB4AC1-2B86-4B0F-BBB6-B7339C086B6A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{40FB4AC1-2B86-4B0F-BBB6-B7339C086B6A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{40FB4AC1-2B86-4B0F-BBB6-B7339C086B6A}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B8EC04E9-906F-42D5-BCC0-F26287DFC90F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{B8EC04E9-906F-42D5-BCC0-F26287DFC90F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B8EC04E9-906F-42D5-BCC0-F26287DFC90F}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -45,6 +41,10 @@ Global
 		{954A1901-CD16-4DD0-A6F3-D0D7E7F1B9A4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{954A1901-CD16-4DD0-A6F3-D0D7E7F1B9A4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{954A1901-CD16-4DD0-A6F3-D0D7E7F1B9A4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6435EBAE-5E0A-446D-B4E4-D75FE89DFC99}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6435EBAE-5E0A-446D-B4E4-D75FE89DFC99}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6435EBAE-5E0A-446D-B4E4-D75FE89DFC99}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6435EBAE-5E0A-446D-B4E4-D75FE89DFC99}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

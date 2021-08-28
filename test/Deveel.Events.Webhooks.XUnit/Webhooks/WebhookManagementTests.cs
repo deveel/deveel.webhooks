@@ -69,7 +69,7 @@ namespace Deveel.Webhooks {
 		[Fact]
 		public async Task GetExistingSubscription() {
 			var subscriptionId = await CreateSubscription(new WebhookSubscriptionInfo("test.event", "https://callback.test.io/webhook") {
-				Filter = "*" ,
+				Filter = WebhookFilter.DefaultWildcard ,
 				Name = "Test Callback"
 			});
 
@@ -78,10 +78,10 @@ namespace Deveel.Webhooks {
 			Assert.NotNull(subscription);
 			Assert.Equal(subscriptionId, subscription.Id);
 			Assert.Contains("test.event", subscription.EventTypes);
-			Assert.NotNull(subscription.Filter);
-
-			var filters = Assert.IsAssignableFrom<IList<string>>(subscription.Filter);
-			Assert.Contains("*", filters);
+			Assert.NotNull(subscription.Filters);
+			Assert.NotEmpty(subscription.Filters);
+			Assert.Single(subscription.Filters);
+			Assert.True(subscription.Filters.First().IsWildcard());
 		}
 
 		[Fact]
@@ -95,12 +95,12 @@ namespace Deveel.Webhooks {
 		[Fact]
 		public async Task GetPageOfSubscriptions() {
 			var subscriptionId1 = await CreateSubscription(new WebhookSubscriptionInfo("test.event", "https://callback.test.io/webhook") {
-				Filter =  "*" ,
+				Filter =  WebhookFilter.DefaultWildcard,
 				Name = "Test Callback"
 			});
 
 			var subscriptionId2 = await CreateSubscription(new WebhookSubscriptionInfo("test.otherEvent", "https://callback.test.io/webhook") {
-				Filter =  "*" ,
+				Filter = WebhookFilter.DefaultWildcard,
 				Name = "Second Test Callback"
 			});
 
@@ -117,7 +117,7 @@ namespace Deveel.Webhooks {
 		[Fact]
 		public async Task GetPageOfSubscriptionsByMeta() {
 			var subscriptionId1 = await CreateSubscription(new WebhookSubscriptionInfo("test.event", "https://callback.test.io/webhook") {
-				Filter = "*" ,
+				Filter = WebhookFilter.DefaultWildcard ,
 				Name = "Test Callback",
 				Metadata = new Dictionary<string, object> {
 					{ "tag", "foo" }
@@ -125,7 +125,7 @@ namespace Deveel.Webhooks {
 			});
 
 			var subscriptionId2 = await CreateSubscription(new WebhookSubscriptionInfo("test.otherEvent", "https://callback.test.io/webhook") {
-				Filter =  "*" ,
+				Filter = WebhookFilter.DefaultWildcard,
 				Name = "Second Test Callback",
 				Metadata = new Dictionary<string, object> {
 					{ "tag", "bar" }

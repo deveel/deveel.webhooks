@@ -7,7 +7,7 @@ using Deveel.Events;
 namespace Deveel.Webhooks {
 	public sealed class WebhookSubscriptionInfo : IWebhookSubscription {
 		public WebhookSubscriptionInfo(string eventTypes, string destinationUrl)
-	: this(new[] { eventTypes }, new Uri(destinationUrl)) {
+			: this(new[] { eventTypes }, new Uri(destinationUrl)) {
 		}
 
 		public WebhookSubscriptionInfo(string[] eventTypes, string destinationUrl)
@@ -47,7 +47,12 @@ namespace Deveel.Webhooks {
 
 		public string Secret { get; set; }
 
-		public object Filter { get; set; }
+		public IEnumerable<IWebhookFilter> Filters { get; set; }
+
+		public IWebhookFilter Filter {
+			get => Filters?.SingleOrDefault();
+			set => Filters = new[] { value };
+		}
 
 		public IDictionary<string, string> Headers { get; set; } = new Dictionary<string, string>();
 

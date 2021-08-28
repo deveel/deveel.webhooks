@@ -66,11 +66,11 @@ namespace Deveel.Webhooks {
 			notifier = provider.GetService<IWebhookNotifier>();
 		}
 
-		private Task<string> CreateSubscriptionAsync(string name, string eventType, object filter) {
+		private Task<string> CreateSubscriptionAsync(string name, string eventType, params IWebhookFilter[] filters) {
 			return CreateSubscriptionAsync(new WebhookSubscriptionInfo(eventType, "https://callback.example.com/webhook") {
 				Name = name,
 				RetryCount = 3,
-				Filter = filter
+				Filters = filters
 			}, true);
 		}
 
@@ -86,7 +86,7 @@ namespace Deveel.Webhooks {
 		[Fact]
 		[Trait("Category", "Webhooks")]
 		public async Task DeliverWebhookFromEvent() {
-			var subscriptionId = await CreateSubscriptionAsync("Data Created", "data.created", "hook.data.data_type == \"test-data\"");
+			var subscriptionId = await CreateSubscriptionAsync("Data Created", "data.created", WebhookFilter.Default("hook.data.data_type == \"test-data\""));
 			var notification = new EventInfo("data.created", new {
 				creationTime = DateTimeOffset.UtcNow,
 				type = "test"
@@ -109,7 +109,9 @@ namespace Deveel.Webhooks {
 		[Fact]
 		[Trait("Category", "Webhooks")]
 		public async Task DeliverWebhookWithMultipleFiltersFromEvent() {
-			var subscriptionId = await CreateSubscriptionAsync("Data Created", "data.created", new string[] { "hook.data.data_type == \"test-data\"", "hook.data.creator.user_name == \"antonello\"" });
+			var subscriptionId = await CreateSubscriptionAsync("Data Created", "data.created", 
+				WebhookFilter.Default( "hook.data.data_type == \"test-data\""), 
+				WebhookFilter.Default("hook.data.creator.user_name == \"antonello\""));
 			var notification = new EventInfo("data.created", new {
 				creationTime = DateTimeOffset.UtcNow,
 				type = "test"
@@ -159,7 +161,7 @@ namespace Deveel.Webhooks {
 			validateSignature = true;
 
 			var subscriptionId = await CreateSubscriptionAsync(new WebhookSubscriptionInfo("data.created", "https://callback.example.com") {
-				Filter = "hook.data.data_type == \"test-data\"",
+				Filter = WebhookFilter.Default("hook.data.data_type == \"test-data\""),
 				Name = "Data Created",
 				Secret = webhookSecret = "abc12345",
 				RetryCount = 3
@@ -187,7 +189,7 @@ namespace Deveel.Webhooks {
 		[Fact]
 		[Trait("Category", "Webhooks")]
 		public async Task FailToDeliver() {
-			var subscriptionId = await CreateSubscriptionAsync("Data Created", "data.created", "hook.data.data_type == \"test-data\"");
+			var subscriptionId = await CreateSubscriptionAsync("Data Created", "data.created", WebhookFilter.Default("hook.data.data_type == \"test-data\""));
 			var notification = new Event("data.created", new { creationTime = DateTimeOffset.UtcNow, type = "test" });
 
 			testResponse = new HttpResponseMessage(HttpStatusCode.InternalServerError);
@@ -207,7 +209,7 @@ namespace Deveel.Webhooks {
 		[Fact]
 		[Trait("Category", "Webhooks")]
 		public async Task NoSubscriptionMatch() {
-			await CreateSubscriptionAsync("Data Created", "data.created", "hook.data.data_type == \"test-data2\"");
+			await CreateSubscriptionAsync("Data Created", "data.created", WebhookFilter.Default("hook.data.data_type == \"test-data2\""));
 			var notification = new Event("data.created", new { creationTime = DateTimeOffset.UtcNow, type = "test" });
 
 			var result = await notifier.NotifyAsync(tenantId, notification, CancellationToken.None);

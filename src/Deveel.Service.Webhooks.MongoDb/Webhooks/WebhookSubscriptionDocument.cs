@@ -33,9 +33,9 @@ namespace Deveel.Webhooks {
 
 		string[] IWebhookSubscription.EventTypes => EventTypes?.ToArray();
 
-		public IList<string> Filters { get; set; }
+		public IList<WebhookFilterField> Filters { get; set; }
 
-		object IWebhookSubscription.Filter => Filters;
+		IEnumerable<IWebhookFilter> IWebhookSubscription.Filters => Filters;
 
 
 		[BsonDictionaryOptions(DictionaryRepresentation.ArrayOfDocuments)]

@@ -24,6 +24,8 @@ namespace Deveel.Webhooks {
 			builder.UseDefaultSubscriptionManager();
 			builder.UseDefaultSender();
 
+			builder.UseDefaultFilterProviderRegistry();
+			builder.AddFilterProvider<DefaultWebhookFilterProvider>();
 			builder.UseDefaultFilterEvaluator();
 			builder.UseDefaultSubscriptionResolver();
 			builder.UseDefaultNotifier();

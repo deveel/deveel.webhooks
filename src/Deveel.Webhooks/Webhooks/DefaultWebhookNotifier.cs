@@ -11,24 +11,37 @@ using Microsoft.Extensions.Logging.Abstractions;
 namespace Deveel.Webhooks {
 	public class DefaultWebhookNotifier : IWebhookNotifier {
 		private readonly IWebhookSubscriptionResolver subscriptionResolver;
-		private readonly IWebhookFilterEvaluator filterEvaluator;
+		private readonly IWebhookFilterProviderRegistry filterProviderRegistry;
 		private readonly IWebhookSender sender;
 
-		public DefaultWebhookNotifier(IWebhookSender sender, 
+		public DefaultWebhookNotifier(IWebhookSender sender,
 			IWebhookSubscriptionResolver subscriptionResolver,
-			IWebhookFilterEvaluator filterEvaluator,
+			IWebhookFilterProviderRegistry filterProviderRegistry,
 			ILogger<DefaultWebhookNotifier> logger) {
 			this.sender = sender;
 			this.subscriptionResolver = subscriptionResolver;
-			this.filterEvaluator = filterEvaluator;
+			this.filterProviderRegistry = filterProviderRegistry;
 			Logger = logger;
 		}
 
-		public DefaultWebhookNotifier(IWebhookSender sender, IWebhookSubscriptionResolver subscriptionResolver, IWebhookFilterEvaluator filterEvaluator)
-			: this(sender, subscriptionResolver, filterEvaluator, NullLogger<DefaultWebhookNotifier>.Instance) {
+		public DefaultWebhookNotifier(IWebhookSender sender, IWebhookSubscriptionResolver subscriptionResolver, IWebhookFilterProviderRegistry filterProviderRegistry)
+			: this(sender, subscriptionResolver, filterProviderRegistry, NullLogger<DefaultWebhookNotifier>.Instance) {
 		}
 
 		protected ILogger Logger { get; }
+
+		protected virtual async Task<bool> ShouldNotifyAsync(IWebhookSubscription subscription, IWebhook webhook, CancellationToken cancellationToken) {
+			var filterRequest = WebhookFilterRequest.FromSubscription(subscription);
+			if (filterRequest == null)
+				return true;
+
+			var filterProvider = filterProviderRegistry.GetProvider(filterRequest.FilterProvider);
+			if (filterProvider == null)
+				throw new NotSupportedException($"The webhook filter provider '{filterRequest.FilterProvider}' was not found in the registry");
+
+			var filterEvaluator = filterProvider.GetEvaluator();
+			return await filterEvaluator.MatchesAsync(filterRequest, webhook, cancellationToken);
+		}
 
 		public async Task<WebhookNotificationResult> NotifyAsync(string tenantId, EventInfo eventInfo, CancellationToken cancellationToken) {
 			var result = new WebhookNotificationResult();
@@ -45,14 +58,16 @@ namespace Deveel.Webhooks {
 					var webhook = await CreateWebhook(subscription, eventInfo, cancellationToken);
 
 					try {
-						if (subscription.Filter == null ||
-							await filterEvaluator.MatchesAsync(subscription.Filter, webhook, cancellationToken)) {
+						if (await ShouldNotifyAsync(subscription, webhook, cancellationToken)) {
 							Logger.LogInformation("Delivering webhook for event {EventType} to subscription {SubscriptionId} of Tenant {TenantId}",
 								eventInfo.EventType, subscription.Id, tenantId);
 
 							var deliveryResult = await SendAsync(tenantId, webhook, cancellationToken);
 
 							result.AddDelivery(deliveryResult);
+						} else {
+							Logger.LogInformation("Not delivering the webhook for event {EventType} to subscription {SubscriptionId} of Tenant {TenantId}",
+								eventInfo.EventType, subscription.Id, tenantId);
 						}
 					} catch (Exception ex) {
 						Logger.LogError(ex, "Could not deliver a webhook for event {EventType} to subscription {SubscriptionId} of Tenant {TenantId}",
@@ -85,8 +100,8 @@ namespace Deveel.Webhooks {
 				Name = subscription.Name,
 				EventType = eventInfo.EventType,
 				DestinationUrl = subscription.DestinationUrl,
-				Headers = subscription.Headers == null 
-					? null 
+				Headers = subscription.Headers == null
+					? null
 					: new Dictionary<string, string>(subscription.Headers),
 				Data = eventInfo.Data,
 				Secret = subscription.Secret,

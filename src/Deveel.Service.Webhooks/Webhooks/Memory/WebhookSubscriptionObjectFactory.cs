@@ -14,26 +14,17 @@ namespace Deveel.Webhooks.Memory {
 				Id = subscriptionInfo.SubscriptionId,
 				RetryCount = subscriptionInfo.RetryCount,
 				Secret = subscriptionInfo.Secret,
-				Filters = GetFilters(subscriptionInfo.Filter),
+				Filters = subscriptionInfo.Filters?.Select(GetFilter).ToList(),
 				Headers = subscriptionInfo.Headers == null ? null : new Dictionary<string, string>(subscriptionInfo.Headers),
 				Metadata = subscriptionInfo == null ? null : new Dictionary<string, object>(subscriptionInfo.Metadata)
 			};
 		}
 
-		private IList<string> GetFilters(object filter) {
-			if (filter == null)
-				return new List<string>();
-
-			if (filter is string s)
-				return new[] { s };
-			if (filter is IEnumerable<string> strings)
-				return strings?.ToList();
-			if (filter is IFilter f)
-				return new[] { f?.ToFilterString() };
-			if (filter is IEnumerable<IFilter> filters)
-				return filters?.Select(f => f.ToFilterString()).ToArray();
-
-			return null;
-		}
+		private static InMemoryWebhookFilter GetFilter(IWebhookFilter filter)
+			=> new InMemoryWebhookFilter {
+				Provider = filter.Provider,
+				Expression = filter.Expression,
+				ExpressionFormat = filter.ExpressionFormat
+			};
 	}
 }

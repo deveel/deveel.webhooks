@@ -21,8 +21,16 @@ namespace Deveel.Webhooks {
 
 		protected override async Task<IWebhook> CreateWebhook(IWebhookSubscription subscription, EventInfo eventInfo, CancellationToken cancellationToken) {
 			var factory = dataStrategy.GetDataFactory(eventInfo.EventType);
-			if (factory != null)
-				eventInfo.SetData(await factory.CreateDataAsync(eventInfo, cancellationToken));
+			if (factory != null) {
+				try {
+					eventInfo.SetData(await factory.CreateDataAsync(eventInfo, cancellationToken));
+				} catch (Exception ex) {
+					Logger.LogError(ex, "Error setting the data for the event {EventType} to subscription {SubscriptionId}",
+						eventInfo.EventType, subscription.Id);
+					throw;
+				}
+				
+			}
 
 			return await base.CreateWebhook(subscription, eventInfo, cancellationToken);
 		}

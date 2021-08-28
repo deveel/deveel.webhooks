@@ -10,7 +10,6 @@ using Microsoft.Extensions.Logging.Abstractions;
 
 namespace Deveel.Webhooks {
 	public class DefaultWebhookNotifier : IWebhookNotifier {
-		private readonly ILogger logger;
 		private readonly IWebhookSubscriptionResolver subscriptionResolver;
 		private readonly IWebhookFilterEvaluator filterEvaluator;
 		private readonly IWebhookSender sender;
@@ -22,12 +21,14 @@ namespace Deveel.Webhooks {
 			this.sender = sender;
 			this.subscriptionResolver = subscriptionResolver;
 			this.filterEvaluator = filterEvaluator;
-			this.logger = logger;
+			Logger = logger;
 		}
 
 		public DefaultWebhookNotifier(IWebhookSender sender, IWebhookSubscriptionResolver subscriptionResolver, IWebhookFilterEvaluator filterEvaluator)
 			: this(sender, subscriptionResolver, filterEvaluator, NullLogger<DefaultWebhookNotifier>.Instance) {
 		}
+
+		protected ILogger Logger { get; }
 
 		public async Task<WebhookNotificationResult> NotifyAsync(string tenantId, EventInfo eventInfo, CancellationToken cancellationToken) {
 			var result = new WebhookNotificationResult();
@@ -36,7 +37,7 @@ namespace Deveel.Webhooks {
 				var subscriptions = await subscriptionResolver.ResolveSubscriptionsAsync(tenantId, eventInfo.EventType, cancellationToken);
 
 				if (subscriptions == null || subscriptions.Count == 0) {
-					logger.LogInformation("No subscriptions to event {EventType} found for Tenant {TenantId}", eventInfo.EventType, tenantId);
+					Logger.LogInformation("No subscriptions to event {EventType} found for Tenant {TenantId}", eventInfo.EventType, tenantId);
 					return result;
 				}
 
@@ -46,7 +47,7 @@ namespace Deveel.Webhooks {
 					try {
 						if (subscription.Filter == null ||
 							await filterEvaluator.MatchesAsync(subscription.Filter, webhook, cancellationToken)) {
-							logger.LogInformation("Delivering webhook for event {EventType} to subscription {SubscriptionId} of Tenant {TenantId}",
+							Logger.LogInformation("Delivering webhook for event {EventType} to subscription {SubscriptionId} of Tenant {TenantId}",
 								eventInfo.EventType, subscription.Id, tenantId);
 
 							var deliveryResult = await SendAsync(tenantId, webhook, cancellationToken);
@@ -54,7 +55,7 @@ namespace Deveel.Webhooks {
 							result.AddDelivery(deliveryResult);
 						}
 					} catch (Exception ex) {
-						logger.LogError(ex, "Could not deliver a webhook for event {EventType} to subscription {SubscriptionId} of Tenant {TenantId}",
+						Logger.LogError(ex, "Could not deliver a webhook for event {EventType} to subscription {SubscriptionId} of Tenant {TenantId}",
 							eventInfo.EventType, subscription.Id, tenantId);
 
 						result.AddDelivery(new WebhookDeliveryResult(webhook));
@@ -63,7 +64,7 @@ namespace Deveel.Webhooks {
 
 				return result;
 			} catch (Exception ex) {
-				logger.LogError(ex, "Could not notify the event {EventType} to tenant {TenantId}", eventInfo.EventType, tenantId);
+				Logger.LogError(ex, "Could not notify the event {EventType} to tenant {TenantId}", eventInfo.EventType, tenantId);
 				throw;
 			}
 		}
@@ -72,7 +73,7 @@ namespace Deveel.Webhooks {
 			try {
 				return sender.SendAsync(webhook, cancellationToken);
 			} catch (Exception ex) {
-				logger.LogError(ex, "The webhook sender failed to send a webhook for event {EventType} to tenant {TenantId} because of an error",
+				Logger.LogError(ex, "The webhook sender failed to send a webhook for event {EventType} to tenant {TenantId} because of an error",
 					webhook.EventType, tenantId);
 				throw;
 			}

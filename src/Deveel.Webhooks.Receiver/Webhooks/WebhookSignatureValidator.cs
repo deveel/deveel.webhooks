@@ -12,12 +12,10 @@ namespace Deveel.Webhooks {
 			if (string.IsNullOrWhiteSpace(algorithm))
 				throw new ArgumentException($"'{nameof(algorithm)}' cannot be null or whitespace.", nameof(algorithm));
 
-			switch (algorithm) {
-				case "sha256":
-					return IsValidSha256(content, signature, secret);
-				default:
-					throw new NotSupportedException($"Te signing algorithm {algorithm} is not supported");
-			}
+			return algorithm switch {
+				"sha256" => IsValidSha256(content, signature, secret),
+				_ => throw new NotSupportedException($"Te signing algorithm {algorithm} is not supported"),
+			};
 		}
 
 		public static bool IsValidSha256(string content, string signature, string secret) {

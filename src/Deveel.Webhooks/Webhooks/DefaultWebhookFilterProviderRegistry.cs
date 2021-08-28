@@ -5,7 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Deveel.Webhooks {
 	public sealed class DefaultWebhookFilterProviderRegistry : IWebhookFilterProviderRegistry {
-		private IServiceProvider provider;
+		private readonly IServiceProvider provider;
 
 		public DefaultWebhookFilterProviderRegistry(IServiceProvider provider) {
 			this.provider = provider;

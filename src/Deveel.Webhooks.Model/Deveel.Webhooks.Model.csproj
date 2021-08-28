@@ -28,8 +28,4 @@
     </None>
   </ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Deveel.Events.Model" Version="1.0.0-1174130134" />
-  </ItemGroup>
-
 </Project>

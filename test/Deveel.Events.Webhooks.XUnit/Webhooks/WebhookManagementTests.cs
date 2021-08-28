@@ -19,9 +19,9 @@ using Xunit;
 
 namespace Deveel.Webhooks {
 	public class WebhookManagementTests : IDisposable {
-		private MongoDbRunner mongoDbCluster;
+		private readonly MongoDbRunner mongoDbCluster;
 		private readonly string tenantId = Guid.NewGuid().ToString();
-		private IWebhookSubscriptionManager webhookManager;
+		private readonly IWebhookSubscriptionManager webhookManager;
 		private readonly IStoreProvider<IWebhookSubscription> storeProvider;
 
 		private readonly IWebhookSubscriptionFactory subscriptionFactory;
@@ -116,7 +116,7 @@ namespace Deveel.Webhooks {
 
 		[Fact]
 		public async Task GetPageOfSubscriptionsByMeta() {
-			var subscriptionId1 = await CreateSubscription(new WebhookSubscriptionInfo("test.event", "https://callback.test.io/webhook") {
+			await CreateSubscription(new WebhookSubscriptionInfo("test.event", "https://callback.test.io/webhook") {
 				Filter = WebhookFilter.DefaultWildcard ,
 				Name = "Test Callback",
 				Metadata = new Dictionary<string, object> {

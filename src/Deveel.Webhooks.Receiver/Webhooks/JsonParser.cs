@@ -13,9 +13,8 @@ namespace Deveel.Webhooks {
 			JToken token;
 
 			using (var textReader = new StringReader(content)) {
-				using (var jsonReader = new JsonTextReader(textReader)) {
-					token = await JToken.ReadFromAsync(jsonReader, cancellationToken);
-				}
+				using var jsonReader = new JsonTextReader(textReader); 
+				token = await JToken.ReadFromAsync(jsonReader, cancellationToken);
 			}
 
 			var result = token.ToObject<T>(JsonSerializer.Create(serializerSettings));

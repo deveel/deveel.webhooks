@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 
-using Deveel.Events;
-
 namespace Deveel.Webhooks {
 	public interface IWebhookSubscription {
 		string Id { get; }

@@ -30,6 +30,7 @@
 
   <ItemGroup>
     <PackageReference Include="Deveel.Data.Core" Version="1.0.0-1174130134" />
+    <PackageReference Include="Deveel.Events.Service.Core" Version="1.0.0-1174130134" />
     <PackageReference Include="Deveel.Service.Core" Version="1.0.0-1174130134" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="3.1.17" />
   </ItemGroup>

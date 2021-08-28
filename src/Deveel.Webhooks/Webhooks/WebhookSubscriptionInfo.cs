@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 
-using Deveel.Events;
-
 namespace Deveel.Webhooks {
 	public sealed class WebhookSubscriptionInfo : IWebhookSubscription {
 		public WebhookSubscriptionInfo(string eventTypes, string destinationUrl)

@@ -30,9 +30,7 @@ namespace Deveel.Webhooks {
 			builder.UseDefaultSubscriptionResolver();
 			builder.UseDefaultNotifier();
 
-			if (configure != null) {
-				configure(builder);
-			}
+			configure?.Invoke(builder);
 
 			return services;
 		}
@@ -41,8 +39,7 @@ namespace Deveel.Webhooks {
 			public IServiceCollection Services { get; }
 
 			public void Configure(Action<IServiceCollection> configure) {
-				if (configure != null)
-					configure(Services);
+				configure?.Invoke(Services);
 			}
 
 			public WebhookConfigurationBuilderImpl(IServiceCollection services) {

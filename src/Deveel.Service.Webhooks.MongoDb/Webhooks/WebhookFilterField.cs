@@ -6,6 +6,6 @@ namespace Deveel.Webhooks {
 
 		public string Provider { get; set; }
 
-		public string ExpressionFormat { get; set; }
+		public string Format { get; set; }
 	}
 }

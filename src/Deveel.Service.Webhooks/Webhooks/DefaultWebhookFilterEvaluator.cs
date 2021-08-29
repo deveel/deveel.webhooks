@@ -7,12 +7,12 @@ using Deveel.Filters;
 
 namespace Deveel.Webhooks {
 	class DefaultWebhookFilterEvaluator : IWebhookFilterEvaluator {
-		private Func<IWebhook, bool> Compile(IEnumerable<WebhookFilterInfo> filters) {
+		private Func<IWebhook, bool> Compile(IEnumerable<IWebhookFilter> filters) {
 			Func<IWebhook, bool> evalFilter = null;
 			bool empty = true;
 
 			foreach (var filter in filters) {
-				if (filter.IsWildcard) {
+				if (filter.IsWildcard()) {
 					evalFilter = hook => true;
 					break;
 				} else {

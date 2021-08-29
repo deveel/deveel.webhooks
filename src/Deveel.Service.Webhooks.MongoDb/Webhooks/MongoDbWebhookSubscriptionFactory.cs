@@ -28,8 +28,7 @@ namespace Deveel.Webhooks {
 		private WebhookFilterField MapFilter(IWebhookFilter filter)
 			=> new WebhookFilterField {
 				Expression = filter.Expression,
-				ExpressionFormat = filter.ExpressionFormat,
-				Provider = filter.Provider
+				Format = filter.Format
 			};
 	}
 }

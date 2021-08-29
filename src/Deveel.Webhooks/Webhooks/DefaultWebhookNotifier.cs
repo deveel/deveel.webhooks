@@ -9,21 +9,21 @@ using Microsoft.Extensions.Logging.Abstractions;
 namespace Deveel.Webhooks {
 	public class DefaultWebhookNotifier : IWebhookNotifier {
 		private readonly IWebhookSubscriptionResolver subscriptionResolver;
-		private readonly IWebhookFilterProviderRegistry filterProviderRegistry;
+		private readonly IWebhookFilterEvaluator filterEvaluator;
 		private readonly IWebhookSender sender;
 
 		public DefaultWebhookNotifier(IWebhookSender sender,
 			IWebhookSubscriptionResolver subscriptionResolver,
-			IWebhookFilterProviderRegistry filterProviderRegistry,
+			IWebhookFilterEvaluator filterEvaluator,
 			ILogger<DefaultWebhookNotifier> logger) {
 			this.sender = sender;
 			this.subscriptionResolver = subscriptionResolver;
-			this.filterProviderRegistry = filterProviderRegistry;
+			this.filterEvaluator = filterEvaluator;
 			Logger = logger;
 		}
 
-		public DefaultWebhookNotifier(IWebhookSender sender, IWebhookSubscriptionResolver subscriptionResolver, IWebhookFilterProviderRegistry filterProviderRegistry)
-			: this(sender, subscriptionResolver, filterProviderRegistry, NullLogger<DefaultWebhookNotifier>.Instance) {
+		public DefaultWebhookNotifier(IWebhookSender sender, IWebhookSubscriptionResolver subscriptionResolver, IWebhookFilterEvaluator filterEvaluator)
+			: this(sender, subscriptionResolver, filterEvaluator, NullLogger<DefaultWebhookNotifier>.Instance) {
 		}
 
 		protected ILogger Logger { get; }
@@ -33,11 +33,6 @@ namespace Deveel.Webhooks {
 			if (filterRequest == null)
 				return true;
 
-			var filterProvider = filterProviderRegistry.GetProvider(filterRequest.FilterProvider);
-			if (filterProvider == null)
-				throw new NotSupportedException($"The webhook filter provider '{filterRequest.FilterProvider}' was not found in the registry");
-
-			var filterEvaluator = filterProvider.GetEvaluator();
 			return await filterEvaluator.MatchesAsync(filterRequest, webhook, cancellationToken);
 		}
 

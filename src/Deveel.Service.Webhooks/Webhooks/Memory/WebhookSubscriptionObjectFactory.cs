@@ -11,7 +11,6 @@ namespace Deveel.Webhooks.Memory {
 				Name = subscriptionInfo.Name,
 				DestinationUrl = subscriptionInfo.DestinationUrl.ToString(),
 				EventTypes = subscriptionInfo.EventTypes,
-				Id = subscriptionInfo.SubscriptionId,
 				RetryCount = subscriptionInfo.RetryCount,
 				Secret = subscriptionInfo.Secret,
 				Filters = subscriptionInfo.Filters?.Select(GetFilter).ToList(),
@@ -21,6 +20,6 @@ namespace Deveel.Webhooks.Memory {
 		}
 
 		private static WebhookFilter GetFilter(IWebhookFilter filter)
-			=> new WebhookFilter(filter.Provider, filter.Expression, filter.ExpressionFormat);
+			=> new WebhookFilter(filter.Expression, filter.Format);
 	}
 }

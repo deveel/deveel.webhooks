@@ -8,13 +8,13 @@ namespace Deveel.Webhooks {
 	class WebhookNotifier : DefaultWebhookNotifier {
 		private readonly IWebhookDataStrategy dataStrategy;
 
-		public WebhookNotifier(IWebhookSender sender, IWebhookSubscriptionResolver subscriptionResolver, IWebhookFilterProviderRegistry filterProviderRegistry, IWebhookDataStrategy dataStrategy) 
-			: base(sender, subscriptionResolver, filterProviderRegistry) {
+		public WebhookNotifier(IWebhookSender sender, IWebhookSubscriptionResolver subscriptionResolver, IWebhookFilterEvaluator filterEvaluator, IWebhookDataStrategy dataStrategy) 
+			: base(sender, subscriptionResolver, filterEvaluator) {
 			this.dataStrategy = dataStrategy;
 		}
 
-		public WebhookNotifier(IWebhookSender sender, IWebhookSubscriptionResolver subscriptionResolver, IWebhookFilterProviderRegistry filterProviderRegistry, IWebhookDataStrategy dataStrategy, ILogger<DefaultWebhookNotifier> logger) 
-			: base(sender, subscriptionResolver, filterProviderRegistry, logger) {
+		public WebhookNotifier(IWebhookSender sender, IWebhookSubscriptionResolver subscriptionResolver, IWebhookFilterEvaluator filterEvaluator, IWebhookDataStrategy dataStrategy, ILogger<DefaultWebhookNotifier> logger) 
+			: base(sender, subscriptionResolver, filterEvaluator, logger) {
 			this.dataStrategy = dataStrategy;
 
 		}

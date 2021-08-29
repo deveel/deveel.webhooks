@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 namespace Deveel.Webhooks {
-	public sealed class WebhookSubscriptionInfo : IWebhookSubscription {
+	public sealed class WebhookSubscriptionInfo {
 		public WebhookSubscriptionInfo(string eventTypes, string destinationUrl)
 			: this(new[] { eventTypes }, new Uri(destinationUrl)) {
 		}
@@ -27,19 +27,11 @@ namespace Deveel.Webhooks {
 			DestinationUrl = destinationUrl;
 		}
 
-		public string SubscriptionId { get; set; }
-
-		string IWebhookSubscription.Id => SubscriptionId;
-
-		bool IWebhookSubscription.IsActive => true;
-
 		public string Name { get; set; }
 
 		public string[] EventTypes { get; }
 
 		public Uri DestinationUrl { get; }
-
-		string IWebhookSubscription.DestinationUrl => DestinationUrl.ToString();
 
 		public int RetryCount { get; set; }
 

@@ -20,7 +20,5 @@ namespace Deveel.Webhooks {
 		IEnumerable<IWebhookFilter> Filters { get; }
 
 		IDictionary<string, string> Headers { get; }
-
-		IDictionary<string, object> Metadata { get; }
 	}
 }

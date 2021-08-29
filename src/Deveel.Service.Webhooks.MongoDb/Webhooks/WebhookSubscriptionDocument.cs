@@ -10,7 +10,7 @@ using MongoDB.Bson.Serialization.Options;
 
 namespace Deveel.Webhooks {
 	class WebhookSubscriptionDocument : IWebhookSubscription, IMongoDocument, IEntity {
-		string IEntity.SubscriptionId => Id.ToEntityId();
+		string IEntity.Id => Id.ToEntityId();
 
 		[BsonId]
 		public ObjectId Id { get; set; }

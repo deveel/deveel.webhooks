@@ -76,18 +76,18 @@ namespace Deveel.Webhooks {
 
 						if (await MatchesAsync(filterRequest, webhook, cancellationToken)) {
 							Logger.LogInformation("Delivering webhook for event {EventType} to subscription {SubscriptionId} of Tenant {TenantId}",
-								eventInfo.EventType, subscription.Id, tenantId);
+								eventInfo.EventType, subscription.SubscriptionId, tenantId);
 
 							var deliveryResult = await SendAsync(tenantId, webhook, cancellationToken);
 
 							result.AddDelivery(deliveryResult);
 						} else {
 							Logger.LogInformation("Not delivering the webhook for event {EventType} to subscription {SubscriptionId} of Tenant {TenantId}",
-								eventInfo.EventType, subscription.Id, tenantId);
+								eventInfo.EventType, subscription.SubscriptionId, tenantId);
 						}
 					} catch (Exception ex) {
 						Logger.LogError(ex, "Could not deliver a webhook for event {EventType} to subscription {SubscriptionId} of Tenant {TenantId}",
-							eventInfo.EventType, subscription.Id, tenantId);
+							eventInfo.EventType, subscription.SubscriptionId, tenantId);
 
 						result.AddDelivery(new WebhookDeliveryResult(webhook));
 					}
@@ -112,7 +112,7 @@ namespace Deveel.Webhooks {
 
 		protected virtual Task<IWebhook> CreateWebhook(IWebhookSubscription subscription, EventInfo eventInfo, CancellationToken cancellationToken) {
 			var webhook = new Webhook {
-				SubscriptionId = subscription.Id,
+				SubscriptionId = subscription.SubscriptionId,
 				Name = subscription.Name,
 				EventType = eventInfo.EventType,
 				DestinationUrl = subscription.DestinationUrl,

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Deveel.Webhooks {
 	public interface IWebhookSubscription {
-		string Id { get; }
+		string SubscriptionId { get; }
 
 		string Name { get; }
 

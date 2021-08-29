@@ -13,7 +13,7 @@ namespace Deveel.Webhooks {
 		}
 
 		public static IWebhookServiceBuilder UseMongoDbStorage(this IWebhookServiceBuilder builder, IConfiguration configuration, string sectionName, string connectionStringName = null) {
-			builder.Configure(services => services.ConfigureMongoDbOptions<WebhookSubscriptionDocument>(configuration, sectionName, connectionStringName));
+			builder.ConfigureServices(services => services.ConfigureMongoDbOptions<WebhookSubscriptionDocument>(configuration, sectionName, connectionStringName));
 			builder.UseMongoDb();
 
 			// builder.Services.AddMongoDbWebhooks(configuration, sectionName, connectionStringName);
@@ -21,7 +21,7 @@ namespace Deveel.Webhooks {
 		}
 
 		public static IWebhookServiceBuilder UseMongoDbStorage(this IWebhookServiceBuilder builder, Action<MongoDbOptions> options) {
-			builder.Configure(services => services.ConfigureMongoDbOptions<WebhookSubscriptionDocument>(options));
+			builder.ConfigureServices(services => services.ConfigureMongoDbOptions<WebhookSubscriptionDocument>(options));
 			builder.UseMongoDb();
 			return builder;
 		}

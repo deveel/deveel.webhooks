@@ -76,7 +76,7 @@ namespace Deveel.Webhooks {
 			var subscription = await webhookManager.GetSubscriptionAsync(tenantId, subscriptionId, CancellationToken.None);
 
 			Assert.NotNull(subscription);
-			Assert.Equal(subscriptionId, subscription.Id);
+			Assert.Equal(subscriptionId, subscription.SubscriptionId);
 			Assert.Contains("test.event", subscription.EventTypes);
 			Assert.NotNull(subscription.Filters);
 			Assert.NotEmpty(subscription.Filters);
@@ -110,8 +110,8 @@ namespace Deveel.Webhooks {
 			Assert.NotEmpty(result.Items);
 			Assert.Equal(2, result.TotalItems);
 			Assert.Equal(1, result.TotalPages);
-			Assert.Equal(subscriptionId1, result.Items.ElementAt(0).Id);
-			Assert.Equal(subscriptionId2, result.Items.ElementAt(1).Id);
+			Assert.Equal(subscriptionId1, result.Items.ElementAt(0).SubscriptionId);
+			Assert.Equal(subscriptionId2, result.Items.ElementAt(1).SubscriptionId);
 		}
 
 		public void Dispose() {

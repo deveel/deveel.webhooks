@@ -36,7 +36,7 @@ namespace Deveel.Webhooks {
 		class WebhookConfigurationBuilderImpl : IWebhookServiceBuilder {
 			public IServiceCollection Services { get; }
 
-			public void Configure(Action<IServiceCollection> configure) {
+			public void ConfigureServices(Action<IServiceCollection> configure) {
 				configure?.Invoke(Services);
 			}
 

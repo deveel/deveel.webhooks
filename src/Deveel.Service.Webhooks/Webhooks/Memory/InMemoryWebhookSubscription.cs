@@ -23,6 +23,6 @@ namespace Deveel.Webhooks.Memory {
 
 		IEnumerable<IWebhookFilter> IWebhookSubscription.Filters => Filters;
 
-		public string Id { get; set; }
+		public string SubscriptionId { get; set; }
 	}
 }

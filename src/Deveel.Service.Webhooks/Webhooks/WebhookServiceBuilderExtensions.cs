@@ -16,13 +16,13 @@ namespace Deveel.Webhooks {
 		private static IWebhookServiceBuilder Use<TService, TImplementation>(this IWebhookServiceBuilder builder, ServiceLifetime lifetime = ServiceLifetime.Scoped)
 			where TService : class
 			where TImplementation : class, TService {
-			builder.Configure(services => services.UseService<TService, TImplementation>(lifetime));
+			builder.ConfigureServices(services => services.UseService<TService, TImplementation>(lifetime));
 			return builder;
 		}
 
 		public static IWebhookServiceBuilder Configure(this IWebhookServiceBuilder builder, Action<WebhookConfigureOptions> configure) {
 			if (configure != null)
-				builder.Configure(services => services.Configure(configure));
+				builder.ConfigureServices(services => services.Configure(configure));
 
 			return builder;
 		}
@@ -48,7 +48,7 @@ namespace Deveel.Webhooks {
 
 		public static IWebhookServiceBuilder AddDataFactory<TFactory>(this IWebhookServiceBuilder builder)
 			where TFactory : class, IWebhookDataFactory {
-			builder.Configure(services => {
+			builder.ConfigureServices(services => {
 				services.TryAddScoped<IWebhookDataStrategy, DefaultWebhookDataStrategy>();
 				services.AddScoped<IWebhookDataFactory, TFactory>();
 			});
@@ -57,7 +57,7 @@ namespace Deveel.Webhooks {
 
 		public static IWebhookServiceBuilder AddDataFactory<TFactory>(this IWebhookServiceBuilder builder, TFactory instance)
 			where TFactory : class, IWebhookDataFactory {
-			builder.Configure(services => {
+			builder.ConfigureServices(services => {
 				services.TryAddScoped<IWebhookDataStrategy, DefaultWebhookDataStrategy>();
 				services.AddSingleton<IWebhookDataFactory>(instance);
 			});
@@ -98,7 +98,7 @@ namespace Deveel.Webhooks {
 
 		public static IWebhookServiceBuilder UseInMemoryStorage(this IWebhookServiceBuilder builder, IStoreProviderState<InMemoryWebhookSubscription> state = null) {
 			if (state != null)
-				builder.Configure(services => services.AddSingleton(state));
+				builder.ConfigureServices(services => services.AddSingleton(state));
 
 			return builder.UseSubscriptionFactory<WebhookSubscriptionObjectFactory>()
 				.UseSubscriptionStore<InMemoryWebhookSubscriptionStore>()

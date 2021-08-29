@@ -26,7 +26,7 @@ namespace Deveel.Webhooks {
 					eventInfo.SetData(await factory.CreateDataAsync(eventInfo, cancellationToken));
 				} catch (Exception ex) {
 					Logger.LogError(ex, "Error setting the data for the event {EventType} to subscription {SubscriptionId}",
-						eventInfo.EventType, subscription.Id);
+						eventInfo.EventType, subscription.SubscriptionId);
 					throw;
 				}
 				

@@ -9,27 +9,48 @@ using Microsoft.Extensions.Logging.Abstractions;
 namespace Deveel.Webhooks {
 	public class DefaultWebhookNotifier : IWebhookNotifier {
 		private readonly IWebhookSubscriptionResolver subscriptionResolver;
+		private readonly IWebhookFilterRequestFactory requestFactory;
 		private readonly IWebhookFilterEvaluator filterEvaluator;
 		private readonly IWebhookSender sender;
 
 		public DefaultWebhookNotifier(IWebhookSender sender,
 			IWebhookSubscriptionResolver subscriptionResolver,
+			IWebhookFilterRequestFactory requestFactory,
 			IWebhookFilterEvaluator filterEvaluator,
 			ILogger<DefaultWebhookNotifier> logger) {
 			this.sender = sender;
+			this.requestFactory = requestFactory;
 			this.subscriptionResolver = subscriptionResolver;
 			this.filterEvaluator = filterEvaluator;
 			Logger = logger;
 		}
 
-		public DefaultWebhookNotifier(IWebhookSender sender, IWebhookSubscriptionResolver subscriptionResolver, IWebhookFilterEvaluator filterEvaluator)
-			: this(sender, subscriptionResolver, filterEvaluator, NullLogger<DefaultWebhookNotifier>.Instance) {
+		public DefaultWebhookNotifier(IWebhookSender sender,
+			IWebhookSubscriptionResolver subscriptionResolver,
+			IWebhookFilterEvaluator filterEvaluator,
+			ILogger<DefaultWebhookNotifier> logger)
+			: this(sender, subscriptionResolver, new DefaultWebookFilterRequestFactory(), filterEvaluator, logger) {
 		}
+
+		public DefaultWebhookNotifier(IWebhookSender sender, IWebhookSubscriptionResolver subscriptionResolver, IWebhookFilterRequestFactory requestFactory, IWebhookFilterEvaluator filterEvaluator)
+			: this(sender, subscriptionResolver, requestFactory, filterEvaluator, NullLogger<DefaultWebhookNotifier>.Instance) {
+		}
+
+		public DefaultWebhookNotifier(IWebhookSender sender, IWebhookSubscriptionResolver subscriptionResolver, IWebhookFilterEvaluator filterEvaluator)
+			: this(sender, subscriptionResolver, new DefaultWebookFilterRequestFactory(), filterEvaluator, NullLogger<DefaultWebhookNotifier>.Instance) {
+		}
+
 
 		protected ILogger Logger { get; }
 
-		protected virtual async Task<bool> ShouldNotifyAsync(IWebhookSubscription subscription, IWebhook webhook, CancellationToken cancellationToken) {
-			var filterRequest = WebhookFilterRequest.FromSubscription(subscription);
+		protected virtual WebhookFilterRequest BuildFilterRequest(IWebhookSubscription subscription) {
+			if (requestFactory != null)
+				return requestFactory.CreateRequest(subscription);
+
+			return WebhookFilterRequest.Empty;
+		}
+
+		protected virtual async Task<bool> MatchesAsync(WebhookFilterRequest filterRequest, IWebhook webhook, CancellationToken cancellationToken) {
 			if (filterRequest == null)
 				return true;
 
@@ -51,7 +72,9 @@ namespace Deveel.Webhooks {
 					var webhook = await CreateWebhook(subscription, eventInfo, cancellationToken);
 
 					try {
-						if (await ShouldNotifyAsync(subscription, webhook, cancellationToken)) {
+						var filterRequest = BuildFilterRequest(subscription);
+
+						if (await MatchesAsync(filterRequest, webhook, cancellationToken)) {
 							Logger.LogInformation("Delivering webhook for event {EventType} to subscription {SubscriptionId} of Tenant {TenantId}",
 								eventInfo.EventType, subscription.Id, tenantId);
 

@@ -67,6 +67,10 @@ namespace Deveel.Webhooks {
 		public static IWebhookServiceBuilder UseFilterEvaluator<TEvaluator>(this IWebhookServiceBuilder builder)
 			where TEvaluator : class, IWebhookFilterEvaluator 
 			=> builder.Use<IWebhookFilterEvaluator, TEvaluator>();
+
+		public static IWebhookServiceBuilder UseFilterFactory<TFactory>(this IWebhookServiceBuilder builder)
+			where TFactory : class, IWebhookFilterRequestFactory
+			=> builder.Use<IWebhookFilterRequestFactory, TFactory>();
 		
 		public static IWebhookServiceBuilder UseSubscriptionResolver<TResolver>(this IWebhookServiceBuilder builder)
 			where TResolver : class, IWebhookSubscriptionResolver 

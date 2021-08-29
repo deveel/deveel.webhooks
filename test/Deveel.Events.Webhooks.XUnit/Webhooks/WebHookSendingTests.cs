@@ -75,10 +75,10 @@ namespace Deveel.Webhooks {
 		}
 
 		private async Task<string> CreateSubscriptionAsync(WebhookSubscriptionInfo subscriptionInfo, bool enabled = true) {
-			var id = await webhookManager.AddSubscriptionAsync(tenantId, subscriptionInfo, CancellationToken.None);
+			var id = await webhookManager.AddSubscriptionAsync(tenantId, Guid.NewGuid().ToString("N"), subscriptionInfo, CancellationToken.None);
 
 			if (enabled)
-				await webhookManager.EnableSubscriptionAsync(tenantId, id, CancellationToken.None);
+				await webhookManager.EnableSubscriptionAsync(tenantId, Guid.NewGuid().ToString("N"), id, CancellationToken.None);
 
 			return id;
 		}

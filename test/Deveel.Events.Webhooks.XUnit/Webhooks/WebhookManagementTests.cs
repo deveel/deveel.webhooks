@@ -57,7 +57,7 @@ namespace Deveel.Webhooks {
 
 		[Fact]
 		public async Task AddSubscription() {
-			var subscriptionId = await webhookManager.AddSubscriptionAsync(tenantId, new WebhookSubscriptionInfo("test.event", "https://callback.test.io/webhook"), CancellationToken.None);
+			var subscriptionId = await webhookManager.AddSubscriptionAsync(tenantId, Guid.NewGuid().ToString("N"), new WebhookSubscriptionInfo("test.event", "https://callback.test.io/webhook"), CancellationToken.None);
 
 			Assert.NotNull(subscriptionId);
 			var subscription = await storeProvider.FindByIdAsync(tenantId, subscriptionId);

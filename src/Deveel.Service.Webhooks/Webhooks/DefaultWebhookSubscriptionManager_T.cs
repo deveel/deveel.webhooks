@@ -34,13 +34,14 @@ namespace Deveel.Webhooks {
 
 		public ILogger Logger { get; }
 
-		private async Task<bool> SetStateAsync(string tenantId, string subscriptionId, bool active, CancellationToken cancellationToken) {
+		private async Task<bool> SetStateAsync(string tenantId, string userId, string subscriptionId, bool active, CancellationToken cancellationToken) {
 			try {
 				var subscription = await subscriptionStore.FindByIdAsync(tenantId, subscriptionId, cancellationToken);
 				if (subscription == null) {
 					Logger.LogWarning("Could not find the subscription with ID {SubscriptionId} of Tenant {TenantId}: could not change state",
 						subscriptionId, tenantId);
-					return false;
+
+					throw new SubscriptionNotFoundException(subscriptionId);
 				}
 
 				if (subscription.IsActive == active) {
@@ -54,7 +55,7 @@ namespace Deveel.Webhooks {
 				await subscriptionStore.SetState(tenantId, subscription, active, cancellationToken);
 				await subscriptionStore.UpdateAsync(tenantId, subscription);
 
-				await OnSubscriptionStateChangesAsync(subscription, active, cancellationToken);
+				await OnSubscriptionStateChangesAsync(tenantId, userId, subscription, active, cancellationToken);
 
 				return true;
 			} catch (Exception ex) {
@@ -64,11 +65,11 @@ namespace Deveel.Webhooks {
 			}
 		}
 
-		protected virtual Task OnSubscriptionStateChangesAsync(TSubscription subscription, bool active, CancellationToken cancellationToken) {
+		protected virtual Task OnSubscriptionStateChangesAsync(string tenantId, string userId, TSubscription subscription, bool active, CancellationToken cancellationToken) {
 			return Task.CompletedTask;
 		}
 
-		protected virtual Task OnSubscriptionCreatedAsync(string id, TSubscription subscription, CancellationToken cancellationToken) {
+		protected virtual Task OnSubscriptionCreatedAsync(string tenantId, string userId, string id, TSubscription subscription, CancellationToken cancellationToken) {
 			return Task.CompletedTask;
 		}
 
@@ -76,14 +77,14 @@ namespace Deveel.Webhooks {
 			return Task.CompletedTask;
 		}
 
-		public virtual async Task<string> AddSubscriptionAsync(string tenantId, WebhookSubscriptionInfo subscriptionInfo, CancellationToken cancellationToken) {
+		public virtual async Task<string> AddSubscriptionAsync(string tenantId, string userId, WebhookSubscriptionInfo subscriptionInfo, CancellationToken cancellationToken) {
 			try {
 				var subscription = subscriptionFactory.Create(subscriptionInfo);
 				var result = await subscriptionStore.CreateAsync(tenantId, subscription, cancellationToken);
 
 				Logger.LogInformation("New subscription with ID {SubscriptionId} for Tenant {TenantId}", result, tenantId);
 
-				await OnSubscriptionCreatedAsync(result, subscription, cancellationToken);
+				await OnSubscriptionCreatedAsync(tenantId, userId, result, subscription, cancellationToken);
 
 				return result;
 			} catch (Exception ex) {
@@ -92,14 +93,15 @@ namespace Deveel.Webhooks {
 			}
 		}
 
-		public virtual async Task<bool> RemoveSubscriptionAsync(string tenantId, string subscriptionId, CancellationToken cancellationToken) {
+		public virtual async Task<bool> RemoveSubscriptionAsync(string tenantId, string userId, string subscriptionId, CancellationToken cancellationToken) {
 			try {
 				var subscription = await subscriptionStore.FindByIdAsync(tenantId, subscriptionId, cancellationToken);
 
 				if (subscription == null) {
 					Logger.LogWarning("Trying to delete the subscription {SubscriptionId} of Tenant {TenantId}, but it was not found",
 						subscriptionId, tenantId);
-					return false;
+
+					throw new SubscriptionNotFoundException(subscriptionId);
 				}
 
 				var result = await subscriptionStore.DeleteAsync(tenantId, subscription);
@@ -119,11 +121,11 @@ namespace Deveel.Webhooks {
 			}
 		}
 
-		public virtual Task<bool> DisableSubscriptionAsync(string tenantId, string subscriptionId, CancellationToken cancellationToken)
-			=> SetStateAsync(tenantId, subscriptionId, false, cancellationToken);
+		public virtual Task<bool> DisableSubscriptionAsync(string tenantId, string userId, string subscriptionId, CancellationToken cancellationToken)
+			=> SetStateAsync(tenantId, userId, subscriptionId, false, cancellationToken);
 
-		public virtual Task<bool> EnableSubscriptionAsync(string tenantId, string subscriptionId, CancellationToken cancellationToken)
-			=> SetStateAsync(tenantId, subscriptionId, true, cancellationToken);
+		public virtual Task<bool> EnableSubscriptionAsync(string tenantId, string userId, string subscriptionId, CancellationToken cancellationToken)
+			=> SetStateAsync(tenantId, userId, subscriptionId, true, cancellationToken);
 
 		public virtual async Task<TSubscription> GetSubscriptionAsync(string tenantId, string subscriptionId, CancellationToken cancellationToken) {
 			try {
@@ -142,12 +144,6 @@ namespace Deveel.Webhooks {
 				Logger.LogError(ex, "Error while retrieving a page of subscriptions for tenant {TenantId}", tenantId);
 				throw;
 			}
-		}
-
-		// TODO: Remove this and delegate to innheriting classes
-		public async Task<PaginatedResult<IWebhookSubscription>> GetSubscriptionsByMetadataAsync(string tenantId, string key, object value, PageRequest page, CancellationToken cancellationToken) {
-			var result = await subscriptionStore.GetPageByMetadataAsync(tenantId, key, value, page, cancellationToken);
-			return result.CastTo<IWebhookSubscription>();
 		}
 	}
 }

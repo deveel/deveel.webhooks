@@ -35,16 +35,6 @@ namespace Deveel.Webhooks {
 			return result.Cast<IWebhookSubscription>().ToList();
 		}
 
-
-		public Task<PaginatedResult<WebhookSubscriptionDocument>> GetPageByMetadataAsync(string key, object value, PageRequest page, CancellationToken cancellationToken) {
-			var filter = Builders<WebhookSubscriptionDocument>.Filter
-				.ElemMatch(doc => doc.Metadata, item => item.Key == key && item.Value == value);
-			return GetPageAsync(filter, page, cancellationToken);
-		}
-
-		public Task<bool> MetadataExistsAsync(string key, object value, CancellationToken cancellationToken)
-			=> ExistsAsync(Builders<WebhookSubscriptionDocument>.Filter.ElemMatch(doc => doc.Metadata, item => item.Key == key && item.Value == value), cancellationToken);
-
 		public Task SetStateAsync(WebhookSubscriptionDocument subscription, bool active, CancellationToken cancellationToken) {
 			ThrowIfDisposed();
 			cancellationToken.ThrowIfCancellationRequested();
@@ -52,11 +42,6 @@ namespace Deveel.Webhooks {
 			subscription.IsActive = active;
 
 			return Task.CompletedTask;
-		}
-
-		async Task<PaginatedResult<IWebhookSubscription>> IWebhookSubscriptionStore<IWebhookSubscription>.GetPageByMetadataAsync(string key, object value, PageRequest page, CancellationToken cancellationToken) {
-			var result = await GetPageByMetadataAsync(key, value, page, cancellationToken);
-			return result.CastTo<IWebhookSubscription>();
 		}
 
 		Task IWebhookSubscriptionStore<IWebhookSubscription>.SetStateAsync(IWebhookSubscription subscription, bool active, CancellationToken cancellationToken)

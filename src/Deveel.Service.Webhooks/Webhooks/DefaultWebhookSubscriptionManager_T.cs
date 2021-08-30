@@ -73,7 +73,7 @@ namespace Deveel.Webhooks {
 			return Task.CompletedTask;
 		}
 
-		protected virtual Task OnSubscriptionDeletedAsync(TSubscription subscription, CancellationToken cancellationToken) {
+		protected virtual Task OnSubscriptionDeletedAsync(string tenantId, string userId, TSubscription subscription, CancellationToken cancellationToken) {
 			return Task.CompletedTask;
 		}
 
@@ -111,7 +111,7 @@ namespace Deveel.Webhooks {
 				} else {
 					Logger.LogInformation("The subscription {SubscriptionId} of Tenant {TenantId} was deleted from the store");
 
-					await OnSubscriptionDeletedAsync(subscription, cancellationToken);
+					await OnSubscriptionDeletedAsync(tenantId, userId, subscription, cancellationToken);
 				}
 
 				return result;

@@ -18,6 +18,8 @@ using MongoDB.Bson;
 using Xunit;
 
 namespace Deveel.Webhooks {
+	[Trait("Category", "Webhooks")]
+	[Trait("Category", "Subscriptions")]
 	public class WebhookManagementTests : IDisposable {
 		private readonly MongoDbRunner mongoDbCluster;
 		private readonly string tenantId = Guid.NewGuid().ToString();

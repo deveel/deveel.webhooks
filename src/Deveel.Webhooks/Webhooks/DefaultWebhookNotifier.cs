@@ -11,35 +11,61 @@ namespace Deveel.Webhooks {
 		private readonly IWebhookSubscriptionResolver subscriptionResolver;
 		private readonly IWebhookFilterRequestFactory requestFactory;
 		private readonly IWebhookFilterEvaluator filterEvaluator;
+		private readonly IWebhookDataStrategy dataStrategy;
 		private readonly IWebhookSender sender;
 
 		public DefaultWebhookNotifier(IWebhookSender sender,
 			IWebhookSubscriptionResolver subscriptionResolver,
 			IWebhookFilterRequestFactory requestFactory,
 			IWebhookFilterEvaluator filterEvaluator,
+			IWebhookDataStrategy dataStrategy,
 			ILogger<DefaultWebhookNotifier> logger) {
 			this.sender = sender;
 			this.requestFactory = requestFactory;
 			this.subscriptionResolver = subscriptionResolver;
 			this.filterEvaluator = filterEvaluator;
+			this.dataStrategy = dataStrategy;
 			Logger = logger;
+		}
+
+		public DefaultWebhookNotifier(IWebhookSender sender,
+			IWebhookSubscriptionResolver subscriptionResolver,
+			IWebhookFilterRequestFactory requestFactory,
+			IWebhookFilterEvaluator filterEvaluator,
+			ILogger<DefaultWebhookNotifier> logger) : this(sender, subscriptionResolver, filterEvaluator, null, logger) {
+		}
+
+		public DefaultWebhookNotifier(IWebhookSender sender,
+			IWebhookSubscriptionResolver subscriptionResolver,
+			IWebhookFilterEvaluator filterEvaluator,
+			IWebhookDataStrategy dataStrategy,
+			ILogger<DefaultWebhookNotifier> logger)
+			: this(sender, subscriptionResolver, new DefaultWebookFilterRequestFactory(), filterEvaluator, dataStrategy, logger) {
 		}
 
 		public DefaultWebhookNotifier(IWebhookSender sender,
 			IWebhookSubscriptionResolver subscriptionResolver,
 			IWebhookFilterEvaluator filterEvaluator,
 			ILogger<DefaultWebhookNotifier> logger)
-			: this(sender, subscriptionResolver, new DefaultWebookFilterRequestFactory(), filterEvaluator, logger) {
+			: this(sender, subscriptionResolver, filterEvaluator, null, logger) {
+		}
+
+
+		public DefaultWebhookNotifier(IWebhookSender sender, IWebhookSubscriptionResolver subscriptionResolver, IWebhookFilterRequestFactory requestFactory, IWebhookFilterEvaluator filterEvaluator, IWebhookDataStrategy dataStrategy)
+			: this(sender, subscriptionResolver, requestFactory, filterEvaluator, dataStrategy, NullLogger<DefaultWebhookNotifier>.Instance) {
 		}
 
 		public DefaultWebhookNotifier(IWebhookSender sender, IWebhookSubscriptionResolver subscriptionResolver, IWebhookFilterRequestFactory requestFactory, IWebhookFilterEvaluator filterEvaluator)
-			: this(sender, subscriptionResolver, requestFactory, filterEvaluator, NullLogger<DefaultWebhookNotifier>.Instance) {
+			: this(sender, subscriptionResolver, requestFactory, filterEvaluator, (IWebhookDataStrategy) null) {
+		}
+
+		public DefaultWebhookNotifier(IWebhookSender sender, IWebhookSubscriptionResolver subscriptionResolver, IWebhookFilterEvaluator filterEvaluator, IWebhookDataStrategy dataStrategy)
+			: this(sender, subscriptionResolver, new DefaultWebookFilterRequestFactory(), filterEvaluator,  dataStrategy, NullLogger<DefaultWebhookNotifier>.Instance) {
 		}
 
 		public DefaultWebhookNotifier(IWebhookSender sender, IWebhookSubscriptionResolver subscriptionResolver, IWebhookFilterEvaluator filterEvaluator)
-			: this(sender, subscriptionResolver, new DefaultWebookFilterRequestFactory(), filterEvaluator, NullLogger<DefaultWebhookNotifier>.Instance) {
+			: this(sender, subscriptionResolver, filterEvaluator, (IWebhookDataStrategy) null) {
 		}
-
 
 		protected ILogger Logger { get; }
 
@@ -50,11 +76,29 @@ namespace Deveel.Webhooks {
 			return WebhookFilterRequest.Empty;
 		}
 
+		protected virtual async Task<object> GetWebhookDataAsync(EventInfo eventInfo, CancellationToken cancellationToken) {
+			var factory = dataStrategy.GetDataFactory(eventInfo.EventType);
+			if (factory != null) {
+				return await factory.CreateDataAsync(eventInfo, cancellationToken);
+			}
+
+			return eventInfo.Data;
+		}
+
 		protected virtual async Task<bool> MatchesAsync(WebhookFilterRequest filterRequest, IWebhook webhook, CancellationToken cancellationToken) {
 			if (filterRequest == null)
 				return true;
 
 			return await filterEvaluator.MatchesAsync(filterRequest, webhook, cancellationToken);
+		}
+
+		protected virtual Task OnWebhookDeliveryResultAsync(string tenantId, IWebhookSubscription subscription, IWebhook webhook, WebhookDeliveryResult result, CancellationToken cancellationToken) {
+			OnWebhookDeliveryResult(tenantId, subscription, webhook, result);
+			return Task.CompletedTask;
+		}
+
+		protected virtual void OnWebhookDeliveryResult(string tenantId, IWebhookSubscription subscription, IWebhook webhook, WebhookDeliveryResult result) {
+
 		}
 
 		public async Task<WebhookNotificationResult> NotifyAsync(string tenantId, EventInfo eventInfo, CancellationToken cancellationToken) {
@@ -81,6 +125,13 @@ namespace Deveel.Webhooks {
 							var deliveryResult = await SendAsync(tenantId, webhook, cancellationToken);
 
 							result.AddDelivery(deliveryResult);
+
+							try {
+								await OnWebhookDeliveryResultAsync(tenantId, subscription, webhook, deliveryResult, cancellationToken);
+							} catch (Exception ex) {
+								Logger.LogError(ex, "The event handling on the delivery thrown an error");
+							}
+							
 						} else {
 							Logger.LogInformation("Not delivering the webhook for event {EventType} to subscription {SubscriptionId} of Tenant {TenantId}",
 								eventInfo.EventType, subscription.SubscriptionId, tenantId);
@@ -110,8 +161,19 @@ namespace Deveel.Webhooks {
 			}
 		}
 
-		protected virtual Task<IWebhook> CreateWebhook(IWebhookSubscription subscription, EventInfo eventInfo, CancellationToken cancellationToken) {
-			var webhook = new Webhook {
+		protected virtual async Task<IWebhook> CreateWebhook(IWebhookSubscription subscription, EventInfo eventInfo, CancellationToken cancellationToken) {
+			object data;
+
+			try {
+				data = await GetWebhookDataAsync(eventInfo, cancellationToken);
+			} catch (Exception ex) {
+				Logger.LogError(ex, "Error setting the data for the event {EventType} to subscription {SubscriptionId}",
+					eventInfo.EventType, subscription.SubscriptionId);
+				throw;
+
+			}
+
+			return new Webhook {
 				SubscriptionId = subscription.SubscriptionId,
 				Name = subscription.Name,
 				EventType = eventInfo.EventType,
@@ -119,13 +181,11 @@ namespace Deveel.Webhooks {
 				Headers = subscription.Headers == null
 					? null
 					: new Dictionary<string, string>(subscription.Headers),
-				Data = eventInfo.Data,
+				Data = data,
 				Secret = subscription.Secret,
 				Id = eventInfo.Id,
 				TimeStamp = eventInfo.TimeStamp
 			};
-
-			return Task.FromResult<IWebhook>(webhook);
 		}
 
 		#region Webhook

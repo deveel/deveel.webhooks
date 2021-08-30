@@ -32,7 +32,7 @@ namespace Deveel.Webhooks {
 			=> builder.Use<IWebhookNotifier, TNotifier>();
 
 		public static IWebhookServiceBuilder UseDefaultNotifier(this IWebhookServiceBuilder builder)
-			=> builder.UseNotifier<WebhookNotifier>();
+			=> builder.UseNotifier<DefaultWebhookNotifier>();
 
 		public static IWebhookServiceBuilder UseSubscriptionStore<TStore>(this IWebhookServiceBuilder builder)
 			where TStore : class, IWebhookSubscriptionStore

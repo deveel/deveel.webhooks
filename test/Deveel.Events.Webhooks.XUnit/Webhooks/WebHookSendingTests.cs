@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -16,6 +15,8 @@ using Mongo2Go;
 using Xunit;
 
 namespace Deveel.Webhooks {
+	[Trait("Category", "Webhooks")]
+	[Trait("Category", "Notification")]
 	public class WebHookSendingTests : IDisposable {
 		private MongoDbRunner mongoDbCluster;
 		private readonly string tenantId = Guid.NewGuid().ToString();
@@ -84,7 +85,6 @@ namespace Deveel.Webhooks {
 		}
 
 		[Fact]
-		[Trait("Category", "Webhooks")]
 		public async Task DeliverWebhookFromEvent() {
 			var subscriptionId = await CreateSubscriptionAsync("Data Created", "data.created", new WebhookFilter("hook.data.data_type == \"test-data\""));
 			var notification = new EventInfo("data.created", new {
@@ -107,7 +107,6 @@ namespace Deveel.Webhooks {
 		}
 
 		[Fact]
-		[Trait("Category", "Webhooks")]
 		public async Task DeliverWebhookWithMultipleFiltersFromEvent() {
 			var subscriptionId = await CreateSubscriptionAsync("Data Created", "data.created", 
 				new WebhookFilter( "hook.data.data_type == \"test-data\""), 
@@ -133,7 +132,6 @@ namespace Deveel.Webhooks {
 
 
 		[Fact]
-		[Trait("Category", "Webhooks")]
 		public async Task DeliverWebhookWithoutFilter() {
 			var subscriptionId = await CreateSubscriptionAsync("Data Created", "data.created", null);
 			var notification = new Event("data.created", new {
@@ -156,7 +154,6 @@ namespace Deveel.Webhooks {
 		}
 
 		[Fact]
-		[Trait("Category", "Webhooks")]
 		public async Task DeliverSignedWebhookFromEvent() {
 			validateSignature = true;
 
@@ -187,7 +184,6 @@ namespace Deveel.Webhooks {
 		}
 
 		[Fact]
-		[Trait("Category", "Webhooks")]
 		public async Task FailToDeliver() {
 			var subscriptionId = await CreateSubscriptionAsync("Data Created", "data.created", new WebhookFilter ("hook.data.data_type == \"test-data\""));
 			var notification = new Event("data.created", new { creationTime = DateTimeOffset.UtcNow, type = "test" });
@@ -207,7 +203,6 @@ namespace Deveel.Webhooks {
 		}
 
 		[Fact]
-		[Trait("Category", "Webhooks")]
 		public async Task NoSubscriptionMatch() {
 			await CreateSubscriptionAsync("Data Created", "data.created",  new WebhookFilter("hook.data.data_type == \"test-data2\""));
 			var notification = new Event("data.created", new { creationTime = DateTimeOffset.UtcNow, type = "test" });

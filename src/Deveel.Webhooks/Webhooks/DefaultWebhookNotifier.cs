@@ -77,17 +77,37 @@ namespace Deveel.Webhooks {
 		}
 
 		protected virtual async Task<object> GetWebhookDataAsync(EventInfo eventInfo, CancellationToken cancellationToken) {
-			var factory = dataStrategy.GetDataFactory(eventInfo.EventType);
-			if (factory != null) {
-				return await factory.CreateDataAsync(eventInfo, cancellationToken);
+			Logger.LogDebug("GetWebhookDataAsync: getting data for an event");
+
+			if (dataStrategy != null) {
+				Logger.LogDebug("GetWebhookDataAsync: the data strategy was enabled");
+
+				var factory = dataStrategy.GetDataFactory(eventInfo.EventType);
+				if (factory != null) {
+					Logger.LogDebug("GetWebhookDataAsync: using a factory for the event of type {EventType} to generate the webhook data", 
+						eventInfo.EventType);
+
+					return await factory.CreateDataAsync(eventInfo, cancellationToken);
+				}
 			}
+
+			Logger.LogDebug("GetWebhookDataAsync: using the data of the event");
 
 			return eventInfo.Data;
 		}
 
 		protected virtual async Task<bool> MatchesAsync(WebhookFilterRequest filterRequest, IWebhook webhook, CancellationToken cancellationToken) {
-			if (filterRequest == null)
+			if (filterRequest == null) {
+				Logger.LogDebug("MachesAsync: the filter request was null");
 				return true;
+			}
+
+			if (filterEvaluator == null) {
+				Logger.LogDebug("MatchesAsync: the filter evaluator was not set");
+				return true;
+			}
+
+			Logger.LogDebug("MatchesAsync: using the filter evaluator");
 
 			return await filterEvaluator.MatchesAsync(filterRequest, webhook, cancellationToken);
 		}
@@ -133,7 +153,7 @@ namespace Deveel.Webhooks {
 							}
 							
 						} else {
-							Logger.LogInformation("Not delivering the webhook for event {EventType} to subscription {SubscriptionId} of Tenant {TenantId}",
+							Logger.LogDebug("The webhook for event {EventType} could not match the subscription {SubscriptionId} of Tenant {TenantId}",
 								eventInfo.EventType, subscription.SubscriptionId, tenantId);
 						}
 					} catch (Exception ex) {

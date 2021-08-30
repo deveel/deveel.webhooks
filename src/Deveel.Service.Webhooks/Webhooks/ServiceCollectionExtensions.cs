@@ -19,14 +19,22 @@ namespace Deveel.Webhooks {
 		public static IServiceCollection AddWebhooks(this IServiceCollection services, Action<IWebhookServiceBuilder> configure = null) {
 			services.TryAddScoped<IWebhookDataStrategy, DefaultWebhookDataStrategy>();
 
+			services.TryAddScoped<IWebhookNotifier, DefaultWebhookNotifier>();
+			services.AddScoped<DefaultWebhookNotifier>();
+
+			services.TryAddScoped<IWebhookSubscriptionManager, DefaultWebhookSubscriptionManager>();
+			services.AddScoped<DefaultWebhookSubscriptionManager>();
+
+			services.TryAddScoped<IWebhookSender, DefaultWebhookSender>();
+			services.AddScoped<DefaultWebhookSender>();
+
+			services.TryAddScoped<IWebhookSubscriptionResolver, DefaultWebhookSubscriptionResolver>();
+			services.AddScoped<DefaultWebhookSubscriptionResolver>();
+
+			services.TryAddScoped<IWebhookFilterEvaluator, DefaultWebhookFilterEvaluator>();
+			services.AddScoped<DefaultWebhookFilterEvaluator>();
+
 			var builder = new WebhookConfigurationBuilderImpl(services);
-
-			builder.UseDefaultSubscriptionManager();
-			builder.UseDefaultSender();
-
-			builder.UseDefaultFilterEvaluator();
-			builder.UseDefaultSubscriptionResolver();
-			builder.UseDefaultNotifier();
 
 			configure?.Invoke(builder);
 

@@ -153,7 +153,7 @@ namespace Deveel.Webhooks {
 							}
 							
 						} else {
-							Logger.LogDebug("The webhook for event {EventType} could not match the subscription {SubscriptionId} of Tenant {TenantId}",
+							Logger.LogInformation("The webhook for event {EventType} could not match the subscription {SubscriptionId} of Tenant {TenantId}",
 								eventInfo.EventType, subscription.SubscriptionId, tenantId);
 						}
 					} catch (Exception ex) {

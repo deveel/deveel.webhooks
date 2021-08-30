@@ -34,6 +34,9 @@ namespace Deveel.Webhooks {
 			services.TryAddScoped<IWebhookFilterEvaluator, DefaultWebhookFilterEvaluator>();
 			services.AddScoped<DefaultWebhookFilterEvaluator>();
 
+			services.TryAddScoped<IWebhookFilterRequestFactory, DefaultWebookFilterRequestFactory>();
+			services.AddScoped<DefaultWebookFilterRequestFactory>();
+
 			var builder = new WebhookConfigurationBuilderImpl(services);
 
 			configure?.Invoke(builder);

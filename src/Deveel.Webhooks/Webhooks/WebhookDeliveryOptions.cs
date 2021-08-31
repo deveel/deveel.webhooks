@@ -10,6 +10,8 @@ namespace Deveel.Webhooks {
 
 		public bool SignWebhooks { get; set; } = true;
 
+		public WebhookFields IncludeFields { get; set; } = WebhookFields.All;
+
 		public WebhookSignatureLocation SignatureLocation { get; set; } = WebhookSignatureLocation.QueryString;
 
 		public WebhookSignatureAlgorithm SignatureAlgorithm { get; set; } = WebhookSignatureAlgorithm.HmacSha256;

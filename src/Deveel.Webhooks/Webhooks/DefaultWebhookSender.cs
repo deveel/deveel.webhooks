@@ -133,17 +133,22 @@ namespace Deveel.Webhooks {
 		}
 
 		public virtual Task<WebhookPayload> GetWebhookPayloadAsync(IWebhook webhook) {
-			return Task.FromResult(new WebhookPayload {
-				WebhookName = webhook.Name,
-				EventType = webhook.EventType,
-				EventId = webhook.Id,
-				TimeStamp = webhook.TimeStamp,
-				Data = GetExtensionData(webhook.Data)
-			});
-		}
+			var payload = new WebhookPayload();
 
-		private JObject GetExtensionData(object data) {
-			return JObject.FromObject(data);
+			var fields = deliveryOptions?.IncludeFields ?? WebhookFields.All;
+
+			if ((fields & WebhookFields.EventId) != 0)
+				payload.EventId = webhook.Id;
+			if ((fields & WebhookFields.EventName) != 0)
+				payload.EventType = webhook.EventType;
+			if ((fields & WebhookFields.TimeStamp) != 0)
+				payload.TimeStamp = webhook.TimeStamp;
+			if ((fields & WebhookFields.Name) != 0)
+				payload.WebhookName = webhook.Name;
+
+			payload.Data = JObject.FromObject(webhook.Data);
+
+			return Task.FromResult(payload);
 		}
 
 		public virtual async Task<string> GetSerializedBodyAsync(IWebhook webhook) {

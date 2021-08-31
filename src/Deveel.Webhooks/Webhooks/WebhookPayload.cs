@@ -16,7 +16,7 @@ namespace Deveel.Webhooks {
 		public string EventType { get; set; }
 
 		[JsonProperty("timeStamp")]
-		public DateTimeOffset TimeStamp { get; set; }
+		public DateTimeOffset? TimeStamp { get; set; }
 
 		[JsonExtensionData]
 		public JObject Data { get; set; }

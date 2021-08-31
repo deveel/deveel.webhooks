@@ -6,6 +6,7 @@ using Deveel.Data.Memory;
 using Deveel.Webhooks;
 using Deveel.Webhooks.Memory;
 
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
@@ -20,10 +21,20 @@ namespace Deveel.Webhooks {
 			return builder;
 		}
 
-		public static IWebhookServiceBuilder Configure(this IWebhookServiceBuilder builder, Action<WebhookConfigureOptions> configure) {
+		public static IWebhookServiceBuilder ConfigureDelivery(this IWebhookServiceBuilder builder, Action<WebhookDeliveryOptions> configure) {
 			if (configure != null)
 				builder.ConfigureServices(services => services.Configure(configure));
 
+			return builder;
+		}
+
+		public static IWebhookServiceBuilder ConfigureDelivery(this IWebhookServiceBuilder builder, WebhookDeliveryOptions options) {
+			builder.ConfigureServices(services => services.AddSingleton(options));
+			return builder;
+		}
+
+		public static IWebhookServiceBuilder ConfigureDelivery(this IWebhookServiceBuilder builder, IConfiguration configuration) {
+			builder.ConfigureServices(services => services.AddOptions<WebhookDeliveryOptions>().Bind(configuration));
 			return builder;
 		}
 

@@ -34,8 +34,8 @@ namespace Deveel.Webhooks {
 
 			var services = new ServiceCollection();
 			services.AddWebhooks(builder => {
-				builder.Configure(options => {
-					options.Delivery.SignWebhooks = true;
+				builder.ConfigureDelivery(options => {
+					options.SignWebhooks = true;
 				})
 				.UseDefaultFilterEvaluator()
 				.AddDataFactory<TestDataFactory>()

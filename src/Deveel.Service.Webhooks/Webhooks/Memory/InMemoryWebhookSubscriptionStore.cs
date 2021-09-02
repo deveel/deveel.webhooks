@@ -16,6 +16,12 @@ namespace Deveel.Webhooks.Memory {
 		public InMemoryWebhookSubscriptionStore(IStoreState<InMemoryWebhookSubscription> state) : base(state) {
 		}
 
+		public InMemoryWebhookSubscriptionStore(InMemoryOptions<InMemoryWebhookSubscription> options) : base(options) {
+		}
+
+		public InMemoryWebhookSubscriptionStore(InMemoryOptions<InMemoryWebhookSubscription> options, IStoreState<InMemoryWebhookSubscription> state) : base(options, state) {
+		}
+
 		public Task<IList<IWebhookSubscription>> GetByEventTypeAsync(string eventType, CancellationToken cancellationToken) {
 			ThrowIfDisposed();
 			cancellationToken.ThrowIfCancellationRequested();

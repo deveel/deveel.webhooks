@@ -107,7 +107,7 @@ namespace Deveel.Webhooks {
 		public static IWebhookServiceBuilder UseDefaultSubscriptionManager(this IWebhookServiceBuilder builder)
 			=> builder.UseSubscriptionManager<DefaultWebhookSubscriptionManager>();
 
-		public static IWebhookServiceBuilder UseInMemoryStorage(this IWebhookServiceBuilder builder, IStoreProviderState<InMemoryWebhookSubscription> state = null) {
+		public static IWebhookServiceBuilder UseInMemoryStorage(this IWebhookServiceBuilder builder, IStoreState<InMemoryWebhookSubscription> state = null) {
 			if (state != null)
 				builder.ConfigureServices(services => services.AddSingleton(state));
 
@@ -116,7 +116,7 @@ namespace Deveel.Webhooks {
 				.UseSubscriptionStoreProvider<InMemoryWebhookSubscriptionStoreProvider>();
 		}
 
-		public static IWebhookServiceBuilder UseInMemoryStorage(this IWebhookServiceBuilder builder, IDictionary<string, IEnumerable<InMemoryWebhookSubscription>> state, bool readOnly = false)
-			=> builder.UseInMemoryStorage(new StoreProviderState<InMemoryWebhookSubscription>(state, readOnly));
+		public static IWebhookServiceBuilder UseInMemoryStorage(this IWebhookServiceBuilder builder, IEnumerable<InMemoryWebhookSubscription> state, bool readOnly = false)
+			=> builder.UseInMemoryStorage(readOnly ? StoreState<InMemoryWebhookSubscription>.ReadOnly(state) : new StoreState<InMemoryWebhookSubscription>(state));
 	}
 }

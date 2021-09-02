@@ -5,6 +5,8 @@ namespace Deveel.Webhooks.Memory {
 	public class InMemoryWebhookSubscription : IWebhookSubscription, IEntity {
 		public string Name { get; set; }
 
+		public string TenantId { get; set; }
+
 		public string DestinationUrl { get; set; }
 
 		public string Secret { get; set; }

@@ -25,6 +25,8 @@ namespace Deveel.Webhooks {
 
 		public bool IsActive { get; set; }
 
+		public string TenantId { get; set; }
+
 		public int RetryCount { get; set; }
 
 		public IDictionary<string, string> Headers { get; set; }

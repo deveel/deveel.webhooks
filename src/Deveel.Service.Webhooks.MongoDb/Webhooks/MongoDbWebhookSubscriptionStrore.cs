@@ -11,7 +11,7 @@ using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 
 namespace Deveel.Webhooks {
-	class MongoDbWebhookSubscriptionStrore : MongoDbEntityStore<WebhookSubscriptionDocument, IWebhookSubscription>,
+	class MongoDbWebhookSubscriptionStrore : MongoDbStore<WebhookSubscriptionDocument, IWebhookSubscription>,
 													IWebhookSubscriptionStore {
 		public MongoDbWebhookSubscriptionStrore(IOptions<MongoDbOptions<WebhookSubscriptionDocument>> options) : base(options) {
 		}

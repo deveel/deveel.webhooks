@@ -9,8 +9,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Deveel.Api.XUnit.Core" Version="1.0.0-1201274614" />
-    <PackageReference Include="Deveel.Events.Service.Test" Version="1.0.0-1201274614" />
+    <PackageReference Include="Deveel.Api.XUnit.Core" Version="1.0.0-1202799609" />
+    <PackageReference Include="Deveel.Events.Service.Test" Version="1.0.0-1202799609" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="3.1.17" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="5.0.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.10.0" />

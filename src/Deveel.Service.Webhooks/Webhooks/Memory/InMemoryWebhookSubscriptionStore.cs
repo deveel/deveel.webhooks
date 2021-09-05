@@ -5,7 +5,6 @@ using System.Threading;
 using System.Threading.Tasks;
 
 using Deveel.Data;
-using Deveel.Data.Memory;
 using Deveel.Webhooks;
 
 namespace Deveel.Webhooks.Memory {

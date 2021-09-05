@@ -1,6 +1,6 @@
 ﻿using System;
 
-using Deveel.Data.Memory;
+using Deveel.Data;
 using Deveel.Webhooks;
 
 namespace Deveel.Webhooks.Memory {

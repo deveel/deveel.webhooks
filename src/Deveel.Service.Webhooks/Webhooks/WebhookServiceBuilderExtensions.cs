@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 
-using Deveel.Data.Memory;
+using Deveel.Data;
 using Deveel.Webhooks;
 using Deveel.Webhooks.Memory;
 

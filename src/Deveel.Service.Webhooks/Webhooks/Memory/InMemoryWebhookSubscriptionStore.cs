@@ -25,7 +25,12 @@ namespace Deveel.Webhooks.Memory {
 			ThrowIfDisposed();
 			cancellationToken.ThrowIfCancellationRequested();
 
-			var result = Entities
+			var entities = Entities.AsQueryable();
+			if (Options.MultiTenancy != null &&
+				Options.MultiTenancy.Handling == InMemoryMultiTenancyHandling.TenantField)
+				entities = entities.Where(x => x.TenantId == Options.TenantId);
+
+			var result = entities
 				.Where(x => x.EventTypes.Any(x => x == eventType))
 				.Cast<IWebhookSubscription>()
 				.ToList();

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 
 namespace Deveel.Webhooks.Memory {
-	public class InMemoryWebhookSubscription : IWebhookSubscription, IEntity {
+	public class InMemoryWebhookSubscription : IWebhookSubscription, IMultiTenantEntity {
 		public string Name { get; set; }
 
 		public string TenantId { get; set; }

@@ -25,9 +25,7 @@ namespace Deveel.Webhooks {
 
 			var filter = Builders<WebhookSubscriptionDocument>.Filter
 				.AnyEq(doc => doc.EventTypes, eventType);
-			var result = await Collection.FindAsync(filter, cancellationToken: cancellationToken);
-
-			return await result.ToListAsync();
+			return await FindAllAsync(filter, cancellationToken: cancellationToken);
 		}
 
 		async Task<IList<IWebhookSubscription>> IWebhookSubscriptionStore<IWebhookSubscription>.GetByEventTypeAsync(string eventType, CancellationToken cancellationToken) {

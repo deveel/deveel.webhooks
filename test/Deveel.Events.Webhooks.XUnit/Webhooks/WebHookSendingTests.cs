@@ -203,11 +203,22 @@ namespace Deveel.Webhooks {
 		}
 
 		[Fact]
-		public async Task NoSubscriptionMatch() {
+		public async Task NoSubscriptionMatches() {
 			await CreateSubscriptionAsync("Data Created", "data.created",  new WebhookFilter("hook.data.data_type == \"test-data2\""));
 			var notification = new Event("data.created", new { creationTime = DateTimeOffset.UtcNow, type = "test" });
 
 			var result = await notifier.NotifyAsync(tenantId, notification, CancellationToken.None);
+
+			Assert.NotNull(result);
+			Assert.Empty(result);
+		}
+
+		[Fact]
+		public async Task NoTenantMatches() {
+			var subscriptionId = await CreateSubscriptionAsync("Data Created", "data.created", new WebhookFilter("hook.data.data_type == \"test-data\""));
+			var notification = new Event("data.created", new { creationTime = DateTimeOffset.UtcNow, type = "test" });
+
+			var result = await notifier.NotifyAsync(Guid.NewGuid().ToString("N"), notification, CancellationToken.None);
 
 			Assert.NotNull(result);
 			Assert.Empty(result);

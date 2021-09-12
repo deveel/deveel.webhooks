@@ -29,10 +29,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Deveel.Data.Core" Version="1.0.0-1218846682" />
-    <PackageReference Include="Deveel.Data.InMemory.Core" Version="1.0.0-1218846682" />
-    <PackageReference Include="Deveel.Events.Service.Core" Version="1.0.0-1218846682" />
-    <PackageReference Include="Deveel.Service.Core" Version="1.0.0-1218846682" />
+    <PackageReference Include="Deveel.Data.Core" Version="1.0.0-1220933152" />
+    <PackageReference Include="Deveel.Data.InMemory.Core" Version="1.0.0-1220933152" />
+    <PackageReference Include="Deveel.Events.Service.Core" Version="1.0.0-1220933152" />
+    <PackageReference Include="Deveel.Service.Core" Version="1.0.0-1220933152" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="3.1.17" />
   </ItemGroup>
 

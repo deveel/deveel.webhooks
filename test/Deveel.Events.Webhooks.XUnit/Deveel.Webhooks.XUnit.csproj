@@ -9,7 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Deveel.Events.Service.Test" Version="1.0.0-1226368084" />
+    <PackageReference Include="Deveel.Events.Service.Test" Version="1.0.0-1226478360" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="3.1.17" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="5.0.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.10.0" />

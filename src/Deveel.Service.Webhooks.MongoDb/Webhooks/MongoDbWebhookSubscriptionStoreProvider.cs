@@ -9,12 +9,10 @@ namespace Deveel.Webhooks {
 														   IWebhookSubscriptionStoreProvider {
 		public MongoDbWebhookSubscriptionStoreProvider(MongoDbOptions<WebhookSubscriptionDocument> baseOptions, IDocumentFieldMapper<WebhookSubscriptionDocument> fieldMapper = null) 
 			: base(baseOptions, fieldMapper) {
-			bool dummy = true;
 		}
 
 		public MongoDbWebhookSubscriptionStoreProvider(IOptions<MongoDbOptions<WebhookSubscriptionDocument>> baseOptions, IDocumentFieldMapper<WebhookSubscriptionDocument> fieldMapper = null) 
 			: base(baseOptions, fieldMapper) {
-			bool dummy = true;
 		}
 
 		protected override MongoDbStore<WebhookSubscriptionDocument> CreateStore(MongoDbOptions<WebhookSubscriptionDocument> options)

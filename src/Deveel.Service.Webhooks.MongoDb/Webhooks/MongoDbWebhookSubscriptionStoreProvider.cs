@@ -7,12 +7,12 @@ using Microsoft.Extensions.Options;
 namespace Deveel.Webhooks {
 	class MongoDbWebhookSubscriptionStoreProvider : MongoDbStoreProvider<WebhookSubscriptionDocument>,
 														   IWebhookSubscriptionStoreProvider {
-		public MongoDbWebhookSubscriptionStoreProvider(MongoDbOptions<WebhookSubscriptionDocument> baseOptions, IDocumentFieldMapper<WebhookSubscriptionDocument> fieldMapper = null) 
-			: base(baseOptions, fieldMapper) {
+		public MongoDbWebhookSubscriptionStoreProvider(MongoDbOptions<WebhookSubscriptionDocument> baseOptions) 
+			: base(baseOptions) {
 		}
 
-		public MongoDbWebhookSubscriptionStoreProvider(IOptions<MongoDbOptions<WebhookSubscriptionDocument>> baseOptions, IDocumentFieldMapper<WebhookSubscriptionDocument> fieldMapper = null) 
-			: base(baseOptions, fieldMapper) {
+		public MongoDbWebhookSubscriptionStoreProvider(IOptions<MongoDbOptions<WebhookSubscriptionDocument>> baseOptions) 
+			: base(baseOptions) {
 		}
 
 		protected override MongoDbStore<WebhookSubscriptionDocument> CreateStore(MongoDbOptions<WebhookSubscriptionDocument> options)

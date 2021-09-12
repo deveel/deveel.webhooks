@@ -5,6 +5,7 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 
+using Deveel.Data;
 using Deveel.Events;
 
 using Microsoft.Extensions.DependencyInjection;
@@ -43,6 +44,8 @@ namespace Deveel.Webhooks {
 					options.CollectionName = "webhooks_subscription";
 					options.DatabaseName = "webhooks";
 					options.ConnectionString = mongoDbCluster.ConnectionString;
+					options.MultiTenancy.Handling = MultiTenancyHandling.TenantField;
+					options.MultiTenancy.FieldName = "TenantId";
 				});
 			})
 			.AddTestHttpClient(async request => {
@@ -223,6 +226,15 @@ namespace Deveel.Webhooks {
 			Assert.NotNull(result);
 			Assert.Empty(result);
 		}
+
+		[Fact]
+		public async Task NoTenantSet() {
+			var subscriptionId = await CreateSubscriptionAsync("Data Created", "data.created", new WebhookFilter("hook.data.data_type == \"test-data\""));
+			var notification = new Event("data.created", new { creationTime = DateTimeOffset.UtcNow, type = "test" });
+
+			await Assert.ThrowsAsync<ArgumentNullException>(() => notifier.NotifyAsync(null, notification, CancellationToken.None));
+		}
+
 
 		public void Dispose() {
 			mongoDbCluster?.Dispose();

@@ -7,19 +7,23 @@ using Microsoft.Extensions.Options;
 namespace Deveel.Webhooks {
 	class MongoDbWebhookSubscriptionStoreProvider : MongoDbStoreProvider<WebhookSubscriptionDocument>,
 														   IWebhookSubscriptionStoreProvider {
-		public MongoDbWebhookSubscriptionStoreProvider(MongoDbOptions<WebhookSubscriptionDocument> baseOptions) : base(baseOptions) {
+		public MongoDbWebhookSubscriptionStoreProvider(MongoDbOptions<WebhookSubscriptionDocument> baseOptions, IDocumentFieldMapper<WebhookSubscriptionDocument> fieldMapper = null) 
+			: base(baseOptions, fieldMapper) {
+			bool dummy = true;
 		}
 
-		public MongoDbWebhookSubscriptionStoreProvider(IOptions<MongoDbOptions<WebhookSubscriptionDocument>> baseOptions) : base(baseOptions) {
+		public MongoDbWebhookSubscriptionStoreProvider(IOptions<MongoDbOptions<WebhookSubscriptionDocument>> baseOptions, IDocumentFieldMapper<WebhookSubscriptionDocument> fieldMapper = null) 
+			: base(baseOptions, fieldMapper) {
+			bool dummy = true;
 		}
 
 		protected override MongoDbStore<WebhookSubscriptionDocument> CreateStore(MongoDbOptions<WebhookSubscriptionDocument> options)
 			=> new MongoDbWebhookSubscriptionStrore(options);
 
-		public new MongoDbWebhookSubscriptionStrore GetStore(string appId) => (MongoDbWebhookSubscriptionStrore)base.GetStore(appId);
+		public new MongoDbWebhookSubscriptionStrore GetStore(string tenantId) => (MongoDbWebhookSubscriptionStrore)base.GetStore(tenantId);
 
-		IWebhookSubscriptionStore IWebhookSubscriptionStoreProvider.GetStore(string appId)
-			=> GetStore(appId);
+		IWebhookSubscriptionStore IWebhookSubscriptionStoreProvider.GetStore(string tenantId)
+			=> GetStore(tenantId);
 
 		IStore<IWebhookSubscription> IStoreProvider<IWebhookSubscription>.GetStore(string tenantId)
 			=> GetStore(tenantId);

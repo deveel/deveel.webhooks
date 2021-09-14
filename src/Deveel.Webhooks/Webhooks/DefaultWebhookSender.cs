@@ -23,6 +23,18 @@ namespace Deveel.Webhooks {
 		private readonly ILogger logger;
 
 		private DefaultWebhookSender(HttpClient httpClient, WebhookDeliveryOptions deliveryOptions, bool disposeClient, ILogger logger) {
+			if (deliveryOptions == null) {
+				logger.LogWarning("Delivery options was not set: resetting to default");
+				deliveryOptions = new WebhookDeliveryOptions();
+			}
+
+			if (httpClient == null) {
+				logger.LogWarning("HTTP Client was not set: setting to default");
+
+				httpClient = new HttpClient();
+				disposeClient = true;
+			}
+
 			this.httpClient = httpClient;
 			this.deliveryOptions = deliveryOptions;
 			this.disposeClient = disposeClient;

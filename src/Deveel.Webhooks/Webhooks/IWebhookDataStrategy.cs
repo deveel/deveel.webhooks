@@ -2,6 +2,6 @@
 
 namespace Deveel.Webhooks {
 	public interface IWebhookDataStrategy {
-		IWebhookDataFactory GetDataFactory(string eventType);
+		IWebhookDataFactory GetDataFactory(EventInfo eventInfo);
 	}
 }

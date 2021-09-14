@@ -241,7 +241,7 @@ namespace Deveel.Webhooks {
 		}
 
 		private class TestDataFactory : IWebhookDataFactory {
-			public bool AppliesTo(string eventType) => eventType == "data.created";
+			public bool Handles(EventInfo eventInfo) => eventInfo.EventType == "data.created";
 
 			public Task<object> CreateDataAsync(EventInfo eventInfo, CancellationToken cancellationToken)
 				=> Task.FromResult<object>(new {

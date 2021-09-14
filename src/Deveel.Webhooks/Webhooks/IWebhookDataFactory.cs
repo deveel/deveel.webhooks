@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace Deveel.Webhooks {
 	public interface IWebhookDataFactory {
-		bool AppliesTo(string eventType);
+		bool Handles(EventInfo eventInfo);
 
 		Task<object> CreateDataAsync(EventInfo eventInfo, CancellationToken cancellationToken);
 	}

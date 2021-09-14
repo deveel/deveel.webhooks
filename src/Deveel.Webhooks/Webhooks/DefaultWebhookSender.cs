@@ -41,53 +41,53 @@ namespace Deveel.Webhooks {
 			this.logger = logger;
 		}
 
-		public DefaultWebhookSender(WebhookDeliveryOptions deliveryOptions, ILogger<DefaultWebhookNotifier> logger)
+		public DefaultWebhookSender(WebhookDeliveryOptions deliveryOptions, ILogger<DefaultWebhookSender> logger)
 			: this(new HttpClient(), deliveryOptions, true, logger) {
 		}
 
 		public DefaultWebhookSender(WebhookDeliveryOptions deliveryOptions)
-			: this(new HttpClient(), deliveryOptions, NullLogger<DefaultWebhookNotifier>.Instance) {
+			: this(new HttpClient(), deliveryOptions, NullLogger<DefaultWebhookSender>.Instance) {
 		}
 
-		public DefaultWebhookSender(HttpClient httpClient, WebhookDeliveryOptions deliveryOptions, ILogger<DefaultWebhookNotifier> logger)
+		public DefaultWebhookSender(HttpClient httpClient, WebhookDeliveryOptions deliveryOptions, ILogger<DefaultWebhookSender> logger)
 			: this(httpClient, deliveryOptions, false, logger) {
 		}
 
 		public DefaultWebhookSender(HttpClient httpClient, WebhookDeliveryOptions deliveryOptions)
-			: this(httpClient, deliveryOptions, NullLogger<DefaultWebhookNotifier>.Instance) {
+			: this(httpClient, deliveryOptions, NullLogger<DefaultWebhookSender>.Instance) {
 		}
 
-		public DefaultWebhookSender(HttpClient httpClient, IOptions<WebhookDeliveryOptions> deliveryOptions, ILogger<DefaultWebhookNotifier> logger)
+		public DefaultWebhookSender(HttpClient httpClient, IOptions<WebhookDeliveryOptions> deliveryOptions, ILogger<DefaultWebhookSender> logger)
 			: this(httpClient, deliveryOptions?.Value, logger) {
 		}
 
 		public DefaultWebhookSender(HttpClient httpClient, IOptions<WebhookDeliveryOptions> deliveryOptions)
-			: this(httpClient, deliveryOptions?.Value, NullLogger<DefaultWebhookNotifier>.Instance) {
+			: this(httpClient, deliveryOptions?.Value, NullLogger<DefaultWebhookSender>.Instance) {
 		}
 
-		public DefaultWebhookSender(IOptions<WebhookDeliveryOptions> deliveryOptions, ILogger<DefaultWebhookNotifier> logger)
+		public DefaultWebhookSender(IOptions<WebhookDeliveryOptions> deliveryOptions, ILogger<DefaultWebhookSender> logger)
 			: this(new HttpClient(), deliveryOptions?.Value, true, logger) {
 		}
 
 		public DefaultWebhookSender(IOptions<WebhookDeliveryOptions> deliveryOptions)
-			: this(new HttpClient(), deliveryOptions?.Value, NullLogger<DefaultWebhookNotifier>.Instance) {
+			: this(new HttpClient(), deliveryOptions?.Value, NullLogger<DefaultWebhookSender>.Instance) {
 		}
 
 
-		public DefaultWebhookSender(IHttpClientFactory httpClientFactory, WebhookDeliveryOptions deliveryOptions, ILogger<DefaultWebhookNotifier> logger)
+		public DefaultWebhookSender(IHttpClientFactory httpClientFactory, WebhookDeliveryOptions deliveryOptions, ILogger<DefaultWebhookSender> logger)
 			: this(httpClientFactory.CreateClient(), deliveryOptions, false, logger) {
 		}
 
 		public DefaultWebhookSender(IHttpClientFactory httpClientFactory, WebhookDeliveryOptions deliveryOptions)
-			: this(httpClientFactory, deliveryOptions, NullLogger<DefaultWebhookNotifier>.Instance) {
+			: this(httpClientFactory, deliveryOptions, NullLogger<DefaultWebhookSender>.Instance) {
 		}
 
-		public DefaultWebhookSender(IHttpClientFactory httpClientFactory, IOptions<WebhookDeliveryOptions> deliveryOptions, ILogger<DefaultWebhookNotifier> logger)
+		public DefaultWebhookSender(IHttpClientFactory httpClientFactory, IOptions<WebhookDeliveryOptions> deliveryOptions, ILogger<DefaultWebhookSender> logger)
 			: this(httpClientFactory, deliveryOptions?.Value, logger) {
 		}
 
 		public DefaultWebhookSender(IHttpClientFactory httpClientFactory, IOptions<WebhookDeliveryOptions> deliveryOptions)
-			: this(httpClientFactory, deliveryOptions?.Value, NullLogger<DefaultWebhookNotifier>.Instance) {
+			: this(httpClientFactory, deliveryOptions?.Value, NullLogger<DefaultWebhookSender>.Instance) {
 		}
 
 		protected virtual void SignWebhookRequest(HttpRequestMessage request, string serializedBody, string secret) {

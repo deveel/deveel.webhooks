@@ -23,7 +23,7 @@ namespace Deveel.Webhooks {
 
 		public static IWebhookServiceBuilder ConfigureDelivery(this IWebhookServiceBuilder builder, Action<WebhookDeliveryOptions> configure) {
 			if (configure != null)
-				builder.ConfigureServices(services => services.Configure(configure));
+				builder.ConfigureServices(services => services.AddOptions<WebhookDeliveryOptions>().Configure(configure));
 
 			return builder;
 		}

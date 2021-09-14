@@ -121,7 +121,7 @@ namespace Deveel.Webhooks {
 
 		}
 
-		public async Task<WebhookNotificationResult> NotifyAsync(string tenantId, EventInfo eventInfo, CancellationToken cancellationToken) {
+		public virtual async Task<WebhookNotificationResult> NotifyAsync(string tenantId, EventInfo eventInfo, CancellationToken cancellationToken) {
 			var result = new WebhookNotificationResult();
 
 			try {

@@ -82,7 +82,7 @@ namespace Deveel.Webhooks {
 			if (dataStrategy != null) {
 				Logger.LogDebug("GetWebhookDataAsync: the data strategy was enabled");
 
-				var factory = dataStrategy.GetDataFactory(eventInfo.EventType);
+				var factory = dataStrategy.GetDataFactory(eventInfo);
 				if (factory != null) {
 					Logger.LogDebug("GetWebhookDataAsync: using a factory for the event of type {EventType} to generate the webhook data", 
 						eventInfo.EventType);

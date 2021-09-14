@@ -10,7 +10,7 @@ namespace Deveel.Webhooks {
 			this.providers = providers;
 		}
 
-		public IWebhookDataFactory GetDataFactory(string eventType)
-			=> providers?.FirstOrDefault(x => x.AppliesTo(eventType));
+		public IWebhookDataFactory GetDataFactory(EventInfo eventInfo)
+			=> providers?.FirstOrDefault(x => x.Handles(eventInfo));
 	}
 }

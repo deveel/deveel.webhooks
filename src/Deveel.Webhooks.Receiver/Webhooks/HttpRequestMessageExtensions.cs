@@ -37,7 +37,7 @@ namespace Deveel.Webhooks {
 				if (!request.IsSignatureValid(content, options))
 					throw new ArgumentException("The signature of the webhook is invalid");
 
-				return await JsonParser.ParseAsync(content, options.JsonSerializerSettings, afterRead, cancellationToken);
+				return await WebhookJsonParser.ParseAsync(content, options.JsonSerializerSettings, afterRead, cancellationToken);
 			}
 
 			return await request.Content.ReadAsObjectAsync(options?.JsonSerializerSettings, afterRead, cancellationToken);

@@ -10,6 +10,7 @@
 
   <ItemGroup>
     <PackageReference Include="Deveel.Events.Service.Test" Version="1.0.0-1245069908" />
+    <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.2.2" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="3.1.17" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="5.0.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.10.0" />
@@ -29,6 +30,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Deveel.Service.Webhooks.MongoDb\Deveel.Webhooks.MongoDb.csproj" />
+    <ProjectReference Include="..\..\src\Deveel.Webhooks.AspNetCore.Receiver\Deveel.Webhooks.AspNetCore.Receiver.csproj" />
     <ProjectReference Include="..\..\src\Deveel.Webhooks.Receiver\Deveel.Webhooks.Receiver.csproj" />
   </ItemGroup>
 

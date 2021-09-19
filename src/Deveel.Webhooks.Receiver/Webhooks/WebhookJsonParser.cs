@@ -8,7 +8,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace Deveel.Webhooks {
-	static class JsonParser {
+	public static class WebhookJsonParser {
 		public static async Task<T> ParseAsync<T>(string content, JsonSerializerSettings serializerSettings, Action<JObject, T> afterRead, CancellationToken cancellationToken) {
 			JToken token;
 

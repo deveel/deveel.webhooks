@@ -6,10 +6,15 @@
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <Authors>Antonello Provenzano</Authors>
     <Company>Deveel</Company>
-    <Copyright>(C) 2021 Devee</Copyright>
+    <Copyright>(C) 2021 Deveel</Copyright>
     <PackageLicenseFile>EULA.md</PackageLicenseFile>
     <PackageIcon>deveel-logo.png</PackageIcon>
     <PackageIconUrl />
+    <RepositoryUrl>https://github.com/deveel/deveel.webhooks</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>webhooks receiver aspnet core httprequest</PackageTags>
+    <Description>Provides an implementation of the webhook receivers that can parse ASP.NET Core HttpRequests</Description>
+    <PackageProjectUrl>https://deveel.com</PackageProjectUrl>
   </PropertyGroup>
 
   <ItemGroup>

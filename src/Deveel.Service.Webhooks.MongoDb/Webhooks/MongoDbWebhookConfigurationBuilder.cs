@@ -13,26 +13,20 @@ namespace Deveel.Webhooks {
 				.UseSubscriptionStoreProvider<MongoDbWebhookSubscriptionStoreProvider>();
 		}
 
-		public static IWebhookServiceBuilder UseMongoDbStorage(this IWebhookServiceBuilder builder, IConfiguration configuration, string sectionName, string connectionStringName = null) {
-			builder.ConfigureServices(services => services.ConfigureMongoDbOptions<WebhookSubscriptionDocument>(configuration, sectionName, connectionStringName));
-			builder.UseMongoDb();
-			return builder;
-		}
-
-		public static IWebhookServiceBuilder UseMongoDbStorage(this IWebhookServiceBuilder builder, string sectionName, string connectionStringName = null) {
+		public static IWebhookServiceBuilder UseMongoDb(this IWebhookServiceBuilder builder, string sectionName, string connectionStringName = null) {
 			builder.ConfigureServices(services => services.ConfigureMongoDbOptions<WebhookSubscriptionDocument>(sectionName, connectionStringName));
 			builder.UseMongoDb();
 			return builder;
 		}
 
 
-		public static IWebhookServiceBuilder UseMongoDbStorage(this IWebhookServiceBuilder builder, Action<MongoDbOptions> options) {
+		public static IWebhookServiceBuilder UseMongoDb(this IWebhookServiceBuilder builder, Action<MongoDbOptions> options) {
 			builder.ConfigureServices(services => services.ConfigureMongoDbOptions<WebhookSubscriptionDocument>(options));
 			builder.UseMongoDb();
 			return builder;
 		}
 
-		public static IWebhookServiceBuilder UseMongoDbStorage(this IWebhookServiceBuilder builder, MongoDbOptions options) {
+		public static IWebhookServiceBuilder UseMongoDb(this IWebhookServiceBuilder builder, MongoDbOptions options) {
 			builder.ConfigureServices(services => services.AddMongoDbOptions<WebhookSubscriptionDocument>(options));
 			return builder.UseMongoDb();
 		}

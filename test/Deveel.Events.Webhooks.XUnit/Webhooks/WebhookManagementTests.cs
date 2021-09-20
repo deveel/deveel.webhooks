@@ -36,7 +36,7 @@ namespace Deveel.Webhooks {
 				buidler.ConfigureDelivery(options => {
 					options.SignWebhooks = true;
 				})
-				.UseMongoDbStorage(options => {
+				.UseMongoDb(options => {
 					options.CollectionName = "webhooks_subscription";
 					options.DatabaseName = "webhooks";
 					options.ConnectionString = mongoDbCluster.ConnectionString;

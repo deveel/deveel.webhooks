@@ -20,7 +20,7 @@ namespace Deveel.Webhooks {
 			return builder.ConfigureServices(services => services.AddSingleton<WebhookReceiveOptions>(options));
 		}
 
-		public static IWebhookReceiverConfigurationBuilder AddReceiver<TReceiver, TWebhook>(this IWebhookReceiverConfigurationBuilder builder, ServiceLifetime lifetime = ServiceLifetime.Scoped)
+		public static IWebhookReceiverConfigurationBuilder AddHttpReceiver<TReceiver, TWebhook>(this IWebhookReceiverConfigurationBuilder builder, ServiceLifetime lifetime = ServiceLifetime.Scoped)
 			where TReceiver : class, IHttpWebhookReceiver<TWebhook>
 			where TWebhook : class {
 			builder.ConfigureServices(services => {
@@ -31,7 +31,7 @@ namespace Deveel.Webhooks {
 			return builder;
 		}
 
-		public static IWebhookReceiverConfigurationBuilder AddReceiver<TReceiver, TWebhook>(this IWebhookReceiverConfigurationBuilder builder, TReceiver receiver)
+		public static IWebhookReceiverConfigurationBuilder AddHttpReceiver<TReceiver, TWebhook>(this IWebhookReceiverConfigurationBuilder builder, TReceiver receiver)
 			where TReceiver : class, IHttpWebhookReceiver<TWebhook>
 			where TWebhook : class {
 			builder.ConfigureServices(services => services
@@ -42,7 +42,7 @@ namespace Deveel.Webhooks {
 
 		public static IWebhookReceiverConfigurationBuilder AddHttpReceiver<T>(this IWebhookReceiverConfigurationBuilder builder)
 			where T : class
-			=> builder.AddReceiver<DefaulHttptWebhookReceiver<T>, T>();
+			=> builder.AddHttpReceiver<DefaulHttptWebhookReceiver<T>, T>();
 
 	}
 }

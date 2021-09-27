@@ -29,7 +29,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Deveel.Data.MongoDb.Core" Version="1.0.0-1278095471" />
+    <PackageReference Include="Deveel.Data.MongoDb.Core" Version="1.0.0-1279323899" />
     <PackageReference Include="MongoDB.Driver" Version="2.13.1" />
   </ItemGroup>
 

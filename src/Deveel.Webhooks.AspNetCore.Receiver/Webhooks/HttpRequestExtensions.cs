@@ -11,7 +11,6 @@ using System.IO;
 using System.Text;
 using System.Linq;
 using Newtonsoft.Json;
-using System.Reflection.Metadata;
 using System.Net.Http;
 
 namespace Deveel.Webhooks {

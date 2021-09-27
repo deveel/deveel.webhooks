@@ -11,35 +11,38 @@ namespace Deveel.Webhooks {
 	public static class WebhookReceiverConfigurationBuilderExtensions {
 		public static IWebhookReceiverConfigurationBuilder Configure(this IWebhookReceiverConfigurationBuilder builder, Action<WebhookReceiveOptions> configure) {
 			if (configure != null)
-				builder.Services.Configure(configure);
+				builder.ConfigureServices(services => services.Configure(configure));
 
 			return builder;
 		}
 
-		public static IWebhookReceiverConfigurationBuilder AddReceiver<TReceiver, TWebhook>(this IWebhookReceiverConfigurationBuilder builder)
-			where TReceiver : class, IWebhookReceiver<TWebhook>
+		public static IWebhookReceiverConfigurationBuilder AddWebhookOptions(this IWebhookReceiverConfigurationBuilder builder, WebhookReceiveOptions options) {
+			return builder.ConfigureServices(services => services.AddSingleton<WebhookReceiveOptions>(options));
+		}
+
+		public static IWebhookReceiverConfigurationBuilder AddReceiver<TReceiver, TWebhook>(this IWebhookReceiverConfigurationBuilder builder, ServiceLifetime lifetime = ServiceLifetime.Scoped)
+			where TReceiver : class, IHttpWebhookReceiver<TWebhook>
 			where TWebhook : class {
-			builder.Services.AddScoped<IWebhookReceiver<TWebhook>, TReceiver>();
+			builder.ConfigureServices(services => {
+				services.Add(new ServiceDescriptor(typeof(IHttpWebhookReceiver<TWebhook>), typeof(TReceiver), lifetime));
+				services.Add(new ServiceDescriptor(typeof(TReceiver), lifetime));
+			});
+
 			return builder;
 		}
 
 		public static IWebhookReceiverConfigurationBuilder AddReceiver<TReceiver, TWebhook>(this IWebhookReceiverConfigurationBuilder builder, TReceiver receiver)
-			where TReceiver : class, IWebhookReceiver<TWebhook>
+			where TReceiver : class, IHttpWebhookReceiver<TWebhook>
 			where TWebhook : class {
-			builder.Services.AddSingleton<IWebhookReceiver<TWebhook>>(receiver);
+			builder.ConfigureServices(services => services
+				.AddSingleton<IHttpWebhookReceiver<TWebhook>>(receiver)
+				.AddSingleton(receiver));
 			return builder;
 		}
 
-		public static IWebhookReceiverConfigurationBuilder AddReceiver<T>(this IWebhookReceiverConfigurationBuilder builder)
+		public static IWebhookReceiverConfigurationBuilder AddHttpReceiver<T>(this IWebhookReceiverConfigurationBuilder builder)
 			where T : class
-			=> builder.AddReceiver<DefaultWebhookReceiver<T>, T>();
-
-		public static IWebhookReceiverConfigurationBuilder AddReceiver<T>(this IWebhookReceiverConfigurationBuilder builder, Action<JObject, T> afterRead)
-			where T : class {
-			builder.Services.AddScoped<IWebhookReceiver<T>>(provider =>
-				new DefaultWebhookReceiver<T>(provider.GetService<IOptions<WebhookReceiveOptions>>(), afterRead));
-			return builder;
-		}
+			=> builder.AddReceiver<DefaulHttptWebhookReceiver<T>, T>();
 
 	}
 }

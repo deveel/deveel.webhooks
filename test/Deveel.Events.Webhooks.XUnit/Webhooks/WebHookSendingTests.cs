@@ -38,9 +38,8 @@ namespace Deveel.Webhooks {
 				builder.ConfigureDelivery(options => {
 					options.SignWebhooks = true;
 				})
-				.UseDefaultFilterEvaluator()
 				.AddDataFactory<TestDataFactory>()
-				.UseMongoDbStorage(options => {
+				.UseMongoDb(options => {
 					options.CollectionName = "webhooks_subscription";
 					options.DatabaseName = "webhooks";
 					options.ConnectionString = mongoDbCluster.ConnectionString;

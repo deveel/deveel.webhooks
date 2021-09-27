@@ -7,11 +7,11 @@ using Microsoft.Extensions.Options;
 namespace Deveel.Webhooks {
 	class MongoDbWebhookSubscriptionStoreProvider : MongoDbStoreProvider<WebhookSubscriptionDocument>,
 														   IWebhookSubscriptionStoreProvider {
-		public MongoDbWebhookSubscriptionStoreProvider(MongoDbOptions<WebhookSubscriptionDocument> baseOptions) 
+		public MongoDbWebhookSubscriptionStoreProvider(IOptions<MongoDbOptions<WebhookSubscriptionDocument>> baseOptions)
 			: base(baseOptions) {
 		}
 
-		public MongoDbWebhookSubscriptionStoreProvider(IOptions<MongoDbOptions<WebhookSubscriptionDocument>> baseOptions) 
+		public MongoDbWebhookSubscriptionStoreProvider(MongoDbOptions<WebhookSubscriptionDocument> baseOptions) 
 			: base(baseOptions) {
 		}
 

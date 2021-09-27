@@ -29,6 +29,10 @@ namespace Deveel.Webhooks {
 			: this(options, null) {
 		}
 
+		public DefaultWebhookReceiver()
+			: this(new WebhookReceiveOptions()) {
+		}
+
 		protected WebhookReceiveOptions Options { get; }
 
 		protected virtual void OnAfterRead(JObject json, T obj) {

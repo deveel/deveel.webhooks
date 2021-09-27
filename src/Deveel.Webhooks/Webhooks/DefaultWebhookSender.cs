@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Security.Cryptography;
@@ -21,8 +23,9 @@ namespace Deveel.Webhooks {
 		private readonly bool disposeClient;
 		private readonly WebhookDeliveryOptions deliveryOptions;
 		private readonly ILogger logger;
+		private readonly IEnumerable<IWebhookSignatureProvider> signatureProviders;
 
-		private DefaultWebhookSender(HttpClient httpClient, WebhookDeliveryOptions deliveryOptions, bool disposeClient, ILogger logger) {
+		private DefaultWebhookSender(HttpClient httpClient, bool disposeClient, WebhookDeliveryOptions deliveryOptions, IEnumerable<IWebhookSignatureProvider> signatureProviders, ILogger logger) {
 			if (deliveryOptions == null) {
 				logger.LogWarning("Delivery options was not set: resetting to default");
 				deliveryOptions = new WebhookDeliveryOptions();
@@ -39,55 +42,57 @@ namespace Deveel.Webhooks {
 			this.deliveryOptions = deliveryOptions;
 			this.disposeClient = disposeClient;
 			this.logger = logger;
+			this.signatureProviders = signatureProviders;
 		}
 
-		public DefaultWebhookSender(WebhookDeliveryOptions deliveryOptions, ILogger<DefaultWebhookSender> logger)
-			: this(new HttpClient(), deliveryOptions, true, logger) {
+		public DefaultWebhookSender(HttpClient httpClient, IOptions<WebhookDeliveryOptions> deliveryOptions, IEnumerable<IWebhookSignatureProvider> signatureProviders, ILogger<DefaultWebhookSender> logger)
+			: this(httpClient, deliveryOptions?.Value, signatureProviders, logger) {
 		}
 
-		public DefaultWebhookSender(WebhookDeliveryOptions deliveryOptions)
-			: this(new HttpClient(), deliveryOptions, NullLogger<DefaultWebhookSender>.Instance) {
+		public DefaultWebhookSender(HttpClient httpClient, IOptions<WebhookDeliveryOptions> deliveryOptions, IEnumerable<IWebhookSignatureProvider> signatureProviders)
+			: this(httpClient, deliveryOptions?.Value, signatureProviders, NullLogger<DefaultWebhookSender>.Instance) {
 		}
 
-		public DefaultWebhookSender(HttpClient httpClient, WebhookDeliveryOptions deliveryOptions, ILogger<DefaultWebhookSender> logger)
-			: this(httpClient, deliveryOptions, false, logger) {
+		public DefaultWebhookSender(IOptions<WebhookDeliveryOptions> deliveryOptions, IEnumerable<IWebhookSignatureProvider> signatureProviders, ILogger<DefaultWebhookSender> logger)
+			: this(new HttpClient(), true, deliveryOptions?.Value, signatureProviders, logger) {
 		}
 
-		public DefaultWebhookSender(HttpClient httpClient, WebhookDeliveryOptions deliveryOptions)
-			: this(httpClient, deliveryOptions, NullLogger<DefaultWebhookSender>.Instance) {
+		public DefaultWebhookSender(IOptions<WebhookDeliveryOptions> deliveryOptions, IEnumerable<IWebhookSignatureProvider> signatureProviders)
+			: this(new HttpClient(), deliveryOptions?.Value, signatureProviders, NullLogger<DefaultWebhookSender>.Instance) {
 		}
 
-		public DefaultWebhookSender(HttpClient httpClient, IOptions<WebhookDeliveryOptions> deliveryOptions, ILogger<DefaultWebhookSender> logger)
-			: this(httpClient, deliveryOptions?.Value, logger) {
+		public DefaultWebhookSender(IHttpClientFactory httpClientFactory, IOptions<WebhookDeliveryOptions> deliveryOptions, IEnumerable<IWebhookSignatureProvider> signatureProviders, ILogger<DefaultWebhookSender> logger)
+			: this(httpClientFactory, deliveryOptions?.Value, signatureProviders, logger) {
 		}
 
-		public DefaultWebhookSender(HttpClient httpClient, IOptions<WebhookDeliveryOptions> deliveryOptions)
-			: this(httpClient, deliveryOptions?.Value, NullLogger<DefaultWebhookSender>.Instance) {
-		}
-
-		public DefaultWebhookSender(IOptions<WebhookDeliveryOptions> deliveryOptions, ILogger<DefaultWebhookSender> logger)
-			: this(new HttpClient(), deliveryOptions?.Value, true, logger) {
-		}
-
-		public DefaultWebhookSender(IOptions<WebhookDeliveryOptions> deliveryOptions)
-			: this(new HttpClient(), deliveryOptions?.Value, NullLogger<DefaultWebhookSender>.Instance) {
+		public DefaultWebhookSender(IHttpClientFactory httpClientFactory, IOptions<WebhookDeliveryOptions> deliveryOptions, IEnumerable<IWebhookSignatureProvider> signatureProviders)
+			: this(httpClientFactory, deliveryOptions?.Value, signatureProviders, NullLogger<DefaultWebhookSender>.Instance) {
 		}
 
 
-		public DefaultWebhookSender(IHttpClientFactory httpClientFactory, WebhookDeliveryOptions deliveryOptions, ILogger<DefaultWebhookSender> logger)
-			: this(httpClientFactory.CreateClient(), deliveryOptions, false, logger) {
+		public DefaultWebhookSender(WebhookDeliveryOptions deliveryOptions, IEnumerable<IWebhookSignatureProvider> signatureProviders, ILogger<DefaultWebhookSender> logger)
+			: this(new HttpClient(), true, deliveryOptions, signatureProviders, logger) {
 		}
 
-		public DefaultWebhookSender(IHttpClientFactory httpClientFactory, WebhookDeliveryOptions deliveryOptions)
-			: this(httpClientFactory, deliveryOptions, NullLogger<DefaultWebhookSender>.Instance) {
+		public DefaultWebhookSender(WebhookDeliveryOptions deliveryOptions, IEnumerable<IWebhookSignatureProvider> signatureProviders)
+			: this(new HttpClient(), deliveryOptions, signatureProviders, NullLogger<DefaultWebhookSender>.Instance) {
 		}
 
-		public DefaultWebhookSender(IHttpClientFactory httpClientFactory, IOptions<WebhookDeliveryOptions> deliveryOptions, ILogger<DefaultWebhookSender> logger)
-			: this(httpClientFactory, deliveryOptions?.Value, logger) {
+		public DefaultWebhookSender(HttpClient httpClient, WebhookDeliveryOptions deliveryOptions, IEnumerable<IWebhookSignatureProvider> signatureProviders, ILogger<DefaultWebhookSender> logger)
+			: this(httpClient, false, deliveryOptions, signatureProviders, logger) {
 		}
 
-		public DefaultWebhookSender(IHttpClientFactory httpClientFactory, IOptions<WebhookDeliveryOptions> deliveryOptions)
-			: this(httpClientFactory, deliveryOptions?.Value, NullLogger<DefaultWebhookSender>.Instance) {
+		public DefaultWebhookSender(HttpClient httpClient, WebhookDeliveryOptions deliveryOptions, IEnumerable<IWebhookSignatureProvider> signatureProviders)
+			: this(httpClient, deliveryOptions, signatureProviders, NullLogger<DefaultWebhookSender>.Instance) {
+		}
+
+
+		public DefaultWebhookSender(IHttpClientFactory httpClientFactory, WebhookDeliveryOptions deliveryOptions, IEnumerable<IWebhookSignatureProvider> signatureProviders, ILogger<DefaultWebhookSender> logger)
+			: this(httpClientFactory.CreateClient(), false, deliveryOptions, signatureProviders, logger) {
+		}
+
+		public DefaultWebhookSender(IHttpClientFactory httpClientFactory, WebhookDeliveryOptions deliveryOptions, IEnumerable<IWebhookSignatureProvider> signatureProviders)
+			: this(httpClientFactory, deliveryOptions, signatureProviders, NullLogger<DefaultWebhookSender>.Instance) {
 		}
 
 		protected virtual void SignWebhookRequest(HttpRequestMessage request, string serializedBody, string secret) {
@@ -97,19 +102,14 @@ namespace Deveel.Webhooks {
 			if (string.IsNullOrWhiteSpace(serializedBody))
 				throw new ArgumentNullException(nameof(serializedBody));
 
-			var secretBytes = Encoding.UTF8.GetBytes(secret);
+			var provider = signatureProviders?.FirstOrDefault(x => x.Algorithm == deliveryOptions.SignatureAlgorithm);
+			if (provider == null)
+				throw new InvalidOperationException($"No signature provider found for the algorithm '{deliveryOptions.SignatureAlgorithm}' configured for the instance");
 
-			string signature;
-
-			using (var hasher = new HMACSHA256(secretBytes)) {
-				var data = Encoding.UTF8.GetBytes(serializedBody);
-				var sha256 = hasher.ComputeHash(data);
-
-				signature = BitConverter.ToString(sha256);
-			}
+			var signature = provider.Sign(serializedBody, secret);
 
 			if (deliveryOptions.SignatureLocation == WebhookSignatureLocation.Header) {
-				request.Headers.Add(deliveryOptions.HeaderName, $"sha256={signature}");
+				request.Headers.Add(deliveryOptions.HeaderName, $"{provider.Algorithm}={signature}");
 			} else if (deliveryOptions.SignatureLocation == WebhookSignatureLocation.QueryString) {
 				var originalUrl = new UriBuilder(request.RequestUri);
 				var queryString = new StringBuilder(originalUrl.Query);
@@ -120,7 +120,7 @@ namespace Deveel.Webhooks {
 				queryString.Append('=');
 				queryString.Append(signature);
 				queryString.Append('&');
-				queryString.Append("sig_alg=sha256");
+				queryString.Append($"sig_alg={provider.Algorithm}");
 
 				originalUrl.Query = queryString.ToString();
 				request.RequestUri = originalUrl.Uri;

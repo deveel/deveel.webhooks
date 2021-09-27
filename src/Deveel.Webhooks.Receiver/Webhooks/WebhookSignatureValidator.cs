@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Deveel.Webhooks {
 	public static class WebhookSignatureValidator {
-		public static bool IsValid(string content, string signature, string secret, string algorithm) {
+		public static bool IsValid(string algorithm, string jsonPayload, string secret, string signature) {
 			if (string.IsNullOrWhiteSpace(signature))
 				throw new ArgumentException($"'{nameof(signature)}' cannot be null or whitespace.", nameof(signature));
 			if (string.IsNullOrWhiteSpace(secret))
@@ -13,7 +13,7 @@ namespace Deveel.Webhooks {
 				throw new ArgumentException($"'{nameof(algorithm)}' cannot be null or whitespace.", nameof(algorithm));
 
 			return algorithm switch {
-				"sha256" => IsValidSha256(content, signature, secret),
+				"sha256" => IsValidSha256(jsonPayload, signature, secret),
 				_ => throw new NotSupportedException($"Te signing algorithm {algorithm} is not supported"),
 			};
 		}

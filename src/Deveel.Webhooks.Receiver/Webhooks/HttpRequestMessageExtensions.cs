@@ -79,7 +79,7 @@ namespace Deveel.Webhooks {
 			if (string.IsNullOrWhiteSpace(signature))
 				return false;
 
-			return WebhookSignatureValidator.IsValid(content, signature, options.Secret, algorithm);
+			return WebhookSignatureValidator.IsValid(algorithm, content, options.Secret, signature);
 		}
 
 	}

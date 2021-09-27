@@ -37,6 +37,9 @@ namespace Deveel.Webhooks {
 			services.TryAddScoped<IWebhookFilterRequestFactory, DefaultWebookFilterRequestFactory>();
 			services.AddScoped<DefaultWebookFilterRequestFactory>();
 
+			services.AddSingleton<IWebhookSignatureProvider, Sha256WebhookSignatureProvider>();
+			services.AddSingleton<Sha256WebhookSignatureProvider>();
+
 			var builder = new WebhookConfigurationBuilderImpl(services);
 
 			configure?.Invoke(builder);

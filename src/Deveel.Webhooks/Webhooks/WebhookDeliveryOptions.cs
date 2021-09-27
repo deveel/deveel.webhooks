@@ -14,7 +14,7 @@ namespace Deveel.Webhooks {
 
 		public WebhookSignatureLocation SignatureLocation { get; set; } = WebhookSignatureLocation.QueryString;
 
-		public WebhookSignatureAlgorithm SignatureAlgorithm { get; set; } = WebhookSignatureAlgorithm.HmacSha256;
+		public string SignatureAlgorithm { get; set; } = WebhookSignatureAlgorithms.HmacSha256;
 
 		public int MaxAttemptCount { get; set; } = 3;
 

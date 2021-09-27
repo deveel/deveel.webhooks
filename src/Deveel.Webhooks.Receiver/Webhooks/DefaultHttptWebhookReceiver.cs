@@ -8,24 +8,24 @@ using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
 
 namespace Deveel.Webhooks {
-	public class DefaulHttptWebhookReceiver<T> : IHttpWebhookReceiver<T> where T : class {
+	public class DefaultHttptWebhookReceiver<T> : IHttpWebhookReceiver<T> where T : class {
 		private readonly WebhookReceiveOptions options;
 		private readonly Action<JObject, T> afterRead;
 
-		public DefaulHttptWebhookReceiver(IOptions<WebhookReceiveOptions> options)
+		public DefaultHttptWebhookReceiver(IOptions<WebhookReceiveOptions> options)
 			: this(options, null) {
 		}
 
-		public DefaulHttptWebhookReceiver(IOptions<WebhookReceiveOptions> options, Action<JObject, T> afterRead)
+		public DefaultHttptWebhookReceiver(IOptions<WebhookReceiveOptions> options, Action<JObject, T> afterRead)
 			: this(options?.Value, afterRead) {
 		}
 
-		public DefaulHttptWebhookReceiver(WebhookReceiveOptions options, Action<JObject, T> afterRead = null) {
+		public DefaultHttptWebhookReceiver(WebhookReceiveOptions options, Action<JObject, T> afterRead = null) {
 			this.options = options;
 			this.afterRead = afterRead;
 		}
 
-		public DefaulHttptWebhookReceiver()
+		public DefaultHttptWebhookReceiver()
 			: this(new WebhookReceiveOptions()) {
 		}
 

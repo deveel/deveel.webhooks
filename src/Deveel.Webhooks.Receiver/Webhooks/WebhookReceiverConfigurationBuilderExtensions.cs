@@ -42,7 +42,7 @@ namespace Deveel.Webhooks {
 
 		public static IWebhookReceiverConfigurationBuilder AddHttpReceiver<T>(this IWebhookReceiverConfigurationBuilder builder)
 			where T : class
-			=> builder.AddHttpReceiver<DefaulHttptWebhookReceiver<T>, T>();
+			=> builder.AddHttpReceiver<DefaultHttptWebhookReceiver<T>, T>();
 
 	}
 }

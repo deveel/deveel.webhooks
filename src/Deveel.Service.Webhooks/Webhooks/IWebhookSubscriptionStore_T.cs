@@ -10,6 +10,6 @@ namespace Deveel.Webhooks {
 		where TSubscription : class, IWebhookSubscription {
 		Task SetStateAsync(TSubscription subscription, bool active, CancellationToken cancellationToken);
 
-		Task<IList<TSubscription>> GetByEventTypeAsync(string eventType, CancellationToken cancellationToken);
+		Task<IList<TSubscription>> GetByEventTypeAsync(string eventType, bool activeOnly, CancellationToken cancellationToken);
 	}
 }

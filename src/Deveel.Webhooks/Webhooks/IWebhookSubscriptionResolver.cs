@@ -6,6 +6,6 @@ using System.Threading.Tasks;
 
 namespace Deveel.Webhooks {
 	public interface IWebhookSubscriptionResolver {
-		Task<IList<IWebhookSubscription>> ResolveSubscriptionsAsync(string tenantId, string eventType, CancellationToken cancellationToken);
+		Task<IList<IWebhookSubscription>> ResolveSubscriptionsAsync(string tenantId, string eventType, bool activeOnly, CancellationToken cancellationToken);
 	}
 }

@@ -19,17 +19,22 @@ namespace Deveel.Webhooks {
 		public MongoDbWebhookSubscriptionStrore(MongoDbOptions<WebhookSubscriptionDocument> options) : base(options) {
 		}
 
-		public async Task<IList<WebhookSubscriptionDocument>> GetByEventTypeAsync(string eventType, CancellationToken cancellationToken) {
+		public async Task<IList<WebhookSubscriptionDocument>> GetByEventTypeAsync(string eventType, bool activeOnly, CancellationToken cancellationToken) {
 			ThrowIfDisposed();
 			cancellationToken.ThrowIfCancellationRequested();
 
 			var filter = Builders<WebhookSubscriptionDocument>.Filter
 				.AnyEq(doc => doc.EventTypes, eventType);
+			if (activeOnly) {
+				var activeFilter = Builders<WebhookSubscriptionDocument>.Filter.Eq(x => x.IsActive, true);
+				filter = Builders<WebhookSubscriptionDocument>.Filter.And(filter, activeFilter);
+			}
+
 			return await FindAllAsync(filter, cancellationToken: cancellationToken);
 		}
 
-		async Task<IList<IWebhookSubscription>> IWebhookSubscriptionStore<IWebhookSubscription>.GetByEventTypeAsync(string eventType, CancellationToken cancellationToken) {
-			var result = await GetByEventTypeAsync(eventType, cancellationToken);
+		async Task<IList<IWebhookSubscription>> IWebhookSubscriptionStore<IWebhookSubscription>.GetByEventTypeAsync(string eventType,  bool activeOnly, CancellationToken cancellationToken) {
+			var result = await GetByEventTypeAsync(eventType, activeOnly, cancellationToken);
 			return result.Cast<IWebhookSubscription>().ToList();
 		}
 

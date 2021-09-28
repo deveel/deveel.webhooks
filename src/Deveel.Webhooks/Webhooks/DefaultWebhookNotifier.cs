@@ -158,10 +158,10 @@ namespace Deveel.Webhooks {
 			var result = new WebhookNotificationResult();
 
 			try {
-				var subscriptions = await subscriptionResolver.ResolveSubscriptionsAsync(tenantId, eventInfo.EventType, cancellationToken);
+				var subscriptions = await subscriptionResolver.ResolveSubscriptionsAsync(tenantId, eventInfo.EventType, true, cancellationToken);
 
 				if (subscriptions == null || subscriptions.Count == 0) {
-					Logger.LogTrace("No subscriptions to event {EventType} found for Tenant {TenantId}", eventInfo.EventType, tenantId);
+					Logger.LogTrace("No active subscription to event {EventType} found for Tenant {TenantId}", eventInfo.EventType, tenantId);
 					return result;
 				}
 

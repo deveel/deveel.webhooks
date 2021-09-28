@@ -13,6 +13,7 @@ namespace Deveel.Webhooks.Memory {
 				EventTypes = subscriptionInfo.EventTypes,
 				RetryCount = subscriptionInfo.RetryCount,
 				Secret = subscriptionInfo.Secret,
+				IsActive = subscriptionInfo.Active,
 				Filters = subscriptionInfo.Filters?.Select(GetFilter).ToList(),
 				Headers = subscriptionInfo.Headers == null ? null : new Dictionary<string, string>(subscriptionInfo.Headers),
 				Metadata = subscriptionInfo == null ? null : new Dictionary<string, object>(subscriptionInfo.Metadata)

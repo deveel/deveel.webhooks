@@ -24,7 +24,6 @@ namespace Deveel.Webhooks {
 		private readonly WebhookDeliveryOptions deliveryOptions;
 		private readonly IEnumerable<IWebhookSignatureProvider> signatureProviders;
 		private readonly ILogger logger;
-		private readonly IEnumerable<IWebhookSignatureProvider> signatureProviders;
 
 		private DefaultWebhookSender(HttpClient httpClient, bool disposeClient, WebhookDeliveryOptions deliveryOptions, IEnumerable<IWebhookSignatureProvider> signatureProviders, ILogger logger) {
 			if (deliveryOptions == null) {

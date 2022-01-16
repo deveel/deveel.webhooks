@@ -10,7 +10,7 @@ namespace Deveel.Webhooks.Storage {
 
 		Task<TSubscription> GetByIdAsync(string id, CancellationToken cancellationToken);
 
-		Task<IList<TSubscription>> GetByEventTypeAsync(string eventType, CancellationToken cancellationToken);
+		Task<IList<TSubscription>> GetByEventTypeAsync(string eventType, bool activeOnly, CancellationToken cancellationToken);
 
 		Task<bool> DeleteAsync(TSubscription subscription, CancellationToken cancellationToken);
 

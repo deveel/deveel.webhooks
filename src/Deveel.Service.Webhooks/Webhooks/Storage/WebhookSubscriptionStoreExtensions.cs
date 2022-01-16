@@ -26,9 +26,9 @@ namespace Deveel.Webhooks.Storage {
 			=> provider.GetTenantRepository(tenantId).GetByIdAsync(id, cancellationToken);
 
 		public static Task<IList<TSubscription>> GetByEventTypeAsync<TSubscription>(this IWebhookSubscriptionStoreProvider<TSubscription> provider, string tenantId,
-			string eventType, CancellationToken cancellationToken = default)
+			string eventType, bool activeOnly, CancellationToken cancellationToken = default)
 			where TSubscription : class, IWebhookSubscription
-			=> provider.GetTenantRepository(tenantId).GetByEventTypeAsync(eventType, cancellationToken);
+			=> provider.GetTenantRepository(tenantId).GetByEventTypeAsync(eventType, activeOnly, cancellationToken);
 
 		public static Task SetStateAsync<TSubscripton>(this IWebhookSubscriptionStoreProvider<TSubscripton> provider, string tenantId, TSubscripton subscripton, WebhookSubscriptionStateInfo stateInfo, CancellationToken cancellationToken = default)
 			where TSubscripton : class, IWebhookSubscription

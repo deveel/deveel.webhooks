@@ -13,7 +13,7 @@ namespace Deveel.Webhooks {
 
 		string Secret { get; }
 
-		bool IsActive { get; }
+		WebhookSubscriptionStatus Status { get; }
 
 		int RetryCount { get; }
 

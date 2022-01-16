@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Deveel.Webhooks {
-	public interface IWebhookSubscriptionRepository<TSubscription> 
+namespace Deveel.Webhooks.Storage {
+	public interface IWebhookSubscriptionStore<TSubscription>
 		where TSubscription : class, IWebhookSubscription {
 		Task<string> CreateAsync(TSubscription subscription, CancellationToken cancellationToken);
 
@@ -16,11 +16,11 @@ namespace Deveel.Webhooks {
 
 		Task<bool> UpdateAsync(TSubscription subscription, CancellationToken cancellationToken);
 
-		Task<IList<TSubscription>> GetListAsync(int offset, int count, CancellationToken cancellationToken);
-
 		Task<int> CountAllAsync(CancellationToken cancellationToken);
+
+		Task SetStateAsync(TSubscription subscription, WebhookSubscriptionStateInfo stateInfo, CancellationToken cancellationToken);
 	}
 
-	public interface IWebhookSubscriptionRepository : IWebhookSubscriptionRepository<IWebhookSubscription> {
+	public interface IWebhookSubscriptionStore : IWebhookSubscriptionStore<IWebhookSubscription> {
 	}
 }

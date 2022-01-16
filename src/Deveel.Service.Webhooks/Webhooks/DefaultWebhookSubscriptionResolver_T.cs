@@ -4,6 +4,8 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
+using Deveel.Webhooks.Storage;
+
 namespace Deveel.Webhooks {
 	public class DefaultWebhookSubscriptionResolver<TSubscription> : IWebhookSubscriptionResolver 
 		where TSubscription : class, IWebhookSubscription { 

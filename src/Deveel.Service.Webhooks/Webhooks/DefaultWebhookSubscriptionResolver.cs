@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-using Deveel.Events;
+using Deveel.Webhooks.Storage;
 
 namespace Deveel.Webhooks {
 	public class DefaultWebhookSubscriptionResolver : IWebhookSubscriptionResolver {

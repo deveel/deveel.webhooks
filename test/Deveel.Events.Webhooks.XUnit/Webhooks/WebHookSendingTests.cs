@@ -5,7 +5,6 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 
-using Deveel.Data;
 using Deveel.Events;
 
 using Microsoft.Extensions.DependencyInjection;
@@ -40,11 +39,11 @@ namespace Deveel.Webhooks {
 				})
 				.AddDataFactory<TestDataFactory>()
 				.UseMongoDb(options => {
-					options.CollectionName = "webhooks_subscription";
+					options.SubscriptionsCollectionName = "webhooks_subscription";
 					options.DatabaseName = "webhooks";
 					options.ConnectionString = mongoDbCluster.ConnectionString;
-					options.MultiTenancy.Handling = MultiTenancyHandling.TenantField;
-					options.MultiTenancy.FieldName = "TenantId";
+					options.MultiTenantHandling = MongoDbMultiTenancyHandling.TenantField;
+					options.TenantField = "TenantId";
 				});
 			})
 			.AddTestHttpClient(async request => {
@@ -136,7 +135,7 @@ namespace Deveel.Webhooks {
 		[Fact]
 		public async Task DeliverWebhookWithoutFilter() {
 			var subscriptionId = await CreateSubscriptionAsync("Data Created", "data.created", null);
-			var notification = new Event("data.created", new {
+			var notification = new EventInfo("data.created", new {
 				creationTime = DateTimeOffset.UtcNow,
 				type = "test"
 			});
@@ -166,7 +165,7 @@ namespace Deveel.Webhooks {
 				RetryCount = 3
 			});
 
-			var notification = new Event("data.created", new {
+			var notification = new EventInfo("data.created", new {
 				creationTime = DateTimeOffset.UtcNow,
 				type = "test"
 			});
@@ -188,7 +187,7 @@ namespace Deveel.Webhooks {
 		[Fact]
 		public async Task FailToDeliver() {
 			var subscriptionId = await CreateSubscriptionAsync("Data Created", "data.created", new WebhookFilter ("hook.data.data_type == \"test-data\""));
-			var notification = new Event("data.created", new { creationTime = DateTimeOffset.UtcNow, type = "test" });
+			var notification = new EventInfo("data.created", new { creationTime = DateTimeOffset.UtcNow, type = "test" });
 
 			testResponse = new HttpResponseMessage(HttpStatusCode.InternalServerError);
 
@@ -207,7 +206,7 @@ namespace Deveel.Webhooks {
 		[Fact]
 		public async Task NoSubscriptionMatches() {
 			await CreateSubscriptionAsync("Data Created", "data.created",  new WebhookFilter("hook.data.data_type == \"test-data2\""));
-			var notification = new Event("data.created", new { creationTime = DateTimeOffset.UtcNow, type = "test" });
+			var notification = new EventInfo("data.created", new { creationTime = DateTimeOffset.UtcNow, type = "test" });
 
 			var result = await notifier.NotifyAsync(tenantId, notification, CancellationToken.None);
 
@@ -218,7 +217,7 @@ namespace Deveel.Webhooks {
 		[Fact]
 		public async Task NoTenantMatches() {
 			var subscriptionId = await CreateSubscriptionAsync("Data Created", "data.created", new WebhookFilter("hook.data.data_type == \"test-data\""));
-			var notification = new Event("data.created", new { creationTime = DateTimeOffset.UtcNow, type = "test" });
+			var notification = new EventInfo("data.created", new { creationTime = DateTimeOffset.UtcNow, type = "test" });
 
 			var result = await notifier.NotifyAsync(Guid.NewGuid().ToString("N"), notification, CancellationToken.None);
 
@@ -229,9 +228,9 @@ namespace Deveel.Webhooks {
 		[Fact]
 		public async Task NoTenantSet() {
 			var subscriptionId = await CreateSubscriptionAsync("Data Created", "data.created", new WebhookFilter("hook.data.data_type == \"test-data\""));
-			var notification = new Event("data.created", new { creationTime = DateTimeOffset.UtcNow, type = "test" });
+			var notification = new EventInfo("data.created", new { creationTime = DateTimeOffset.UtcNow, type = "test" });
 
-			await Assert.ThrowsAsync<ArgumentNullException>(() => notifier.NotifyAsync(null, notification, CancellationToken.None));
+			await Assert.ThrowsAsync<ArgumentException>(() => notifier.NotifyAsync(null, notification, CancellationToken.None));
 		}
 
 

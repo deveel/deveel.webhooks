@@ -2,9 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 
-using Deveel.Events;
-using Deveel.Filters;
-
 namespace Deveel.Webhooks {
 	public sealed class MongoDbWebhookSubscriptionFactory : IWebhookSubscriptionFactory {
 		public IWebhookSubscription Create(WebhookSubscriptionInfo subscriptionInfo) {

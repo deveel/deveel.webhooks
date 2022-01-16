@@ -2,15 +2,13 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 
-using Deveel.Data;
 using Deveel.Webhooks;
-using Deveel.Webhooks.Memory;
+// using Deveel.Webhooks.Memory;
+using Deveel.Webhooks.Storage;
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-
-using PhoneNumbers;
 
 namespace Deveel.Webhooks {
 	public static class WebhookServiceBuilderExtensions {
@@ -107,16 +105,16 @@ namespace Deveel.Webhooks {
 		public static IWebhookServiceBuilder UseDefaultSubscriptionManager(this IWebhookServiceBuilder builder)
 			=> builder.UseSubscriptionManager<DefaultWebhookSubscriptionManager>();
 
-		public static IWebhookServiceBuilder UseInMemoryStorage(this IWebhookServiceBuilder builder, IStoreState<InMemoryWebhookSubscription> state = null) {
-			if (state != null)
-				builder.ConfigureServices(services => services.AddSingleton(state));
+		//public static IWebhookServiceBuilder UseInMemoryStorage(this IWebhookServiceBuilder builder, IStoreState<InMemoryWebhookSubscription> state = null) {
+		//	if (state != null)
+		//		builder.ConfigureServices(services => services.AddSingleton(state));
 
-			return builder.UseSubscriptionFactory<WebhookSubscriptionObjectFactory>()
-				.UseSubscriptionStore<InMemoryWebhookSubscriptionStore>()
-				.UseSubscriptionStoreProvider<InMemoryWebhookSubscriptionStoreProvider>();
-		}
+		//	return builder.UseSubscriptionFactory<WebhookSubscriptionObjectFactory>()
+		//		.UseSubscriptionStore<InMemoryWebhookSubscriptionStore>()
+		//		.UseSubscriptionStoreProvider<InMemoryWebhookSubscriptionStoreProvider>();
+		//}
 
-		public static IWebhookServiceBuilder UseInMemoryStorage(this IWebhookServiceBuilder builder, IEnumerable<InMemoryWebhookSubscription> state, bool readOnly = false)
-			=> builder.UseInMemoryStorage(readOnly ? StoreState<InMemoryWebhookSubscription>.ReadOnly(state) : new StoreState<InMemoryWebhookSubscription>(state));
+		//public static IWebhookServiceBuilder UseInMemoryStorage(this IWebhookServiceBuilder builder, IEnumerable<InMemoryWebhookSubscription> state, bool readOnly = false)
+		//	=> builder.UseInMemoryStorage(readOnly ? StoreState<InMemoryWebhookSubscription>.ReadOnly(state) : new StoreState<InMemoryWebhookSubscription>(state));
 	}
 }

@@ -1,21 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 
-using Deveel.Data;
-using Deveel.States;
-
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Bson.Serialization.Options;
 
 namespace Deveel.Webhooks {
-	class WebhookSubscriptionDocument : IWebhookSubscription, IMongoDocument, IMultiTenantEntity {
-		string IEntity.Id => Id.ToEntityId();
+	class WebhookSubscriptionDocument : IWebhookSubscription, IMongoDocument {
+		string IWebhookSubscription.SubscriptionId => Id.ToEntityId();
 
 		[BsonId]
 		public ObjectId Id { get; set; }
-
-		string IWebhookSubscription.SubscriptionId => Id.ToEntityId();
 
 		public string Name { get; set; }
 
@@ -23,7 +18,9 @@ namespace Deveel.Webhooks {
 
 		public string Secret { get; set; }
 
-		public bool IsActive { get; set; }
+		public WebhookSubscriptionStatus Status { get; set; }
+
+		public DateTimeOffset? LastStatusTime { get; set; }
 
 		public string TenantId { get; set; }
 

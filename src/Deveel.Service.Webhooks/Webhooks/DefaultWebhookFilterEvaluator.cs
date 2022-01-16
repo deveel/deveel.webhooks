@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq.Dynamic.Core;
 using System.Threading;
 using System.Threading.Tasks;
-
-using Deveel.Filters;
 
 namespace Deveel.Webhooks {
 	class DefaultWebhookFilterEvaluator : IWebhookFilterEvaluator {
@@ -16,7 +15,11 @@ namespace Deveel.Webhooks {
 					evalFilter = hook => true;
 					break;
 				} else {
-					var compiled = FilterExpression.Compile<IWebhook>("hook", filter.Expression);
+					// TODO: argument name?
+					var config = new ParsingConfig {
+					};
+
+					var compiled = DynamicExpressionParser.ParseLambda<IWebhook, bool>(config, false, filter.Expression).Compile();
 					if (evalFilter == null) {
 						evalFilter = compiled;
 					} else {

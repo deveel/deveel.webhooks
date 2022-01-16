@@ -4,9 +4,10 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-using Deveel.Data;
 using Deveel.Events;
 using Deveel.Filters;
+using Deveel.Webhooks;
+using Deveel.Webhooks.Storage;
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -24,7 +25,7 @@ namespace Deveel.Webhooks {
 		private readonly MongoDbRunner mongoDbCluster;
 		private readonly string tenantId = Guid.NewGuid().ToString();
 		private readonly IWebhookSubscriptionManager webhookManager;
-		private readonly IStoreProvider<IWebhookSubscription> storeProvider;
+		private readonly IWebhookSubscriptionStoreProvider storeProvider;
 
 		private readonly IWebhookSubscriptionFactory subscriptionFactory;
 
@@ -37,7 +38,7 @@ namespace Deveel.Webhooks {
 					options.SignWebhooks = true;
 				})
 				.UseMongoDb(options => {
-					options.CollectionName = "webhooks_subscription";
+					options.SubscriptionsCollectionName = "webhooks_subscription";
 					options.DatabaseName = "webhooks";
 					options.ConnectionString = mongoDbCluster.ConnectionString;
 				})
@@ -62,7 +63,7 @@ namespace Deveel.Webhooks {
 			var subscriptionId = await webhookManager.AddSubscriptionAsync(tenantId, Guid.NewGuid().ToString("N"), new WebhookSubscriptionInfo("test.event", "https://callback.test.io/webhook"), CancellationToken.None);
 
 			Assert.NotNull(subscriptionId);
-			var subscription = await storeProvider.FindByIdAsync(tenantId, subscriptionId);
+			var subscription = await storeProvider.GetByIdAsync(tenantId, subscriptionId);
 
 			Assert.NotNull(subscription);
 			Assert.Contains("test.event", subscription.EventTypes);
@@ -106,14 +107,15 @@ namespace Deveel.Webhooks {
 				Name = "Second Test Callback"
 			});
 
-			var result = await webhookManager.GetSubscriptionsAsync(tenantId, new PageRequest(1, 10), default);
+			var query = new WebhookSubscriptionQuery<IWebhookSubscription>(1, 10);
+			var result = await webhookManager.GetSubscriptionsAsync(tenantId, query, default);
 
 			Assert.NotNull(result);
-			Assert.NotEmpty(result.Items);
-			Assert.Equal(2, result.TotalItems);
+			Assert.NotEmpty(result.Subscriptions);
+			Assert.Equal(2, result.TotalCount);
 			Assert.Equal(1, result.TotalPages);
-			Assert.Equal(subscriptionId1, result.Items.ElementAt(0).SubscriptionId);
-			Assert.Equal(subscriptionId2, result.Items.ElementAt(1).SubscriptionId);
+			Assert.Equal(subscriptionId1, result.Subscriptions.ElementAt(0).SubscriptionId);
+			Assert.Equal(subscriptionId2, result.Subscriptions.ElementAt(1).SubscriptionId);
 		}
 
 		public void Dispose() {

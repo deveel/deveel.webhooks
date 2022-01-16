@@ -1,32 +1,26 @@
 ﻿using System;
 
-using Deveel.Data;
+using Deveel.Webhooks.Storage;
 
 using Microsoft.Extensions.Options;
 
 namespace Deveel.Webhooks {
-	class MongoDbWebhookSubscriptionStoreProvider : MongoDbStoreProvider<WebhookSubscriptionDocument>,
+	class MongoDbWebhookSubscriptionStoreProvider : MongoDbWebhookStoreProviderBase<WebhookSubscriptionDocument, IWebhookSubscription>,
 														   IWebhookSubscriptionStoreProvider {
-		public MongoDbWebhookSubscriptionStoreProvider(IOptions<MongoDbOptions<WebhookSubscriptionDocument>> baseOptions)
+		public MongoDbWebhookSubscriptionStoreProvider(IOptions<MongoDbWebhookOptions> baseOptions)
 			: base(baseOptions) {
 		}
 
-		public MongoDbWebhookSubscriptionStoreProvider(MongoDbOptions<WebhookSubscriptionDocument> baseOptions) 
+		public MongoDbWebhookSubscriptionStoreProvider(MongoDbWebhookOptions baseOptions) 
 			: base(baseOptions) {
 		}
 
-		protected override MongoDbStore<WebhookSubscriptionDocument> CreateStore(MongoDbOptions<WebhookSubscriptionDocument> options)
+		protected override MongoDbWebhookStoreBase<WebhookSubscriptionDocument, IWebhookSubscription> CreateStore(MongoDbWebhookOptions options)
 			=> new MongoDbWebhookSubscriptionStrore(options);
 
-		public new MongoDbWebhookSubscriptionStrore GetStore(string tenantId) => (MongoDbWebhookSubscriptionStrore)base.GetStore(tenantId);
+		public MongoDbWebhookSubscriptionStrore GetStore(string tenantId) => (MongoDbWebhookSubscriptionStrore)CreateStore(tenantId);
 
-		IWebhookSubscriptionStore IWebhookSubscriptionStoreProvider.GetStore(string tenantId)
-			=> GetStore(tenantId);
-
-		IStore<IWebhookSubscription> IStoreProvider<IWebhookSubscription>.GetStore(string tenantId)
-			=> GetStore(tenantId);
-
-		IWebhookSubscriptionStore<IWebhookSubscription> IWebhookSubscriptionStoreProvider<IWebhookSubscription>.GetStore(string tenantId)
+		IWebhookSubscriptionStore<IWebhookSubscription> IWebhookSubscriptionStoreProvider<IWebhookSubscription>.GetTenantRepository(string tenantId)
 			=> GetStore(tenantId);
 	}
 }

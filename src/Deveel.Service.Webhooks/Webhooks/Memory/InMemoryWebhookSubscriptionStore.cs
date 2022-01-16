@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 using Deveel.Data;
 using Deveel.Webhooks;
+using Deveel.Webhooks.Storage;
 
 namespace Deveel.Webhooks.Memory {
 	class InMemoryWebhookSubscriptionStore : InMemoryStore<InMemoryWebhookSubscription, IWebhookSubscription>, IWebhookSubscriptionStore {

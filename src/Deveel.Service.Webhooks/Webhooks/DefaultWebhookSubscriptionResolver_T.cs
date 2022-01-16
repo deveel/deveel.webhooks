@@ -15,8 +15,8 @@ namespace Deveel.Webhooks {
 			this.storeProvider = storeProvider;
 		}
 
-		public async Task<IList<IWebhookSubscription>> ResolveSubscriptionsAsync(string tenantId, string eventType, CancellationToken cancellationToken) {
-			var result = await storeProvider.GetByEventTypeAsync(tenantId, eventType, cancellationToken);
+		public async Task<IList<IWebhookSubscription>> ResolveSubscriptionsAsync(string tenantId, string eventType, bool activeOnly, CancellationToken cancellationToken) {
+			var result = await storeProvider.GetByEventTypeAsync(tenantId, eventType, activeOnly, cancellationToken);
 			return result.Cast<IWebhookSubscription>().ToList();
 		}
 	}

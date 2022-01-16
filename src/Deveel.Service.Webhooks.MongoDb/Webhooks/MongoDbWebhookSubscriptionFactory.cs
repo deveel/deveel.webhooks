@@ -11,6 +11,7 @@ namespace Deveel.Webhooks {
 				DestinationUrl = subscriptionInfo.DestinationUrl.ToString(),
 				RetryCount = subscriptionInfo.RetryCount,
 				Secret = subscriptionInfo.Secret,
+				IsActive = subscriptionInfo.Active,
 				Headers = subscriptionInfo.Headers != null
 					? new Dictionary<string, string>(subscriptionInfo.Headers)
 					: null,

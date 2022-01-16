@@ -22,7 +22,7 @@ namespace Deveel.Webhooks.Memory {
 		public InMemoryWebhookSubscriptionStore(InMemoryOptions<InMemoryWebhookSubscription> options, IStoreState<InMemoryWebhookSubscription> state) : base(options, state) {
 		}
 
-		public Task<IList<IWebhookSubscription>> GetByEventTypeAsync(string eventType, CancellationToken cancellationToken) {
+		public Task<IList<IWebhookSubscription>> GetByEventTypeAsync(string eventType, bool activeOnly, CancellationToken cancellationToken) {
 			ThrowIfDisposed();
 			cancellationToken.ThrowIfCancellationRequested();
 
@@ -31,8 +31,13 @@ namespace Deveel.Webhooks.Memory {
 				Options.MultiTenancy.Handling == InMemoryMultiTenancyHandling.TenantField)
 				entities = entities.Where(x => x.TenantId == Options.TenantId);
 
-			var result = entities
-				.Where(x => x.EventTypes.Any(x => x == eventType))
+			var query = entities
+				.Where(x => x.EventTypes.Any(x => x == eventType));
+
+			if (activeOnly)
+				query = query.Where(x => x.IsActive == true);
+
+			var result = query
 				.Cast<IWebhookSubscription>()
 				.ToList();
 

@@ -22,6 +22,7 @@ namespace Deveel.Webhooks {
 		private readonly HttpClient httpClient;
 		private readonly bool disposeClient;
 		private readonly WebhookDeliveryOptions deliveryOptions;
+		private readonly IEnumerable<IWebhookSignatureProvider> signatureProviders;
 		private readonly ILogger logger;
 		private readonly IEnumerable<IWebhookSignatureProvider> signatureProviders;
 
@@ -102,7 +103,9 @@ namespace Deveel.Webhooks {
 			if (string.IsNullOrWhiteSpace(serializedBody))
 				throw new ArgumentNullException(nameof(serializedBody));
 
-			var provider = signatureProviders?.FirstOrDefault(x => x.Algorithm == deliveryOptions.SignatureAlgorithm);
+			var provider = signatureProviders?
+				.FirstOrDefault(x => x.Algorithm == deliveryOptions.SignatureAlgorithm);
+
 			if (provider == null)
 				throw new InvalidOperationException($"No signature provider found for the algorithm '{deliveryOptions.SignatureAlgorithm}' configured for the instance");
 

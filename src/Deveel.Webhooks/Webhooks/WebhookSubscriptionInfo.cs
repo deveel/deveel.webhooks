@@ -39,6 +39,11 @@ namespace Deveel.Webhooks {
 
 		public IEnumerable<IWebhookFilter> Filters { get; set; }
 
+		/// <summary>
+		/// The initial state of the subscription
+		/// </summary>
+		public bool Active { get; set; } = true;
+
 		public IWebhookFilter Filter {
 			get => Filters?.SingleOrDefault();
 			set => Filters = new[] { value };

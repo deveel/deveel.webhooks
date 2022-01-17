@@ -31,11 +31,13 @@ namespace Deveel.Webhooks {
 			services.TryAddScoped<IWebhookSubscriptionResolver, DefaultWebhookSubscriptionResolver>();
 			services.AddScoped<DefaultWebhookSubscriptionResolver>();
 
-			services.TryAddScoped<IWebhookFilterEvaluator, DefaultWebhookFilterEvaluator>();
-			services.AddScoped<DefaultWebhookFilterEvaluator>();
+			services.TryAddScoped<IWebhookFilterEvaluator, LinqWebhookFilterEvaluator>();
+			services.AddScoped<LinqWebhookFilterEvaluator>();
 
 			services.TryAddScoped<IWebhookFilterRequestFactory, DefaultWebookFilterRequestFactory>();
 			services.AddScoped<DefaultWebookFilterRequestFactory>();
+
+			services.TryAddScoped<IWebhookFilterSelector, DefaultWebhookFilterSelector>();
 
 			services.AddSingleton<IWebhookSignatureProvider, Sha256WebhookSignatureProvider>();
 			services.AddSingleton<Sha256WebhookSignatureProvider>();

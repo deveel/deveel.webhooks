@@ -89,7 +89,7 @@ namespace Deveel.Webhooks {
 			=> builder.UseSubscriptionResolver<DefaultWebhookSubscriptionResolver>();
 
 		public static IWebhookServiceBuilder UseDefaultFilterEvaluator(this IWebhookServiceBuilder builder)
-			=> builder.UseFilterEvaluator<DefaultWebhookFilterEvaluator>();
+			=> builder.UseFilterEvaluator<LinqWebhookFilterEvaluator>();
 
 		public static IWebhookServiceBuilder UseSender<TSender>(this IWebhookServiceBuilder builder)
 			where TSender : class, IWebhookSender

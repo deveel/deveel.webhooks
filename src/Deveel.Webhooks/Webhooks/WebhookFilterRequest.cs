@@ -4,49 +4,53 @@ using System.Collections.Generic;
 using System.Linq;
 
 namespace Deveel.Webhooks {
-	public sealed class WebhookFilterRequest : IEnumerable<IWebhookFilter> {
-		private readonly List<IWebhookFilter> filters;
+	public sealed class WebhookFilterRequest : IEnumerable<string> {
+		private readonly List<string> filters;
 		private readonly bool readOnly;
 
-		private WebhookFilterRequest(bool readOnly, IEnumerable<IWebhookFilter> filters) {
+		private WebhookFilterRequest(bool readOnly, string format, IEnumerable<string> filters) {
+			if (string.IsNullOrWhiteSpace(format))
+				throw new ArgumentException($"'{nameof(format)}' cannot be null or whitespace.", nameof(format));
+
 			this.readOnly = readOnly;
 
+			FilterFormat = format;
+
 			if (filters != null) {
-				this.filters = new List<IWebhookFilter>(filters);
+				this.filters = new List<string>(filters);
 			} else {
-				this.filters = new List<IWebhookFilter>();
+				this.filters = new List<string>();
 			}
 		}
 
-		public WebhookFilterRequest(IEnumerable<IWebhookFilter> filters)
-			: this(false, filters) {
+		public WebhookFilterRequest(string format, IEnumerable<string> filters)
+			: this(false, format, filters) {
 		}
 
-		public WebhookFilterRequest()
-			: this(new List<IWebhookFilter>()) {
+		public WebhookFilterRequest(string format)
+			: this(format, new List<string>()) {
 		}
 
-		public ICollection<IWebhookFilter> Filters => filters.AsReadOnly();
+		public string FilterFormat { get; }
+
+		public ICollection<string> Filters => filters.AsReadOnly();
 
 		public bool IsEmpty => filters.Count == 0;
 
-		public bool IsWildcard => filters.Count == 1 && filters[0].IsWildcard();
+		public bool IsWildcard => filters.Count == 1 && WebhookFilter.IsWildcard(filters[0]);
 
-		public static WebhookFilterRequest Empty => new WebhookFilterRequest(true, null);
+		public static WebhookFilterRequest Empty => new WebhookFilterRequest(true, "<empty>", null);
 
-		public void AddFilter(IWebhookFilter filterInfo) {
+		public void AddFilter(string expression) {
 			if (readOnly)
 				throw new NotSupportedException("The request is read-only");
 
 			lock(filters) {
-				filters.Add(filterInfo);
+				filters.Add(expression);
 			}
 		}
 
-		public void AddFilter(string expression, string format = null)
-			=> AddFilter(new WebhookFilter(expression, format));
-
-		public IEnumerator<IWebhookFilter> GetEnumerator() => filters.GetEnumerator();
+		public IEnumerator<string> GetEnumerator() => filters.GetEnumerator();
 
 		IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 	}

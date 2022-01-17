@@ -1,25 +1,30 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq.Dynamic.Core;
+using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace Deveel.Webhooks {
-	class DefaultWebhookFilterEvaluator : IWebhookFilterEvaluator {
-		private Func<IWebhook, bool> Compile(IEnumerable<IWebhookFilter> filters) {
+	class LinqWebhookFilterEvaluator : IWebhookFilterEvaluator {
+		public string Format => "linq";
+
+		private Func<IWebhook, bool> Compile(IEnumerable<string> filters) {
 			Func<IWebhook, bool> evalFilter = null;
 			bool empty = true;
 
 			foreach (var filter in filters) {
-				if (filter.IsWildcard()) {
+				if (WebhookFilter.IsWildcard(filter)) {
 					evalFilter = hook => true;
 					break;
 				} else {
 					// TODO: argument name?
-					var config = new ParsingConfig {
+					var config = ParsingConfig.Default;
+					var parameters = new[] {
+						Expression.Parameter(typeof(IWebhook), "hook")
 					};
 
-					var compiled = DynamicExpressionParser.ParseLambda<IWebhook, bool>(config, false, filter.Expression).Compile();
+					var compiled = (Func<IWebhook, bool>) DynamicExpressionParser.ParseLambda(config, parameters, typeof(bool), filter).Compile();
 					if (evalFilter == null) {
 						evalFilter = compiled;
 					} else {

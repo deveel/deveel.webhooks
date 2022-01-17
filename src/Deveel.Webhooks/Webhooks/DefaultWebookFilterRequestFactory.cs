@@ -8,10 +8,14 @@ namespace Deveel.Webhooks {
 				!subscription.Filters.Any())
 				return null;
 
-			var request = new WebhookFilterRequest();
+			var formats = subscription.Filters?.Select(x => x.Format).Distinct().ToList();
+			if (formats.Count > 1)
+				throw new InvalidOperationException("The subscription has filters with multiple formats");
+
+			var request = new WebhookFilterRequest(formats[0]);
 
 			foreach (var filter in subscription.Filters) {
-				request.AddFilter(filter);
+				request.AddFilter(filter.Expression);
 			}
 
 			return request;

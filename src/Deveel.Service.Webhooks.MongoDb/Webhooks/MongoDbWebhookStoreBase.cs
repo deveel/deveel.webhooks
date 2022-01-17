@@ -8,8 +8,8 @@ using MongoDB.Bson;
 using MongoDB.Driver;
 
 namespace Deveel.Webhooks {
-	abstract class MongoDbWebhookStoreBase<TDocument, TFacade> : IDisposable 
-		where TDocument : class, TFacade, IMongoDocument 
+	abstract class MongoDbWebhookStoreBase<TDocument, TFacade> : IDisposable
+		where TDocument : class, TFacade, IMongoDocument
 		where TFacade : class {
 		private bool disposed;
 
@@ -28,10 +28,37 @@ namespace Deveel.Webhooks {
 
 		protected IMongoClient Client => CreateClient();
 
-		protected IMongoDatabase Database => Client.GetDatabase(Options.DatabaseName);
+		protected IMongoDatabase Database {
+			get {
+				var database = Options.DatabaseName;
+				if (Options.MultiTenantHandling == MongoDbMultiTenancyHandling.TenantDatabase) {
+					database = Options.TenantDatabaseFormat
+						.Replace("{database}", database)
+						.Replace("{tenant}", Options.TenantId);
+				}
 
-		protected IMongoCollection<TDocument> GetCollection(string collectionName)
-			=> Database.GetCollection<TDocument>(collectionName);
+				return Client.GetDatabase(database);
+			}
+		}
+
+		protected IMongoCollection<TDocument> GetCollection(string collectionName) {
+			if (Options.MultiTenantHandling == MongoDbMultiTenancyHandling.TenantCollection) {
+				collectionName = Options.TenantCollectionFormat
+					.Replace("{collection}", collectionName)
+					.Replace("{tenant}", Options.TenantId);
+			}
+
+			return Database.GetCollection<TDocument>(collectionName);
+		}
+
+		protected FilterDefinition<TDocument> NormalizeFilter(FilterDefinition<TDocument> filter) {
+			if (Options.MultiTenantHandling == MongoDbMultiTenancyHandling.TenantField) {
+				var tenantFilter = Builders<TDocument>.Filter.Eq(Options.TenantField, Options.TenantId);
+				filter = Builders<TDocument>.Filter.And(filter, tenantFilter);
+			}
+
+			return filter;
+		}
 
 		private IMongoClient CreateClient() {
 			var settings = MongoClientSettings.FromConnectionString(Options.ConnectionString);
@@ -76,6 +103,9 @@ namespace Deveel.Webhooks {
 			cancellationToken.ThrowIfCancellationRequested();
 
 			var filter = Builders<TDocument>.Filter.Eq(doc => doc.Id, ObjectId.Parse(id));
+
+			filter = NormalizeFilter(filter);
+
 			var result = await Collection.FindAsync(filter, new FindOptions<TDocument, TDocument> { Limit = 1 }, cancellationToken);
 
 			return await result.FirstOrDefaultAsync(cancellationToken);
@@ -98,7 +128,9 @@ namespace Deveel.Webhooks {
 			ThrowIfDisposed();
 			cancellationToken.ThrowIfCancellationRequested();
 
-			return (int) await Collection.CountDocumentsAsync(Builders<TDocument>.Filter.Empty, cancellationToken: cancellationToken);
+			var filter = NormalizeFilter(Builders<TDocument>.Filter.Empty);
+
+			return (int) await Collection.CountDocumentsAsync(filter, cancellationToken: cancellationToken);
 		}
 
 		public virtual void Dispose() {

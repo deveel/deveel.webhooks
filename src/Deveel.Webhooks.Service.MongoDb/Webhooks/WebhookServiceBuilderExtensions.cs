@@ -1,5 +1,7 @@
 ﻿using System;
 
+using Deveel.Webhooks.Storage;
+
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -22,9 +24,11 @@ namespace Deveel.Webhooks {
 
 		private static IWebhookServiceBuilder UseMongoDb(this IWebhookServiceBuilder builder) {
 			return builder
-				.UseSubscriptionFactory<MongoDbWebhookSubscriptionFactory>()
-				.UseSubscriptionStore<MongoDbWebhookSubscriptionStrore>()
-				.UseSubscriptionStoreProvider<MongoDbWebhookSubscriptionStoreProvider>();
+				.Use<IWebhookSubscriptionFactory, MongoDbWebhookSubscriptionFactory>()
+				.Use<IWebhookSubscriptionStore, MongoDbWebhookSubscriptionStrore>()
+				.Use<IWebhookSubscriptionStore<WebhookSubscriptionDocument>, MongoDbWebhookSubscriptionStrore>()
+				.Use<IWebhookSubscriptionStoreProvider, MongoDbWebhookSubscriptionStoreProvider>()
+				.Use<IWebhookSubscriptionStoreProvider<WebhookSubscriptionDocument>, MongoDbWebhookSubscriptionStoreProvider>();
 		}
 
 		public static IWebhookServiceBuilder UseMongoDb(this IWebhookServiceBuilder builder, string sectionName, string connectionStringName = null) {

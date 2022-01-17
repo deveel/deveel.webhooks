@@ -3,8 +3,8 @@ using System.Security.Cryptography;
 using System.Text;
 
 namespace Deveel.Webhooks {
-	public sealed class Sha256WebhookSignatureProvider : IWebhookSignatureProvider {
-		string IWebhookSignatureProvider.Algorithm => WebhookSignatureAlgorithms.HmacSha256;
+	public sealed class Sha256WebhookSigner : IWebhookSigner {
+		string IWebhookSigner.Algorithm => WebhookSignatureAlgorithms.HmacSha256;
 
 		public string Sign(string serializedBody, string secret) {
 			var secretBytes = Encoding.UTF8.GetBytes(secret);

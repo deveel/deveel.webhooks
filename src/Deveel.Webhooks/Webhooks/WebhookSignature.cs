@@ -2,7 +2,7 @@
 
 namespace Deveel.Webhooks {
 	public static class WebhookSignature {
-		public static IWebhookSignatureProvider Sha256 => new Sha256WebhookSignatureProvider();
+		public static IWebhookSigner Sha256 => new Sha256WebhookSigner();
 
 		public static string Sign(string algorithm, string jsonPayload, string secret) {
 			if (string.IsNullOrWhiteSpace(algorithm))

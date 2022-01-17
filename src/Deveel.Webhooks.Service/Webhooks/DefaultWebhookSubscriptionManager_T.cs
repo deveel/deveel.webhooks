@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using System.Linq.Dynamic.Core;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -143,7 +142,7 @@ namespace Deveel.Webhooks {
 
 		public virtual async Task<WebhookSubscriptionPage<TSubscription>> GetSubscriptionsAsync(string tenantId, WebhookSubscriptionQuery<TSubscription> query, CancellationToken cancellationToken) {
 			try {
-				var store = subscriptionStore.GetTenantRepository(tenantId);
+				var store = subscriptionStore.GetTenantStore(tenantId);
 				if (store is IWebhookSubscriptionPaginatedStore<TSubscription> paginated)
 					return await paginated.GetPageAsync(query, cancellationToken);
 				if (store is IWebhookSubscriptionQueryableStore<TSubscription> queryable) {

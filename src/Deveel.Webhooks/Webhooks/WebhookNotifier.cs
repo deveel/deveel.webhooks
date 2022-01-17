@@ -9,85 +9,64 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 
 namespace Deveel.Webhooks {
-	public class DefaultWebhookNotifier : IWebhookNotifier {
+	public class WebhookNotifier : IWebhookNotifier {
 		private readonly IWebhookSubscriptionResolver subscriptionResolver;
-		private readonly IWebhookFilterRequestFactory requestFactory;
-		private readonly IWebhookFilterEvaluator filterEvaluator;
-		private readonly IWebhookDataStrategy dataStrategy;
+		private readonly IWebhookFilterSelector filterSelector;
+		private readonly IWebhookDataFactorySelector dataStrategy;
 		private readonly IWebhookSender sender;
 
-		public DefaultWebhookNotifier(IWebhookSender sender,
+		#region .ctor
+
+		public WebhookNotifier(IWebhookSender sender,
 			IWebhookSubscriptionResolver subscriptionResolver,
-			IWebhookFilterRequestFactory requestFactory,
-			IWebhookFilterEvaluator filterEvaluator,
-			IWebhookDataStrategy dataStrategy,
-			ILogger<DefaultWebhookNotifier> logger) {
+			IWebhookFilterSelector filterSelector,
+			IWebhookDataFactorySelector dataStrategy,
+			ILogger<WebhookNotifier> logger) {
 			this.sender = sender;
-			this.requestFactory = requestFactory;
 			this.subscriptionResolver = subscriptionResolver;
-			this.filterEvaluator = filterEvaluator;
+			this.filterSelector = filterSelector;
 			this.dataStrategy = dataStrategy;
 			Logger = logger;
 		}
 
-		public DefaultWebhookNotifier(IWebhookSender sender,
+		public WebhookNotifier(IWebhookSender sender,
 			IWebhookSubscriptionResolver subscriptionResolver,
-			IWebhookFilterRequestFactory requestFactory,
-			IWebhookFilterEvaluator filterEvaluator,
-			ILogger<DefaultWebhookNotifier> logger) : this(sender, subscriptionResolver, filterEvaluator, null, logger) {
+			IWebhookFilterSelector filterSelector,
+			IWebhookDataFactorySelector dataStrategy)
+			: this(sender, subscriptionResolver, filterSelector, dataStrategy, NullLogger<WebhookNotifier>.Instance) {
 		}
 
-		public DefaultWebhookNotifier(IWebhookSender sender,
+		public WebhookNotifier(IWebhookSender sender,
 			IWebhookSubscriptionResolver subscriptionResolver,
-			IWebhookFilterEvaluator filterEvaluator,
-			IWebhookDataStrategy dataStrategy,
-			ILogger<DefaultWebhookNotifier> logger)
-			: this(sender, subscriptionResolver, new DefaultWebookFilterRequestFactory(), filterEvaluator, dataStrategy, logger) {
+			IWebhookFilterSelector filterSelector,
+			ILogger<WebhookNotifier> logger)
+			: this(sender, subscriptionResolver, filterSelector, null, logger) {
 		}
 
-		public DefaultWebhookNotifier(IWebhookSender sender,
+		public WebhookNotifier(IWebhookSender sender,
 			IWebhookSubscriptionResolver subscriptionResolver,
-			IWebhookFilterEvaluator filterEvaluator,
-			ILogger<DefaultWebhookNotifier> logger)
-			: this(sender, subscriptionResolver, filterEvaluator, null, logger) {
+			IWebhookDataFactorySelector dataStrategy,
+			ILogger<WebhookNotifier> logger)
+			: this(sender, subscriptionResolver, null, dataStrategy, logger) {
 		}
 
-
-		public DefaultWebhookNotifier(IWebhookSender sender, 
-			IWebhookSubscriptionResolver subscriptionResolver, 
-			IWebhookFilterRequestFactory requestFactory, 
-			IWebhookFilterEvaluator filterEvaluator, 
-			IWebhookDataStrategy dataStrategy)
-			: this(sender, subscriptionResolver, requestFactory, filterEvaluator, dataStrategy, NullLogger<DefaultWebhookNotifier>.Instance) {
+		public WebhookNotifier(IWebhookSender sender,
+			IWebhookSubscriptionResolver subscriptionResolver,
+			IWebhookDataFactorySelector dataStrategy)
+			: this(sender, subscriptionResolver, null, dataStrategy, NullLogger<WebhookNotifier>.Instance) {
 		}
 
-		public DefaultWebhookNotifier(IWebhookSender sender, 
-			IWebhookSubscriptionResolver subscriptionResolver, 
-			IWebhookFilterRequestFactory requestFactory, 
-			IWebhookFilterEvaluator filterEvaluator)
-			: this(sender, subscriptionResolver, requestFactory, filterEvaluator, (IWebhookDataStrategy) null) {
+		public WebhookNotifier(IWebhookSender sender,
+			IWebhookSubscriptionResolver subscriptionResolver)
+			: this(sender, subscriptionResolver, null) {
 		}
 
-		public DefaultWebhookNotifier(IWebhookSender sender, 
-			IWebhookSubscriptionResolver subscriptionResolver, 
-			IWebhookFilterEvaluator filterEvaluator, 
-			IWebhookDataStrategy dataStrategy)
-			: this(sender, subscriptionResolver, new DefaultWebookFilterRequestFactory(), filterEvaluator,  dataStrategy, NullLogger<DefaultWebhookNotifier>.Instance) {
-		}
-
-		public DefaultWebhookNotifier(IWebhookSender sender,
-			IWebhookSubscriptionResolver subscriptionResolver, 
-			IWebhookFilterEvaluator filterEvaluator)
-			: this(sender, subscriptionResolver, filterEvaluator, (IWebhookDataStrategy) null) {
-		}
+		#endregion
 
 		protected ILogger Logger { get; }
 
 		protected virtual WebhookFilterRequest BuildFilterRequest(IWebhookSubscription subscription) {
-			if (requestFactory != null)
-				return requestFactory.CreateRequest(subscription);
-
-			return WebhookFilterRequest.Empty;
+			return WebookFilterRequestFactory.CreateRequest(subscription);
 		}
 
 		protected virtual async Task<object> GetWebhookDataAsync(EventInfo eventInfo, CancellationToken cancellationToken) {
@@ -116,12 +95,19 @@ namespace Deveel.Webhooks {
 				return true;
 			}
 
-			if (filterEvaluator == null) {
-				Logger.LogDebug("MatchesAsync: the filter evaluator was not set");
+			if (filterSelector == null) {
+				Logger.LogTrace("None webhook filter was set: matching all filters to true");
 				return true;
 			}
 
-			Logger.LogDebug("MatchesAsync: using the filter evaluator");
+			Logger.LogTrace("Selecting the filter evaluator for '{FilterFormat}' format", filterRequest.FilterFormat);
+
+			var filterEvaluator = filterSelector.GetEvaluator(filterRequest.FilterFormat);
+
+			if (filterEvaluator == null) {
+				Logger.LogError("Could not resolve any filter evaluator for the format '{FilterFormat}'", filterRequest.FilterFormat);
+				throw new NotSupportedException($"Filers of type '{filterRequest.FilterFormat}' are not supported");
+			}
 
 			return await filterEvaluator.MatchesAsync(filterRequest, webhook, cancellationToken);
 		}
@@ -136,6 +122,9 @@ namespace Deveel.Webhooks {
 		}
 
 		private void TraceDeliveryResult(WebhookDeliveryResult deliveryResult) {
+			if (!Logger.IsEnabled(LogLevel.Trace))
+				return;
+
 			if (!deliveryResult.HasAttempted) {
 				Logger.LogTrace("The delivery was not attempted");
 			} else if (deliveryResult.Successful) {

@@ -2,8 +2,8 @@
 using System.Linq;
 
 namespace Deveel.Webhooks {
-	public class DefaultWebookFilterRequestFactory : IWebhookFilterRequestFactory {
-		public virtual WebhookFilterRequest CreateRequest(IWebhookSubscription subscription) {
+	static class WebookFilterRequestFactory {
+		public static WebhookFilterRequest CreateRequest(IWebhookSubscription subscription) {
 			if (subscription.Filters == null ||
 				!subscription.Filters.Any())
 				return null;

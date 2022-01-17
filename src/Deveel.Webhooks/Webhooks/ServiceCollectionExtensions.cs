@@ -1,5 +1,6 @@
 ﻿using System;
-using System.Runtime.CompilerServices;
+using System.Collections.Generic;
+using System.Text;
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -17,30 +18,18 @@ namespace Deveel.Webhooks {
 		}
 
 		public static IServiceCollection AddWebhooks(this IServiceCollection services, Action<IWebhookServiceBuilder> configure = null) {
-			services.TryAddScoped<IWebhookDataStrategy, DefaultWebhookDataStrategy>();
+			services.TryAddScoped<IWebhookDataFactorySelector, DefaultWebhookDataFactorySelector>();
 
-			services.TryAddScoped<IWebhookNotifier, DefaultWebhookNotifier>();
-			services.AddScoped<DefaultWebhookNotifier>();
+			services.TryAddScoped<IWebhookNotifier, WebhookNotifier>();
+			services.AddScoped<WebhookNotifier>();
 
-			services.TryAddScoped<IWebhookSubscriptionManager, DefaultWebhookSubscriptionManager>();
-			services.AddScoped<DefaultWebhookSubscriptionManager>();
-
-			services.TryAddScoped<IWebhookSender, DefaultWebhookSender>();
-			services.AddScoped<DefaultWebhookSender>();
-
-			services.TryAddScoped<IWebhookSubscriptionResolver, DefaultWebhookSubscriptionResolver>();
-			services.AddScoped<DefaultWebhookSubscriptionResolver>();
-
-			services.TryAddScoped<IWebhookFilterEvaluator, LinqWebhookFilterEvaluator>();
-			services.AddScoped<LinqWebhookFilterEvaluator>();
-
-			services.TryAddScoped<IWebhookFilterRequestFactory, DefaultWebookFilterRequestFactory>();
-			services.AddScoped<DefaultWebookFilterRequestFactory>();
+			services.TryAddScoped<IWebhookSender, WebhookSender>();
+			services.AddScoped<WebhookSender>();
 
 			services.TryAddScoped<IWebhookFilterSelector, DefaultWebhookFilterSelector>();
 
-			services.AddSingleton<IWebhookSignatureProvider, Sha256WebhookSignatureProvider>();
-			services.AddSingleton<Sha256WebhookSignatureProvider>();
+			services.AddSingleton<IWebhookSigner, Sha256WebhookSigner>();
+			services.AddSingleton<Sha256WebhookSigner>();
 
 			var builder = new WebhookConfigurationBuilderImpl(services);
 
@@ -60,5 +49,6 @@ namespace Deveel.Webhooks {
 				Services = services;
 			}
 		}
+
 	}
 }

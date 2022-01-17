@@ -10,7 +10,7 @@ namespace Deveel.Webhooks {
 		public string Format => "linq";
 
 		private Func<IWebhook, bool> Compile(IEnumerable<string> filters) {
-			Func<IWebhook, bool> evalFilter = null;
+			Func<IWebhook, bool>? evalFilter = null;
 			bool empty = true;
 
 			foreach (var filter in filters) {
@@ -18,7 +18,6 @@ namespace Deveel.Webhooks {
 					evalFilter = hook => true;
 					break;
 				} else {
-					// TODO: argument name?
 					var config = ParsingConfig.Default;
 					var parameters = new[] {
 						Expression.Parameter(typeof(IWebhook), "hook")
@@ -36,7 +35,7 @@ namespace Deveel.Webhooks {
 				empty = false;
 			}
 
-			if (empty)
+			if (empty || evalFilter == null)
 				evalFilter = hook => true;
 
 			return evalFilter;
@@ -47,6 +46,12 @@ namespace Deveel.Webhooks {
 				throw new ArgumentNullException(nameof(request));
 			if (webhook is null) 
 				throw new ArgumentNullException(nameof(webhook));
+
+			if (request.FilterFormat != "linq")
+				throw new ArgumentException($"Filter format '{request.FilterFormat}' not supported by the DLINQ evaluator");
+
+			if (request.IsWildcard)
+				return Task.FromResult(true);
 
 			var evalFilter = Compile(request.Filters);
 

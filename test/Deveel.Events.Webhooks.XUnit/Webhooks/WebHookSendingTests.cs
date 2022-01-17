@@ -5,7 +5,7 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 
-using Deveel.Events;
+using Deveel.Util;
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -37,6 +37,8 @@ namespace Deveel.Webhooks {
 				builder.ConfigureDelivery(options => {
 					options.SignWebhooks = true;
 				})
+				.UseSubscriptionManager()
+				.AddDynamicLinqFilterEvaluator()
 				.AddDataFactory<TestDataFactory>()
 				.UseMongoDb(options => {
 					options.SubscriptionsCollectionName = "webhooks_subscription";

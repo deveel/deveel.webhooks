@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 
 namespace Deveel.Webhooks {
-	class DefaultWebhookDataStrategy : IWebhookDataStrategy {
+	class DefaultWebhookDataFactorySelector : IWebhookDataFactorySelector {
 		private readonly IEnumerable<IWebhookDataFactory> providers;
 
-		public DefaultWebhookDataStrategy(IEnumerable<IWebhookDataFactory> providers) {
+		public DefaultWebhookDataFactorySelector(IEnumerable<IWebhookDataFactory> providers) {
 			this.providers = providers;
 		}
 

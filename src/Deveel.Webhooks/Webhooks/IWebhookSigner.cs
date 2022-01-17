@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 
 namespace Deveel.Webhooks {
-	public interface IWebhookSignatureProvider {
+	public interface IWebhookSigner {
 		string Algorithm { get; }
 
 		string Sign(string payloadJson, string secret);

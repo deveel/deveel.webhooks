@@ -4,8 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-using Deveel.Events;
-using Deveel.Filters;
+using Deveel.Util;
 using Deveel.Webhooks;
 using Deveel.Webhooks.Storage;
 
@@ -37,12 +36,13 @@ namespace Deveel.Webhooks {
 				buidler.ConfigureDelivery(options => {
 					options.SignWebhooks = true;
 				})
+				.UseSubscriptionManager()
 				.UseMongoDb(options => {
 					options.SubscriptionsCollectionName = "webhooks_subscription";
 					options.DatabaseName = "webhooks";
 					options.ConnectionString = mongoDbCluster.ConnectionString;
 				})
-				.UseDefaultFilterEvaluator();
+				.AddDynamicLinqFilterEvaluator();
 			})
 				.AddTestHttpClient();
 

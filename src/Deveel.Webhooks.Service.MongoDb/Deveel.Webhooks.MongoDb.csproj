@@ -33,7 +33,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Deveel.Service.Webhooks\Deveel.Service.Webhooks.csproj" />
+    <ProjectReference Include="..\Deveel.Webhooks.Service\Deveel.Webhooks.Service.csproj" />
   </ItemGroup>
 
 </Project>

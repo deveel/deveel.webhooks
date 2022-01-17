@@ -29,9 +29,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Deveel.Service.Webhooks.MongoDb\Deveel.Webhooks.MongoDb.csproj" />
-    <ProjectReference Include="..\..\src\Deveel.Webhooks.AspNetCore.Receiver\Deveel.Webhooks.AspNetCore.Receiver.csproj" />
-    <ProjectReference Include="..\..\src\Deveel.Webhooks.Receiver\Deveel.Webhooks.Receiver.csproj" />
+    <ProjectReference Include="..\..\src\Deveel.Webhooks.Receiver.AspNetCore\Deveel.Webhooks.Receiver.AspNetCore.csproj" />
+    <ProjectReference Include="..\..\src\Deveel.Webhooks.Service.MongoDb\Deveel.Webhooks.MongoDb.csproj" />
   </ItemGroup>
 
 </Project>

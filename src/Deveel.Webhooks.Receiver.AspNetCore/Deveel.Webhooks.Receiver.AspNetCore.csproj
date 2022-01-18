@@ -11,7 +11,7 @@
     <PackageIcon>deveel-logo.png</PackageIcon>
     <RepositoryUrl>https://github.com/deveel/deveel.webhooks</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <PackageTags>webhooks receiver aspnet core httprequest</PackageTags>
+    <PackageTags>webhooks receiver receivers aspnet core httprequest</PackageTags>
     <Description>Provides an implementation of the webhook receivers supporting the ASP.NET Core infrastructure</Description>
     <PackageProjectUrl>https://deveel.com</PackageProjectUrl>
   </PropertyGroup>

@@ -9,6 +9,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="coverlet.msbuild" Version="3.1.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.2.2" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="3.1.17" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="5.0.0" />
@@ -28,7 +32,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Deveel.Webhooks.DynamicLinq\Deveel.Webhooks.DynamicLinq.csproj" />
-    <ProjectReference Include="..\..\src\Deveel.Webhooks.Receiver.AspNetCore\Deveel.Webhooks.Receiver.AspNetCore.csproj" />
     <ProjectReference Include="..\..\src\Deveel.Webhooks.Service.MongoDb\Deveel.Webhooks.MongoDb.csproj" />
   </ItemGroup>
 

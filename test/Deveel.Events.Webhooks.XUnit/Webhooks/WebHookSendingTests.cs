@@ -12,6 +12,8 @@ using Microsoft.Extensions.Logging.Abstractions;
 
 using Mongo2Go;
 
+using MongoDB.Bson.IO;
+
 using Xunit;
 
 namespace Deveel.Webhooks {
@@ -22,9 +24,6 @@ namespace Deveel.Webhooks {
 		private readonly string tenantId = Guid.NewGuid().ToString();
 		private IWebhookSubscriptionManager webhookManager;
 		private IWebhookNotifier notifier;
-
-		private bool validateSignature;
-		private string webhookSecret;
 
 		private WebhookPayload lastWebhook;
 		private HttpResponseMessage testResponse;
@@ -50,10 +49,8 @@ namespace Deveel.Webhooks {
 			})
 			.AddTestHttpClient(async request => {
 				try {
-					lastWebhook = await request.GetWebhookAsync<WebhookPayload>(new WebhookReceiveOptions {
-						ValidateSignature = validateSignature,
-						Secret = webhookSecret
-					});
+					var json = await request.Content.ReadAsStringAsync();
+					lastWebhook = Newtonsoft.Json.JsonConvert.DeserializeObject<WebhookPayload>(json);
 
 					if (testResponse != null)
 						return testResponse;
@@ -158,12 +155,10 @@ namespace Deveel.Webhooks {
 
 		[Fact]
 		public async Task DeliverSignedWebhookFromEvent() {
-			validateSignature = true;
-
 			var subscriptionId = await CreateSubscriptionAsync(new WebhookSubscriptionInfo("data.created", "https://callback.example.com") {
 				Filter = new WebhookFilter("hook.data.data_type == \"test-data\"", "linq"),
 				Name = "Data Created",
-				Secret = webhookSecret = "abc12345",
+				Secret = "abc12345",
 				RetryCount = 3
 			});
 

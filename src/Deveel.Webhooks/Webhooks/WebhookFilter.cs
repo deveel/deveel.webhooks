@@ -32,7 +32,7 @@ namespace Deveel.Webhooks {
 
 		public string Format { get; set; }
 
-		public static WebhookFilter WildcardFilter => new WebhookFilter(Wildcard);
+		public static WebhookFilter WildcardFilter => new WebhookFilter(Wildcard, NoFormat);
 
 		public static bool IsWildcard(string expression) => String.Equals(expression, Wildcard);
 	}

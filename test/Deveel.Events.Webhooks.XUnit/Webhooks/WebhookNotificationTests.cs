@@ -14,28 +14,31 @@ using Mongo2Go;
 
 using MongoDB.Bson.IO;
 
+using Newtonsoft.Json.Linq;
+
 using Xunit;
 
 namespace Deveel.Webhooks {
 	[Trait("Category", "Webhooks")]
 	[Trait("Category", "Notification")]
-	public class WebHookSendingTests : IDisposable {
+	public class WebhookNotificationTests : IDisposable {
 		private MongoDbRunner mongoDbCluster;
+
 		private readonly string tenantId = Guid.NewGuid().ToString();
+
 		private IWebhookSubscriptionManager webhookManager;
 		private IWebhookNotifier notifier;
 
 		private WebhookPayload lastWebhook;
 		private HttpResponseMessage testResponse;
 
-		public WebHookSendingTests() {
+		public WebhookNotificationTests() {
 			mongoDbCluster = MongoDbRunner.Start(logger: NullLogger.Instance);
 
 			var services = new ServiceCollection();
 			services.AddWebhooks(builder => {
-				builder.ConfigureDelivery(options => {
-					options.SignWebhooks = true;
-				})
+				builder.ConfigureDelivery(options =>
+					options.SignWebhooks())
 				.UseSubscriptionManager()
 				.AddDynamicLinqFilterEvaluator()
 				.AddDataFactory<TestDataFactory>()
@@ -104,7 +107,39 @@ namespace Deveel.Webhooks {
 			Assert.Equal("data.created", lastWebhook.EventType);
 			Assert.Equal(notification.Id, lastWebhook.EventId);
 			Assert.Equal(notification.TimeStamp, lastWebhook.TimeStamp);
+
+			var testData = Assert.IsType<JObject>(lastWebhook.Data);
+
+			Assert.Equal("test-data", testData.Value<string>("data_type"));
 		}
+
+		[Fact]
+		public async Task DeliverWebhookFromEvent_NoTransformations() {
+			var subscriptionId = await CreateSubscriptionAsync("Data Modified", "data.modified");
+			var notification = new EventInfo("data.modified", new {
+				creationTime = DateTimeOffset.UtcNow,
+				type = "test"
+			});
+
+			var result = await notifier.NotifyAsync(tenantId, notification, CancellationToken.None);
+
+			Assert.NotNull(result);
+			Assert.NotEmpty(result);
+			Assert.Equal(subscriptionId, result.First().Webhook.SubscriptionId);
+			Assert.True(result[subscriptionId].Successful);
+			Assert.Single(result[subscriptionId].Attempts);
+
+			Assert.NotNull(lastWebhook);
+			Assert.Equal("data.modified", lastWebhook.EventType);
+			Assert.Equal(notification.Id, lastWebhook.EventId);
+			Assert.Equal(notification.TimeStamp, lastWebhook.TimeStamp);
+
+			var eventData = Assert.IsType<JObject>(lastWebhook.Data);
+
+			Assert.Equal("test", eventData.Value<string>("type"));
+			Assert.True(eventData.ContainsKey("creationTime"));
+		}
+
 
 		[Fact]
 		public async Task DeliverWebhookWithMultipleFiltersFromEvent() {

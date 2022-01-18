@@ -33,9 +33,8 @@ namespace Deveel.Webhooks {
 
 			var services = new ServiceCollection();
 			services.AddWebhooks(buidler => {
-				buidler.ConfigureDelivery(options => {
-					options.SignWebhooks = true;
-				})
+				buidler.ConfigureDelivery(options =>
+					options.SignWebhooks())
 				.UseSubscriptionManager()
 				.UseMongoDb(options => {
 					options.SubscriptionsCollectionName = "webhooks_subscription";

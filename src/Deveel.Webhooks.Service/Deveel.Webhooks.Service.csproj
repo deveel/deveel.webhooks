@@ -5,39 +5,24 @@
     <RootNamespace>Deveel</RootNamespace>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-    <Authors>Antonello Provenzano</Authors>
+    <Authors>antonello</Authors>
     <Company>Deveel</Company>
-    <Description>Abstractions and default services for the management and delivery of Webhooks</Description>
-    <Copyright>(C) 2020-2021 Deveel</Copyright>
-    <PackageLicenseFile>EULA.md</PackageLicenseFile>
+    <Description>Abstractions and default services for the management Webhook subscriptions and their resolution</Description>
+    <Copyright>Copyright (C) 2021-2022 Deveel</Copyright>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <PackageProjectUrl>https://deveel.com</PackageProjectUrl>
     <PackageIcon>deveel-logo.png</PackageIcon>
     <RepositoryUrl>https://github.com/deveel/deveel.webhooks</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <PackageTags>webhook event schema management</PackageTags>
+    <PackageTags>webhook event schema management subscriptions subscription</PackageTags>
   </PropertyGroup>
-
-  <ItemGroup>
-    <Compile Remove="Webhooks\Memory\**" />
-    <EmbeddedResource Remove="Webhooks\Memory\**" />
-    <None Remove="Webhooks\Memory\**" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Remove="Webhooks\IWebhookSubscriptionStore.cs" />
-    <Compile Remove="Webhooks\IWebhookSubscriptionStoreProvider.cs" />
-    <Compile Remove="Webhooks\IWebhookSubscriptionStoreProvider_T.cs" />
-    <Compile Remove="Webhooks\IWebhookSubscriptionStore_T.cs" />
-    <Compile Remove="Webhooks\WebhookStoreExtensions.cs" />
-    <Compile Remove="Webhooks\WebhookSubscriptionStoreProviderExtensions.cs" />
-  </ItemGroup>
 
   <ItemGroup>
     <None Include="..\..\deveel-logo.png">
       <Pack>True</Pack>
       <PackagePath></PackagePath>
     </None>
-    <None Include="..\..\EULA.md">
+    <None Include="..\..\LICENSE">
       <Pack>True</Pack>
       <PackagePath></PackagePath>
     </None>

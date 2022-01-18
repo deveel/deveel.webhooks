@@ -5,11 +5,11 @@
     <RootNamespace>Deveel</RootNamespace>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-    <Authors>Antonello Provenzano</Authors>
+    <Authors>antonello</Authors>
     <Company>Deveel</Company>
-    <Description>The MongoDb data layer to support the webhook management</Description>
-    <Copyright>(C) 2020-2021</Copyright>
-    <PackageLicenseFile>EULA.md</PackageLicenseFile>
+    <Description>An implementation of the Deveel Webhooks storage layer based on MongoDb</Description>
+    <Copyright>Copyright (C) 2021-2022</Copyright>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <PackageProjectUrl>https://deveel.com</PackageProjectUrl>
     <PackageIcon>deveel-logo.png</PackageIcon>
     <RepositoryUrl>https://github.com/deveel/deveel.webhooks</RepositoryUrl>
@@ -22,7 +22,7 @@
       <Pack>True</Pack>
       <PackagePath></PackagePath>
     </None>
-    <None Include="..\..\EULA.md">
+    <None Include="..\..\LICENSE">
       <Pack>True</Pack>
       <PackagePath></PackagePath>
     </None>

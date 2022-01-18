@@ -1,10 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+﻿// Copyright 2022 Deveel
+// 
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+// 
+//     http://www.apache.org/licenses/LICENSE-2.0
+// 
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+using System;
 using System.Net;
 using System.Net.Http;
-using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -28,9 +38,9 @@ namespace Deveel.Webhooks {
 
 		#region .ctor
 
-		private WebhookSender(HttpClient httpClient, bool disposeClient, 
+		private WebhookSender(HttpClient httpClient, bool disposeClient,
 			WebhookDeliveryOptions deliveryOptions,
-			IWebhookSignerSelector signerSelector, 
+			IWebhookSignerSelector signerSelector,
 			ILogger logger) {
 			if (deliveryOptions == null) {
 				logger.LogWarning("Delivery options was not set: resetting to default");
@@ -51,9 +61,9 @@ namespace Deveel.Webhooks {
 			this.signerSelector = signerSelector;
 		}
 
-		public WebhookSender(HttpClient httpClient, 
+		public WebhookSender(HttpClient httpClient,
 			IOptions<WebhookDeliveryOptions> deliveryOptions,
-			IWebhookSignerSelector signerSelector, 
+			IWebhookSignerSelector signerSelector,
 			ILogger<WebhookSender> logger)
 			: this(httpClient, deliveryOptions?.Value, signerSelector, logger) {
 		}
@@ -64,7 +74,7 @@ namespace Deveel.Webhooks {
 			: this(httpClient, deliveryOptions, new SingletonWebhookSignerSelector(new Sha256WebhookSigner()), logger) {
 		}
 
-		public WebhookSender(HttpClient httpClient, 
+		public WebhookSender(HttpClient httpClient,
 			IOptions<WebhookDeliveryOptions> deliveryOptions,
 			IWebhookSignerSelector signerSelector)
 			: this(httpClient, deliveryOptions?.Value, signerSelector, NullLogger<WebhookSender>.Instance) {
@@ -75,8 +85,8 @@ namespace Deveel.Webhooks {
 			: this(httpClient, deliveryOptions?.Value, new SingletonWebhookSignerSelector(new Sha256WebhookSigner()), NullLogger<WebhookSender>.Instance) {
 		}
 
-		public WebhookSender(IOptions<WebhookDeliveryOptions> deliveryOptions, 
-			IWebhookSignerSelector signerSelector, 
+		public WebhookSender(IOptions<WebhookDeliveryOptions> deliveryOptions,
+			IWebhookSignerSelector signerSelector,
 			ILogger<WebhookSender> logger)
 			: this(new HttpClient(), true, deliveryOptions?.Value, signerSelector, logger) {
 		}
@@ -93,8 +103,8 @@ namespace Deveel.Webhooks {
 			: this(deliveryOptions, new SingletonWebhookSignerSelector(new Sha256WebhookSigner())) {
 		}
 
-		public WebhookSender(IHttpClientFactory httpClientFactory, 
-			IOptions<WebhookDeliveryOptions> deliveryOptions, 
+		public WebhookSender(IHttpClientFactory httpClientFactory,
+			IOptions<WebhookDeliveryOptions> deliveryOptions,
 			IWebhookSignerSelector signerSelector,
 			ILogger<WebhookSender> logger)
 			: this(httpClientFactory, deliveryOptions?.Value, signerSelector, logger) {
@@ -233,7 +243,7 @@ namespace Deveel.Webhooks {
 
 			// first normalize the string to the JSON serialization settings
 			var dataJson = JsonConvert.SerializeObject(webhook.Data, deliveryOptions.JsonSerializerSettings);
-			
+
 			payload.Data = JObject.Parse(dataJson);
 
 			return Task.FromResult(payload);

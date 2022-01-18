@@ -1,4 +1,32 @@
-﻿using System;
+﻿// Copyright 2022 Deveel
+// 
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+// 
+//     http://www.apache.org/licenses/LICENSE-2.0
+// 
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+// Copyright 2022 Deveel
+// 
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+// 
+//     http://www.apache.org/licenses/LICENSE-2.0
+// 
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -9,12 +37,12 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 
 namespace Deveel.Webhooks {
-	public class DefaultWebhookSubscriptionManager<TSubscription> : IWebhookSubscriptionManager<TSubscription>
+	public class WebhookSubscriptionManager<TSubscription> : IWebhookSubscriptionManager<TSubscription>
 		where TSubscription : class, IWebhookSubscription {
 		private readonly IWebhookSubscriptionFactory<TSubscription> subscriptionFactory;
 		private readonly IWebhookSubscriptionStoreProvider<TSubscription> subscriptionStore;
 
-		protected DefaultWebhookSubscriptionManager(IWebhookSubscriptionStoreProvider<TSubscription> subscriptionStore,
+		protected WebhookSubscriptionManager(IWebhookSubscriptionStoreProvider<TSubscription> subscriptionStore,
 			IWebhookSubscriptionFactory<TSubscription> subscriptionFactory,
 			ILogger logger) {
 			this.subscriptionStore = subscriptionStore;
@@ -22,15 +50,15 @@ namespace Deveel.Webhooks {
 			Logger = logger;
 		}
 
-		public DefaultWebhookSubscriptionManager(IWebhookSubscriptionStoreProvider<TSubscription> subscriptionStore,
+		public WebhookSubscriptionManager(IWebhookSubscriptionStoreProvider<TSubscription> subscriptionStore,
 			IWebhookSubscriptionFactory<TSubscription> subscriptionFactory,
-			ILogger<DefaultWebhookSubscriptionManager<TSubscription>> logger)
+			ILogger<WebhookSubscriptionManager<TSubscription>> logger)
 			: this(subscriptionStore, subscriptionFactory, (ILogger)logger) {
 		}
 
-		public DefaultWebhookSubscriptionManager(IWebhookSubscriptionStoreProvider<TSubscription> subscriptionStore,
+		public WebhookSubscriptionManager(IWebhookSubscriptionStoreProvider<TSubscription> subscriptionStore,
 			IWebhookSubscriptionFactory<TSubscription> subscriptionFactory)
-			: this(subscriptionStore, subscriptionFactory, NullLogger<DefaultWebhookSubscriptionManager<TSubscription>>.Instance) {
+			: this(subscriptionStore, subscriptionFactory, NullLogger<WebhookSubscriptionManager<TSubscription>>.Instance) {
 		}
 
 		public ILogger Logger { get; }

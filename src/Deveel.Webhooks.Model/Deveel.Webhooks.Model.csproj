@@ -5,16 +5,16 @@
     <RootNamespace>Deveel</RootNamespace>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-    <Authors>Antonello Provenzano</Authors>
+    <Authors>antonello</Authors>
     <Company>Deveel</Company>
-    <Description>Abstractions defining the model of the Webhook domain within the Deveel Framework</Description>
-    <Copyright>(C) 2020-2021 Deveel</Copyright>
-    <PackageLicenseFile>EULA.md</PackageLicenseFile>
+    <Description>Abstractions defining the model of the Webhook domain within the Deveel Webhooks Framework</Description>
+    <Copyright>Copyright (C) 2021-2022 Deveel</Copyright>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <PackageProjectUrl>https://deveel.com</PackageProjectUrl>
     <PackageIcon>deveel-logo.png</PackageIcon>
     <RepositoryUrl>https://github.com/deveel/deveel.webhooks</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <PackageTags>webhook events model</PackageTags>
+    <PackageTags>webhook events model abstractions</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
@@ -22,7 +22,7 @@
       <Pack>True</Pack>
       <PackagePath></PackagePath>
     </None>
-    <None Include="..\..\EULA.md">
+    <None Include="..\..\LICENSE">
       <Pack>True</Pack>
       <PackagePath></PackagePath>
     </None>

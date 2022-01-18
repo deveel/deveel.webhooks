@@ -4,16 +4,15 @@
     <TargetFramework>netstandard2.1</TargetFramework>
     <RootNamespace>Deveel</RootNamespace>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-    <Authors>Antonello Provenzano</Authors>
+    <Authors>antonello</Authors>
     <Company>Deveel</Company>
-    <Copyright>(C) 2021 Deveel</Copyright>
-    <PackageLicenseFile>EULA.md</PackageLicenseFile>
+    <Copyright>Copyright (C) 2021-2022 Deveel</Copyright>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <PackageIcon>deveel-logo.png</PackageIcon>
-    <PackageIconUrl />
     <RepositoryUrl>https://github.com/deveel/deveel.webhooks</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageTags>webhooks receiver aspnet core httprequest</PackageTags>
-    <Description>Provides an implementation of the webhook receivers that can parse ASP.NET Core HttpRequests</Description>
+    <Description>Provides an implementation of the webhook receivers supporting the ASP.NET Core infrastructure</Description>
     <PackageProjectUrl>https://deveel.com</PackageProjectUrl>
   </PropertyGroup>
 
@@ -27,7 +26,7 @@
       <Pack>True</Pack>
       <PackagePath></PackagePath>
     </None>
-    <None Include="..\..\EULA.md">
+    <None Include="..\..\LICENSE">
       <Pack>True</Pack>
       <PackagePath></PackagePath>
     </None>

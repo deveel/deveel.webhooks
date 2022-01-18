@@ -34,7 +34,7 @@ namespace Deveel.Webhooks {
 			where TNotifier : class, IWebhookNotifier
 			=> builder.Use<IWebhookNotifier, TNotifier>();
 
-		public static IWebhookServiceBuilder UseDefaultNotifier(this IWebhookServiceBuilder builder)
+		public static IWebhookServiceBuilder UseNotifier(this IWebhookServiceBuilder builder)
 			=> builder.UseNotifier<WebhookNotifier>();
 
 		public static IWebhookServiceBuilder AddDataFactory<TFactory>(this IWebhookServiceBuilder builder)

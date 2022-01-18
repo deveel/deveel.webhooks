@@ -5,11 +5,11 @@
     <RootNamespace>Deveel</RootNamespace>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-    <Authors>Antonello Provenzano</Authors>
+    <Authors>antonello</Authors>
     <Company>Deveel</Company>
     <Description>Abstractions and utilities for the service management of webhooks senders</Description>
-    <Copyright>(C) 2020-2021 Deveel</Copyright>
-    <PackageLicenseFile>EULA.md</PackageLicenseFile>
+    <Copyright>Copyright (C) 2021-2022 Deveel</Copyright>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <PackageIcon>deveel-logo.png</PackageIcon>
     <RepositoryUrl>https://github.com/deveel/deveel.webhooks</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
@@ -26,7 +26,7 @@
       <Pack>True</Pack>
       <PackagePath></PackagePath>
     </None>
-    <None Include="..\..\EULA.md">
+    <None Include="..\..\LICENSE">
       <Pack>True</Pack>
       <PackagePath></PackagePath>
     </None>

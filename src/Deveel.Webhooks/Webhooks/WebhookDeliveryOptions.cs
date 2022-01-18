@@ -4,9 +4,9 @@ using Newtonsoft.Json;
 
 namespace Deveel.Webhooks {
 	public class WebhookDeliveryOptions {
-		public string HeaderName { get; set; } = "X-WEBHOOK-SIGNATURE";
+		public string SignatureHeaderName { get; set; } = "X-WEBHOOK-SIGNATURE";
 
-		public string QueryStringKey { get; set; } = "webhook-signature";
+		public string SignatureQueryStringKey { get; set; } = "webhook-signature";
 
 		public bool SignWebhooks { get; set; } = true;
 

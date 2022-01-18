@@ -182,14 +182,14 @@ namespace Deveel.Webhooks {
 			var signature = provider.Sign(serializedBody, secret);
 
 			if (deliveryOptions.SignatureLocation == WebhookSignatureLocation.Header) {
-				request.Headers.Add(deliveryOptions.HeaderName, $"{provider.Algorithm}={signature}");
+				request.Headers.Add(deliveryOptions.SignatureHeaderName, $"{provider.Algorithm}={signature}");
 			} else if (deliveryOptions.SignatureLocation == WebhookSignatureLocation.QueryString) {
 				var originalUrl = new UriBuilder(request.RequestUri);
 				var queryString = new StringBuilder(originalUrl.Query);
 				if (queryString.Length > 0)
 					queryString.Append('&');
 
-				queryString.Append(deliveryOptions.QueryStringKey);
+				queryString.Append(deliveryOptions.SignatureQueryStringKey);
 				queryString.Append('=');
 				queryString.Append(signature);
 				queryString.Append('&');

@@ -1,3 +1,5 @@
+[![Code Coverage](https://codecov.io/gh/deveel/deveel.webhooks/branch/main/graph/badge.svg?token=BKRX2N1IZ1)](https://codecov.io/gh/deveel/deveel.webhooks)
+
 # Deveel Webhooks
 
 This project provides a set of .NET tools for the management of subscriptions to events, basic transformations and notifications of such event occurrences (_webhooks_): in a global design scope, this model enables event-driven architectures, triggering system processes upon the occurrence of expected occurrences from other systems.
@@ -23,9 +25,9 @@ While working on a .NET Core/.NET 5 *aaS (_as-a-Service_) project that functiona
 
 This framework is composed by a set of libraries enabling some functionalities
 
-| Library                         |   Description                                |
-+---------------------------------+----------------------------------------------+
-| Deveel.Webhooks.Model           | Defines the contracts of the webhooks information and tranasformation  model |
+| Library                         |   Description                                                                       |
+|---------------------------------|-------------------------------------------------------------------------------------|
+| Deveel.Webhooks.Model           | Defines the contracts of the webhooks information and tranasformation  model        |
 | Deveel.Webhooks                 | Provides abstractions and basic implementations of the webhook sending capabilities |
 | Deveel.Webhooks.Service         | Implements the functions for the management of webhook subscriptions |
 | Deveel.Webhooks.Service.MongoDb | An implementation of the storage layer of subscriptions and webhook logging that uses MongoDB |

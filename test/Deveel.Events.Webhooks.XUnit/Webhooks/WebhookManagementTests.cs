@@ -152,7 +152,7 @@ namespace Deveel.Webhooks {
 				Active = false
 			});
 
-			var result = await webhookManager.EnableSubscriptionAsync(tenantId, Guid.NewGuid().ToString("N"), subscriptionId, default);
+			var result = await webhookManager.EnableSubscriptionAsync(tenantId, userId, subscriptionId, default);
 
 			Assert.True(result);
 
@@ -176,7 +176,7 @@ namespace Deveel.Webhooks {
 				Active = true
 			});
 
-			var result = await webhookManager.EnableSubscriptionAsync(tenantId, Guid.NewGuid().ToString("N"), subscriptionId, default);
+			var result = await webhookManager.EnableSubscriptionAsync(tenantId, userId, subscriptionId, default);
 
 			Assert.False(result);
 
@@ -193,7 +193,7 @@ namespace Deveel.Webhooks {
 				Active = true
 			});
 
-			var result = await webhookManager.DisableSubscriptionAsync(tenantId, Guid.NewGuid().ToString("N"), subscriptionId, default);
+			var result = await webhookManager.DisableSubscriptionAsync(tenantId, userId, subscriptionId, default);
 
 			Assert.True(result);
 
@@ -207,17 +207,25 @@ namespace Deveel.Webhooks {
 		public async Task DisableNoyExistingSubscription() {
 			var subscriptionId = ObjectId.GenerateNewId().ToString();
 
-			await Assert.ThrowsAsync<SubscriptionNotFoundException>(() => webhookManager.DisableSubscriptionAsync(tenantId, Guid.NewGuid().ToString("N"), subscriptionId, default));
+			await Assert.ThrowsAsync<SubscriptionNotFoundException>(() => webhookManager.DisableSubscriptionAsync(tenantId, userId, subscriptionId, default));
+		}
 
-			Assert.True(result);
+		[Fact]
+		public async Task DisableAlreadyDisabledSubscription() {
+			var subscriptionId = await CreateSubscription(new WebhookSubscriptionInfo("test.event", "https://callback.test.io/webhook") {
+				Name = "Test Callback",
+				Active = false
+			});
+
+			var result = await webhookManager.DisableSubscriptionAsync(tenantId, userId, subscriptionId, default);
+
+			Assert.False(result);
 
 			var subscription = await GetSubscription(subscriptionId);
 
 			Assert.NotNull(subscription);
 			Assert.Equal(WebhookSubscriptionStatus.Suspended, subscription.Status);
 		}
-
-
 
 
 		public void Dispose() {

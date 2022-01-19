@@ -19,16 +19,13 @@ using System.Linq;
 namespace Deveel.Webhooks {
 	public sealed class MongoDbWebhookSubscriptionFactory : IWebhookSubscriptionFactory {
 		public IWebhookSubscription Create(WebhookSubscriptionInfo subscriptionInfo) {
-			return new WebhookSubscriptionDocument {
+			var doc = new WebhookSubscriptionDocument {
 				Name = subscriptionInfo.Name,
 				EventTypes = subscriptionInfo.EventTypes?.ToList(),
 				DestinationUrl = subscriptionInfo.DestinationUrl.ToString(),
 				RetryCount = subscriptionInfo.RetryCount,
 				Secret = subscriptionInfo.Secret,
-				Status = subscriptionInfo.Active ?
-					WebhookSubscriptionStatus.Active :
-					WebhookSubscriptionStatus.None,
-				LastStatusTime = subscriptionInfo.Active ?
+				LastStatusTime = subscriptionInfo.Active != null ?
 					DateTimeOffset.UtcNow :
 					DateTimeOffset.MinValue,
 				Headers = subscriptionInfo.Headers != null
@@ -39,6 +36,16 @@ namespace Deveel.Webhooks {
 					? new Dictionary<string, object>(subscriptionInfo.Metadata)
 					: new Dictionary<string, object>()
 			};
+
+			if (subscriptionInfo.Active != null) {
+				doc.Status = subscriptionInfo.Active.Value ?
+					WebhookSubscriptionStatus.Active :
+					WebhookSubscriptionStatus.Suspended;
+			} else {
+				doc.Status = WebhookSubscriptionStatus.None;
+			}
+
+			return doc;
 		}
 
 

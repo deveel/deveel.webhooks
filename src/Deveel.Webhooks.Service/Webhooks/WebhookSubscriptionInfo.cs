@@ -56,7 +56,7 @@ namespace Deveel.Webhooks {
 		/// <summary>
 		/// The initial state of the subscription
 		/// </summary>
-		public bool Active { get; set; } = true;
+		public bool? Active { get; set; }
 
 		public IWebhookFilter Filter {
 			get => Filters?.SingleOrDefault();

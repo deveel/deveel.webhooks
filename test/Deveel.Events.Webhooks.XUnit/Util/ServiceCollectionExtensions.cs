@@ -36,11 +36,5 @@ namespace Deveel.Util {
 
 		public static IServiceCollection AddTestHttpClient(this IServiceCollection services)
 			=> services.AddTestHttpClient(request => new HttpResponseMessage(HttpStatusCode.OK));
-
-		public static IServiceCollection AddTestHttpClient(this IServiceCollection services, Func<HttpContext, CancellationToken, Task> callback)
-			=> services.AddTestHttpClient(new TestHttpRequestConvertCallback(callback));
-
-		public static IServiceCollection AddTestHttpClient(this IServiceCollection services, Action<HttpContext> callback)
-			=> services.AddTestHttpClient(new TestHttpRequestConvertCallback(callback));
 	}
 }

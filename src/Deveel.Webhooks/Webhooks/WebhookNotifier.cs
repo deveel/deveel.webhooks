@@ -103,8 +103,13 @@ namespace Deveel.Webhooks {
 		}
 
 		protected virtual async Task<bool> MatchesAsync(WebhookFilterRequest filterRequest, IWebhook webhook, CancellationToken cancellationToken) {
-			if (filterRequest == null) {
-				Logger.LogDebug("MachesAsync: the filter request was null");
+			if (filterRequest == null || filterRequest.IsEmpty) {
+				Logger.LogTrace("The filter request was null or empty: accepting by default");
+				return true;
+			}
+
+			if (filterRequest.IsWildcard) {
+				Logger.LogTrace("The whole filter request was a wildcard");
 				return true;
 			}
 

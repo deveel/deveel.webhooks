@@ -110,7 +110,10 @@ namespace Deveel.Webhooks {
 			Assert.NotEmpty(result);
 			Assert.Equal(subscriptionId, result.First().Webhook.SubscriptionId);
 			Assert.True(result[subscriptionId].Successful);
+			Assert.True(result[subscriptionId].HasAttempted);
 			Assert.Single(result[subscriptionId].Attempts);
+			Assert.NotNull(result[subscriptionId].LastAttempt);
+			Assert.True(result[subscriptionId].LastAttempt.HasResponse);
 
 			Assert.NotNull(lastWebhook);
 			Assert.Equal("data.created", lastWebhook.EventType);
@@ -135,8 +138,10 @@ namespace Deveel.Webhooks {
 			Assert.NotNull(result);
 			Assert.NotEmpty(result);
 			Assert.Equal(subscriptionId, result.First().Webhook.SubscriptionId);
+			Assert.True(result[subscriptionId].HasAttempted);
 			Assert.True(result[subscriptionId].Successful);
 			Assert.Single(result[subscriptionId].Attempts);
+			Assert.True(result[subscriptionId].LastAttempt.HasResponse);
 
 			Assert.NotNull(lastWebhook);
 			Assert.Equal("data.modified", lastWebhook.EventType);

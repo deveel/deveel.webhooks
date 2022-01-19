@@ -24,7 +24,7 @@ namespace Deveel.Webhooks {
 		public string Format => "linq";
 
 		private Func<IWebhook, bool> Compile(IEnumerable<string> filters) {
-			Func<IWebhook, bool>? evalFilter = null;
+			Func<IWebhook, bool> evalFilter = null;
 			bool empty = true;
 
 			foreach (var filter in filters) {

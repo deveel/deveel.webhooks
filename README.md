@@ -1,6 +1,6 @@
 # Deveel Webhooks
 
-[![Code Coverage](https://codecov.io/gh/deveel/deveel.webhooks/branch/main/graph/badge.svg?token=BKRX2N1IZ1)](https://codecov.io/gh/deveel/deveel.webhooks)
+[![GitHub Actions](https://github.com/deveel/deveel.webhooks/actions/workflows/cd.yml/badge.svg)](https://github.com/deveel/deveel.webhooks/actions/workflows/cd.yml) [![Code Coverage](https://codecov.io/gh/deveel/deveel.webhooks/branch/main/graph/badge.svg?token=BKRX2N1IZ1)](https://codecov.io/gh/deveel/deveel.webhooks)
 
 This project provides a set of .NET tools for the management of subscriptions to events, basic transformations and notifications of such event occurrences (_webhooks_): in a global design scope, this model enables event-driven architectures, triggering system processes upon the occurrence of expected occurrences from other systems.
 

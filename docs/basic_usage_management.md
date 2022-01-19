@@ -16,11 +16,9 @@
 
 # Webhook Subscription Management
 
-The process of sending _webhooks_ to recipient \[systems\] (implemented by the `IWebhookSender` contract), at least in the model provided by _Deveel Webhooks_, is not technically dependent from the existence of the subscription management component: that means you might implement your own subscription management (see the section on _[Advanced Usage - Custom Webhook Management](advaned_usage_custom_management.md)_ for further information on how to do it).
+The process of sending _webhooks_ to recipient \[systems\] is provided through implementations of the `IWebhookSender` contract, and in the model provided by _Deveel Webhooks_ is not dependent from the existence of a Subscription Management component: that means you might implement your own components for the Webhook Subscription Management (see the section on _[Advanced Usage - Custom Webhook Management](advaned_usage_custom_management.md)), using the remaining parts of the framework.
 
-In fact this requirement exists for the _notification_ scenarios (implemented by the `IWebhookNotifier`), in which the framework resolves the matching subscriptions to an event, forms the webhook and delivers it through the sender.
-
-Anyway the framework provides an implementation for the management and resolution of subscriptions to certain type of events, and eventually other conditions (_filters_) to ease the process of notification.
+Anyway the framework provides a default implementation for the management and resolution of subscriptions to certain type of events, and optionally other additional conditions (_subscription filters_), to ease the process of notification.
 
 ## Service Instrumentation
 

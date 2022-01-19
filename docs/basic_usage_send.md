@@ -16,11 +16,11 @@
 
 # Sending Webhooks
 
-As mentioned above, the simple act of sending webhooks to receivers is not depdenent from the existence of subscriptions, but the process might still be configured.
+The simple act of sending Webhooks to receivers is not depdenent from the existence of subscriptions, and can be executed throug direct invocations to instances of the `IWebhookSender`.
 
----
+## Configuring the Webook Sender
 
-Still assuming you are working on a traditional _[ASP.NET application model](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/?view=aspnetcore-5.0&tabs=windows)_, you can start using the sender functions of this framework through the _Dependency Injection_ (DI) pattern, including a default implementation of the sender during the Startup of your application, by calling the `.AddWebhooks()` extension method provided by _Deveel Webhooks_, and optionally configuring the behavior of the delivery:
+Assuming you are working on a traditional _[ASP.NET application model](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/?view=aspnetcore-5.0&tabs=windows)_, you can start using the sender functions of this framework through the _Dependency Injection_ (DI) pattern, including a default implementation of the sender during the Startup of your application, by calling the `.AddWebhooks()` extension method provided by _Deveel Webhooks_, and optionally configuring the behavior of the delivery:
 
 ``` csharp
 using System;
@@ -43,6 +43,8 @@ namespace Example {
 
             // this call adds the basic services for sending of webhooks
             services.AddWebhooks(webhooks => {
+                // Optional: if not configured by you, the service
+                // will use the default configurations..
                 webhooks.ConfigureDelivery(delivery => {
                     // Instructs the sender to sign the webhooks
                     delivery.SignWebhooks = true;
@@ -74,7 +76,7 @@ namespace Example {
 
 _Please note_: The framework provides by default an implementation of a signature provider (the `IWebhookSigner` contract), that computes signatures using the 'HMAC-SHA-256' algorithm, but it is possible to add custom ones through the call to `.AddSigner()` of the service builder.
 
----
+## Using the Webhook Sender
 
 At this point you can obtain from the service provider an instance of the `IWebhookSender` that is configured and ready to be used.
 

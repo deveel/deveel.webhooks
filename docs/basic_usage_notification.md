@@ -105,6 +105,8 @@ namespace Example {
 
 After this you will have an instance of `IWebhookNotiier` instance that can be used witin your code for triggering the process described above.
 
+_**Note**: Since in this example no `IWebhookDataFactory` instance has been registered, the webhook payload will contain the same data transported by the event._
+
 ``` csharp
 
 namespace Example {

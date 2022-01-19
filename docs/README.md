@@ -16,6 +16,14 @@
 
 # Deveel Webhooks Documentation
 
+## Basic Concepts
+
+| Concept                                              | Description                                |
+| ---------------------------------------------------- | ------------------------------------------ |
+| **[Webook](concept_webhook.md)**                     | What is it a 'Webhook' and why I need it?  |
+| **[Subscriptions](concept_webhook_subscription.md)** | How does a subscription to an event works? |
+| **[Receivers](concept_webhook_receiver.md)**         | What is a receiver of webooks?             |
+
 ## Tutorials
 
 | Topic                                                                  | Description                                                           |
@@ -27,8 +35,9 @@
 
 ## Extending
 
-| Topic                                                                              | Description                                                |
-| ---------------------------------------------------------------------------------- | ---------------------------------------------------------- |
-| **[Advaced Usage - Filtering Subscriptions](advanced_usage_filters.md)**           | Allow subscribers to filter webhooks on dynamic parameters |
-| **[Advanced Usage - Custom Data Factories](advanced_usage_custom_datafactory.md)** | Implement a component that transforms event data           |
-| **[Advanced Usage - Custom Receivers](advanced_usage_custom_receiver.md)**         | Implement parsers for receiving webhooks                   |
+| Topic                                                                              | Description                                                                    |
+| ---------------------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| **[Advaced Usage - Filtering Subscriptions](advanced_usage_filters.md)**           | Allow subscribers to filter webhooks on dynamic parameters                     |
+| **[Advanced Usage - Custom Data Factories](advanced_usage_custom_datafactory.md)** | Implement a component that transforms event data                               |
+| **[Advanced Usage - Custom Receivers](advanced_usage_custom_receiver.md)**         | Implement parsers for receiving webhooks                                       |
+| **[Advanced Usage - Using Data Layers](advanced_usage_data_layer.md)**             | Use different data layers for the persistence of the webhook information model |

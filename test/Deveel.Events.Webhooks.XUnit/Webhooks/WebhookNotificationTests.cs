@@ -24,6 +24,9 @@ namespace Deveel.Webhooks {
 	public class WebhookNotificationTests : IDisposable {
 		private MongoDbRunner mongoDbCluster;
 
+		private const int TimeOutSeconds = 2;
+		private bool testTimeout = false;
+
 		private readonly string tenantId = Guid.NewGuid().ToString();
 
 		private IWebhookSubscriptionManager webhookManager;
@@ -38,7 +41,8 @@ namespace Deveel.Webhooks {
 			var services = new ServiceCollection();
 			services.AddWebhooks(builder => {
 				builder.ConfigureDelivery(options =>
-					options.SignWebhooks())
+					options.SignWebhooks()
+						   .SecondsBeforeTimeOut(TimeOutSeconds))
 				.UseSubscriptionManager()
 				.AddDynamicLinqFilterEvaluator()
 				.AddDataFactory<TestDataFactory>()
@@ -52,6 +56,11 @@ namespace Deveel.Webhooks {
 			})
 			.AddTestHttpClient(async request => {
 				try {
+					if (testTimeout) {
+						await Task.Delay(TimeSpan.FromSeconds(TimeOutSeconds).Add(TimeSpan.FromSeconds(1)));
+						return new HttpResponseMessage(HttpStatusCode.RequestTimeout);
+					}
+
 					var json = await request.Content.ReadAsStringAsync();
 					lastWebhook = Newtonsoft.Json.JsonConvert.DeserializeObject<WebhookPayload>(json);
 
@@ -234,6 +243,27 @@ namespace Deveel.Webhooks {
 			Assert.Equal((int)HttpStatusCode.InternalServerError, result[subscriptionId].Attempts.ElementAt(1).ResponseStatusCode);
 			Assert.Equal((int)HttpStatusCode.InternalServerError, result[subscriptionId].Attempts.ElementAt(2).ResponseStatusCode);
 		}
+
+		[Fact]
+		public async Task TimeOutWhileDelivering() {
+			var subscriptionId = await CreateSubscriptionAsync("Data Created", "data.created", new WebhookFilter("hook.data.data_type == \"test-data\"", "linq"));
+			var notification = new EventInfo("data.created", new { creationTime = DateTimeOffset.UtcNow, type = "test" });
+
+			testTimeout = true;
+
+			var result = await notifier.NotifyAsync(tenantId, notification, CancellationToken.None);
+
+			Assert.NotNull(result);
+			Assert.NotEmpty(result);
+			Assert.Equal(subscriptionId, result.First().Webhook.SubscriptionId);
+			Assert.False(result[subscriptionId].Successful);
+			Assert.Equal(3, result[subscriptionId].Attempts.Count());
+			Assert.Equal((int)HttpStatusCode.RequestTimeout, result[subscriptionId].Attempts.ElementAt(0).ResponseStatusCode);
+			Assert.Equal((int)HttpStatusCode.RequestTimeout, result[subscriptionId].Attempts.ElementAt(1).ResponseStatusCode);
+			Assert.Equal((int)HttpStatusCode.RequestTimeout, result[subscriptionId].Attempts.ElementAt(2).ResponseStatusCode);
+		}
+
+
 
 		[Fact]
 		public async Task NoSubscriptionMatches() {

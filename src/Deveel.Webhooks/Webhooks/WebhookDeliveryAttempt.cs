@@ -14,6 +14,7 @@
 
 using System;
 using System.Diagnostics;
+using System.Net;
 
 namespace Deveel.Webhooks {
 	/// <summary>
@@ -97,11 +98,7 @@ namespace Deveel.Webhooks {
 		/// <summary>
 		/// Signals that the attempt of delivery timed-out.
 		/// </summary>
-		public void Timeout() {
-			stopwatch.Stop();
-
-			HasTimedOut = true;
-			EndedAt = StartedAt.Add(stopwatch.Elapsed);
-		}
+		public void Timeout()
+			=> Finish((int)HttpStatusCode.RequestTimeout, null);
 	}
 }

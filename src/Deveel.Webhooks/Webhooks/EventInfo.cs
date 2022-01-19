@@ -65,19 +65,6 @@ namespace Deveel.Webhooks {
 		/// <summary>
 		/// Gets the data transported by the event.
 		/// </summary>
-		public object Data { get; private set; }
-
-		/// <summary>
-		/// Updates the data of the event
-		/// </summary>
-		/// <param name="data">The object carrying the new
-		/// data of the event</param>
-		/// <exception cref="ArgumentNullException"></exception>
-		public void SetData(object data) {
-			if (data is null)
-				throw new ArgumentNullException(nameof(data));
-
-			Data = data;
-		}
+		public object Data { get; }
 	}
 }

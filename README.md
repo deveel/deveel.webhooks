@@ -27,7 +27,13 @@ You can refer to the [Documentation](docs/README.md) provided to getting you sta
 
 ## Contribute
 
-If you wish to contribute, through _bug fixing_, new features or components, please feel free to open PRs or drop an e-mail to _antonello at deveel dot com_ for more information.
+Contributions to open-source projects, like **Deveel Webhooks**, is generally driven by interest in using the product and services, if they would respect some of the expectations we have to its functions.
+
+The best ways to contribute and improve the quality of this project is by trying it, filing issues, joining in design conversations, and make pull-requests.
+
+Please refer to the [Contributing Guidelines](CONTRIBUTING.md) to receive more details on how you can contribute to this project.
+
+We aim to address most of the questions you might have by providing [documentations](docs/README.md), answering [frequently asked questions](docs/FAQS.md) and following up on issues like bug reports and feature requests.
 
 ## License Information
 

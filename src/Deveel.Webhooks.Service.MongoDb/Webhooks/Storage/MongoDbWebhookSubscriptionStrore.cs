@@ -54,6 +54,8 @@ namespace Deveel.Webhooks.Storage {
 				filter = Builders<WebhookSubscriptionDocument>.Filter.And(filter, activeFilter);
 			}
 
+			filter = NormalizeFilter(filter);
+
 			var result = await Collection.FindAsync(filter, cancellationToken: cancellationToken);
 			return await result.ToListAsync(cancellationToken);
 		}
@@ -99,6 +101,8 @@ namespace Deveel.Webhooks.Storage {
 			var filter = Builders<WebhookSubscriptionDocument>.Filter.Empty;
 			if (query.Predicate != null)
 				filter = new ExpressionFilterDefinition<WebhookSubscriptionDocument>(query.Predicate);
+
+			filter = NormalizeFilter(filter);
 
 			var options = new FindOptions<WebhookSubscriptionDocument> {
 				Limit = query.PageSize,

@@ -15,15 +15,34 @@
 using System;
 
 namespace Deveel.Webhooks.Storage {
+	/// <summary>
+	/// The configuration options for the MongoDB data layer
+	/// of the webhook management.
+	/// </summary>
 	public sealed class MongoDbWebhookOptions {
+		/// <summary>
+		/// Gets or sets the name of the database.
+		/// </summary>
 		public string DatabaseName { get; set; }
 
+		/// <summary>
+		/// Gets or sets the name of the webhook subscriptions collection
+		/// </summary>
 		public string SubscriptionsCollectionName { get; set; }
 
+		/// <summary>
+		/// Gets or sets the name of the webhook logging collection
+		/// </summary>
 		public string WebhooksCollectionName { get; set; }
 
+		/// <summary>
+		/// Gets or sets the connection string to the MongoDB server
+		/// </summary>
 		public string ConnectionString { get; set; }
 
+		/// <summary>
+		/// Gets or sets the identifier of the tenant
+		/// </summary>
 		public string TenantId { get; set; }
 
 		public string TenantDatabaseFormat { get; set; } = "{tenant}_{database}";
@@ -32,6 +51,9 @@ namespace Deveel.Webhooks.Storage {
 
 		public string TenantField { get; set; } = "TenantId";
 
-		public MongoDbMultiTenancyHandling MultiTenantHandling { get; set; }
+		/// <summary>
+		/// Gets or sets the type of handling of the multi-tenant scenarios of usage
+		/// </summary>
+		public MongoDbMultiTenancyHandling MultiTenantHandling { get; set; } = MongoDbMultiTenancyHandling.TenantField;
 	}
 }

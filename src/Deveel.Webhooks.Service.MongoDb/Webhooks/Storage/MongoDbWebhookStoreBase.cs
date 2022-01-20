@@ -84,6 +84,13 @@ namespace Deveel.Webhooks.Storage {
 				throw new ObjectDisposedException(GetType().Name);
 		}
 
+		protected void SetTenantId(TDocument document) {
+			var property = typeof(TDocument).GetProperty(Options.TenantField);
+			if (property != null) {
+				property.SetValue(document, Options.TenantId);
+			}
+		}
+
 		public Task<string> CreateAsync(TFacade entity, CancellationToken cancellationToken)
 			=> CreateAsync((TDocument)entity, cancellationToken);
 
@@ -92,6 +99,10 @@ namespace Deveel.Webhooks.Storage {
 			cancellationToken.ThrowIfCancellationRequested();
 
 			var options = new InsertOneOptions();
+
+			if (Options.MultiTenantHandling == MongoDbMultiTenancyHandling.TenantField) {
+				SetTenantId(entity);
+			}
 
 			await Collection.InsertOneAsync(entity, options, cancellationToken);
 
@@ -133,6 +144,8 @@ namespace Deveel.Webhooks.Storage {
 			cancellationToken.ThrowIfCancellationRequested();
 
 			var filter = Builders<TDocument>.Filter.Eq(doc => doc.Id, document.Id);
+			filter = NormalizeFilter(filter);
+
 			var result = await Collection.DeleteOneAsync(filter, cancellationToken: cancellationToken);
 
 			return result.DeletedCount > 0;

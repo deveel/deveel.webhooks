@@ -42,6 +42,10 @@ namespace Deveel.Webhooks.Storage {
 				DatabaseName = Options.DatabaseName,
 				SubscriptionsCollectionName = Options.SubscriptionsCollectionName,
 				WebhooksCollectionName = Options.WebhooksCollectionName,
+				MultiTenantHandling = Options.MultiTenantHandling,
+				TenantCollectionFormat = Options.TenantCollectionFormat,
+				TenantDatabaseFormat = Options.TenantDatabaseFormat,
+				TenantField = Options.TenantField,
 			};
 
 			return CreateStore(storeOptions);

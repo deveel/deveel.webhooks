@@ -62,6 +62,41 @@ You can obtain the stable versions of these libraries from the [NuGet Official](
 
 For the _nighly builds_ and previews you can restore from the [Deveel Package Manager](https://github.com/orgs/deveel/packages).
 
+## Adding the Webhook Service
+
+To begin using the basic functions of the webhook service all that you need is to invoke the `.AddWebhooks()` function of the service collection in the instrumentation of your application.
+
+For example, assuming you are working on a traditional _[ASP.NET application model](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/?view=aspnetcore-5.0&tabs=windows)_, you can enable these functions like this:
+
+``` csharp
+
+using System;
+
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+
+using Deveel.Webhooks;
+
+namespace Example {
+    public class Startup {
+        public Startup(IConfiguration config) {
+            Configuration = config;
+        }
+
+        public IConfiguration Configuration { get; }
+
+        public void Configure(IServiceCollection services) {
+            // ... add any other service you need ...
+
+            // this call adds the basic services for sending of webhooks
+            // using the default configurations
+            services.AddWebhooks();
+        }
+    }
+}
+
+```
+
 ## Configuring the Delivery Behavior
 
 Included in the core library of the framework (`Deveel.Webhooks`) you will find the abstractions and helpers to configure the behavior of the webhook delivery to recipient systems: this controls aspects of the process like _payload formatting_, _retries on failures_, _signatures_.

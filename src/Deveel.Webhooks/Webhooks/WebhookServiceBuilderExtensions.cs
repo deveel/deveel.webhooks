@@ -62,10 +62,23 @@ namespace Deveel.Webhooks {
 			return builder;
 		}
 
+		/// <summary>
+		/// Replaces the notifier service with another one.
+		/// </summary>
+		/// <typeparam name="TNotifier">The type of the new <see cref="IWebhookNotifier"/> to be used</typeparam>
+		/// <param name="builder"></param>
+		/// <returns>
+		/// Returns the instance of the builder.
+		/// </returns>
 		public static IWebhookServiceBuilder UseNotifier<TNotifier>(this IWebhookServiceBuilder builder)
 			where TNotifier : class, IWebhookNotifier
 			=> builder.Use<IWebhookNotifier, TNotifier>();
 
+		/// <summary>
+		/// Uses the default webhook notifier (and replaces an existing one).
+		/// </summary>
+		/// <param name="builder"></param>
+		/// <returns></returns>
 		public static IWebhookServiceBuilder UseNotifier(this IWebhookServiceBuilder builder)
 			=> builder.UseNotifier<WebhookNotifier>();
 
@@ -98,5 +111,25 @@ namespace Deveel.Webhooks {
 
 		public static IWebhookServiceBuilder UseDefaultSender(this IWebhookServiceBuilder builder)
 			=> builder.UseSender<WebhookSender>();
+
+		public static IWebhookServiceBuilder AddSerializer<TSerializer>(this IWebhookServiceBuilder builder, ServiceLifetime lifetime = ServiceLifetime.Singleton) 
+			where TSerializer : class, IWebhookSerializer {
+			builder.ConfigureServices(services => {
+				services.Add(new ServiceDescriptor(typeof(IWebhookSerializer), typeof(TSerializer), lifetime));
+				services.Add(new ServiceDescriptor(typeof(TSerializer), typeof(TSerializer), lifetime));
+			});
+
+			return builder;
+		}
+
+		public static IWebhookServiceBuilder AddSerializer<TSerializer>(this IWebhookServiceBuilder builder, TSerializer serializer)
+			where TSerializer : class, IWebhookSerializer {
+			builder.ConfigureServices(services => {
+				services.Add(new ServiceDescriptor(typeof(IWebhookSerializer), serializer));
+				services.Add(new ServiceDescriptor(typeof(TSerializer), serializer));
+			});
+
+			return builder;
+		}
 	}
 }

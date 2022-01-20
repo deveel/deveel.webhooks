@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 
 using Deveel.Util;
+using Deveel.Webhooks.Storage;
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Abstractions;

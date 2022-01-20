@@ -14,7 +14,7 @@
 
 using System;
 
-namespace Deveel.Webhooks {
+namespace Deveel.Webhooks.Storage {
 	public sealed class MongoDbWebhookOptions {
 		public string DatabaseName { get; set; }
 

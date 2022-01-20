@@ -18,7 +18,7 @@ using System.Text;
 
 using Microsoft.Extensions.Options;
 
-namespace Deveel.Webhooks {
+namespace Deveel.Webhooks.Storage {
 	abstract class MongoDbWebhookStoreProviderBase<TDocument, TFacade>
 		where TDocument : class, TFacade, IMongoDocument
 		where TFacade : class {

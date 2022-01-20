@@ -14,7 +14,7 @@
 
 using System;
 
-namespace Deveel.Webhooks {
+namespace Deveel.Webhooks.Storage {
 	class MongoDbWebhookOptionBuilder : IMongoDbOptionBuilder {
 		public MongoDbWebhookOptions Options { get; }
 

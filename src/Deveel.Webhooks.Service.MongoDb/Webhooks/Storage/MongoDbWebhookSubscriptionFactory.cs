@@ -16,7 +16,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Deveel.Webhooks {
+namespace Deveel.Webhooks.Storage {
 	public sealed class MongoDbWebhookSubscriptionFactory : IWebhookSubscriptionFactory {
 		public IWebhookSubscription Create(WebhookSubscriptionInfo subscriptionInfo) {
 			var doc = new WebhookSubscriptionDocument {

@@ -19,7 +19,7 @@ using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Bson.Serialization.Options;
 
-namespace Deveel.Webhooks {
+namespace Deveel.Webhooks.Storage {
 	class WebhookSubscriptionDocument : IWebhookSubscription, IMongoDocument {
 		string IWebhookSubscription.SubscriptionId => Id.ToEntityId();
 

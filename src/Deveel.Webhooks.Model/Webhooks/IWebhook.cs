@@ -33,6 +33,11 @@ namespace Deveel.Webhooks {
 		string Name { get; }
 
 		/// <summary>
+		/// Gets the format of the content of the webhook
+		/// </summary>
+		string Format { get; }
+
+		/// <summary>
 		/// If the webhook was originated by a subscription,
 		/// this gets its unique identifier.
 		/// </summary>

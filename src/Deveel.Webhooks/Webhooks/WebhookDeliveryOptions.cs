@@ -32,6 +32,8 @@ namespace Deveel.Webhooks {
 
 		public int MaxAttemptCount { get; set; } = 3;
 
+		public string BodyFormat { get; set; } = "json";
+
 		public TimeSpan TimeOut { get; set; } = TimeSpan.FromSeconds(2);
 
 		public JsonSerializerSettings JsonSerializerSettings { get; set; } = new JsonSerializerSettings();

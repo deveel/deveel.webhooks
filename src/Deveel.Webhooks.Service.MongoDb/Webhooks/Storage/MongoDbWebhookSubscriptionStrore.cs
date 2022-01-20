@@ -24,7 +24,7 @@ using Microsoft.Extensions.Options;
 
 using MongoDB.Driver;
 
-namespace Deveel.Webhooks {
+namespace Deveel.Webhooks.Storage {
 	class MongoDbWebhookSubscriptionStrore : MongoDbWebhookStoreBase<WebhookSubscriptionDocument, IWebhookSubscription>,
 											 IWebhookSubscriptionStore,
 											 IWebhookSubscriptionPaginatedStore<IWebhookSubscription>,

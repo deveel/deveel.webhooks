@@ -50,6 +50,11 @@ namespace Deveel.Webhooks {
 			services.AddSingleton<IWebhookSigner, Sha256WebhookSigner>();
 			services.AddSingleton<Sha256WebhookSigner>();
 
+			services.AddSingleton<IWebhookSerializer, JsonWebhookSerializer>();
+			services.AddSingleton<JsonWebhookSerializer>();
+
+			services.AddScoped<IWebhookSenderConfiguration, DefaultWebhookSenderConfiguration>();
+
 			var builder = new WebhookConfigurationBuilderImpl(services);
 
 			configure?.Invoke(builder);

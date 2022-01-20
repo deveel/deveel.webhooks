@@ -22,6 +22,9 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 
 namespace Deveel.Webhooks {
+	/// <summary>
+	/// The default implementation of the webhook notifier
+	/// </summary>
 	public class WebhookNotifier : IWebhookNotifier {
 		private readonly IWebhookSubscriptionResolver subscriptionResolver;
 		private readonly IWebhookFilterSelector filterSelector;
@@ -286,6 +289,8 @@ namespace Deveel.Webhooks {
 			public object Data { get; set; }
 
 			public string SubscriptionId { get; set; }
+
+			public string Format { get; set; }
 		}
 
 		#endregion

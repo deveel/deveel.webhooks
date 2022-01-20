@@ -21,7 +21,7 @@ using Microsoft.Extensions.Options;
 using MongoDB.Bson;
 using MongoDB.Driver;
 
-namespace Deveel.Webhooks {
+namespace Deveel.Webhooks.Storage {
 	abstract class MongoDbWebhookStoreBase<TDocument, TFacade> : IDisposable
 		where TDocument : class, TFacade, IMongoDocument
 		where TFacade : class {

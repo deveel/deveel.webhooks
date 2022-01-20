@@ -14,8 +14,11 @@
 
 using System;
 
-namespace Deveel.Webhooks {
-	public interface IWebhookSignerSelector {
-		IWebhookSigner GetSigner(string algorithm);
+using MongoDB.Bson;
+
+namespace Deveel.Webhooks.Storage {
+	static class ObjectIdExtensions {
+		public static string ToEntityId(this ObjectId id)
+			=> id == ObjectId.Empty ? null : id.ToString();
 	}
 }

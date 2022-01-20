@@ -14,10 +14,10 @@
 
 using System;
 
-using MongoDB.Bson;
-
-namespace Deveel.Webhooks {
-	interface IMongoDocument {
-		ObjectId Id { get; }
+namespace Deveel.Webhooks.Storage {
+	public enum MongoDbMultiTenancyHandling {
+		TenantDatabase,
+		TenantCollection,
+		TenantField
 	}
 }

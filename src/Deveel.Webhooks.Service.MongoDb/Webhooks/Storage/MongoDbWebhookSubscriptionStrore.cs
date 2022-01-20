@@ -18,6 +18,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
+using Deveel.Data;
 using Deveel.Webhooks.Storage;
 
 using Microsoft.Extensions.Options;
@@ -80,8 +81,8 @@ namespace Deveel.Webhooks.Storage {
 
 		IQueryable<IWebhookSubscription> IWebhookSubscriptionQueryableStore<IWebhookSubscription>.AsQueryable() => Collection.AsQueryable();
 
-		async Task<WebhookSubscriptionPage<IWebhookSubscription>> IWebhookSubscriptionPaginatedStore<IWebhookSubscription>.GetPageAsync(WebhookSubscriptionQuery<IWebhookSubscription> query, CancellationToken cancellationToken) {
-			var newQuery = new WebhookSubscriptionQuery<WebhookSubscriptionDocument>(query.Page, query.PageSize);
+		async Task<PagedResult<IWebhookSubscription>> IWebhookSubscriptionPaginatedStore<IWebhookSubscription>.GetPageAsync(PagedQuery<IWebhookSubscription> query, CancellationToken cancellationToken) {
+			var newQuery = new PagedQuery<WebhookSubscriptionDocument>(query.Page, query.PageSize);
 
 			if (query.Predicate != null) {
 				newQuery.Predicate = webhook => query.Predicate.Compile().Invoke(webhook);
@@ -89,12 +90,12 @@ namespace Deveel.Webhooks.Storage {
 
 			var result = await GetPageAsync(newQuery, cancellationToken);
 
-			return new WebhookSubscriptionPage<IWebhookSubscription>(query, result.TotalCount, result.Subscriptions);
+			return new PagedResult<IWebhookSubscription>(query, result.TotalCount, result.Subscriptions);
 		}
 
 		public IQueryable<WebhookSubscriptionDocument> AsQueryable() => Collection.AsQueryable();
 
-		public async Task<WebhookSubscriptionPage<WebhookSubscriptionDocument>> GetPageAsync(WebhookSubscriptionQuery<WebhookSubscriptionDocument> query, CancellationToken cancellationToken) {
+		public async Task<PagedResult<WebhookSubscriptionDocument>> GetPageAsync(PagedQuery<WebhookSubscriptionDocument> query, CancellationToken cancellationToken) {
 			ThrowIfDisposed();
 			cancellationToken.ThrowIfCancellationRequested();
 
@@ -112,7 +113,7 @@ namespace Deveel.Webhooks.Storage {
 			var count = await Collection.CountDocumentsAsync(filter, cancellationToken: cancellationToken);
 			var items = await Collection.FindAsync(filter, options, cancellationToken);
 
-			return new WebhookSubscriptionPage<WebhookSubscriptionDocument>(query, (int)count, await items.ToListAsync(cancellationToken));
+			return new PagedResult<WebhookSubscriptionDocument>(query, (int)count, await items.ToListAsync(cancellationToken));
 		}
 	}
 }

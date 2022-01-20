@@ -15,6 +15,7 @@
 using System;
 using System.Threading.Tasks;
 using System.Threading;
+using Deveel.Data;
 
 namespace Deveel.Webhooks {
 	public interface IWebhookSubscriptionManager<TSubscription>
@@ -27,7 +28,7 @@ namespace Deveel.Webhooks {
 
 		Task<TSubscription> GetSubscriptionAsync(string tenantId, string subscriptionId, CancellationToken cancellationToken);
 
-		Task<WebhookSubscriptionPage<TSubscription>> GetSubscriptionsAsync(string tenantId, WebhookSubscriptionQuery<TSubscription> query, CancellationToken cancellationToken);
+		Task<PagedResult<TSubscription>> GetSubscriptionsAsync(string tenantId, PagedQuery<TSubscription> query, CancellationToken cancellationToken);
 
 		Task<bool> RemoveSubscriptionAsync(string tenantId, string userId, string subscriptionId, CancellationToken cancellationToken);
 

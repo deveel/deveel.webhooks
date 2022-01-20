@@ -15,9 +15,9 @@
 using System;
 using System.Collections.Generic;
 
-namespace Deveel.Webhooks {
-	public sealed class WebhookSubscriptionPage<TSubscription> where TSubscription : class, IWebhookSubscription {
-		public WebhookSubscriptionPage(WebhookSubscriptionQuery<TSubscription> query, int totalCount, IEnumerable<TSubscription> subscriptions = null) {
+namespace Deveel.Data {
+	public sealed class PagedResult<TItem> where TItem : class {
+		public PagedResult(PagedQuery<TItem> query, int totalCount, IEnumerable<TItem> subscriptions = null) {
 			if (totalCount < 0)
 				throw new ArgumentOutOfRangeException(nameof(totalCount), "The total count must be equal or greater than zero");
 
@@ -26,9 +26,9 @@ namespace Deveel.Webhooks {
 			Subscriptions = subscriptions;
 		}
 
-		public WebhookSubscriptionQuery<TSubscription> Query { get; }
+		public PagedQuery<TItem> Query { get; }
 
-		public IEnumerable<TSubscription> Subscriptions { get; set; }
+		public IEnumerable<TItem> Subscriptions { get; set; }
 
 		public int TotalCount { get; }
 

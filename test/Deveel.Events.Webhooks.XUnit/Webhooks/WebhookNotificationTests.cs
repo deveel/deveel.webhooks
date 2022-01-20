@@ -9,15 +9,17 @@ using Deveel.Util;
 using Deveel.Webhooks.Storage;
 
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 
 using Mongo2Go;
 
-using MongoDB.Bson.IO;
+using MongoDB.Driver;
 
 using Newtonsoft.Json.Linq;
 
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Deveel.Webhooks {
 	[Trait("Category", "Webhooks")]
@@ -36,10 +38,15 @@ namespace Deveel.Webhooks {
 		private WebhookPayload lastWebhook;
 		private HttpResponseMessage testResponse;
 
-		public WebhookNotificationTests() {
+		public WebhookNotificationTests(ITestOutputHelper outputHelper) {
 			mongoDbCluster = MongoDbRunner.Start(logger: NullLogger.Instance);
 
 			var services = new ServiceCollection();
+
+			services.AddLogging(logging => {
+				logging.AddXUnit(outputHelper, options => options.Filter = (category, level) => true);
+			});
+
 			services.AddWebhooks(builder => {
 				builder.ConfigureDelivery(options =>
 					options.SignWebhooks()

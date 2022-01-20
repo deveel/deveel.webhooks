@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
+using Deveel.Data;
 using Deveel.Util;
 using Deveel.Webhooks;
 using Deveel.Webhooks.Storage;
@@ -134,7 +135,7 @@ namespace Deveel.Webhooks {
 				Name = "Second Test Callback"
 			});
 
-			var query = new WebhookSubscriptionQuery<IWebhookSubscription>(1, 10);
+			var query = new PagedQuery<IWebhookSubscription>(1, 10);
 			var result = await webhookManager.GetSubscriptionsAsync(tenantId, query, default);
 
 			Assert.NotNull(result);

@@ -13,9 +13,12 @@
 // limitations under the License.
 
 using System;
+using System.Collections.Generic;
 
 namespace Deveel.Webhooks {
-	public interface IWebhookFilterSelector {
-		IWebhookFilterEvaluator GetEvaluator(string filterFormat);
+	public interface IWebhookDeliveryResult {
+		IWebhook Webhook { get; }
+
+		IEnumerable<IWebhookDeliveryAttempt> DeliveryAttempts { get; }
 	}
 }

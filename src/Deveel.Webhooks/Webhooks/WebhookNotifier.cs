@@ -26,55 +26,32 @@ namespace Deveel.Webhooks {
 	/// The default implementation of the webhook notifier
 	/// </summary>
 	public class WebhookNotifier : IWebhookNotifier {
+		private readonly IWebhookServiceConfiguration configuration;
 		private readonly IWebhookSubscriptionResolver subscriptionResolver;
-		private readonly IWebhookFilterSelector filterSelector;
 		private readonly IWebhookDataFactorySelector dataStrategy;
 		private readonly IWebhookSender sender;
 
 		#region .ctor
 
-		public WebhookNotifier(IWebhookSender sender,
+		public WebhookNotifier(
+			IWebhookServiceConfiguration configuration,
+			IWebhookSender sender,
 			IWebhookSubscriptionResolver subscriptionResolver,
-			IWebhookFilterSelector filterSelector,
 			IWebhookDataFactorySelector dataStrategy,
 			ILogger<WebhookNotifier> logger) {
 			this.sender = sender;
 			this.subscriptionResolver = subscriptionResolver;
-			this.filterSelector = filterSelector;
+			this.configuration = configuration;
 			this.dataStrategy = dataStrategy;
 			Logger = logger;
 		}
 
-		public WebhookNotifier(IWebhookSender sender,
-			IWebhookSubscriptionResolver subscriptionResolver,
-			IWebhookFilterSelector filterSelector,
-			IWebhookDataFactorySelector dataStrategy)
-			: this(sender, subscriptionResolver, filterSelector, dataStrategy, NullLogger<WebhookNotifier>.Instance) {
-		}
-
-		public WebhookNotifier(IWebhookSender sender,
-			IWebhookSubscriptionResolver subscriptionResolver,
-			IWebhookFilterSelector filterSelector,
-			ILogger<WebhookNotifier> logger)
-			: this(sender, subscriptionResolver, filterSelector, null, logger) {
-		}
-
-		public WebhookNotifier(IWebhookSender sender,
-			IWebhookSubscriptionResolver subscriptionResolver,
-			IWebhookDataFactorySelector dataStrategy,
-			ILogger<WebhookNotifier> logger)
-			: this(sender, subscriptionResolver, null, dataStrategy, logger) {
-		}
-
-		public WebhookNotifier(IWebhookSender sender,
+		public WebhookNotifier(
+			IWebhookServiceConfiguration configuration,
+			IWebhookSender sender,
 			IWebhookSubscriptionResolver subscriptionResolver,
 			IWebhookDataFactorySelector dataStrategy)
-			: this(sender, subscriptionResolver, null, dataStrategy, NullLogger<WebhookNotifier>.Instance) {
-		}
-
-		public WebhookNotifier(IWebhookSender sender,
-			IWebhookSubscriptionResolver subscriptionResolver)
-			: this(sender, subscriptionResolver, null) {
+			: this(configuration, sender, subscriptionResolver, dataStrategy, NullLogger<WebhookNotifier>.Instance) {
 		}
 
 		#endregion
@@ -116,14 +93,9 @@ namespace Deveel.Webhooks {
 				return true;
 			}
 
-			if (filterSelector == null) {
-				Logger.LogTrace("None webhook filter was set: matching all filters to true");
-				return true;
-			}
-
 			Logger.LogTrace("Selecting the filter evaluator for '{FilterFormat}' format", filterRequest.FilterFormat);
 
-			var filterEvaluator = filterSelector.GetEvaluator(filterRequest.FilterFormat);
+			var filterEvaluator = configuration.GetFilterEvaluator(filterRequest.FilterFormat);
 
 			if (filterEvaluator == null) {
 				Logger.LogError("Could not resolve any filter evaluator for the format '{FilterFormat}'", filterRequest.FilterFormat);

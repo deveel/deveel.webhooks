@@ -45,15 +45,13 @@ namespace Deveel.Webhooks {
 			services.TryAddScoped<IWebhookSender, WebhookSender>();
 			services.AddScoped<WebhookSender>();
 
-			services.TryAddScoped<IWebhookFilterSelector, DefaultWebhookFilterSelector>();
-
 			services.AddSingleton<IWebhookSigner, Sha256WebhookSigner>();
 			services.AddSingleton<Sha256WebhookSigner>();
 
 			services.AddSingleton<IWebhookSerializer, JsonWebhookSerializer>();
 			services.AddSingleton<JsonWebhookSerializer>();
 
-			services.AddScoped<IWebhookSenderConfiguration, DefaultWebhookSenderConfiguration>();
+			services.AddScoped<IWebhookServiceConfiguration, DefaultWebhookServiceConfiguration>();
 
 			var builder = new WebhookConfigurationBuilderImpl(services);
 

@@ -32,13 +32,13 @@ namespace Deveel.Webhooks {
 	public class WebhookSender : IWebhookSender, IDisposable {
 		private readonly HttpClient httpClient;
 		private readonly bool disposeClient;
-		private readonly IWebhookSenderConfiguration configuration;
+		private readonly IWebhookServiceConfiguration configuration;
 		private readonly ILogger logger;
 
 		#region .ctor
 
 		private WebhookSender(HttpClient httpClient, bool disposeClient,
-			IWebhookSenderConfiguration configuration,
+			IWebhookServiceConfiguration configuration,
 			ILogger logger) {
 			if (httpClient == null) {
 				logger.LogWarning("HTTP Client was not set: setting to default");
@@ -54,33 +54,33 @@ namespace Deveel.Webhooks {
 		}
 
 		public WebhookSender(HttpClient httpClient,
-			IWebhookSenderConfiguration configuration,
+			IWebhookServiceConfiguration configuration,
 			ILogger<WebhookSender> logger)
 			: this(httpClient, false, configuration, logger) {
 		}
 
 		public WebhookSender(HttpClient httpClient,
-			IWebhookSenderConfiguration configuration)
+			IWebhookServiceConfiguration configuration)
 			: this(httpClient, configuration, NullLogger<WebhookSender>.Instance) {
 		}
 
-		public WebhookSender(IWebhookSenderConfiguration configuration,
+		public WebhookSender(IWebhookServiceConfiguration configuration,
 			ILogger<WebhookSender> logger)
 			: this(new HttpClient(), true, configuration, logger) {
 		}
 
-		public WebhookSender(IWebhookSenderConfiguration configuration)
+		public WebhookSender(IWebhookServiceConfiguration configuration)
 			: this(new HttpClient(), configuration, NullLogger<WebhookSender>.Instance) {
 		}
 
 		public WebhookSender(IHttpClientFactory httpClientFactory,
-			IWebhookSenderConfiguration configuration,
+			IWebhookServiceConfiguration configuration,
 			ILogger<WebhookSender> logger)
 			: this(httpClientFactory.CreateClient(), false, configuration, logger) {
 		}
 
 		public WebhookSender(IHttpClientFactory httpClientFactory,
-			IWebhookSenderConfiguration configuration)
+			IWebhookServiceConfiguration configuration)
 			: this(httpClientFactory, configuration, NullLogger<WebhookSender>.Instance) {
 		}
 

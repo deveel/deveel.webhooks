@@ -17,6 +17,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
+using Deveel.Data;
 using Deveel.Webhooks.Storage;
 
 using Microsoft.Extensions.Logging;
@@ -154,7 +155,7 @@ namespace Deveel.Webhooks {
 			}
 		}
 
-		public virtual async Task<WebhookSubscriptionPage<TSubscription>> GetSubscriptionsAsync(string tenantId, WebhookSubscriptionQuery<TSubscription> query, CancellationToken cancellationToken) {
+		public virtual async Task<PagedResult<TSubscription>> GetSubscriptionsAsync(string tenantId, PagedQuery<TSubscription> query, CancellationToken cancellationToken) {
 			try {
 				var store = subscriptionStore.GetTenantStore(tenantId);
 				if (store is IWebhookSubscriptionPaginatedStore<TSubscription> paginated)
@@ -166,7 +167,7 @@ namespace Deveel.Webhooks {
 						.Take(query.PageSize)
 						.Cast<TSubscription>();
 
-					return new WebhookSubscriptionPage<TSubscription>(query, totalCount, items);
+					return new PagedResult<TSubscription>(query, totalCount, items);
 				}
 
 				throw new NotSupportedException("Paged query is not supported by the store");

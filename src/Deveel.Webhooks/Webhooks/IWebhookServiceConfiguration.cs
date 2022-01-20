@@ -16,9 +16,9 @@ using System;
 
 namespace Deveel.Webhooks {
 	/// <summary>
-	/// Provides the functions to configure the webhook sending processes
+	/// Provides the functions to obtain the configurations of the webhook service
 	/// </summary>
-	public interface IWebhookSenderConfiguration {
+	public interface IWebhookServiceConfiguration {
 		/// <summary>
 		/// Gets a set of options to configure the delivery behavior.
 		/// </summary>
@@ -44,5 +44,17 @@ namespace Deveel.Webhooks {
 		/// provided.
 		/// </returns>
 		IWebhookSigner GetSigner(string algorithm);
+
+		/// <summary>
+		/// Gets an evaluaor of filters that is supporting
+		/// the given format
+		/// </summary>
+		/// <param name="filterFormat">The format of filters to be evaluated</param>
+		/// <returns>
+		/// Returns an instance of <see cref="IWebhookFilterEvaluator"/> that supports
+		/// the <paramref name="filterFormat">format</paramref> given to evaluate
+		/// some subscription filters.
+		/// </returns>
+		IWebhookFilterEvaluator GetFilterEvaluator(string filterFormat);
 	}
 }

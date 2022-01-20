@@ -21,7 +21,7 @@ namespace Deveel.Webhooks {
 	/// Provides the aggregated information of a webhook
 	/// delivery process, through all the attempts.
 	/// </summary>
-	public sealed class WebhookDeliveryResult {
+	public sealed class WebhookDeliveryResult : IWebhookDeliveryResult {
 		private readonly List<WebhookDeliveryAttempt> _attempts;
 		private readonly bool failed;
 
@@ -43,6 +43,8 @@ namespace Deveel.Webhooks {
 		public IWebhook Webhook { get; }
 
 		public IEnumerable<WebhookDeliveryAttempt> Attempts => _attempts.AsReadOnly();
+
+		IEnumerable<IWebhookDeliveryAttempt> IWebhookDeliveryResult.DeliveryAttempts => Attempts;
 
 		/// <summary>
 		/// Creates a delivery result that failed before any attempt was done.

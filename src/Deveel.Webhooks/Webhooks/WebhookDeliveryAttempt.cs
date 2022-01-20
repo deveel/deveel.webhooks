@@ -21,7 +21,7 @@ namespace Deveel.Webhooks {
 	/// Describes a single attempt in a
 	/// process of delivery of a webhook.
 	/// </summary>
-	public sealed class WebhookDeliveryAttempt {
+	public sealed class WebhookDeliveryAttempt : IWebhookDeliveryAttempt {
 		private readonly Stopwatch stopwatch;
 
 		/// <summary>

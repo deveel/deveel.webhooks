@@ -94,7 +94,7 @@ namespace Deveel.Webhooks {
 				throw new ArgumentNullException(nameof(serializedBody));
 
 			// TODO: get the algorithm from the subscription / webhook
-			var provider = configuration.GetSigner(configuration.DeliveryOptions.SignatureAlgorithm);
+			var provider = configuration.Signers.DefaultSigner;
 
 			if (provider == null)
 				throw new InvalidOperationException($"No signature provider found for the algorithm '{configuration.DeliveryOptions.SignatureAlgorithm}' configured for the instance");
@@ -141,7 +141,7 @@ namespace Deveel.Webhooks {
 			try {
 				var request = CreateWebhookRequestMessage(webhook);
 
-				var serializer = configuration.GetSerializer("json");
+				var serializer = configuration.Serializers["json"];
 
 				await serializer.WriteAsync(request, webhook, cancellationToken);
 

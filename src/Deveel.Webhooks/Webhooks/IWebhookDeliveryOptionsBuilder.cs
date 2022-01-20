@@ -24,6 +24,8 @@ namespace Deveel.Webhooks {
 
 		IWebhookDeliveryOptionsBuilder TimeOutAfter(TimeSpan timeSpan);
 
+		IWebhookDeliveryOptionsBuilder BodyFormat(string format);
+
 		IWebhookDeliveryOptionsBuilder JsonSerialization(JsonSerializerSettings settings);
 
 		IWebhookDeliveryOptionsBuilder SignWebhooks(bool sign);

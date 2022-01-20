@@ -25,36 +25,23 @@ namespace Deveel.Webhooks {
 		WebhookDeliveryOptions DeliveryOptions { get; }
 
 		/// <summary>
-		/// Gets a serializer that supports the given format.
+		/// Gets a collection of the registered webhook serializers.
 		/// </summary>
-		/// <param name="format">The format of the webhook payload.</param>
-		/// <returns>
-		/// Returns an instance of the <see cref="IWebhookSerializer"/> that supports
-		/// the provided <paramref name="format"/>.
-		/// </returns>
-		IWebhookSerializer GetSerializer(string format);
+		IWebhookSerializerCollection Serializers { get; }
 
 		/// <summary>
-		/// Gets a signer for the given algorithm.
+		/// Gets a collection the registered webhook signers.
 		/// </summary>
-		/// <param name="algorithm">The signing algorithm to be used.</param>
-		/// <returns>
-		/// Returns an instance of <see cref="IWebhookSigner"/> that can be
-		/// used to sign the webhooks through the <paramref name="algorithm"/>
-		/// provided.
-		/// </returns>
-		IWebhookSigner GetSigner(string algorithm);
+		IWebhookSignerCollection Signers { get; }
 
 		/// <summary>
-		/// Gets an evaluaor of filters that is supporting
-		/// the given format
+		/// Gets a collection of the data factories registered in the service
 		/// </summary>
-		/// <param name="filterFormat">The format of filters to be evaluated</param>
-		/// <returns>
-		/// Returns an instance of <see cref="IWebhookFilterEvaluator"/> that supports
-		/// the <paramref name="filterFormat">format</paramref> given to evaluate
-		/// some subscription filters.
-		/// </returns>
-		IWebhookFilterEvaluator GetFilterEvaluator(string filterFormat);
+		IWebhookDataFactoryCollection DataFactories { get; }
+
+		/// <summary>
+		/// Gets all the registered filter evaluating engines.
+		/// </summary>
+		IWebhookFilterEvaluatorCollection FilterEvaluators { get; }
 	}
 }

@@ -18,21 +18,21 @@ using Newtonsoft.Json;
 
 namespace Deveel.Webhooks {
 	public class WebhookDeliveryOptions {
-		public string SignatureHeaderName { get; set; } = "X-WEBHOOK-SIGNATURE";
+		public string SignatureHeaderName { get; set; } = WebhookConfigurationDefaults.SignatureHeaderName;
 
-		public string SignatureQueryStringKey { get; set; } = "webhook-signature";
+		public string SignatureQueryStringKey { get; set; } = WebhookConfigurationDefaults.SignatureQueryStringKey;
 
-		public bool SignWebhooks { get; set; } = true;
+		public bool SignWebhooks { get; set; } = WebhookConfigurationDefaults.SignWebhooks;
 
-		public WebhookFields IncludeFields { get; set; } = WebhookFields.All;
+		public WebhookFields IncludeFields { get; set; } = WebhookConfigurationDefaults.IncludedFields;
 
-		public WebhookSignatureLocation SignatureLocation { get; set; } = WebhookSignatureLocation.QueryString;
+		public WebhookSignatureLocation SignatureLocation { get; set; } = WebhookConfigurationDefaults.SignatureLocation;
 
-		public string SignatureAlgorithm { get; set; } = WebhookSignatureAlgorithms.HmacSha256;
+		public string SignatureAlgorithm { get; set; } = WebhookConfigurationDefaults.SignatureAlgorithm;
 
-		public int MaxAttemptCount { get; set; } = 3;
+		public int MaxAttemptCount { get; set; } = WebhookConfigurationDefaults.MaxDeliveryAttempts;
 
-		public string BodyFormat { get; set; } = "json";
+		public string BodyFormat { get; set; } = WebhookConfigurationDefaults.SerializationFormat;
 
 		public TimeSpan TimeOut { get; set; } = TimeSpan.FromSeconds(2);
 

@@ -82,11 +82,11 @@ namespace Deveel.Webhooks {
 		public static IWebhookServiceBuilder UseNotifier(this IWebhookServiceBuilder builder)
 			=> builder.UseNotifier<WebhookNotifier>();
 
-		public static IWebhookServiceBuilder AddDataFactory<TFactory>(this IWebhookServiceBuilder builder)
+		public static IWebhookServiceBuilder AddDataFactory<TFactory>(this IWebhookServiceBuilder builder, ServiceLifetime lifetime = ServiceLifetime.Scoped)
 			where TFactory : class, IWebhookDataFactory {
 			builder.ConfigureServices(services => {
-				services.TryAddScoped<IWebhookDataFactorySelector, DefaultWebhookDataFactorySelector>();
-				services.AddScoped<IWebhookDataFactory, TFactory>();
+				services.Add(new ServiceDescriptor(typeof(IWebhookDataFactory), typeof(TFactory), lifetime));
+				services.Add(new ServiceDescriptor(typeof(TFactory), typeof(TFactory), lifetime));
 			});
 			return builder;
 		}

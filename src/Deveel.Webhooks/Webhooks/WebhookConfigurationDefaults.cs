@@ -13,18 +13,23 @@
 // limitations under the License.
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace Deveel.Webhooks {
-	class DefaultWebhookDataFactorySelector : IWebhookDataFactorySelector {
-		private readonly IEnumerable<IWebhookDataFactory> providers;
+	public static class WebhookConfigurationDefaults {
+		public const string SerializationFormat = "json";
 
-		public DefaultWebhookDataFactorySelector(IEnumerable<IWebhookDataFactory> providers) {
-			this.providers = providers;
-		}
+		public const string SignatureHeaderName = "X-WEBHOOK-SIGNATURE";
 
-		public IWebhookDataFactory GetDataFactory(EventInfo eventInfo)
-			=> providers?.FirstOrDefault(x => x.Handles(eventInfo));
+		public const string SignatureQueryStringKey = "webhook-signature";
+
+		public const bool SignWebhooks = true;
+
+		public const WebhookFields IncludedFields = WebhookFields.All;
+
+		public const WebhookSignatureLocation SignatureLocation = WebhookSignatureLocation.QueryString;
+
+		public const string SignatureAlgorithm = WebhookSignatureAlgorithms.HmacSha256;
+
+		public const int MaxDeliveryAttempts = 3;
 	}
 }

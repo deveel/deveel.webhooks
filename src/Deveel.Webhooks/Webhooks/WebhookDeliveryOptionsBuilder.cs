@@ -34,6 +34,14 @@ namespace Deveel.Webhooks {
 			return this;
 		}
 
+		public IWebhookDeliveryOptionsBuilder BodyFormat(string format) {
+			if (string.IsNullOrWhiteSpace(format)) 
+				throw new ArgumentException($"'{nameof(format)}' cannot be null or whitespace.", nameof(format));
+
+			Options.BodyFormat = format;
+			return this;
+		}
+
 		public IWebhookDeliveryOptionsBuilder MaxAttempts(int count) {
 			if (count <= 0)
 				throw new ArgumentException("Cannot set a negative number of attempts");

@@ -28,7 +28,7 @@ namespace Deveel.Webhooks {
 	public class WebhookNotifier : IWebhookNotifier {
 		private readonly IWebhookServiceConfiguration configuration;
 		private readonly IWebhookSubscriptionResolver subscriptionResolver;
-		private readonly IWebhookDataFactorySelector dataStrategy;
+		private readonly IWebhookDeliveryResultLogger deliveryResultLogger;
 		private readonly IWebhookSender sender;
 
 		#region .ctor
@@ -37,12 +37,12 @@ namespace Deveel.Webhooks {
 			IWebhookServiceConfiguration configuration,
 			IWebhookSender sender,
 			IWebhookSubscriptionResolver subscriptionResolver,
-			IWebhookDataFactorySelector dataStrategy,
+			IWebhookDeliveryResultLogger deliveryResultLogger,
 			ILogger<WebhookNotifier> logger) {
 			this.sender = sender;
 			this.subscriptionResolver = subscriptionResolver;
 			this.configuration = configuration;
-			this.dataStrategy = dataStrategy;
+			this.deliveryResultLogger = deliveryResultLogger;
 			Logger = logger;
 		}
 
@@ -50,8 +50,23 @@ namespace Deveel.Webhooks {
 			IWebhookServiceConfiguration configuration,
 			IWebhookSender sender,
 			IWebhookSubscriptionResolver subscriptionResolver,
-			IWebhookDataFactorySelector dataStrategy)
-			: this(configuration, sender, subscriptionResolver, dataStrategy, NullLogger<WebhookNotifier>.Instance) {
+			ILogger<WebhookNotifier> logger)
+			: this(configuration, sender, subscriptionResolver, null, logger) {
+		}
+
+		public WebhookNotifier(
+			IWebhookServiceConfiguration configuration,
+			IWebhookSender sender,
+			IWebhookSubscriptionResolver subscriptionResolver,
+			IWebhookDeliveryResultLogger deliveryResultLogger)
+			: this(configuration, sender, subscriptionResolver, deliveryResultLogger, NullLogger<WebhookNotifier>.Instance) {
+		}
+
+		public WebhookNotifier(
+			IWebhookServiceConfiguration configuration,
+			IWebhookSender sender,
+			IWebhookSubscriptionResolver subscriptionResolver)
+			: this(configuration, sender, subscriptionResolver, (IWebhookDeliveryResultLogger) null) {
 		}
 
 		#endregion
@@ -65,16 +80,12 @@ namespace Deveel.Webhooks {
 		protected virtual async Task<object> GetWebhookDataAsync(EventInfo eventInfo, CancellationToken cancellationToken) {
 			Logger.LogDebug("GetWebhookDataAsync: getting data for an event");
 
-			if (dataStrategy != null) {
-				Logger.LogDebug("GetWebhookDataAsync: the data strategy was enabled");
+			var factory = configuration.DataFactories.Find(eventInfo);
+			if (factory != null) {
+				Logger.LogDebug("GetWebhookDataAsync: using a factory for the event of type {EventType} to generate the webhook data",
+					eventInfo.EventType);
 
-				var factory = dataStrategy.GetDataFactory(eventInfo);
-				if (factory != null) {
-					Logger.LogDebug("GetWebhookDataAsync: using a factory for the event of type {EventType} to generate the webhook data",
-						eventInfo.EventType);
-
-					return await factory.CreateDataAsync(eventInfo, cancellationToken);
-				}
+				return await factory.CreateDataAsync(eventInfo, cancellationToken);
 			}
 
 			Logger.LogDebug("GetWebhookDataAsync: using the data of the event");
@@ -95,7 +106,7 @@ namespace Deveel.Webhooks {
 
 			Logger.LogTrace("Selecting the filter evaluator for '{FilterFormat}' format", filterRequest.FilterFormat);
 
-			var filterEvaluator = configuration.GetFilterEvaluator(filterRequest.FilterFormat);
+			var filterEvaluator = configuration.FilterEvaluators[filterRequest.FilterFormat];
 
 			if (filterEvaluator == null) {
 				Logger.LogError("Could not resolve any filter evaluator for the format '{FilterFormat}'", filterRequest.FilterFormat);
@@ -114,10 +125,17 @@ namespace Deveel.Webhooks {
 
 		}
 
-		private void TraceDeliveryResult(WebhookDeliveryResult deliveryResult) {
-			if (!Logger.IsEnabled(LogLevel.Trace))
-				return;
+		protected virtual async Task LogDeliveryResult(string tenantId, IWebhookDeliveryResult deliveryResult, CancellationToken cancellationToken) {
+			try {
+				if (deliveryResultLogger != null)
+					await deliveryResultLogger.LogResultAsync(tenantId, deliveryResult, cancellationToken);
+			} catch (Exception ex) {
+				// If an error occurs here, we report it, but we don't throw it...
+				Logger.LogError(ex, "Error while logging a delivery result for tenant {TenantId}", tenantId);
+			}
+		}
 
+		private void TraceDeliveryResult(WebhookDeliveryResult deliveryResult) {
 			if (!deliveryResult.HasAttempted) {
 				Logger.LogTrace("The delivery was not attempted");
 			} else if (deliveryResult.Successful) {
@@ -136,11 +154,15 @@ namespace Deveel.Webhooks {
 			}
 		}
 
+		protected virtual async Task<IList<IWebhookSubscription>> ResolveSubscriptionsAsync(string tenantId, EventInfo eventInfo, CancellationToken cancellationToken) {
+			return await subscriptionResolver.ResolveSubscriptionsAsync(tenantId, eventInfo.EventType, true, cancellationToken);
+		}
+
 		public virtual async Task<WebhookNotificationResult> NotifyAsync(string tenantId, EventInfo eventInfo, CancellationToken cancellationToken) {
 			var result = new WebhookNotificationResult();
 
 			try {
-				var subscriptions = await subscriptionResolver.ResolveSubscriptionsAsync(tenantId, eventInfo.EventType, true, cancellationToken);
+				var subscriptions = await ResolveSubscriptionsAsync(tenantId, eventInfo, cancellationToken);
 
 				if (subscriptions == null || subscriptions.Count == 0) {
 					Logger.LogTrace("No active subscription to event {EventType} found for Tenant {TenantId}", eventInfo.EventType, tenantId);
@@ -148,6 +170,9 @@ namespace Deveel.Webhooks {
 				}
 
 				foreach (var subscription in subscriptions) {
+					Logger.LogDebug("Evaluating subscription {SubscriptionId} to the event of type {EventType} of tenant {TenantId}",
+						subscription.SubscriptionId, eventInfo.EventType, tenantId);
+
 					var webhook = await CreateWebhook(subscription, eventInfo, cancellationToken);
 
 					if (webhook == null) {
@@ -166,6 +191,8 @@ namespace Deveel.Webhooks {
 							var deliveryResult = await SendAsync(tenantId, webhook, cancellationToken);
 
 							result.AddDelivery(deliveryResult);
+
+							await LogDeliveryResult(tenantId, deliveryResult, cancellationToken);
 
 							TraceDeliveryResult(deliveryResult);
 

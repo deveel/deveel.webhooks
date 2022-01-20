@@ -37,8 +37,6 @@ namespace Deveel.Webhooks {
 		/// <param name="configure">A builder used to configure the service</param>
 		/// <returns></returns>
 		public static IServiceCollection AddWebhooks(this IServiceCollection services, Action<IWebhookServiceBuilder> configure = null) {
-			services.TryAddScoped<IWebhookDataFactorySelector, DefaultWebhookDataFactorySelector>();
-
 			services.TryAddScoped<IWebhookNotifier, WebhookNotifier>();
 			services.AddScoped<WebhookNotifier>();
 
@@ -53,9 +51,14 @@ namespace Deveel.Webhooks {
 
 			services.AddScoped<IWebhookServiceConfiguration, DefaultWebhookServiceConfiguration>();
 
-			var builder = new WebhookConfigurationBuilderImpl(services);
+			if (configure != null) {
+				var builder = new WebhookConfigurationBuilderImpl(services);
 
-			configure?.Invoke(builder);
+				configure.Invoke(builder);
+			} else {
+				// add the default configurations ...
+				services.AddOptions<WebhookDeliveryOptions>();
+			}
 
 			return services;
 		}

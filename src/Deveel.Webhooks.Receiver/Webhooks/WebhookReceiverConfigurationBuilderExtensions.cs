@@ -20,18 +20,18 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Deveel.Webhooks {
 	public static class WebhookReceiverConfigurationBuilderExtensions {
-		public static IWebhookReceiverConfigurationBuilder Configure(this IWebhookReceiverConfigurationBuilder builder, Action<WebhookReceiveOptions> configure) {
+		public static IWebhookReceiverBuilder Configure(this IWebhookReceiverBuilder builder, Action<WebhookReceiveOptions> configure) {
 			if (configure != null)
 				builder.ConfigureServices(services => services.Configure(configure));
 
 			return builder;
 		}
 
-		public static IWebhookReceiverConfigurationBuilder AddWebhookOptions(this IWebhookReceiverConfigurationBuilder builder, WebhookReceiveOptions options) {
+		public static IWebhookReceiverBuilder AddWebhookOptions(this IWebhookReceiverBuilder builder, WebhookReceiveOptions options) {
 			return builder.ConfigureServices(services => services.AddSingleton<WebhookReceiveOptions>(options));
 		}
 
-		public static IWebhookReceiverConfigurationBuilder AddHttpReceiver<TReceiver, TWebhook>(this IWebhookReceiverConfigurationBuilder builder, ServiceLifetime lifetime = ServiceLifetime.Scoped)
+		public static IWebhookReceiverBuilder AddHttpReceiver<TReceiver, TWebhook>(this IWebhookReceiverBuilder builder, ServiceLifetime lifetime = ServiceLifetime.Scoped)
 			where TReceiver : class, IHttpWebhookReceiver<TWebhook>
 			where TWebhook : class {
 			builder.ConfigureServices(services => {
@@ -42,7 +42,7 @@ namespace Deveel.Webhooks {
 			return builder;
 		}
 
-		public static IWebhookReceiverConfigurationBuilder AddHttpReceiver<TReceiver, TWebhook>(this IWebhookReceiverConfigurationBuilder builder, TReceiver receiver)
+		public static IWebhookReceiverBuilder AddHttpReceiver<TReceiver, TWebhook>(this IWebhookReceiverBuilder builder, TReceiver receiver)
 			where TReceiver : class, IHttpWebhookReceiver<TWebhook>
 			where TWebhook : class {
 			builder.ConfigureServices(services => services
@@ -51,7 +51,7 @@ namespace Deveel.Webhooks {
 			return builder;
 		}
 
-		public static IWebhookReceiverConfigurationBuilder AddHttpReceiver<T>(this IWebhookReceiverConfigurationBuilder builder)
+		public static IWebhookReceiverBuilder AddHttpReceiver<T>(this IWebhookReceiverBuilder builder)
 			where T : class
 			=> builder.AddHttpReceiver<DefaultHttptWebhookReceiver<T>, T>();
 

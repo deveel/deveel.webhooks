@@ -8,7 +8,6 @@ using Newtonsoft.Json.Linq;
 namespace Deveel.Webhooks {
 	class WebhookPayload {
 		[JsonProperty("webhook")]
-
 		public string WebhookName { get; set; }
 
 		[JsonProperty("event_id")]

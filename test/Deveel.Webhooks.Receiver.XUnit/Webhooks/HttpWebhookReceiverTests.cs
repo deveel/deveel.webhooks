@@ -12,11 +12,17 @@ using Xunit;
 namespace Deveel.Webhooks {
 	public class HttpWebhookReceiverTests {
 		private readonly IHttpWebhookReceiver<WebhookPayload> httpReceiver;
+		private bool signed;
+		private WebhookSignatureLocation signatureLocation = WebhookSignatureLocation.QueryString;
 
 		public HttpWebhookReceiverTests() {
 			var services = new ServiceCollection();
 
 			services.AddWebhookReceivers(webhook => webhook
+				.Configure(options => {
+					options.ValidateSignature = signed;
+					options.SignatureLocation = signatureLocation;
+				})
 				.AddHttpReceiver<WebhookPayload>());
 
 			var provider = services.BuildServiceProvider();

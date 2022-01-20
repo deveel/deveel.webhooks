@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
 using System.Security.Cryptography;
@@ -19,10 +20,16 @@ using Xunit;
 namespace Deveel.Webhooks {
 	public class WebhookReceiverTests {
 		private readonly IWebhookReceiver<WebhookPayload> receiver;
+		private bool signed;
+		private WebhookSignatureLocation signatureLocation = WebhookSignatureLocation.QueryString;
 
 		public WebhookReceiverTests() {
 			var services = new ServiceCollection();
 			services.AddWebhookReceivers(webhook => webhook
+				.Configure(options => {
+					options.ValidateSignature = signed;
+					options.SignatureLocation = signatureLocation;
+				})
 				.AddReceiver<WebhookPayload>());
 
 			var provider = services.BuildServiceProvider();
@@ -66,8 +73,10 @@ namespace Deveel.Webhooks {
 			Assert.Equal("bar", webhook.Data["Value"].Value<string>());
 		}
 
-		[Fact]
-		public async Task ReceiveSignedWebhookFromRequest() {
+		[Theory]
+		[InlineData(WebhookSignatureLocation.Header)]
+		[InlineData(WebhookSignatureLocation.QueryString)]
+		public async Task ReceiveSignedWebhookFromRequest(WebhookSignatureLocation signatureLocation) {
 			var webhook = new WebhookPayload {
 				WebhookName = "Test Webhook",
 				EventId = Guid.NewGuid().ToString("N"),
@@ -82,7 +91,8 @@ namespace Deveel.Webhooks {
 
 			var options = new WebhookReceiveOptions {
 				Secret = secret,
-				ValidateSignature = true
+				ValidateSignature = true,
+				SignatureLocation = signatureLocation
 			};
 
 			var json = JObject.FromObject(webhook);
@@ -101,7 +111,12 @@ namespace Deveel.Webhooks {
 			var context = new DefaultHttpContext();
 			context.Request.ContentType = "application/json";
 			context.Request.Method = "POST";
-			context.Request.QueryString = new QueryString($"?sig_alg=sha256&webhook-signature={signature}");
+			if (signatureLocation == WebhookSignatureLocation.QueryString) {
+				context.Request.QueryString = new QueryString($"?sig_alg=sha256&webhook-signature={signature}");
+			} else {
+				context.Request.Headers.TryAdd(options.SignatureHeaderName, $"sha256={signature}");
+			}
+
 			context.Request.Body = stream;
 
 			var received = await context.Request.GetWebhookAsync<WebhookPayload>(options);

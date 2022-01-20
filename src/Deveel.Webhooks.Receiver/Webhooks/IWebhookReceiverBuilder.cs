@@ -17,7 +17,7 @@ using System;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Deveel.Webhooks {
-	public interface IWebhookReceiverConfigurationBuilder {
-		IWebhookReceiverConfigurationBuilder ConfigureServices(Action<IServiceCollection> configure);
+	public interface IWebhookReceiverBuilder {
+		IWebhookReceiverBuilder ConfigureServices(Action<IServiceCollection> configure);
 	}
 }

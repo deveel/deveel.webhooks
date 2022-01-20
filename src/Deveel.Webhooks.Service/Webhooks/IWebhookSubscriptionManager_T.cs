@@ -32,5 +32,6 @@ namespace Deveel.Webhooks {
 
 		Task<bool> RemoveSubscriptionAsync(string tenantId, string userId, string subscriptionId, CancellationToken cancellationToken);
 
+		Task<int> CountAllAsync(string tenantId, CancellationToken cancellationToken);
 	}
 }

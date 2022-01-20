@@ -14,10 +14,8 @@
 
 using System;
 
-using MongoDB.Bson;
-
-namespace Deveel.Webhooks.Storage {
-	interface IMongoDocument {
-		ObjectId Id { get; }
+namespace Deveel.Data {
+	interface IMultiTenantDocument : IMongoDocument {
+		string TenantId { get; set; }
 	}
 }

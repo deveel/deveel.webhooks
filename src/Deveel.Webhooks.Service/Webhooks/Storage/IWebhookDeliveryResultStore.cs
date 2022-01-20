@@ -15,9 +15,6 @@
 using System;
 
 namespace Deveel.Webhooks.Storage {
-	public enum MongoDbMultiTenancyHandling {
-		TenantDatabase,
-		TenantCollection,
-		TenantField
+	public interface IWebhookDeliveryResultStore<TResult> where TResult : class, IWebhookDeliveryResult {
 	}
 }

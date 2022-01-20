@@ -14,23 +14,24 @@
 
 using System;
 
+using Deveel.Data;
 using Deveel.Webhooks.Storage;
 
 using Microsoft.Extensions.Options;
 
 namespace Deveel.Webhooks.Storage {
-	class MongoDbWebhookSubscriptionStoreProvider : MongoDbWebhookStoreProviderBase<WebhookSubscriptionDocument, IWebhookSubscription>,
+	class MongoDbWebhookSubscriptionStoreProvider : MongoDbStoreProviderBase<WebhookSubscriptionDocument, IWebhookSubscription>,
 													IWebhookSubscriptionStoreProvider,
 													IWebhookSubscriptionStoreProvider<WebhookSubscriptionDocument> {
-		public MongoDbWebhookSubscriptionStoreProvider(IOptions<MongoDbWebhookOptions> baseOptions)
+		public MongoDbWebhookSubscriptionStoreProvider(IOptions<MongoDbOptions> baseOptions)
 			: base(baseOptions) {
 		}
 
-		public MongoDbWebhookSubscriptionStoreProvider(MongoDbWebhookOptions baseOptions)
+		public MongoDbWebhookSubscriptionStoreProvider(MongoDbOptions baseOptions)
 			: base(baseOptions) {
 		}
 
-		protected override MongoDbWebhookStoreBase<WebhookSubscriptionDocument, IWebhookSubscription> CreateStore(MongoDbWebhookOptions options)
+		protected override MongoDbStoreBase<WebhookSubscriptionDocument, IWebhookSubscription> CreateStore(MongoDbOptions options)
 			=> new MongoDbWebhookSubscriptionStrore(options);
 
 		public MongoDbWebhookSubscriptionStrore GetStore(string tenantId) => (MongoDbWebhookSubscriptionStrore)CreateStore(tenantId);

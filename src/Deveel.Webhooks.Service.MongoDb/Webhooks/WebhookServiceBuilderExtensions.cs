@@ -14,6 +14,7 @@
 
 using System;
 
+using Deveel.Data;
 using Deveel.Webhooks.Storage;
 
 using Microsoft.Extensions.Configuration;
@@ -22,7 +23,7 @@ using Microsoft.Extensions.DependencyInjection;
 namespace Deveel.Webhooks {
 	public static class WebhookServiceBuilderExtensions {
 		private static IServiceCollection ConfigureMongoDbOptions(this IServiceCollection services, string sectionName, string connectionStringName = null) {
-			services.AddOptions<MongoDbWebhookOptions>()
+			services.AddOptions<MongoDbOptions>()
 				.Configure<IConfiguration>((options, config) => {
 					var section = config.GetSection(sectionName);
 					if (section != null)
@@ -52,8 +53,8 @@ namespace Deveel.Webhooks {
 		}
 
 
-		public static IWebhookServiceBuilder UseMongoDb(this IWebhookServiceBuilder builder, Action<MongoDbWebhookOptions> configure) {
-			builder.ConfigureServices(services => services.AddOptions<MongoDbWebhookOptions>().Configure(configure));
+		public static IWebhookServiceBuilder UseMongoDb(this IWebhookServiceBuilder builder, Action<MongoDbOptions> configure) {
+			builder.ConfigureServices(services => services.AddOptions<MongoDbOptions>().Configure(configure));
 
 			builder.UseMongoDb();
 			return builder;
@@ -61,9 +62,9 @@ namespace Deveel.Webhooks {
 
 		public static IWebhookServiceBuilder UseMongoDb(this IWebhookServiceBuilder builder, Action<IMongoDbOptionBuilder> configure) {
 			builder.ConfigureServices(services => {
-				services.AddOptions<MongoDbWebhookOptions>()
+				services.AddOptions<MongoDbOptions>()
 				.Configure(options => {
-					var optionsBuilder = new MongoDbWebhookOptionBuilder(options);
+					var optionsBuilder = new MongoDbOptionBuilder(options);
 					configure(optionsBuilder);
 				});
 			});

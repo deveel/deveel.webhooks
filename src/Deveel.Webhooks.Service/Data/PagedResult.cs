@@ -23,12 +23,12 @@ namespace Deveel.Data {
 
 			Query = query ?? throw new ArgumentNullException(nameof(query));
 			TotalCount = totalCount;
-			Subscriptions = subscriptions;
+			Items = subscriptions;
 		}
 
 		public PagedQuery<TItem> Query { get; }
 
-		public IEnumerable<TItem> Subscriptions { get; set; }
+		public IEnumerable<TItem> Items { get; set; }
 
 		public int TotalCount { get; }
 

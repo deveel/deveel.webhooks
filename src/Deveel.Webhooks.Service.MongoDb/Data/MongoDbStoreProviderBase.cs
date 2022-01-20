@@ -18,25 +18,25 @@ using System.Text;
 
 using Microsoft.Extensions.Options;
 
-namespace Deveel.Webhooks.Storage {
-	abstract class MongoDbWebhookStoreProviderBase<TDocument, TFacade>
+namespace Deveel.Data {
+	abstract class MongoDbStoreProviderBase<TDocument, TFacade>
 		where TDocument : class, TFacade, IMongoDocument
 		where TFacade : class {
-		protected MongoDbWebhookStoreProviderBase(IOptions<MongoDbWebhookOptions> options)
+		protected MongoDbStoreProviderBase(IOptions<MongoDbOptions> options)
 			: this(options.Value) {
 		}
 
-		protected MongoDbWebhookStoreProviderBase(MongoDbWebhookOptions options) {
+		protected MongoDbStoreProviderBase(MongoDbOptions options) {
 			Options = options;
 		}
 
-		protected MongoDbWebhookOptions Options { get; }
+		protected MongoDbOptions Options { get; }
 
-		protected MongoDbWebhookStoreBase<TDocument, TFacade> CreateStore(string tenantId) {
+		protected MongoDbStoreBase<TDocument, TFacade> CreateStore(string tenantId) {
 			if (string.IsNullOrWhiteSpace(tenantId))
 				throw new ArgumentException($"'{nameof(tenantId)}' cannot be null or whitespace.", nameof(tenantId));
 
-			var storeOptions = new MongoDbWebhookOptions {
+			var storeOptions = new MongoDbOptions {
 				TenantId = tenantId,
 				ConnectionString = Options.ConnectionString,
 				DatabaseName = Options.DatabaseName,
@@ -51,6 +51,6 @@ namespace Deveel.Webhooks.Storage {
 			return CreateStore(storeOptions);
 		}
 
-		protected abstract MongoDbWebhookStoreBase<TDocument, TFacade> CreateStore(MongoDbWebhookOptions options);
+		protected abstract MongoDbStoreBase<TDocument, TFacade> CreateStore(MongoDbOptions options);
 	}
 }

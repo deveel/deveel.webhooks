@@ -16,9 +16,8 @@ using System;
 
 using MongoDB.Bson;
 
-namespace Deveel.Webhooks.Storage {
-	static class ObjectIdExtensions {
-		public static string ToEntityId(this ObjectId id)
-			=> id == ObjectId.Empty ? null : id.ToString();
+namespace Deveel.Data {
+	interface IMongoDocument {
+		ObjectId Id { get; }
 	}
 }

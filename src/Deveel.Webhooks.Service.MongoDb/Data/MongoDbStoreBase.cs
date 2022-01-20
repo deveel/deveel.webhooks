@@ -16,31 +16,35 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
+using Deveel.Data;
+
 using Microsoft.Extensions.Options;
 
 using MongoDB.Bson;
 using MongoDB.Driver;
 
-namespace Deveel.Webhooks.Storage {
-	abstract class MongoDbWebhookStoreBase<TDocument, TFacade> : IDisposable
+namespace Deveel.Data {
+	abstract class MongoDbStoreBase<TDocument, TFacade> : IStore<TDocument>, IDisposable
 		where TDocument : class, TFacade, IMongoDocument
 		where TFacade : class {
 		private bool disposed;
 
-		protected MongoDbWebhookStoreBase(IOptions<MongoDbWebhookOptions> options)
+		protected MongoDbStoreBase(IOptions<MongoDbOptions> options)
 			: this(options.Value) {
 		}
 
-		protected MongoDbWebhookStoreBase(MongoDbWebhookOptions options) {
+		protected MongoDbStoreBase(MongoDbOptions options) {
 			Options = options;
 		}
 
 
 		protected abstract IMongoCollection<TDocument> Collection { get; }
 
-		protected MongoDbWebhookOptions Options { get; }
+		protected MongoDbOptions Options { get; }
 
 		protected IMongoClient Client => CreateClient();
+
+		public bool SupportsPaging => true;
 
 		protected IMongoDatabase Database {
 			get {
@@ -109,6 +113,7 @@ namespace Deveel.Webhooks.Storage {
 			return entity.Id.ToEntityId();
 		}
 
+
 		public Task<bool> UpdateAsync(TFacade facade, CancellationToken cancellationToken)
 			=> UpdateAsync((TDocument)facade, cancellationToken);
 
@@ -123,7 +128,7 @@ namespace Deveel.Webhooks.Storage {
 		}
 
 
-		public async Task<TDocument> GetByIdAsync(string id, CancellationToken cancellationToken) {
+		public async Task<TDocument> FindByIdAsync(string id, CancellationToken cancellationToken) {
 			ThrowIfDisposed();
 			cancellationToken.ThrowIfCancellationRequested();
 
@@ -158,6 +163,27 @@ namespace Deveel.Webhooks.Storage {
 			var filter = NormalizeFilter(Builders<TDocument>.Filter.Empty);
 
 			return (int)await Collection.CountDocumentsAsync(filter, cancellationToken: cancellationToken);
+		}
+
+		public async Task<PagedResult<TDocument>> GetPageAsync(PagedQuery<TDocument> query, CancellationToken cancellationToken) {
+			ThrowIfDisposed();
+			cancellationToken.ThrowIfCancellationRequested();
+
+			var filter = Builders<TDocument>.Filter.Empty;
+			if (query.Predicate != null)
+				filter = new ExpressionFilterDefinition<TDocument>(query.Predicate);
+
+			filter = NormalizeFilter(filter);
+
+			var options = new FindOptions<TDocument> {
+				Limit = query.PageSize,
+				Skip = query.Offset
+			};
+
+			var count = await Collection.CountDocumentsAsync(filter, cancellationToken: cancellationToken);
+			var items = await Collection.FindAsync(filter, options, cancellationToken);
+
+			return new PagedResult<TDocument>(query, (int)count, await items.ToListAsync(cancellationToken));
 		}
 
 		public virtual void Dispose() {

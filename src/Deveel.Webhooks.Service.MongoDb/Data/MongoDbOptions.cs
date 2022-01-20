@@ -14,12 +14,12 @@
 
 using System;
 
-namespace Deveel.Webhooks.Storage {
+namespace Deveel.Data {
 	/// <summary>
 	/// The configuration options for the MongoDB data layer
 	/// of the webhook management.
 	/// </summary>
-	public sealed class MongoDbWebhookOptions {
+	public sealed class MongoDbOptions {
 		/// <summary>
 		/// Gets or sets the name of the database.
 		/// </summary>

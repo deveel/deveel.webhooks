@@ -62,14 +62,14 @@ namespace Deveel.Webhooks {
 		}
 
 		private async Task<IWebhookSubscription> GetSubscription(string subscriptionId)
-			=> await storeProvider.GetByIdAsync(tenantId, subscriptionId);
+			=> await storeProvider.FindByIdAsync(tenantId, subscriptionId);
 
 		[Fact]
 		public async Task AddSubscription() {
 			var subscriptionId = await webhookManager.AddSubscriptionAsync(tenantId, Guid.NewGuid().ToString("N"), new WebhookSubscriptionInfo("test.event", "https://callback.test.io/webhook"), CancellationToken.None);
 
 			Assert.NotNull(subscriptionId);
-			var subscription = await storeProvider.GetByIdAsync(tenantId, subscriptionId);
+			var subscription = await storeProvider.FindByIdAsync(tenantId, subscriptionId);
 
 			Assert.NotNull(subscription);
 			Assert.Contains("test.event", subscription.EventTypes);
@@ -139,11 +139,11 @@ namespace Deveel.Webhooks {
 			var result = await webhookManager.GetSubscriptionsAsync(tenantId, query, default);
 
 			Assert.NotNull(result);
-			Assert.NotEmpty(result.Subscriptions);
+			Assert.NotEmpty(result.Items);
 			Assert.Equal(2, result.TotalCount);
 			Assert.Equal(1, result.TotalPages);
-			Assert.Equal(subscriptionId1, result.Subscriptions.ElementAt(0).SubscriptionId);
-			Assert.Equal(subscriptionId2, result.Subscriptions.ElementAt(1).SubscriptionId);
+			Assert.Equal(subscriptionId1, result.Items.ElementAt(0).SubscriptionId);
+			Assert.Equal(subscriptionId2, result.Items.ElementAt(1).SubscriptionId);
 		}
 
 		[Fact]
@@ -228,6 +228,17 @@ namespace Deveel.Webhooks {
 			Assert.Equal(WebhookSubscriptionStatus.Suspended, subscription.Status);
 		}
 
+		[Fact]
+		public async Task CountAllSubscriptionExistingTenant() {
+			var subscriptionId = await CreateSubscription(new WebhookSubscriptionInfo("test.event", "https://callback.test.io/webhook") {
+				Name = "Test Callback",
+				Active = false
+			});
+
+			var result = await webhookManager.CountAllAsync(tenantId, default);
+
+			Assert.Equal(1, result);
+		}
 
 		public void Dispose() {
 			mongoDbCluster?.Dispose();

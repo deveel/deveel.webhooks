@@ -26,22 +26,17 @@ using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 
 namespace Deveel.Webhooks.Storage {
-	class MongoDbWebhookSubscriptionStrore : MongoDbWebhookStoreBase<WebhookSubscriptionDocument, IWebhookSubscription>,
+	class MongoDbWebhookSubscriptionStrore : MongoDbStoreBase<WebhookSubscriptionDocument, IWebhookSubscription>,
 											 IWebhookSubscriptionStore,
-											 IWebhookSubscriptionPaginatedStore<IWebhookSubscription>,
-											 IWebhookSubscriptionPaginatedStore<WebhookSubscriptionDocument>,
 											 IWebhookSubscriptionQueryableStore<IWebhookSubscription>,
 											 IWebhookSubscriptionQueryableStore<WebhookSubscriptionDocument> {
-		public MongoDbWebhookSubscriptionStrore(IOptions<MongoDbWebhookOptions> options) : base(options) {
+		public MongoDbWebhookSubscriptionStrore(IOptions<MongoDbOptions> options) : base(options) {
 		}
 
-		public MongoDbWebhookSubscriptionStrore(MongoDbWebhookOptions options) : base(options) {
+		public MongoDbWebhookSubscriptionStrore(MongoDbOptions options) : base(options) {
 		}
 
 		protected override IMongoCollection<WebhookSubscriptionDocument> Collection => GetCollection(Options.SubscriptionsCollectionName);
-
-		async Task<IWebhookSubscription> IWebhookSubscriptionStore<IWebhookSubscription>.GetByIdAsync(string id, CancellationToken cancellationToken)
-			=> await base.GetByIdAsync(id, cancellationToken);
 
 		public async Task<IList<WebhookSubscriptionDocument>> GetByEventTypeAsync(string eventType, bool activeOnly, CancellationToken cancellationToken) {
 			ThrowIfDisposed();
@@ -81,39 +76,19 @@ namespace Deveel.Webhooks.Storage {
 
 		IQueryable<IWebhookSubscription> IWebhookSubscriptionQueryableStore<IWebhookSubscription>.AsQueryable() => Collection.AsQueryable();
 
-		async Task<PagedResult<IWebhookSubscription>> IWebhookSubscriptionPaginatedStore<IWebhookSubscription>.GetPageAsync(PagedQuery<IWebhookSubscription> query, CancellationToken cancellationToken) {
-			var newQuery = new PagedQuery<WebhookSubscriptionDocument>(query.Page, query.PageSize);
+		public IQueryable<WebhookSubscriptionDocument> AsQueryable() => Collection.AsQueryable();
 
-			if (query.Predicate != null) {
-				newQuery.Predicate = webhook => query.Predicate.Compile().Invoke(webhook);
-			}
+		async Task<PagedResult<IWebhookSubscription>> IStore<IWebhookSubscription>.GetPageAsync(PagedQuery<IWebhookSubscription> query, CancellationToken cancellationToken) {
+			var newQuery = new PagedQuery<WebhookSubscriptionDocument>(query.Page, query.PageSize);
+			if (query.Predicate != null)
+				newQuery.Predicate = item => query.Predicate.Compile().Invoke(item);
 
 			var result = await GetPageAsync(newQuery, cancellationToken);
 
-			return new PagedResult<IWebhookSubscription>(query, result.TotalCount, result.Subscriptions);
+			return new PagedResult<IWebhookSubscription>(query, result.TotalCount, result.Items?.Cast<IWebhookSubscription>());
 		}
 
-		public IQueryable<WebhookSubscriptionDocument> AsQueryable() => Collection.AsQueryable();
-
-		public async Task<PagedResult<WebhookSubscriptionDocument>> GetPageAsync(PagedQuery<WebhookSubscriptionDocument> query, CancellationToken cancellationToken) {
-			ThrowIfDisposed();
-			cancellationToken.ThrowIfCancellationRequested();
-
-			var filter = Builders<WebhookSubscriptionDocument>.Filter.Empty;
-			if (query.Predicate != null)
-				filter = new ExpressionFilterDefinition<WebhookSubscriptionDocument>(query.Predicate);
-
-			filter = NormalizeFilter(filter);
-
-			var options = new FindOptions<WebhookSubscriptionDocument> {
-				Limit = query.PageSize,
-				Skip = query.Offset
-			};
-
-			var count = await Collection.CountDocumentsAsync(filter, cancellationToken: cancellationToken);
-			var items = await Collection.FindAsync(filter, options, cancellationToken);
-
-			return new PagedResult<WebhookSubscriptionDocument>(query, (int)count, await items.ToListAsync(cancellationToken));
-		}
+		async Task<IWebhookSubscription> IStore<IWebhookSubscription>.FindByIdAsync(string id, CancellationToken cancellationToken) 
+			=> await base.FindByIdAsync(id, cancellationToken);
 	}
 }

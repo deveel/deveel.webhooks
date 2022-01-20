@@ -14,6 +14,7 @@
 
 using System;
 using System.Linq;
+using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -52,7 +53,7 @@ namespace Deveel.Webhooks {
 
 		private async Task<bool> SetStateAsync(string tenantId, string userId, string subscriptionId, WebhookSubscriptionStatus status, CancellationToken cancellationToken) {
 			try {
-				var subscription = await subscriptionStore.GetByIdAsync(tenantId, subscriptionId, cancellationToken);
+				var subscription = await subscriptionStore.FindByIdAsync(tenantId, subscriptionId, cancellationToken);
 				if (subscription == null) {
 					Logger.LogWarning("Could not find the subscription with ID {SubscriptionId} of Tenant {TenantId}: could not change state",
 						subscriptionId, tenantId);
@@ -112,7 +113,7 @@ namespace Deveel.Webhooks {
 
 		public virtual async Task<bool> RemoveSubscriptionAsync(string tenantId, string userId, string subscriptionId, CancellationToken cancellationToken) {
 			try {
-				var subscription = await subscriptionStore.GetByIdAsync(tenantId, subscriptionId, cancellationToken);
+				var subscription = await subscriptionStore.FindByIdAsync(tenantId, subscriptionId, cancellationToken);
 
 				if (subscription == null) {
 					Logger.LogWarning("Trying to delete the subscription {SubscriptionId} of Tenant {TenantId}, but it was not found",
@@ -147,7 +148,7 @@ namespace Deveel.Webhooks {
 
 		public virtual async Task<TSubscription> GetSubscriptionAsync(string tenantId, string subscriptionId, CancellationToken cancellationToken) {
 			try {
-				return await subscriptionStore.GetByIdAsync(tenantId, subscriptionId, cancellationToken);
+				return await subscriptionStore.FindByIdAsync(tenantId, subscriptionId, cancellationToken);
 			} catch (Exception ex) {
 				Logger.LogError(ex, "Error while retrieving the webhook subscription {SubscriptionId} of tenant {TenantId}",
 					subscriptionId, tenantId);
@@ -158,8 +159,8 @@ namespace Deveel.Webhooks {
 		public virtual async Task<PagedResult<TSubscription>> GetSubscriptionsAsync(string tenantId, PagedQuery<TSubscription> query, CancellationToken cancellationToken) {
 			try {
 				var store = subscriptionStore.GetTenantStore(tenantId);
-				if (store is IWebhookSubscriptionPaginatedStore<TSubscription> paginated)
-					return await paginated.GetPageAsync(query, cancellationToken);
+				if (store.SupportsPaging)
+					return await store.GetPageAsync(query, cancellationToken);
 				if (store is IWebhookSubscriptionQueryableStore<TSubscription> queryable) {
 					var totalCount = queryable.AsQueryable().Count(query.Predicate);
 					var items = queryable.AsQueryable()
@@ -173,6 +174,15 @@ namespace Deveel.Webhooks {
 				throw new NotSupportedException("Paged query is not supported by the store");
 			} catch (Exception ex) {
 				Logger.LogError(ex, "Error while retrieving a page of subscriptions for tenant {TenantId}", tenantId);
+				throw;
+			}
+		}
+
+		public virtual async Task<int> CountAllAsync(string tenantId, CancellationToken cancellationToken) {
+			try {
+				return await subscriptionStore.CountAllAsync(tenantId, cancellationToken);
+			} catch (Exception ex) {
+				Logger.LogError(ex, "Error while trying to count all webhook subscriptions of tenant {TenantId}", tenantId);
 				throw;
 			}
 		}

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 
+using Deveel.Data;
+
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -20,7 +22,7 @@ namespace Deveel.Webhooks.Storage {
 				})
 				.BuildServiceProvider();
 
-			var options = provider.GetService<IOptions<MongoDbWebhookOptions>>();
+			var options = provider.GetService<IOptions<MongoDbOptions>>();
 
 			Assert.NotNull(options);
 
@@ -50,7 +52,7 @@ namespace Deveel.Webhooks.Storage {
 				})
 				.BuildServiceProvider();
 
-			var options = provider.GetService<IOptions<MongoDbWebhookOptions>>();
+			var options = provider.GetService<IOptions<MongoDbOptions>>();
 
 			Assert.NotNull(options);
 
@@ -80,7 +82,7 @@ namespace Deveel.Webhooks.Storage {
 				})
 				.BuildServiceProvider();
 
-			var options = provider.GetService<IOptions<MongoDbWebhookOptions>>();
+			var options = provider.GetService<IOptions<MongoDbOptions>>();
 
 			Assert.NotNull(options);
 

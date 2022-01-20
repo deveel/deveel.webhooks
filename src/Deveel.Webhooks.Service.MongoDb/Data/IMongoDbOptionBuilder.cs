@@ -14,7 +14,7 @@
 
 using System;
 
-namespace Deveel.Webhooks.Storage {
+namespace Deveel.Data {
 	public interface IMongoDbOptionBuilder {
 		IMongoDbOptionBuilder SetConnectionString(string connectionString);
 

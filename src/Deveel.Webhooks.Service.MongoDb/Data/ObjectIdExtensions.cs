@@ -14,8 +14,11 @@
 
 using System;
 
-namespace Deveel.Webhooks.Storage {
-	interface IMultiTenantDocument : IMongoDocument {
-		string TenantId { get; set; }
+using MongoDB.Bson;
+
+namespace Deveel.Data {
+	static class ObjectIdExtensions {
+		public static string ToEntityId(this ObjectId id)
+			=> id == ObjectId.Empty ? null : id.ToString();
 	}
 }

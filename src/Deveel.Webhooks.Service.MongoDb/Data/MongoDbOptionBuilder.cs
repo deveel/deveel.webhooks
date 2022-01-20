@@ -14,16 +14,16 @@
 
 using System;
 
-namespace Deveel.Webhooks.Storage {
-	class MongoDbWebhookOptionBuilder : IMongoDbOptionBuilder {
-		public MongoDbWebhookOptions Options { get; }
+namespace Deveel.Data {
+	class MongoDbOptionBuilder : IMongoDbOptionBuilder {
+		public MongoDbOptions Options { get; }
 
-		public MongoDbWebhookOptionBuilder(MongoDbWebhookOptions options) {
+		public MongoDbOptionBuilder(MongoDbOptions options) {
 			Options = options;
 		}
 
-		public MongoDbWebhookOptionBuilder() {
-			Options = new MongoDbWebhookOptions();
+		public MongoDbOptionBuilder() {
+			Options = new MongoDbOptions();
 		}
 
 		public IMongoDbOptionBuilder SetSubscriptionsCollection(string collectionName) {

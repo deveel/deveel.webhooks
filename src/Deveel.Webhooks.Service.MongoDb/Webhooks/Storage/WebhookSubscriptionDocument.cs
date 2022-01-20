@@ -15,6 +15,8 @@
 using System;
 using System.Collections.Generic;
 
+using Deveel.Data;
+
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Bson.Serialization.Options;

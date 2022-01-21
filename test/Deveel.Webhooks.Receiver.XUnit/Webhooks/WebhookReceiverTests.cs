@@ -73,10 +73,48 @@ namespace Deveel.Webhooks {
 			Assert.Equal("bar", webhook.Data["Value"].Value<string>());
 		}
 
+		[Fact]
+		public async Task ReceiveWebhookFromReceiver() {
+			var webhook = new WebhookPayload {
+				WebhookName = "Test Webhook",
+				EventId = Guid.NewGuid().ToString("N"),
+				EventType = "event.occurred",
+				Data = JObject.FromObject(new TestData {
+					Key = "foo",
+					Value = "bar"
+				})
+			};
+
+			var json = JObject.FromObject(webhook);
+			var stream = new MemoryStream();
+
+			var writer = new StreamWriter(stream);
+			var jsonWriter = new JsonTextWriter(writer);
+			await json.WriteToAsync(jsonWriter);
+			await jsonWriter.FlushAsync();
+
+			stream.Position = 0;
+
+			var context = new DefaultHttpContext();
+			context.Request.ContentType = "application/json";
+			context.Request.Method = "POST";
+			context.Request.Body = stream;
+
+			var received = await receiver.ReceiveAsync(context.Request, default);
+
+			Assert.NotNull(received);
+			Assert.Equal(webhook.EventId, received.EventId);
+			Assert.Equal(webhook.EventType, received.EventType);
+			Assert.NotNull(webhook.Data);
+			Assert.Equal("foo", webhook.Data["Key"].Value<string>());
+			Assert.Equal("bar", webhook.Data["Value"].Value<string>());
+		}
+
+
 		[Theory]
 		[InlineData(WebhookSignatureLocation.Header)]
 		[InlineData(WebhookSignatureLocation.QueryString)]
-		public async Task ReceiveSignedWebhookFromRequest(WebhookSignatureLocation signatureLocation) {
+		public async Task ReceiveSignedWebhook(WebhookSignatureLocation signatureLocation) {
 			var webhook = new WebhookPayload {
 				WebhookName = "Test Webhook",
 				EventId = Guid.NewGuid().ToString("N"),

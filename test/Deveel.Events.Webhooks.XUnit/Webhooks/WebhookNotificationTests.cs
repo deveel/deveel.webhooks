@@ -117,6 +117,10 @@ namespace Deveel.Webhooks {
 
 			Assert.NotNull(result);
 			Assert.NotEmpty(result);
+			Assert.True(result.HasSuccessful);
+			Assert.False(result.HasFailed);
+			Assert.NotEmpty(result.Successful);
+			Assert.Empty(result.Failed);
 			Assert.Equal(subscriptionId, result.First().Webhook.SubscriptionId);
 			Assert.True(result[subscriptionId].Successful);
 			Assert.True(result[subscriptionId].HasAttempted);
@@ -146,6 +150,10 @@ namespace Deveel.Webhooks {
 
 			Assert.NotNull(result);
 			Assert.NotEmpty(result);
+			Assert.True(result.HasSuccessful);
+			Assert.False(result.HasFailed);
+			Assert.NotEmpty(result.Successful);
+			Assert.Empty(result.Failed);
 			Assert.Equal(subscriptionId, result.First().Webhook.SubscriptionId);
 			Assert.True(result[subscriptionId].HasAttempted);
 			Assert.True(result[subscriptionId].Successful);
@@ -250,6 +258,8 @@ namespace Deveel.Webhooks {
 
 			Assert.NotNull(result);
 			Assert.NotEmpty(result);
+			Assert.NotEmpty(result.Failed);
+			Assert.True(result.HasFailed);
 			Assert.Equal(subscriptionId, result.First().Webhook.SubscriptionId);
 			Assert.False(result[subscriptionId].Successful);
 			Assert.Equal(3, result[subscriptionId].Attempts.Count());

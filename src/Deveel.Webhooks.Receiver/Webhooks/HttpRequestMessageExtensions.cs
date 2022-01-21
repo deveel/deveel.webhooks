@@ -70,7 +70,7 @@ namespace Deveel.Webhooks {
 
 					if (!string.IsNullOrEmpty(signature)) {
 						if (signature.StartsWith("sha256=")) {
-							signature = signature.Substring("sha256=".Length - 1);
+							signature = signature.Substring("sha256=".Length);
 							algorithm = "sha256";
 						}
 					}

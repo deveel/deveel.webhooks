@@ -26,7 +26,13 @@ The overall set of libraries are available through [NuGet](https://nuget.org), a
 
 At the moment (_January 2022_) they are developed as `.NET Standard 2.1` and thus compatible with all the profiles of the .NET framework greater or equal than the `.NET Core 3.1`.
 
-The core library of the framework is `Deveel.Webhooks` and can be installed as follow
+The core library of the framework is `Deveel.Webhooks` and can be installed through the `dotnet` tool command line
+
+```sh
+$ dotnet add package Deveel.Webhooks
+```
+
+Or by editing your `.csproj` file and adding a `<PackageReference>` entry.
 
 ``` xml
 <Project Sdk="Microsoft.NET.Sdk">
@@ -50,13 +56,13 @@ This provides all the functions that are needed to send webhooks to a given dest
 
 The libraries currently provided by the framework are the following:
 
-| Library                             | Description                                                                                                       |
-| ----------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
-| **Deveel.Webhooks.Model**           | The foundation library that defines the webhooks information model                                                |
-| **Deveel.Webhooks**                 | Provides the foundation contracts of the webhook service and basic implementations for the sending functions      |
-| **Deveel.Webhooks.Service**         | Implements the functions to manage and resolve webhook subscriptions                                              |
-| **Deveel.Webhooks.Service.MongoDb** | An implementation of the webhoom management data layer that is backed by [MongoDB](https://mongodb.com) databases |
-| **Deveel.Webhooks.DynamicLinq**     | The webhook subscription filtering engine that uses the [Dynamic LINQ](https://dynamic-linq.net/) expressions     |
+| Library                             | Description                                                                                                       | NuGet                                                                  |
+| ----------------------------------- | ----------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------- |
+| **Deveel.Webhooks.Model**           | The foundation library that defines the webhooks information model                                                | [Package](https://www.nuget.org/packages/Deveel.Webhooks.Model/)       |
+| **Deveel.Webhooks**                 | Provides the foundation contracts of the webhook service and basic implementations for the sending functions      | [Package](https://www.nuget.org/packages/Deveel.Webhooks/)             |
+| **Deveel.Webhooks.Service**         | Implements the functions to manage and resolve webhook subscriptions                                              | [Package](https://www.nuget.org/packages/Deveel.Webhooks.Service/)     |
+| **Deveel.Webhooks.Service.MongoDb** | An implementation of the webhoom management data layer that is backed by [MongoDB](https://mongodb.com) databases | [Package](https://www.nuget.org/packages/Deveel.Webhooks.MongoDb/)     |
+| **Deveel.Webhooks.DynamicLinq**     | The webhook subscription filtering engine that uses the [Dynamic LINQ](https://dynamic-linq.net/) expressions     | [Package](https://www.nuget.org/packages/Deveel.Webhooks.DynamicLinq/) |
 
 You can obtain the stable versions of these libraries from the [NuGet Official](https://nuget.org) channel.
 

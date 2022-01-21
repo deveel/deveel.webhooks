@@ -14,14 +14,8 @@
 
 using System;
 
-using Deveel.Data;
-
-namespace Deveel.Webhooks.Storage {
-	public interface IWebhookSubscriptionStoreProvider<TSubscription> : IStoreProvider<TSubscription>
-		where TSubscription : class, IWebhookSubscription {
-		new IWebhookSubscriptionStore<TSubscription> GetTenantStore(string tenantId);
-	}
-
-	public interface IWebhookSubscriptionStoreProvider : IWebhookSubscriptionStoreProvider<IWebhookSubscription> {
+namespace Deveel.Data {
+	public interface IStoreProvider<TEntity> where TEntity : class {
+		IStore<TEntity> GetTenantStore(string tenantId);
 	}
 }

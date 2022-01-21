@@ -21,8 +21,6 @@ using Deveel.Webhooks.Storage;
 
 namespace Deveel.Webhooks {
 	public class DefaultWebhookSubscriptionResolver : DefaultWebhookSubscriptionResolver<IWebhookSubscription> {
-		private readonly IWebhookSubscriptionStoreProvider storeProvider;
-
 		public DefaultWebhookSubscriptionResolver(IWebhookSubscriptionStoreProvider storeProvider)
 			: base(storeProvider) {
 		}

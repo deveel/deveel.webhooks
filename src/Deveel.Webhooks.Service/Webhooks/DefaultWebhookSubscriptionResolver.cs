@@ -17,12 +17,23 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
+using Deveel.Webhooks.Caching;
 using Deveel.Webhooks.Storage;
+
+using Microsoft.Extensions.Logging;
 
 namespace Deveel.Webhooks {
 	public class DefaultWebhookSubscriptionResolver : DefaultWebhookSubscriptionResolver<IWebhookSubscription> {
-		public DefaultWebhookSubscriptionResolver(IWebhookSubscriptionStoreProvider storeProvider)
-			: base(storeProvider) {
+		public DefaultWebhookSubscriptionResolver(IWebhookSubscriptionStoreProvider storeProvider, IWebhookSubscriptionCache cache) 
+			: base(storeProvider, cache) {
+		}
+
+		public DefaultWebhookSubscriptionResolver(IWebhookSubscriptionStoreProvider storeProvider, ILogger<DefaultWebhookSubscriptionResolver<IWebhookSubscription>> logger) 
+			: base(storeProvider, logger) {
+		}
+
+		public DefaultWebhookSubscriptionResolver(IWebhookSubscriptionStoreProvider storeProvider, IWebhookSubscriptionCache cache, ILogger<DefaultWebhookSubscriptionResolver<IWebhookSubscription>> logger) 
+			: base(storeProvider, cache, logger) {
 		}
 	}
 }

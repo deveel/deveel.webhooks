@@ -111,6 +111,10 @@ namespace Deveel.Webhooks.Storage {
 			Assert.NotNull(provider.GetService<IWebhookSubscriptionStore>());
 			Assert.NotNull(provider.GetService<IWebhookSubscriptionStore<MongoDbWebhookSubscription>>());
 			Assert.NotNull(provider.GetService<IWebhookSubscriptionStore<IWebhookSubscription>>());
+
+			Assert.NotNull(provider.GetService<IWebhookSubscriptionStoreProvider>());
+			Assert.NotNull(provider.GetService<IWebhookSubscriptionStoreProvider<MongoDbWebhookSubscription>>());
+			Assert.NotNull(provider.GetService<IWebhookSubscriptionStoreProvider<IWebhookSubscription>>());
 		}
 
 		#region MyMongoDbWebhookSubscriptionStore

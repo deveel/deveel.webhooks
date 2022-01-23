@@ -17,7 +17,7 @@ using System;
 using MongoDB.Bson;
 
 namespace Deveel.Data {
-	interface IMongoDocument {
+	public interface IMongoDocument {
 		ObjectId Id { get; }
 	}
 }

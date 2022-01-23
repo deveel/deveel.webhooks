@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System;
+using System.Collections.Generic;
 
 namespace Deveel.Data {
 	/// <summary>
@@ -26,14 +27,9 @@ namespace Deveel.Data {
 		public string DatabaseName { get; set; }
 
 		/// <summary>
-		/// Gets or sets the name of the webhook subscriptions collection
+		/// Gets or sets a dictionary of the names of collections
 		/// </summary>
-		public string SubscriptionsCollectionName { get; set; }
-
-		/// <summary>
-		/// Gets or sets the name of the webhook logging collection
-		/// </summary>
-		public string WebhooksCollectionName { get; set; }
+		public IDictionary<string, string> Collections { get; set; }
 
 		/// <summary>
 		/// Gets or sets the connection string to the MongoDB server
@@ -55,5 +51,8 @@ namespace Deveel.Data {
 		/// Gets or sets the type of handling of the multi-tenant scenarios of usage
 		/// </summary>
 		public MongoDbMultiTenancyHandling MultiTenantHandling { get; set; } = MongoDbMultiTenancyHandling.TenantField;
+
+		public bool IsCollectionSet(string collectionKey)
+			=> Collections?.ContainsKey(collectionKey) ?? false;
 	}
 }

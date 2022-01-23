@@ -22,7 +22,7 @@ using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Bson.Serialization.Options;
 
 namespace Deveel.Webhooks.Storage {
-	class WebhookSubscriptionDocument : IWebhookSubscription, IMongoDocument {
+	public class MongoDbWebhookSubscription : IWebhookSubscription, IMongoDocument {
 		string IWebhookSubscription.SubscriptionId => Id.ToEntityId();
 
 		[BsonId]
@@ -48,7 +48,7 @@ namespace Deveel.Webhooks.Storage {
 
 		string[] IWebhookSubscription.EventTypes => EventTypes?.ToArray();
 
-		public IList<WebhookFilterField> Filters { get; set; }
+		public IList<MongoDbWebhookFilter> Filters { get; set; }
 
 		IEnumerable<IWebhookFilter> IWebhookSubscription.Filters => Filters;
 

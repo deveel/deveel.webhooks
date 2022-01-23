@@ -26,28 +26,28 @@ using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 
 namespace Deveel.Webhooks.Storage {
-	class MongoDbWebhookSubscriptionStrore : MongoDbStoreBase<WebhookSubscriptionDocument, IWebhookSubscription>,
+	public class MongoDbWebhookSubscriptionStrore : MongoDbStoreBase<MongoDbWebhookSubscription, IWebhookSubscription>,
 											 IWebhookSubscriptionStore,
 											 IWebhookSubscriptionQueryableStore<IWebhookSubscription>,
-											 IWebhookSubscriptionQueryableStore<WebhookSubscriptionDocument> {
+											 IWebhookSubscriptionQueryableStore<MongoDbWebhookSubscription> {
 		public MongoDbWebhookSubscriptionStrore(IOptions<MongoDbOptions> options) : base(options) {
 		}
 
 		public MongoDbWebhookSubscriptionStrore(MongoDbOptions options) : base(options) {
 		}
 
-		protected override IMongoCollection<WebhookSubscriptionDocument> Collection => GetCollection(Options.SubscriptionsCollectionName);
+		protected override IMongoCollection<MongoDbWebhookSubscription> Collection => GetCollection(Options.SubscriptionsCollectionName());
 
-		public async Task<IList<WebhookSubscriptionDocument>> GetByEventTypeAsync(string eventType, bool activeOnly, CancellationToken cancellationToken) {
+		public async Task<IList<MongoDbWebhookSubscription>> GetByEventTypeAsync(string eventType, bool activeOnly, CancellationToken cancellationToken) {
 			ThrowIfDisposed();
 			cancellationToken.ThrowIfCancellationRequested();
 
-			var filter = Builders<WebhookSubscriptionDocument>.Filter
+			var filter = Builders<MongoDbWebhookSubscription>.Filter
 				.AnyEq(doc => doc.EventTypes, eventType);
 
 			if (activeOnly) {
-				var activeFilter = Builders<WebhookSubscriptionDocument>.Filter.Eq(doc => doc.Status, WebhookSubscriptionStatus.Active);
-				filter = Builders<WebhookSubscriptionDocument>.Filter.And(filter, activeFilter);
+				var activeFilter = Builders<MongoDbWebhookSubscription>.Filter.Eq(doc => doc.Status, WebhookSubscriptionStatus.Active);
+				filter = Builders<MongoDbWebhookSubscription>.Filter.And(filter, activeFilter);
 			}
 
 			filter = NormalizeFilter(filter);
@@ -61,7 +61,7 @@ namespace Deveel.Webhooks.Storage {
 			return result.Cast<IWebhookSubscription>().ToList();
 		}
 
-		public Task SetStateAsync(WebhookSubscriptionDocument subscription, WebhookSubscriptionStateInfo stateInfo, CancellationToken cancellationToken) {
+		public Task SetStateAsync(MongoDbWebhookSubscription subscription, WebhookSubscriptionStateInfo stateInfo, CancellationToken cancellationToken) {
 			ThrowIfDisposed();
 			cancellationToken.ThrowIfCancellationRequested();
 
@@ -72,14 +72,12 @@ namespace Deveel.Webhooks.Storage {
 		}
 
 		Task IWebhookSubscriptionStore<IWebhookSubscription>.SetStateAsync(IWebhookSubscription subscription, WebhookSubscriptionStateInfo stateInfo, CancellationToken cancellationToken)
-			=> SetStateAsync((WebhookSubscriptionDocument)subscription, stateInfo, cancellationToken);
+			=> SetStateAsync((MongoDbWebhookSubscription)subscription, stateInfo, cancellationToken);
 
 		IQueryable<IWebhookSubscription> IWebhookSubscriptionQueryableStore<IWebhookSubscription>.AsQueryable() => Collection.AsQueryable();
 
-		public IQueryable<WebhookSubscriptionDocument> AsQueryable() => Collection.AsQueryable();
-
 		async Task<PagedResult<IWebhookSubscription>> IStore<IWebhookSubscription>.GetPageAsync(PagedQuery<IWebhookSubscription> query, CancellationToken cancellationToken) {
-			var newQuery = new PagedQuery<WebhookSubscriptionDocument>(query.Page, query.PageSize);
+			var newQuery = new PagedQuery<MongoDbWebhookSubscription>(query.Page, query.PageSize);
 			if (query.Predicate != null)
 				newQuery.Predicate = item => query.Predicate.Compile().Invoke(item);
 

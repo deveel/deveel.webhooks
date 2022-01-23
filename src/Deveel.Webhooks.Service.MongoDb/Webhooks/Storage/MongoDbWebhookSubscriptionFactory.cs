@@ -17,9 +17,10 @@ using System.Collections.Generic;
 using System.Linq;
 
 namespace Deveel.Webhooks.Storage {
-	public sealed class MongoDbWebhookSubscriptionFactory : IWebhookSubscriptionFactory {
-		public IWebhookSubscription Create(WebhookSubscriptionInfo subscriptionInfo) {
-			var doc = new WebhookSubscriptionDocument {
+	public class MongoDbWebhookSubscriptionFactory : IWebhookSubscriptionFactory<MongoDbWebhookSubscription>, 
+													 IWebhookSubscriptionFactory {
+		public virtual MongoDbWebhookSubscription Create(WebhookSubscriptionInfo subscriptionInfo) {
+			var doc = new MongoDbWebhookSubscription {
 				Name = subscriptionInfo.Name,
 				EventTypes = subscriptionInfo.EventTypes?.ToList(),
 				DestinationUrl = subscriptionInfo.DestinationUrl.ToString(),
@@ -49,10 +50,13 @@ namespace Deveel.Webhooks.Storage {
 		}
 
 
-		private WebhookFilterField MapFilter(IWebhookFilter filter)
-			=> new WebhookFilterField {
+		private MongoDbWebhookFilter MapFilter(IWebhookFilter filter)
+			=> new MongoDbWebhookFilter {
 				Expression = filter.Expression,
 				Format = filter.Format
 			};
+
+		IWebhookSubscription IWebhookSubscriptionFactory<IWebhookSubscription>.Create(WebhookSubscriptionInfo subscriptionInfo)
+			=> Create(subscriptionInfo);
 	}
 }

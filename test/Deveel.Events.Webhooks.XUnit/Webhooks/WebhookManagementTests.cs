@@ -41,9 +41,9 @@ namespace Deveel.Webhooks {
 					options.SignWebhooks())
 				.UseSubscriptionManager()
 				.UseMongoDb(options => {
-					options.SubscriptionsCollectionName = "webhooks_subscription";
 					options.DatabaseName = "webhooks";
 					options.ConnectionString = mongoDbCluster.ConnectionString;
+					options.SubscriptionsCollectionName("webhooks_subscription");
 				})
 				.AddDynamicLinqFilterEvaluator();
 			})

@@ -14,12 +14,14 @@
 
 using System;
 
-namespace Deveel.Webhooks.Storage {
-	class WebhookFilterField : IWebhookFilter {
-		public string Expression { get; set; }
+namespace Deveel.Data {
+	public sealed class MongoDbMultiTenantOptions {
+		public MongoDbMultiTenancyHandling Handling { get; set; } = MongoDbMultiTenancyHandling.TenantDatabase;
 
-		public string Provider { get; set; }
+		public string TenantDatabaseFormat { get; set; } = "{tenant}_{database}";
 
-		public string Format { get; set; }
+		public string TenantCollectionFormat { get; set; } = "{tenant}_{collection}";
+
+		public string TenantField { get; set; } = "TenantId";
 	}
 }

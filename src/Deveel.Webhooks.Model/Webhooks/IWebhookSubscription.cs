@@ -72,5 +72,10 @@ namespace Deveel.Webhooks {
 		/// webhook to receivers.
 		/// </summary>
 		IDictionary<string, string> Headers { get; }
+
+		/// <summary>
+		/// Gets an optional set of metadata of the subscription
+		/// </summary>
+		IDictionary<string, object> Metadata { get; }
 	}
 }

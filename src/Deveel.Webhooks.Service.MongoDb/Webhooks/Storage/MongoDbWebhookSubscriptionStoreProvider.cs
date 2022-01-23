@@ -20,9 +20,9 @@ using Deveel.Webhooks.Storage;
 using Microsoft.Extensions.Options;
 
 namespace Deveel.Webhooks.Storage {
-	class MongoDbWebhookSubscriptionStoreProvider : MongoDbStoreProviderBase<WebhookSubscriptionDocument, IWebhookSubscription>,
+	public class MongoDbWebhookSubscriptionStoreProvider : MongoDbStoreProviderBase<MongoDbWebhookSubscription, IWebhookSubscription>,
 													IWebhookSubscriptionStoreProvider,
-													IWebhookSubscriptionStoreProvider<WebhookSubscriptionDocument> {
+													IWebhookSubscriptionStoreProvider<MongoDbWebhookSubscription> {
 		public MongoDbWebhookSubscriptionStoreProvider(IOptions<MongoDbOptions> baseOptions)
 			: base(baseOptions) {
 		}
@@ -31,7 +31,7 @@ namespace Deveel.Webhooks.Storage {
 			: base(baseOptions) {
 		}
 
-		protected override MongoDbStoreBase<WebhookSubscriptionDocument, IWebhookSubscription> CreateStore(MongoDbOptions options)
+		protected override MongoDbStoreBase<MongoDbWebhookSubscription, IWebhookSubscription> CreateStore(MongoDbOptions options)
 			=> new MongoDbWebhookSubscriptionStrore(options);
 
 		public MongoDbWebhookSubscriptionStrore GetStore(string tenantId) => (MongoDbWebhookSubscriptionStrore)CreateStore(tenantId);
@@ -39,13 +39,13 @@ namespace Deveel.Webhooks.Storage {
 		IWebhookSubscriptionStore<IWebhookSubscription> IWebhookSubscriptionStoreProvider<IWebhookSubscription>.GetTenantStore(string tenantId)
 			=> GetStore(tenantId);
 
-		IWebhookSubscriptionStore<WebhookSubscriptionDocument> IWebhookSubscriptionStoreProvider<WebhookSubscriptionDocument>.GetTenantStore(string tenantId)
+		IWebhookSubscriptionStore<MongoDbWebhookSubscription> IWebhookSubscriptionStoreProvider<MongoDbWebhookSubscription>.GetTenantStore(string tenantId)
 			=> GetStore(tenantId);
 
 		IStore<IWebhookSubscription> IStoreProvider<IWebhookSubscription>.GetTenantStore(string tenantId)
 			=> GetStore(tenantId);
 
-		IStore<WebhookSubscriptionDocument> IStoreProvider<WebhookSubscriptionDocument>.GetTenantStore(string tenantId) 
+		IStore<MongoDbWebhookSubscription> IStoreProvider<MongoDbWebhookSubscription>.GetTenantStore(string tenantId) 
 			=> GetStore(tenantId);
 	}
 }

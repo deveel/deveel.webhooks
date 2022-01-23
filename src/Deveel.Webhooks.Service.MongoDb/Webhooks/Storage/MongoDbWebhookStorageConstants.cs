@@ -14,20 +14,9 @@
 
 using System;
 
-namespace Deveel.Data {
-	public interface IMongoDbOptionBuilder {
-		IMongoDbOptionBuilder SetConnectionString(string connectionString);
-
-		IMongoDbOptionBuilder SetDatabaseName(string databaseName);
-
-		IMongoDbOptionBuilder SetCollectionName(string key, string collectionName);
-
-		IMongoDbOptionBuilder SetMultiTenancyHandling(MongoDbMultiTenancyHandling handling);
-
-		IMongoDbOptionBuilder SetTenantFieldName(string fieldName);
-
-		IMongoDbOptionBuilder SetTenantDatabaseFormat(string format);
-
-		IMongoDbOptionBuilder SetTenantCollectionFormat(string format);
+namespace Deveel.Webhooks.Storage {
+	public static class MongoDbWebhookStorageConstants {
+		public const string SubscriptionCollectionKey = "WebhookSubscriptions";
+		public const string DeliveryResultCollectionKey = "WebhookDeliveryResults";
 	}
 }

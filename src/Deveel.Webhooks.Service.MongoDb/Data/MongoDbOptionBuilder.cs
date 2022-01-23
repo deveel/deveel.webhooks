@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System;
+using System.Collections.Generic;
 
 namespace Deveel.Data {
 	class MongoDbOptionBuilder : IMongoDbOptionBuilder {
@@ -24,14 +25,6 @@ namespace Deveel.Data {
 
 		public MongoDbOptionBuilder() {
 			Options = new MongoDbOptions();
-		}
-
-		public IMongoDbOptionBuilder SetSubscriptionsCollection(string collectionName) {
-			if (string.IsNullOrWhiteSpace(collectionName))
-				throw new ArgumentException($"'{nameof(collectionName)}' cannot be null or whitespace.", nameof(collectionName));
-
-			Options.SubscriptionsCollectionName = collectionName;
-			return this;
 		}
 
 		public IMongoDbOptionBuilder SetConnectionString(string connectionString) {
@@ -50,11 +43,16 @@ namespace Deveel.Data {
 			return this;
 		}
 
-		public IMongoDbOptionBuilder SetWebhooksCollection(string collectionName) {
-			if (string.IsNullOrWhiteSpace(collectionName))
+		public IMongoDbOptionBuilder SetCollectionName(string collectionKey, string collectionName) {
+			if (string.IsNullOrWhiteSpace(collectionKey)) 
+				throw new ArgumentException($"'{nameof(collectionKey)}' cannot be null or whitespace.", nameof(collectionKey));
+			if (string.IsNullOrWhiteSpace(collectionName)) 
 				throw new ArgumentException($"'{nameof(collectionName)}' cannot be null or whitespace.", nameof(collectionName));
 
-			Options.WebhooksCollectionName = collectionName;
+			if (Options.Collections == null)
+				Options.Collections = new Dictionary<string, string>();
+
+			Options.Collections[collectionKey] = collectionName;
 			return this;
 		}
 

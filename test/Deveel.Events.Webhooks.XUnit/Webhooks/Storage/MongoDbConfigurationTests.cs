@@ -31,7 +31,7 @@ namespace Deveel.Webhooks.Storage {
 			Assert.NotNull(mongoDbOptions);
 			Assert.Equal("mongodb://127.0.0.1:2709", mongoDbOptions.ConnectionString);
 			Assert.Equal("test", mongoDbOptions.DatabaseName);
-			Assert.Equal("webhook_subscriptions", mongoDbOptions.SubscriptionsCollectionName);
+			Assert.Equal("webhook_subscriptions", mongoDbOptions.SubscriptionsCollectionName());
 			Assert.Equal(MongoDbMultiTenancyHandling.TenantField, mongoDbOptions.MultiTenantHandling);
 			Assert.Equal("TenantId", mongoDbOptions.TenantField);
 		}
@@ -42,7 +42,7 @@ namespace Deveel.Webhooks.Storage {
 				.AddInMemoryCollection(new Dictionary<string, string> {
 					{ "MongoDb:Webhooks:ConnectionString", "mongodb://127.0.0.1:2709" },
 					{ "MongoDb:Webhooks:DatabaseName", "test" },
-					{ "MongoDb:Webhooks:SubscriptionsCollectionName", "webhook_subscriptions" }
+					{ "MongoDb:Webhooks:Collections:WebhookSubscriptions", "webhook_subscriptions" }
 				});
 
 			var provider = new ServiceCollection()
@@ -61,7 +61,7 @@ namespace Deveel.Webhooks.Storage {
 			Assert.NotNull(mongoDbOptions);
 			Assert.Equal("mongodb://127.0.0.1:2709", mongoDbOptions.ConnectionString);
 			Assert.Equal("test", mongoDbOptions.DatabaseName);
-			Assert.Equal("webhook_subscriptions", mongoDbOptions.SubscriptionsCollectionName);
+			Assert.Equal("webhook_subscriptions", mongoDbOptions.SubscriptionsCollectionName());
 			Assert.Equal(MongoDbMultiTenancyHandling.TenantField, mongoDbOptions.MultiTenantHandling);
 			Assert.Equal("TenantId", mongoDbOptions.TenantField);
 		}
@@ -72,7 +72,7 @@ namespace Deveel.Webhooks.Storage {
 				.AddInMemoryCollection(new Dictionary<string, string> {
 					{ "ConnectionStrings:MongoDb", "mongodb://127.0.0.1:2709" },
 					{ "MongoDb:Webhooks:DatabaseName", "test" },
-					{ "MongoDb:Webhooks:SubscriptionsCollectionName", "webhook_subscriptions" }
+					{ "MongoDb:Webhooks:Collections:WebhookSubscriptions", "webhook_subscriptions" }
 				});
 
 			var provider = new ServiceCollection()
@@ -91,10 +91,45 @@ namespace Deveel.Webhooks.Storage {
 			Assert.NotNull(mongoDbOptions);
 			Assert.Equal("mongodb://127.0.0.1:2709", mongoDbOptions.ConnectionString);
 			Assert.Equal("test", mongoDbOptions.DatabaseName);
-			Assert.Equal("webhook_subscriptions", mongoDbOptions.SubscriptionsCollectionName);
+			Assert.Equal("webhook_subscriptions", mongoDbOptions.SubscriptionsCollectionName());
 			Assert.Equal(MongoDbMultiTenancyHandling.TenantField, mongoDbOptions.MultiTenantHandling);
 			Assert.Equal("TenantId", mongoDbOptions.TenantField);
 		}
 
+		[Fact]
+		public static void ConfigureCustomStorage() {
+			var provider = new ServiceCollection()
+				.AddWebhooks(webhook => webhook.UseMongoDb(builder =>
+					builder.Configure(options => {
+						options.ConnectionString = "mongodb://127.0.0.1:2709";
+						options.DatabaseName = "test";
+					})
+					.UseSubscriptionStore<MyMongoDbWebhookSubscriptionStore>()
+					.UseSubscriptionStoreProvider<MyMongoDbWebhookSubscriptionStoreProvider>()))
+				.BuildServiceProvider();
+
+			Assert.NotNull(provider.GetService<IWebhookSubscriptionStore>());
+			Assert.NotNull(provider.GetService<IWebhookSubscriptionStore<MongoDbWebhookSubscription>>());
+			Assert.NotNull(provider.GetService<IWebhookSubscriptionStore<IWebhookSubscription>>());
+		}
+
+		#region MyMongoDbWebhookSubscriptionStore
+
+		class MyMongoDbWebhookSubscriptionStore : MongoDbWebhookSubscriptionStrore {
+			public MyMongoDbWebhookSubscriptionStore(IOptions<MongoDbOptions> options) 
+				: base(options) {
+			}
+		}
+
+		#endregion
+
+		#region MyMongoDbWebhookSubscriptionStoreProvider
+
+		class MyMongoDbWebhookSubscriptionStoreProvider : MongoDbWebhookSubscriptionStoreProvider {
+			public MyMongoDbWebhookSubscriptionStoreProvider(IOptions<MongoDbOptions> baseOptions) : base(baseOptions) {
+			}
+		}
+
+		#endregion
 	}
 }

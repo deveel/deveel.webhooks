@@ -19,7 +19,7 @@ using System.Text;
 using Microsoft.Extensions.Options;
 
 namespace Deveel.Data {
-	abstract class MongoDbStoreProviderBase<TDocument, TFacade>
+	public abstract class MongoDbStoreProviderBase<TDocument, TFacade>
 		where TDocument : class, TFacade, IMongoDocument
 		where TFacade : class {
 		protected MongoDbStoreProviderBase(IOptions<MongoDbOptions> options)
@@ -40,8 +40,7 @@ namespace Deveel.Data {
 				TenantId = tenantId,
 				ConnectionString = Options.ConnectionString,
 				DatabaseName = Options.DatabaseName,
-				SubscriptionsCollectionName = Options.SubscriptionsCollectionName,
-				WebhooksCollectionName = Options.WebhooksCollectionName,
+				Collections = Options.Collections,
 				MultiTenantHandling = Options.MultiTenantHandling,
 				TenantCollectionFormat = Options.TenantCollectionFormat,
 				TenantDatabaseFormat = Options.TenantDatabaseFormat,

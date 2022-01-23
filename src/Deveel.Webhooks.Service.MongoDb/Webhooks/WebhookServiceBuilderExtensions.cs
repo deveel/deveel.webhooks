@@ -22,54 +22,68 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Deveel.Webhooks {
 	public static class WebhookServiceBuilderExtensions {
-		private static IServiceCollection ConfigureMongoDbOptions(this IServiceCollection services, string sectionName, string connectionStringName = null) {
-			services.AddOptions<MongoDbOptions>()
-				.Configure<IConfiguration>((options, config) => {
-					var section = config.GetSection(sectionName);
-					if (section != null)
-						section.Bind(options);
+		//private static IServiceCollection ConfigureMongoDbOptions(this IServiceCollection services, string sectionName, string connectionStringName = null) {
+		//	services.AddOptions<MongoDbOptions>()
+		//		.Configure<IConfiguration>((options, config) => {
+		//			var section = config.GetSection(sectionName);
+		//			if (section != null)
+		//				section.Bind(options);
 
-					if (!String.IsNullOrWhiteSpace(connectionStringName)) {
-						options.ConnectionString = config.GetConnectionString(connectionStringName);
-					}
-				});
+		//			if (!String.IsNullOrWhiteSpace(connectionStringName)) {
+		//				options.ConnectionString = config.GetConnectionString(connectionStringName);
+		//			}
+		//		});
 
-			return services;
-		}
+		//	return services;
+		//}
 
-		private static IWebhookServiceBuilder UseMongoDb(this IWebhookServiceBuilder builder) {
-			return builder
-				.Use<IWebhookSubscriptionFactory, MongoDbWebhookSubscriptionFactory>()
-				.Use<IWebhookSubscriptionStore, MongoDbWebhookSubscriptionStrore>()
-				.Use<IWebhookSubscriptionStore<WebhookSubscriptionDocument>, MongoDbWebhookSubscriptionStrore>()
-				.Use<IWebhookSubscriptionStoreProvider, MongoDbWebhookSubscriptionStoreProvider>()
-				.Use<IWebhookSubscriptionStoreProvider<WebhookSubscriptionDocument>, MongoDbWebhookSubscriptionStoreProvider>();
+		public static IWebhookServiceBuilder UseMongoDb(this IWebhookServiceBuilder builder, Action<IMongoDbWebhookStorageBuilder> configure = null) {
+			var storageBuilder = new MongoDbWebhookStorageBuilderImpl(builder);
+			if (configure != null) {
+				configure(storageBuilder);
+			}
+
+			return builder;
+
+			//return builder
+			//	.Use<IWebhookSubscriptionFactory, MongoDbWebhookSubscriptionFactory>()
+			//	.Use<IWebhookSubscriptionStore, MongoDbWebhookSubscriptionStrore>()
+			//	.Use<IWebhookSubscriptionStore<MongoDbWebhookSubscription>, MongoDbWebhookSubscriptionStrore>()
+			//	.Use<IWebhookSubscriptionStoreProvider, MongoDbWebhookSubscriptionStoreProvider>()
+			//	.Use<IWebhookSubscriptionStoreProvider<MongoDbWebhookSubscription>, MongoDbWebhookSubscriptionStoreProvider>();
 		}
 
 		public static IWebhookServiceBuilder UseMongoDb(this IWebhookServiceBuilder builder, string sectionName, string connectionStringName = null) {
-			builder.ConfigureServices(services => services.ConfigureMongoDbOptions(sectionName, connectionStringName));
-			builder.UseMongoDb();
-			return builder;
+			return builder.UseMongoDb(mongo => mongo.Configure(sectionName, connectionStringName));
+
+			//builder.ConfigureServices(services => services.ConfigureMongoDbOptions(sectionName, connectionStringName));
+			//builder.UseMongoDb();
+			//return builder;
 		}
 
 
 		public static IWebhookServiceBuilder UseMongoDb(this IWebhookServiceBuilder builder, Action<MongoDbOptions> configure) {
-			builder.ConfigureServices(services => services.AddOptions<MongoDbOptions>().Configure(configure));
+			return builder.UseMongoDb(mongo => mongo.Configure(configure));
 
-			builder.UseMongoDb();
-			return builder;
+			//builder.ConfigureServices(services => services.AddOptions<MongoDbOptions>().Configure(configure));
+
+			//builder.UseMongoDb();
+			//return builder;
 		}
 
 		public static IWebhookServiceBuilder UseMongoDb(this IWebhookServiceBuilder builder, Action<IMongoDbOptionBuilder> configure) {
-			builder.ConfigureServices(services => {
-				services.AddOptions<MongoDbOptions>()
-				.Configure(options => {
-					var optionsBuilder = new MongoDbOptionBuilder(options);
-					configure(optionsBuilder);
-				});
-			});
+			return builder.UseMongoDb(mongo => mongo.Configure(configure));
 
-			return builder;
+			//builder.ConfigureServices(services => {
+			//	services.AddOptions<MongoDbOptions>()
+			//	.Configure(options => {
+			//		var optionsBuilder = new MongoDbOptionBuilder(options);
+			//		configure(optionsBuilder);
+			//	});
+			//});
+
+			//builder.UseMongoDb();
+			//return builder;
 		}
 	}
 }

@@ -13,10 +13,12 @@
 // limitations under the License.
 
 using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
 using Deveel.Data;
+using Deveel.Webhooks.Storage;
 
 using Microsoft.Extensions.Options;
 
@@ -24,7 +26,7 @@ using MongoDB.Bson;
 using MongoDB.Driver;
 
 namespace Deveel.Data {
-	abstract class MongoDbStoreBase<TDocument, TFacade> : IStore<TDocument>, IDisposable
+	public abstract class MongoDbStoreBase<TDocument, TFacade> : IStore<TDocument>, IQueryableStore<TDocument>, IDisposable
 		where TDocument : class, TFacade, IMongoDocument
 		where TFacade : class {
 		private bool disposed;
@@ -94,6 +96,8 @@ namespace Deveel.Data {
 				property.SetValue(document, Options.TenantId);
 			}
 		}
+
+		public IQueryable<TDocument> AsQueryable() => Collection.AsQueryable();
 
 		public Task<string> CreateAsync(TFacade entity, CancellationToken cancellationToken)
 			=> CreateAsync((TDocument)entity, cancellationToken);

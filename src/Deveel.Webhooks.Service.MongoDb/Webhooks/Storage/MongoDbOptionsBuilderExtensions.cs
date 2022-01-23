@@ -14,20 +14,14 @@
 
 using System;
 
-namespace Deveel.Data {
-	public interface IMongoDbOptionBuilder {
-		IMongoDbOptionBuilder SetConnectionString(string connectionString);
+using Deveel.Data;
 
-		IMongoDbOptionBuilder SetDatabaseName(string databaseName);
+namespace Deveel.Webhooks.Storage {
+	public static class MongoDbOptionsBuilderExtensions {
+		public static IMongoDbOptionBuilder SetSubscriptionsCollection(this IMongoDbOptionBuilder builder, string collectionName)
+			=> builder.SetCollectionName(MongoDbWebhookStorageConstants.SubscriptionCollectionKey, collectionName);
 
-		IMongoDbOptionBuilder SetCollectionName(string key, string collectionName);
-
-		IMongoDbOptionBuilder SetMultiTenancyHandling(MongoDbMultiTenancyHandling handling);
-
-		IMongoDbOptionBuilder SetTenantFieldName(string fieldName);
-
-		IMongoDbOptionBuilder SetTenantDatabaseFormat(string format);
-
-		IMongoDbOptionBuilder SetTenantCollectionFormat(string format);
+		public static IMongoDbOptionBuilder SetDeliveryResultsCollection(this IMongoDbOptionBuilder builder, string collectionName)
+			=> builder.SetCollectionName(MongoDbWebhookStorageConstants.DeliveryResultCollectionKey, collectionName);
 	}
 }

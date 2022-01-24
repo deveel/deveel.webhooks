@@ -57,14 +57,20 @@ namespace Deveel.Data {
 		}
 
 		public IMongoDbOptionBuilder SetMultiTenancyHandling(MongoDbMultiTenancyHandling handling) {
-			Options.MultiTenantHandling = handling;
+			if (Options.MultiTenancy == null)
+				Options.MultiTenancy = new MongoDbMultiTenantOptions();
+
+			Options.MultiTenancy.Handling = handling;
 			return this;
 		}
 
 		public IMongoDbOptionBuilder SetTenantFieldName(string fieldName) {
 			if (!String.IsNullOrWhiteSpace(fieldName)) {
-				Options.TenantField = fieldName;
-				Options.MultiTenantHandling = MongoDbMultiTenancyHandling.TenantField;
+				if (Options.MultiTenancy == null)
+					Options.MultiTenancy = new MongoDbMultiTenantOptions();
+
+				Options.MultiTenancy.TenantField = fieldName;
+				Options.MultiTenancy.Handling = MongoDbMultiTenancyHandling.TenantField;
 			}
 
 			return this;
@@ -72,8 +78,11 @@ namespace Deveel.Data {
 
 		public IMongoDbOptionBuilder SetTenantDatabaseFormat(string format) {
 			if (!String.IsNullOrWhiteSpace(format)) {
-				Options.TenantDatabaseFormat = format;
-				Options.MultiTenantHandling = MongoDbMultiTenancyHandling.TenantDatabase;
+				if (Options.MultiTenancy == null)
+					Options.MultiTenancy = new MongoDbMultiTenantOptions();
+
+				Options.MultiTenancy.TenantDatabaseFormat = format;
+				Options.MultiTenancy.Handling = MongoDbMultiTenancyHandling.TenantDatabase;
 			}
 
 			return this;
@@ -81,8 +90,11 @@ namespace Deveel.Data {
 
 		public IMongoDbOptionBuilder SetTenantCollectionFormat(string format) {
 			if (!String.IsNullOrWhiteSpace(format)) {
-				Options.TenantCollectionFormat = format;
-				Options.MultiTenantHandling = MongoDbMultiTenancyHandling.TenantCollection;
+				if (Options.MultiTenancy == null)
+					Options.MultiTenancy = new MongoDbMultiTenantOptions();
+
+				Options.MultiTenancy.TenantCollectionFormat = format;
+				Options.MultiTenancy.Handling = MongoDbMultiTenancyHandling.TenantCollection;
 			}
 
 			return this;

@@ -50,8 +50,9 @@ namespace Deveel.Data {
 		protected IMongoDatabase Database {
 			get {
 				var database = Options.DatabaseName;
-				if (Options.MultiTenantHandling == MongoDbMultiTenancyHandling.TenantDatabase) {
-					database = Options.TenantDatabaseFormat
+				if (Options.MultiTenancy != null &&
+					Options.MultiTenancy.Handling == MongoDbMultiTenancyHandling.TenantDatabase) {
+					database = Options.MultiTenancy.TenantDatabaseFormat
 						.Replace("{database}", database)
 						.Replace("{tenant}", Options.TenantId);
 				}
@@ -61,8 +62,9 @@ namespace Deveel.Data {
 		}
 
 		protected IMongoCollection<TDocument> GetCollection(string collectionName) {
-			if (Options.MultiTenantHandling == MongoDbMultiTenancyHandling.TenantCollection) {
-				collectionName = Options.TenantCollectionFormat
+			if (Options.MultiTenancy != null &&
+				Options.MultiTenancy.Handling == MongoDbMultiTenancyHandling.TenantCollection) {
+				collectionName = Options.MultiTenancy.TenantCollectionFormat
 					.Replace("{collection}", collectionName)
 					.Replace("{tenant}", Options.TenantId);
 			}
@@ -71,8 +73,9 @@ namespace Deveel.Data {
 		}
 
 		protected FilterDefinition<TDocument> NormalizeFilter(FilterDefinition<TDocument> filter) {
-			if (Options.MultiTenantHandling == MongoDbMultiTenancyHandling.TenantField) {
-				var tenantFilter = Builders<TDocument>.Filter.Eq(Options.TenantField, Options.TenantId);
+			if (Options.MultiTenancy != null &&
+				Options.MultiTenancy.Handling == MongoDbMultiTenancyHandling.TenantField) {
+				var tenantFilter = Builders<TDocument>.Filter.Eq(Options.MultiTenancy.TenantField, Options.TenantId);
 				filter = Builders<TDocument>.Filter.And(filter, tenantFilter);
 			}
 
@@ -90,9 +93,12 @@ namespace Deveel.Data {
 		}
 
 		protected void SetTenantId(TDocument document) {
-			var property = typeof(TDocument).GetProperty(Options.TenantField);
-			if (property != null) {
-				property.SetValue(document, Options.TenantId);
+			if (Options.MultiTenancy != null &&
+				Options.MultiTenancy.Handling == MongoDbMultiTenancyHandling.TenantField) {
+				var property = typeof(TDocument).GetProperty(Options.MultiTenancy.TenantField);
+				if (property != null) {
+					property.SetValue(document, Options.TenantId);
+				}
 			}
 		}
 
@@ -104,9 +110,7 @@ namespace Deveel.Data {
 
 			var options = new InsertOneOptions();
 
-			if (Options.MultiTenantHandling == MongoDbMultiTenancyHandling.TenantField) {
-				SetTenantId(entity);
-			}
+			SetTenantId(entity);
 
 			await Collection.InsertOneAsync(entity, options, cancellationToken);
 

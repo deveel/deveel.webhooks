@@ -26,10 +26,7 @@ namespace Deveel.Data {
 				ConnectionString = Options.ConnectionString,
 				DatabaseName = Options.DatabaseName,
 				Collections = Options.Collections,
-				MultiTenantHandling = Options.MultiTenantHandling,
-				TenantCollectionFormat = Options.TenantCollectionFormat,
-				TenantDatabaseFormat = Options.TenantDatabaseFormat,
-				TenantField = Options.TenantField,
+				MultiTenancy = Options.MultiTenancy
 			};
 
 			return CreateStore(storeOptions);

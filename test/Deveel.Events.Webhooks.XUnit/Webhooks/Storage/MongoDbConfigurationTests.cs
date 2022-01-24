@@ -32,8 +32,9 @@ namespace Deveel.Webhooks.Storage {
 			Assert.Equal("mongodb://127.0.0.1:2709", mongoDbOptions.ConnectionString);
 			Assert.Equal("test", mongoDbOptions.DatabaseName);
 			Assert.Equal("webhook_subscriptions", mongoDbOptions.SubscriptionsCollectionName());
-			Assert.Equal(MongoDbMultiTenancyHandling.TenantField, mongoDbOptions.MultiTenantHandling);
-			Assert.Equal("TenantId", mongoDbOptions.TenantField);
+			Assert.NotNull(mongoDbOptions.MultiTenancy);
+			Assert.Equal(MongoDbMultiTenancyHandling.TenantDatabase, mongoDbOptions.MultiTenancy.Handling);
+			Assert.Equal("TenantId", mongoDbOptions.MultiTenancy.TenantField);
 		}
 
 		[Fact]
@@ -62,8 +63,9 @@ namespace Deveel.Webhooks.Storage {
 			Assert.Equal("mongodb://127.0.0.1:2709", mongoDbOptions.ConnectionString);
 			Assert.Equal("test", mongoDbOptions.DatabaseName);
 			Assert.Equal("webhook_subscriptions", mongoDbOptions.SubscriptionsCollectionName());
-			Assert.Equal(MongoDbMultiTenancyHandling.TenantField, mongoDbOptions.MultiTenantHandling);
-			Assert.Equal("TenantId", mongoDbOptions.TenantField);
+			Assert.NotNull(mongoDbOptions.MultiTenancy);
+			Assert.Equal(MongoDbMultiTenancyHandling.TenantDatabase, mongoDbOptions.MultiTenancy.Handling);
+			Assert.Equal("TenantId", mongoDbOptions.MultiTenancy.TenantField);
 		}
 
 		[Fact]
@@ -92,8 +94,9 @@ namespace Deveel.Webhooks.Storage {
 			Assert.Equal("mongodb://127.0.0.1:2709", mongoDbOptions.ConnectionString);
 			Assert.Equal("test", mongoDbOptions.DatabaseName);
 			Assert.Equal("webhook_subscriptions", mongoDbOptions.SubscriptionsCollectionName());
-			Assert.Equal(MongoDbMultiTenancyHandling.TenantField, mongoDbOptions.MultiTenantHandling);
-			Assert.Equal("TenantId", mongoDbOptions.TenantField);
+			Assert.NotNull(mongoDbOptions.MultiTenancy);
+			Assert.Equal(MongoDbMultiTenancyHandling.TenantDatabase, mongoDbOptions.MultiTenancy.Handling);
+			Assert.Equal("TenantId", mongoDbOptions.MultiTenancy.TenantField);
 		}
 
 		[Fact]

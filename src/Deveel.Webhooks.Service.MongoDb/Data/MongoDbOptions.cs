@@ -41,16 +41,18 @@ namespace Deveel.Data {
 		/// </summary>
 		public string TenantId { get; set; }
 
-		public string TenantDatabaseFormat { get; set; } = "{tenant}_{database}";
+		public MongoDbMultiTenantOptions MultiTenancy { get; set; } = new MongoDbMultiTenantOptions();
 
-		public string TenantCollectionFormat { get; set; } = "{tenant}_{collection}";
+		//public string TenantDatabaseFormat { get; set; } = "{tenant}_{database}";
 
-		public string TenantField { get; set; } = "TenantId";
+		//public string TenantCollectionFormat { get; set; } = "{tenant}_{collection}";
 
-		/// <summary>
-		/// Gets or sets the type of handling of the multi-tenant scenarios of usage
-		/// </summary>
-		public MongoDbMultiTenancyHandling MultiTenantHandling { get; set; } = MongoDbMultiTenancyHandling.TenantField;
+		//public string TenantField { get; set; } = "TenantId";
+
+		///// <summary>
+		///// Gets or sets the type of handling of the multi-tenant scenarios of usage
+		///// </summary>
+		//public MongoDbMultiTenancyHandling MultiTenantHandling { get; set; } = MongoDbMultiTenancyHandling.TenantField;
 
 		public bool IsCollectionSet(string collectionKey)
 			=> Collections?.ContainsKey(collectionKey) ?? false;

@@ -59,8 +59,8 @@ namespace Deveel.Webhooks {
 					options.DatabaseName = "webhooks";
 					options.ConnectionString = mongoDbCluster.ConnectionString;
 					options.SubscriptionsCollectionName("webhooks_subscription");
-					options.MultiTenantHandling = MongoDbMultiTenancyHandling.TenantField;
-					options.TenantField = "TenantId";
+					options.MultiTenancy.Handling = MongoDbMultiTenancyHandling.TenantField;
+					options.MultiTenancy.TenantField = "TenantId";
 				});
 			})
 			.AddTestHttpClient(async request => {

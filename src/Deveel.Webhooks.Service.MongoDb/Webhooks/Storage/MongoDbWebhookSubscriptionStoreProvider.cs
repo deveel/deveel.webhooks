@@ -15,37 +15,19 @@
 using System;
 
 using Deveel.Data;
-using Deveel.Webhooks.Storage;
 
 using Microsoft.Extensions.Options;
 
 namespace Deveel.Webhooks.Storage {
-	public class MongoDbWebhookSubscriptionStoreProvider : MongoDbStoreProviderBase<MongoDbWebhookSubscription, IWebhookSubscription>,
-													IWebhookSubscriptionStoreProvider,
-													IWebhookSubscriptionStoreProvider<MongoDbWebhookSubscription> {
-		public MongoDbWebhookSubscriptionStoreProvider(IOptions<MongoDbOptions> baseOptions)
-			: base(baseOptions) {
+	public class MongoDbWebhookSubscriptionStoreProvider : MongoDbWebhookSubscriptionStoreProvider<MongoDbWebhookSubscription>,
+							IWebhookSubscriptionStoreProvider<MongoDbWebhookSubscription> {
+		public MongoDbWebhookSubscriptionStoreProvider(IOptions<MongoDbOptions> baseOptions) : base(baseOptions) {
 		}
 
-		public MongoDbWebhookSubscriptionStoreProvider(MongoDbOptions baseOptions)
-			: base(baseOptions) {
+		public MongoDbWebhookSubscriptionStoreProvider(MongoDbOptions baseOptions) : base(baseOptions) {
 		}
-
-		protected override MongoDbStoreBase<MongoDbWebhookSubscription> CreateStore(MongoDbOptions options)
-			=> new MongoDbWebhookSubscriptionStrore(options);
-
-		public MongoDbWebhookSubscriptionStrore GetStore(string tenantId) => (MongoDbWebhookSubscriptionStrore)CreateStore(tenantId);
-
-		IWebhookSubscriptionStore<IWebhookSubscription> IWebhookSubscriptionStoreProvider<IWebhookSubscription>.GetTenantStore(string tenantId)
-			=> GetStore(tenantId);
 
 		IWebhookSubscriptionStore<MongoDbWebhookSubscription> IWebhookSubscriptionStoreProvider<MongoDbWebhookSubscription>.GetTenantStore(string tenantId)
-			=> GetStore(tenantId);
-
-		IStore<IWebhookSubscription> IStoreProvider<IWebhookSubscription>.GetTenantStore(string tenantId)
-			=> GetStore(tenantId);
-
-		IStore<MongoDbWebhookSubscription> IStoreProvider<MongoDbWebhookSubscription>.GetTenantStore(string tenantId) 
-			=> GetStore(tenantId);
+			=> (IWebhookSubscriptionStore<MongoDbWebhookSubscription>) base.GetStore(tenantId);
 	}
 }

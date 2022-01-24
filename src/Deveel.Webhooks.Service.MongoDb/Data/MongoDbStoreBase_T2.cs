@@ -31,23 +31,23 @@ namespace Deveel.Data {
 		}
 
 		public Task<string> CreateAsync(TFacade entity, CancellationToken cancellationToken)
-			=> CreateAsync((TDocument)entity, cancellationToken);
+			=> base.CreateAsync((TDocument)entity, cancellationToken);
 
 		public Task<bool> UpdateAsync(TFacade facade, CancellationToken cancellationToken)
-			=> UpdateAsync((TDocument)facade, cancellationToken);
+			=> base.UpdateAsync((TDocument)facade, cancellationToken);
 
 		public Task<bool> DeleteAsync(TFacade entity, CancellationToken cancellationToken)
-			=> DeleteAsync((TDocument)entity, cancellationToken);
+			=> base.DeleteAsync((TDocument)entity, cancellationToken);
 
 		async Task<TFacade> IStore<TFacade>.FindByIdAsync(string id, CancellationToken cancellationToken)
-			=> await FindByIdAsync(id, cancellationToken);
+			=> await base.FindByIdAsync(id, cancellationToken);
 
 		public async Task<PagedResult<TFacade>> GetPageAsync(PagedQuery<TFacade> query, CancellationToken cancellationToken) {
 			var newQuery = new PagedQuery<TDocument>(query.Page, query.PageSize);
 			if (query.Predicate != null)
 				newQuery.Predicate = item => query.Predicate.Compile().Invoke(item);
 
-			var result = await GetPageAsync(newQuery, cancellationToken);
+			var result = await base.GetPageAsync(newQuery, cancellationToken);
 
 			var items = result.Items.Cast<TFacade>();
 			return new PagedResult<TFacade>(query, result.TotalCount, items);

@@ -26,9 +26,8 @@ using MongoDB.Bson;
 using MongoDB.Driver;
 
 namespace Deveel.Data {
-	public abstract class MongoDbStoreBase<TDocument, TFacade> : IStore<TDocument>, IQueryableStore<TDocument>, IDisposable
-		where TDocument : class, TFacade, IMongoDocument
-		where TFacade : class {
+	public abstract class MongoDbStoreBase<TDocument> : IStore<TDocument>, IQueryableStore<TDocument>, IDisposable
+		where TDocument : class, IMongoDocument {
 		private bool disposed;
 
 		protected MongoDbStoreBase(IOptions<MongoDbOptions> options)
@@ -99,9 +98,6 @@ namespace Deveel.Data {
 
 		public IQueryable<TDocument> AsQueryable() => Collection.AsQueryable();
 
-		public Task<string> CreateAsync(TFacade entity, CancellationToken cancellationToken)
-			=> CreateAsync((TDocument)entity, cancellationToken);
-
 		public async Task<string> CreateAsync(TDocument entity, CancellationToken cancellationToken) {
 			ThrowIfDisposed();
 			cancellationToken.ThrowIfCancellationRequested();
@@ -116,10 +112,6 @@ namespace Deveel.Data {
 
 			return entity.Id.ToEntityId();
 		}
-
-
-		public Task<bool> UpdateAsync(TFacade facade, CancellationToken cancellationToken)
-			=> UpdateAsync((TDocument)facade, cancellationToken);
 
 		public async Task<bool> UpdateAsync(TDocument document, CancellationToken cancellationToken) {
 			ThrowIfDisposed();
@@ -144,9 +136,6 @@ namespace Deveel.Data {
 
 			return await result.FirstOrDefaultAsync(cancellationToken);
 		}
-
-		public Task<bool> DeleteAsync(TFacade entity, CancellationToken cancellationToken)
-			=> DeleteAsync((TDocument)entity, cancellationToken);
 
 		public async Task<bool> DeleteAsync(TDocument document, CancellationToken cancellationToken) {
 			ThrowIfDisposed();

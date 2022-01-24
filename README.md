@@ -2,7 +2,7 @@
 
 [![GitHub Actions](https://github.com/deveel/deveel.webhooks/actions/workflows/cd.yml/badge.svg)](https://github.com/deveel/deveel.webhooks/actions/workflows/cd.yml) [![Code Coverage](https://codecov.io/gh/deveel/deveel.webhooks/branch/main/graph/badge.svg?token=BKRX2N1IZ1)](https://codecov.io/gh/deveel/deveel.webhooks) [![Maintainability](https://api.codeclimate.com/v1/badges/d6af433587d35d4eaee3/maintainability)](https://codeclimate.com/github/deveel/deveel.webhooks/maintainability)
 
-This project provides a set of .NET tools for the management of subscriptions to events, basic transformations and notifications of such event occurrences (_webhooks_): in a global design scope, this model enables event-driven architectures, triggering system processes upon the occurrence of expected occurrences from other systems.
+This project provides a set of .NET tools for the management of subscriptions to events, basic transformations and notifications of such event occurrences (_[webhooks](docs/concept_webhook.md)_): in a global design scope, this model enables event-driven architectures, triggering system processes upon the occurrence of expected occurrences from other systems.
 
 Although this integration model is widely adopted by major service providers (like _[SendGrid](https://docs.sendgrid.com/for-developers/tracking-events/getting-started-event-webhook)_, _[Twilio](https://www.twilio.com/docs/usage/webhooks)_, _[GitHub](https://docs.github.com/en/developers/webhooks-and-events/webhooks/about-webhooks)_, _[Slack](https://api.slack.com/messaging/webhooks)_, etc.), there is no formal protocol or authority that would enforce a compliance (like for other cases, such as OpenID, OpenAPI, etc.).
 
@@ -12,6 +12,8 @@ Anyway, a typical implementation consists of the following elements:
 * The webhook payload is represented as a JSON object (or alternatively as XML or Form)
 * The webhook payload includes properties that describe the type of event and the time-stamp of the occurrence
 * An optional signature in the header of the request or a query-string parameter ensures the authenticity of the caller
+
+I tried to express the concepts in more details in [this page](docs/concept_webhook.md) within this repository (without any ambition to be pedagogic).
 
 ## Motivation
 

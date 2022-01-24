@@ -62,6 +62,11 @@ namespace Deveel.Webhooks {
 			return builder;
 		}
 
+		public static IWebhookServiceBuilder ConfigureDefaultDelivery(this IWebhookServiceBuilder builder) {
+			builder.ConfigureServices(services => services.AddOptions<WebhookDeliveryOptions>());
+			return builder;
+		}
+
 		/// <summary>
 		/// Replaces the notifier service with another one.
 		/// </summary>

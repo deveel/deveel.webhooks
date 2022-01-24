@@ -35,6 +35,21 @@ namespace Deveel.Webhooks {
 		}
 
 		[Fact]
+		public static void DefaultConfigurationWithOtherSettings() {
+			var config = Configure(webhooks => webhooks.ConfigureDefaultDelivery().UseMongoDb());
+
+			Assert.NotNull(config);
+			Assert.NotNull(config.DeliveryOptions);
+			Assert.Equal(WebhookConfigurationDefaults.SignWebhooks, config.DeliveryOptions.SignWebhooks);
+			Assert.Equal(WebhookConfigurationDefaults.SignatureAlgorithm, config.DeliveryOptions.SignatureAlgorithm);
+			Assert.Equal(WebhookConfigurationDefaults.SignatureLocation, config.DeliveryOptions.SignatureLocation);
+			Assert.NotEmpty(config.Serializers);
+			Assert.NotEmpty(config.Signers);
+			Assert.Empty(config.DataFactories);
+			Assert.Empty(config.FilterEvaluators);
+		}
+
+		[Fact]
 		public static void DeliveryConfigurationBuilder() {
 			var config = Configure(webooks => 
 				webooks.ConfigureDelivery(delivery => delivery

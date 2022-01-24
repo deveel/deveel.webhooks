@@ -51,14 +51,18 @@ namespace Deveel.Webhooks {
 
 			services.AddScoped<IWebhookServiceConfiguration, DefaultWebhookServiceConfiguration>();
 
+			services.AddOptions<WebhookDeliveryOptions>();
+
 			if (configure != null) {
 				var builder = new WebhookConfigurationBuilderImpl(services);
 
 				configure.Invoke(builder);
-			} else {
-				// add the default configurations ...
-				services.AddOptions<WebhookDeliveryOptions>();
 			}
+
+			//} else {
+			//	// add the default configurations ...
+			//	services.AddOptions<WebhookDeliveryOptions>();
+			//}
 
 			return services;
 		}

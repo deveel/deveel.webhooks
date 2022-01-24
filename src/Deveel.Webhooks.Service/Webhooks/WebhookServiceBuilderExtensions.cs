@@ -22,15 +22,15 @@ namespace Deveel.Webhooks {
 			=> builder.UseSubscriptionResolver<DefaultWebhookSubscriptionResolver>();
 
 		public static IWebhookServiceBuilder UseSubscriptionManager<TManager>(this IWebhookServiceBuilder builder)
-			where TManager : class, IWebhookSubscriptionManager
-			=> builder.Use<IWebhookSubscriptionManager, TManager>();
-
-		public static IWebhookServiceBuilder UseSubscriptionManager(this IWebhookServiceBuilder builder) {
+			where TManager : class, IWebhookSubscriptionManager {
 			builder.ConfigureServices(services => {
 				services.TryAddScoped<IWebhookSubscriptionResolver, DefaultWebhookSubscriptionResolver>();
 			});
 
-			return builder.UseSubscriptionManager<WebhookSubscriptionManager>();
+			return builder.Use<IWebhookSubscriptionManager, TManager>();
 		}
+
+		public static IWebhookServiceBuilder UseSubscriptionManager(this IWebhookServiceBuilder builder)
+			=> builder.UseSubscriptionManager<WebhookSubscriptionManager>();
 	}
 }

@@ -23,6 +23,7 @@ using Deveel.Webhooks.Storage;
 using Microsoft.Extensions.Options;
 
 using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Conventions;
 using MongoDB.Driver;
 
 namespace Deveel.Data {
@@ -84,6 +85,16 @@ namespace Deveel.Data {
 
 		private IMongoClient CreateClient() {
 			var settings = MongoClientSettings.FromConnectionString(Options.ConnectionString);
+
+			var pack = new ConventionPack();
+
+			if (Options.CamelCase)
+				pack.Add(new CamelCaseElementNameConvention());
+			if (Options.EnumAsString)
+				pack.Add(new EnumRepresentationConvention(BsonType.String));
+
+			ConventionRegistry.Register("conventions", pack, t => true);
+
 			return new MongoClient(settings);
 		}
 

@@ -29,5 +29,9 @@ namespace Deveel.Data {
 		IMongoDbOptionBuilder SetTenantDatabaseFormat(string format);
 
 		IMongoDbOptionBuilder SetTenantCollectionFormat(string format);
+
+		IMongoDbOptionBuilder SetCamelCase(bool value = true);
+
+		IMongoDbOptionBuilder EnumAsString(bool value = true);
 	}
 }

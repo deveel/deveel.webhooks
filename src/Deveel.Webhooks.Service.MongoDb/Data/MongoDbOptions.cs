@@ -41,13 +41,19 @@ namespace Deveel.Data {
 		/// </summary>
 		public string TenantId { get; set; }
 
+		/// <summary>
+		/// Gets or sets whether the serialization of the documents
+		/// should be camel-case.
+		/// </summary>
+		public bool CamelCase { get; set; } = true;
+
+		/// <summary>
+		/// Gets or sets whether the serialization of enumerations
+		/// in documents should be as done strings
+		/// </summary>
+		public bool EnumAsString { get; set; } = true;
+
 		public MongoDbMultiTenantOptions MultiTenancy { get; set; } = new MongoDbMultiTenantOptions();
-
-		//public string TenantDatabaseFormat { get; set; } = "{tenant}_{database}";
-
-		//public string TenantCollectionFormat { get; set; } = "{tenant}_{collection}";
-
-		//public string TenantField { get; set; } = "TenantId";
 
 		///// <summary>
 		///// Gets or sets the type of handling of the multi-tenant scenarios of usage

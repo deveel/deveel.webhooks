@@ -99,5 +99,15 @@ namespace Deveel.Data {
 
 			return this;
 		}
+
+		public IMongoDbOptionBuilder SetCamelCase(bool value = true) {
+			Options.CamelCase = value;
+			return this;
+		}
+
+		public IMongoDbOptionBuilder EnumAsString(bool value = true) {
+			Options.EnumAsString = value;
+			return this;
+		}
 	}
 }

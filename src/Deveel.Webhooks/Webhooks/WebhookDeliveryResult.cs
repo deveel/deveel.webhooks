@@ -75,19 +75,20 @@ namespace Deveel.Webhooks {
 		/// </summary>
 		public bool Successful => !failed && Attempts.All(x => !x.Failed);
 
-		/// <summary>
-		/// Registers a new attempt of delivery of the webhook.
-		/// </summary>
-		/// <param name="attempt"></param>
-		public void AddAttempt(WebhookDeliveryAttempt attempt) {
-			lock (this) {
-				_attempts.Add(attempt);
-			}
-		}
+		///// <summary>
+		///// Registers a new attempt of delivery of the webhook.
+		///// </summary>
+		///// <param name="attempt"></param>
+		//public void AddAttempt(WebhookDeliveryAttempt attempt) {
+		//	lock (this) {
+		//		_attempts.Add(attempt);
+		//	}
+		//}
 
 		public WebhookDeliveryAttempt StartAttempt() {
 			lock (this) {
-				var attempt = new WebhookDeliveryAttempt();
+				var number = _attempts.Count + 1;
+				var attempt = new WebhookDeliveryAttempt(number);
 				_attempts.Add(attempt);
 
 				return attempt;

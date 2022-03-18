@@ -179,11 +179,13 @@ namespace Deveel.Webhooks {
 					.WaitAndRetryAsync(waitTimes);
 
 				var captured = await policy.ExecuteAndCaptureAsync(async () => {
-					var attempt = new WebhookDeliveryAttempt();
+					var attempt = result.StartAttempt();
+
+					HttpResponseMessage response = null;
 
 					try {
 						var request = await BuildRequestAsync(webhook, cancellationToken);
-						var response = await SendHttpRequest(request);
+						response = await SendHttpRequest(request);
 
 						if (response.StatusCode == HttpStatusCode.RequestTimeout) {
 							attempt.Timeout();
@@ -193,11 +195,29 @@ namespace Deveel.Webhooks {
 
 						response.EnsureSuccessStatusCode();
 					} catch (TimeoutException) {
+						logger.LogWarning("The delivery attempt {AttemptNumber} timed-out", attempt.Number);
+
 						attempt.Timeout();
 						throw;
-					} finally {
-						result.AddAttempt(attempt);
-					}
+					} catch(HttpRequestException ex) {
+						logger.LogWarning(ex, "The delivery attempt {AttemptNumber} failed", attempt.Number);
+
+						if (response != null) {
+							attempt.Finish((int)response.StatusCode, response.ReasonPhrase);
+						} else {
+							attempt.Finish(null, $"Remote error: {ex.Message}");
+						}
+
+						throw;
+					} catch(Exception ex) {
+						logger.LogError(ex, "The delivery attempt {AttemptNumber} caused an exception", attempt.Number);
+
+						attempt.Finish(null, $"Local error: {ex.Message}");
+						throw;
+					} 
+					//finally {
+					//	result.AddAttempt(attempt);
+					//}
 				});
 
 				return result;

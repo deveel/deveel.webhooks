@@ -145,11 +145,14 @@ namespace Deveel.Webhooks {
 			}
 
 			if (deliveryResult.HasAttempted) {
-				int offset = 1;
 				foreach (var attempt in deliveryResult.Attempts) {
-					Logger.LogTrace("Attempt {AttemptNumber} - [{StartDate} - {EndDate}] {StatusCode}",
-						offset, attempt.StartedAt, attempt.EndedAt, attempt.ResponseStatusCode);
-					offset++;
+					if (attempt.Failed) {
+						Logger.LogTrace("Attempt {AttemptNumber} Failed - [{StartDate} - {EndDate}] {StatusCode}: {ErrorMessage}",
+							attempt.Number, attempt.StartedAt, attempt.EndedAt, attempt.ResponseStatusCode, attempt.ResponseMessage);
+					} else {
+						Logger.LogTrace("Attempt {AttemptNumber} Successful - [{StartDate} - {EndDate}] {StatusCode}",
+							attempt.Number, attempt.StartedAt, attempt.EndedAt, attempt.ResponseStatusCode);
+					}
 				}
 			}
 		}
@@ -165,7 +168,7 @@ namespace Deveel.Webhooks {
 				var subscriptions = await ResolveSubscriptionsAsync(tenantId, eventInfo, cancellationToken);
 
 				if (subscriptions == null || subscriptions.Count == 0) {
-					Logger.LogTrace("No active subscription to event {EventType} found for Tenant {TenantId}", eventInfo.EventType, tenantId);
+					Logger.LogTrace("No active subscription to event '{EventType}' found for Tenant '{TenantId}': skipping notification", eventInfo.EventType, tenantId);
 					return result;
 				}
 
@@ -212,7 +215,7 @@ namespace Deveel.Webhooks {
 
 						await OnWebhookDeliveryErrorAsync(tenantId, subscription, webhook, ex, cancellationToken);
 
-						result.AddDelivery(new WebhookDeliveryResult(webhook));
+						result.AddDelivery(WebhookDeliveryResult.Fail(webhook));
 					}
 				}
 

@@ -31,11 +31,14 @@ namespace Deveel.Webhooks {
 		/// Invoking this constrcutor also starts a timer
 		/// for the count of the following reports.
 		/// </remarks>
-		public WebhookDeliveryAttempt() {
+		internal WebhookDeliveryAttempt(int number) {
+			Number = number;
 			stopwatch = new Stopwatch();
 			stopwatch.Start();
 			StartedAt = DateTimeOffset.UtcNow;
 		}
+
+		public int Number { get; }
 
 		/// <summary>
 		/// Gets a value indicating if any response was
@@ -71,13 +74,19 @@ namespace Deveel.Webhooks {
 		/// <summary>
 		/// Gets a value indicating if the attempt was unsuccessful.
 		/// </summary>
-		public bool Failed => ResponseStatusCode >= 400 || HasTimedOut;
+		public bool Failed => (HasFinished && ResponseStatusCode == null) ||
+			(ResponseStatusCode >= 400 || HasTimedOut);
 
 		/// <summary>
 		/// Gets a value indicating if the system timed-out while
 		/// attempting to deliver a webhook.
 		/// </summary>
 		public bool HasTimedOut { get; private set; }
+
+		/// <summary>
+		/// Gets a value indicating if the attempt was finished
+		/// </summary>
+		public bool HasFinished => EndedAt != null;
 
 		/// <summary>
 		/// Notifies that the attempt of delivery was finished
@@ -87,7 +96,7 @@ namespace Deveel.Webhooks {
 		/// the receiver.</param>
 		/// <param name="message">A message that describes the status
 		/// of delivery of the webhook.</param>
-		public void Finish(int statusCode, string message) {
+		public void Finish(int? statusCode, string message) {
 			stopwatch.Stop();
 
 			ResponseStatusCode = statusCode;

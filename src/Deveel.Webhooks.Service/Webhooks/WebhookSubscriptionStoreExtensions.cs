@@ -14,22 +14,31 @@
 
 using System;
 using System.Collections.Generic;
-using System.Threading;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace Deveel.Webhooks {
 	public static class WebhookSubscriptionStoreExtensions {
-		public static Task<IList<TSubscription>> GetByEventTypeAsync<TSubscription>(this IWebhookSubscriptionStoreProvider<TSubscription> provider, string tenantId,
-			string eventType, bool activeOnly, CancellationToken cancellationToken = default)
+		public static Task<string> CreateAsync<TSubscription>(this IWebhookSubscriptionStore<TSubscription> store, TSubscription entity)
 			where TSubscription : class, IWebhookSubscription
-			=> provider.GetTenantStore(tenantId).GetByEventTypeAsync(eventType, activeOnly, cancellationToken);
+			=> store.CreateAsync(entity, default);
 
-		public static Task SetStateAsync<TSubscripton>(this IWebhookSubscriptionStoreProvider<TSubscripton> provider, string tenantId, TSubscripton subscripton, WebhookSubscriptionStateInfo stateInfo, CancellationToken cancellationToken = default)
-			where TSubscripton : class, IWebhookSubscription
-			=> provider.GetTenantStore(tenantId).SetStateAsync(subscripton, stateInfo, cancellationToken);
-
-		public static Task<int> CountAllAsync<TSubscription>(this IWebhookSubscriptionStoreProvider<TSubscription> provider, string tenantId, CancellationToken cancellationToken = default)
+		public static string Create<TSubscription>(this IWebhookSubscriptionStore<TSubscription> store, TSubscription entity)
 			where TSubscription : class, IWebhookSubscription
-			=> provider.GetTenantStore(tenantId).CountAllAsync(cancellationToken);
+			=> store.CreateAsync(entity, default)
+				.ConfigureAwait(false)
+				.GetAwaiter()
+				.GetResult();
+
+		public static Task<TSubscription> FindByIdAsync<TSubscription>(this IWebhookSubscriptionStore<TSubscription> store, string id)
+			where TSubscription : class, IWebhookSubscription
+			=> store.FindByIdAsync(id, default);
+
+		public static TSubscription FindById<TSubscription>(this IWebhookSubscriptionStore<TSubscription> store, string id)
+			where TSubscription : class, IWebhookSubscription
+			=> store.FindByIdAsync(id, default)
+				.ConfigureAwait(false)
+				.GetAwaiter()
+				.GetResult();
 	}
 }

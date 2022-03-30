@@ -15,7 +15,6 @@
 using System;
 
 using Deveel.Data;
-using Deveel.Webhooks.Storage;
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;

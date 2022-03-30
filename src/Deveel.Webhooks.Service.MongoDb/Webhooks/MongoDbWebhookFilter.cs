@@ -14,7 +14,7 @@
 
 using System;
 
-namespace Deveel.Webhooks.Storage {
+namespace Deveel.Webhooks {
 	public class MongoDbWebhookFilter : IWebhookFilter {
 		public string Expression { get; set; }
 

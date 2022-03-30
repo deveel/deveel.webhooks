@@ -14,14 +14,9 @@
 
 using System;
 
-using Deveel.Data;
-
-namespace Deveel.Webhooks.Storage {
-	public static class MongoDbOptionsBuilderExtensions {
-		public static IMongoDbOptionBuilder SetSubscriptionsCollection(this IMongoDbOptionBuilder builder, string collectionName)
-			=> builder.SetCollectionName(MongoDbWebhookStorageConstants.SubscriptionCollectionKey, collectionName);
-
-		public static IMongoDbOptionBuilder SetDeliveryResultsCollection(this IMongoDbOptionBuilder builder, string collectionName)
-			=> builder.SetCollectionName(MongoDbWebhookStorageConstants.DeliveryResultCollectionKey, collectionName);
+namespace Deveel.Webhooks {
+	public static class MongoDbWebhookStorageConstants {
+		public const string SubscriptionCollectionKey = "WebhookSubscriptions";
+		public const string DeliveryResultCollectionKey = "WebhookDeliveryResults";
 	}
 }

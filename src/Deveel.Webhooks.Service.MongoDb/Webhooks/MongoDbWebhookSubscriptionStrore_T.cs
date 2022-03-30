@@ -24,7 +24,7 @@ using Microsoft.Extensions.Options;
 
 using MongoDB.Driver;
 
-namespace Deveel.Webhooks.Storage {
+namespace Deveel.Webhooks {
 	public class MongoDbWebhookSubscriptionStrore<TSubscription> : MongoDbStoreBase<TSubscription, IWebhookSubscription>,
 											 IWebhookSubscriptionStore,
 											 IWebhookSubscriptionQueryableStore<IWebhookSubscription>
@@ -36,6 +36,8 @@ namespace Deveel.Webhooks.Storage {
 		}
 
 		protected override IMongoCollection<TSubscription> Collection => GetCollection(Options.SubscriptionsCollectionName());
+
+
 
 		public async Task<IList<TSubscription>> GetByEventTypeAsync(string eventType, bool activeOnly, CancellationToken cancellationToken) {
 			ThrowIfDisposed();
@@ -74,6 +76,9 @@ namespace Deveel.Webhooks.Storage {
 			=> SetStateAsync((TSubscription)subscription, stateInfo, cancellationToken);
 
 		IQueryable<IWebhookSubscription> IWebhookSubscriptionQueryableStore<IWebhookSubscription>.AsQueryable() => Collection.AsQueryable();
+
+		async Task<IWebhookSubscription> IWebhookSubscriptionStore<IWebhookSubscription>.FindByIdAsync(string id, CancellationToken cancellationToken)
+			=> await FindByIdAsync(id, cancellationToken);
 
 		//async Task<PagedResult<IWebhookSubscription>> IStore<IWebhookSubscription>.GetPageAsync(PagedQuery<IWebhookSubscription> query, CancellationToken cancellationToken) {
 		//	var newQuery = new PagedQuery<MongoDbWebhookSubscription>(query.Page, query.PageSize);

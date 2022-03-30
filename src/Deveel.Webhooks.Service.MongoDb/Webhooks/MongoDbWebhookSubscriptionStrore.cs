@@ -14,9 +14,17 @@
 
 using System;
 
-namespace Deveel.Webhooks.Storage {
-	public static class MongoDbWebhookStorageConstants {
-		public const string SubscriptionCollectionKey = "WebhookSubscriptions";
-		public const string DeliveryResultCollectionKey = "WebhookDeliveryResults";
+using Deveel.Data;
+
+using Microsoft.Extensions.Options;
+
+namespace Deveel.Webhooks {
+	public class MongoDbWebhookSubscriptionStrore : MongoDbWebhookSubscriptionStrore<MongoDbWebhookSubscription>,
+													IWebhookSubscriptionStore<MongoDbWebhookSubscription> {
+		public MongoDbWebhookSubscriptionStrore(IOptions<MongoDbOptions> options) : base(options) {
+		}
+
+		public MongoDbWebhookSubscriptionStrore(MongoDbOptions options) : base(options) {
+		}
 	}
 }

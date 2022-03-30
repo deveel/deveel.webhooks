@@ -6,7 +6,7 @@ using Deveel.Data;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
-namespace Deveel.Webhooks.Storage {
+namespace Deveel.Webhooks {
 	public class MongoDbWebhookDeliveryResult : IWebhookDeliveryResult, IMongoDocument {
 		[BsonId]
 		public ObjectId Id { get; set; }
@@ -17,6 +17,6 @@ namespace Deveel.Webhooks.Storage {
 
 		IEnumerable<IWebhookDeliveryAttempt> IWebhookDeliveryResult.DeliveryAttempts => DeliveryAttempts;
 
-		public virtual List<MongoDbWebhookDeliveryAttempt> DeliveryAttempts { get; set;}
+		public virtual List<MongoDbWebhookDeliveryAttempt> DeliveryAttempts { get; set; }
 	}
 }

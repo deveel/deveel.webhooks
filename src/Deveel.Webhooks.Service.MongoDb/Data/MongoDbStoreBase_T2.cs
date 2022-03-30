@@ -22,7 +22,7 @@ using MongoDB.Driver;
 using Deveel.Webhooks;
 
 namespace Deveel.Data {
-	public abstract class MongoDbStoreBase<TDocument, TFacade> : MongoDbStoreBase<TDocument>, IWebhookStore<TFacade>
+	public abstract class MongoDbStoreBase<TDocument, TFacade> : MongoDbStoreBase<TDocument>
 		where TDocument : class, TFacade, IMongoDocument
 		where TFacade : class {
 		protected MongoDbStoreBase(IOptions<MongoDbOptions> options) : base(options) {
@@ -40,8 +40,8 @@ namespace Deveel.Data {
 		public Task<bool> DeleteAsync(TFacade entity, CancellationToken cancellationToken)
 			=> base.DeleteAsync((TDocument)entity, cancellationToken);
 
-		async Task<TFacade> IWebhookStore<TFacade>.FindByIdAsync(string id, CancellationToken cancellationToken)
-			=> await base.FindByIdAsync(id, cancellationToken);
+		//async Task<TFacade> IWebhookStore<TFacade>.FindByIdAsync(string id, CancellationToken cancellationToken)
+		//	=> await base.FindByIdAsync(id, cancellationToken);
 
 		public async Task<PagedResult<TFacade>> GetPageAsync(PagedQuery<TFacade> query, CancellationToken cancellationToken) {
 			var newQuery = new PagedQuery<TDocument>(query.Page, query.PageSize);

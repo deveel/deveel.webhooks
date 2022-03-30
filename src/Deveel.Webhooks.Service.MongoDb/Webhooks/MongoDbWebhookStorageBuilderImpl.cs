@@ -6,7 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
-namespace Deveel.Webhooks.Storage {
+namespace Deveel.Webhooks {
 	class MongoDbWebhookStorageBuilderImpl : IMongoDbWebhookStorageBuilder {
 		private readonly IWebhookServiceBuilder serviceBuilder;
 
@@ -23,9 +23,7 @@ namespace Deveel.Webhooks.Storage {
 					if (section != null)
 						section.Bind(options);
 
-					if (!String.IsNullOrWhiteSpace(connectionStringName)) {
-						options.ConnectionString = config.GetConnectionString(connectionStringName);
-					}
+					if (!string.IsNullOrWhiteSpace(connectionStringName)) options.ConnectionString = config.GetConnectionString(connectionStringName);
 				});
 
 			return services;
@@ -90,7 +88,7 @@ namespace Deveel.Webhooks.Storage {
 			return this;
 		}
 
-		public IMongoDbWebhookStorageBuilder UseSubscriptionStoreProvider<TProvider>() 
+		public IMongoDbWebhookStorageBuilder UseSubscriptionStoreProvider<TProvider>()
 			where TProvider : MongoDbWebhookSubscriptionStoreProvider {
 			serviceBuilder.ConfigureServices(services => AddSubscriptionFactory(services));
 			serviceBuilder.Use<IWebhookSubscriptionStoreProvider, TProvider>();

@@ -16,15 +16,12 @@ using System;
 
 using Deveel.Data;
 
-using Microsoft.Extensions.Options;
+namespace Deveel.Webhooks {
+	public static class MongoDbOptionsBuilderExtensions {
+		public static IMongoDbOptionBuilder SetSubscriptionsCollection(this IMongoDbOptionBuilder builder, string collectionName)
+			=> builder.SetCollectionName(MongoDbWebhookStorageConstants.SubscriptionCollectionKey, collectionName);
 
-namespace Deveel.Webhooks.Storage {
-	public class MongoDbWebhookSubscriptionStrore : MongoDbWebhookSubscriptionStrore<MongoDbWebhookSubscription>,
-													IWebhookSubscriptionStore<MongoDbWebhookSubscription> {
-		public MongoDbWebhookSubscriptionStrore(IOptions<MongoDbOptions> options) : base(options) {
-		}
-
-		public MongoDbWebhookSubscriptionStrore(MongoDbOptions options) : base(options) {
-		}
+		public static IMongoDbOptionBuilder SetDeliveryResultsCollection(this IMongoDbOptionBuilder builder, string collectionName)
+			=> builder.SetCollectionName(MongoDbWebhookStorageConstants.DeliveryResultCollectionKey, collectionName);
 	}
 }

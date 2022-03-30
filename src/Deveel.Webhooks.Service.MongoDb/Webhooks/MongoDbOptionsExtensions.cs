@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 using Deveel.Data;
 
-namespace Deveel.Webhooks.Storage {
+namespace Deveel.Webhooks {
 	public static class MongoDbOptionsExtensions {
 		public static string SubscriptionsCollectionName(this MongoDbOptions options)
 			=> options.Collections?[MongoDbWebhookStorageConstants.SubscriptionCollectionKey];

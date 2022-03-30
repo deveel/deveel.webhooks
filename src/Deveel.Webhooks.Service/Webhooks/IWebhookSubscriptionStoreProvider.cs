@@ -15,9 +15,9 @@
 using System;
 
 namespace Deveel.Webhooks {
-	public interface IWebhookSubscriptionStoreProvider<TSubscription> : IWebhookStoreProvider<TSubscription>
+	public interface IWebhookSubscriptionStoreProvider<TSubscription>
 		where TSubscription : class, IWebhookSubscription {
-		new IWebhookSubscriptionStore<TSubscription> GetTenantStore(string tenantId);
+		IWebhookSubscriptionStore<TSubscription> GetTenantStore(string tenantId);
 	}
 
 	public interface IWebhookSubscriptionStoreProvider : IWebhookSubscriptionStoreProvider<IWebhookSubscription> {

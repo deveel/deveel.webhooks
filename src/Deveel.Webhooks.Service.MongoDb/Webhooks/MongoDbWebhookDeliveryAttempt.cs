@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Deveel.Webhooks.Storage {
+namespace Deveel.Webhooks {
 	public class MongoDbWebhookDeliveryAttempt : IWebhookDeliveryAttempt {
 		public int? ResponseStatusCode { get; set; }
 

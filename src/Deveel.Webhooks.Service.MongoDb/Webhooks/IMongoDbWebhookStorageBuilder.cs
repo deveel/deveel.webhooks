@@ -4,7 +4,7 @@ using System.Text;
 
 using Deveel.Data;
 
-namespace Deveel.Webhooks.Storage {
+namespace Deveel.Webhooks {
 	public interface IMongoDbWebhookStorageBuilder {
 		IMongoDbWebhookStorageBuilder Configure(string sectionName, string connectionStringName = null);
 

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 
 using Deveel.Data;
+using Deveel.Webhooks;
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;

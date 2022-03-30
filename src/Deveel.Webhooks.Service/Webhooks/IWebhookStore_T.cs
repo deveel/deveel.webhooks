@@ -17,10 +17,8 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Threading;
 
-using Deveel.Webhooks;
-
-namespace Deveel.Data {
-	public interface IStore<TEntity> where TEntity : class {
+namespace Deveel.Webhooks {
+	public interface IWebhookStore<TEntity> where TEntity : class {
 		bool SupportsPaging { get; }
 
 

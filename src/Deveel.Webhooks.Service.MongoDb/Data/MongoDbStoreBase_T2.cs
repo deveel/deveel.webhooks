@@ -19,9 +19,10 @@ using System.Threading;
 using Microsoft.Extensions.Options;
 using System.Linq;
 using MongoDB.Driver;
+using Deveel.Webhooks;
 
 namespace Deveel.Data {
-	public abstract class MongoDbStoreBase<TDocument, TFacade> : MongoDbStoreBase<TDocument>, IStore<TFacade>
+	public abstract class MongoDbStoreBase<TDocument, TFacade> : MongoDbStoreBase<TDocument>, IWebhookStore<TFacade>
 		where TDocument : class, TFacade, IMongoDocument
 		where TFacade : class {
 		protected MongoDbStoreBase(IOptions<MongoDbOptions> options) : base(options) {
@@ -39,7 +40,7 @@ namespace Deveel.Data {
 		public Task<bool> DeleteAsync(TFacade entity, CancellationToken cancellationToken)
 			=> base.DeleteAsync((TDocument)entity, cancellationToken);
 
-		async Task<TFacade> IStore<TFacade>.FindByIdAsync(string id, CancellationToken cancellationToken)
+		async Task<TFacade> IWebhookStore<TFacade>.FindByIdAsync(string id, CancellationToken cancellationToken)
 			=> await base.FindByIdAsync(id, cancellationToken);
 
 		public async Task<PagedResult<TFacade>> GetPageAsync(PagedQuery<TFacade> query, CancellationToken cancellationToken) {

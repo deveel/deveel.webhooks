@@ -17,24 +17,24 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Deveel.Data {
-	public static class StoreExtensions {
-		public static Task<string> CreateAsync<TEntity>(this IStore<TEntity> store, TEntity entity)
+namespace Deveel.Webhooks {
+	public static class WebhookStoreExtensions {
+		public static Task<string> CreateAsync<TEntity>(this IWebhookStore<TEntity> store, TEntity entity)
 			where TEntity : class
 			=> store.CreateAsync(entity, default);
 
-		public static string Create<TEntity>(this IStore<TEntity> store, TEntity entity)
+		public static string Create<TEntity>(this IWebhookStore<TEntity> store, TEntity entity)
 			where TEntity : class
 			=> store.CreateAsync(entity, default)
 				.ConfigureAwait(false)
 				.GetAwaiter()
 				.GetResult();
 
-		public static Task<TEntity> FindByIdAsync<TEntity>(this IStore<TEntity> store, string id)
+		public static Task<TEntity> FindByIdAsync<TEntity>(this IWebhookStore<TEntity> store, string id)
 			where TEntity : class
 			=> store.FindByIdAsync(id, default);
 
-		public static TEntity FindById<TEntity>(this IStore<TEntity> store, string id)
+		public static TEntity FindById<TEntity>(this IWebhookStore<TEntity> store, string id)
 			where TEntity : class
 			=> store.FindByIdAsync(id, default)
 				.ConfigureAwait(false)

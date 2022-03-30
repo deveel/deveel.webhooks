@@ -13,9 +13,10 @@
 // limitations under the License.
 
 using System;
+using System.Linq;
 
-namespace Deveel.Data {
-	public interface IStoreProvider<TEntity> where TEntity : class {
-		IStore<TEntity> GetTenantStore(string tenantId);
+namespace Deveel.Webhooks {
+	public interface IWebhookQueryableStore<TEntity> : IWebhookStore<TEntity> where TEntity : class {
+		IQueryable<TEntity> AsQueryable();
 	}
 }

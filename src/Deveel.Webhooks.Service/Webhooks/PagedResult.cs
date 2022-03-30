@@ -15,7 +15,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Deveel.Data {
+namespace Deveel.Webhooks {
 	public sealed class PagedResult<TItem> where TItem : class {
 		public PagedResult(PagedQuery<TItem> query, int totalCount, IEnumerable<TItem> subscriptions = null) {
 			if (totalCount < 0)

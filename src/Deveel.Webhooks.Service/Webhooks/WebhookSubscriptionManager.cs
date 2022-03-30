@@ -14,8 +14,6 @@
 
 using System;
 
-using Deveel.Webhooks.Storage;
-
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 

@@ -1,9 +1,11 @@
 ﻿using System;
 
+using Deveel.Webhooks;
+
 using Microsoft.Extensions.Options;
 
 namespace Deveel.Data {
-	public abstract class MongoDbStoreProviderBase<TDocument> : IStoreProvider<TDocument>
+	public abstract class MongoDbStoreProviderBase<TDocument> : IWebhookStoreProvider<TDocument>
 		where TDocument : class, IMongoDocument {
 		protected MongoDbStoreProviderBase(IOptions<MongoDbOptions> options)
 	: this(options.Value) {
@@ -15,7 +17,7 @@ namespace Deveel.Data {
 
 		protected MongoDbOptions Options { get; }
 
-		IStore<TDocument> IStoreProvider<TDocument>.GetTenantStore(string tenantId) => CreateStore(tenantId);
+		IWebhookStore<TDocument> IWebhookStoreProvider<TDocument>.GetTenantStore(string tenantId) => CreateStore(tenantId);
 
 		protected MongoDbStoreBase<TDocument> CreateStore(string tenantId) {
 			if (string.IsNullOrWhiteSpace(tenantId))

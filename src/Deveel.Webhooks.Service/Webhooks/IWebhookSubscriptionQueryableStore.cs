@@ -12,9 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
 
-namespace Deveel.Webhooks.Storage {
-	public interface IWebhookDeliveryResultStore<TResult> where TResult : class, IWebhookDeliveryResult {
+using System;
+using System.Linq;
+
+namespace Deveel.Webhooks {
+	public interface IWebhookSubscriptionQueryableStore<TSubscription> : IWebhookSubscriptionStore<TSubscription>
+		where TSubscription : class, IWebhookSubscription {
+		IQueryable<TSubscription> AsQueryable();
 	}
 }

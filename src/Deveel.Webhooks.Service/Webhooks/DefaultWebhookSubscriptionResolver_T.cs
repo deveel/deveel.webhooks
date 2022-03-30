@@ -19,7 +19,6 @@ using System.Threading;
 using System.Threading.Tasks;
 
 using Deveel.Webhooks.Caching;
-using Deveel.Webhooks.Storage;
 
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;

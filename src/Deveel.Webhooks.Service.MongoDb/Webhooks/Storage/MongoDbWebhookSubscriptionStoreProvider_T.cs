@@ -15,7 +15,6 @@
 using System;
 
 using Deveel.Data;
-using Deveel.Webhooks.Storage;
 
 using Microsoft.Extensions.Options;
 
@@ -40,7 +39,7 @@ namespace Deveel.Webhooks.Storage {
 		IWebhookSubscriptionStore<IWebhookSubscription> IWebhookSubscriptionStoreProvider<IWebhookSubscription>.GetTenantStore(string tenantId)
 			=> GetStore(tenantId);
 
-		IStore<IWebhookSubscription> IStoreProvider<IWebhookSubscription>.GetTenantStore(string tenantId)
+		IWebhookStore<IWebhookSubscription> IWebhookStoreProvider<IWebhookSubscription>.GetTenantStore(string tenantId)
 			=> GetStore(tenantId);
 	}
 }

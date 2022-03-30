@@ -17,7 +17,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-using Deveel.Data;
+using Deveel.Webhooks;
 using Deveel.Webhooks.Storage;
 
 using Microsoft.Extensions.Options;
@@ -27,7 +27,7 @@ using MongoDB.Bson.Serialization.Conventions;
 using MongoDB.Driver;
 
 namespace Deveel.Data {
-	public abstract class MongoDbStoreBase<TDocument> : IStore<TDocument>, IQueryableStore<TDocument>, IDisposable
+	public abstract class MongoDbStoreBase<TDocument> : IWebhookStore<TDocument>, IWebhookQueryableStore<TDocument>, IDisposable
 		where TDocument : class, IMongoDocument {
 		private bool disposed;
 

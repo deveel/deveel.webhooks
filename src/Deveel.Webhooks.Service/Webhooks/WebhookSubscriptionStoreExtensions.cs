@@ -17,7 +17,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Deveel.Webhooks.Storage {
+namespace Deveel.Webhooks {
 	public static class WebhookSubscriptionStoreExtensions {
 		public static Task<IList<TSubscription>> GetByEventTypeAsync<TSubscription>(this IWebhookSubscriptionStoreProvider<TSubscription> provider, string tenantId,
 			string eventType, bool activeOnly, CancellationToken cancellationToken = default)

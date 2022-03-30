@@ -16,10 +16,12 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
+using Deveel.Webhooks;
+
 using Microsoft.Extensions.Options;
 
 namespace Deveel.Data {
-	public abstract class MongoDbStoreProviderBase<TDocument, TFacade> : MongoDbStoreProviderBase<TDocument>, IStoreProvider<TFacade>
+	public abstract class MongoDbStoreProviderBase<TDocument, TFacade> : MongoDbStoreProviderBase<TDocument>, IWebhookStoreProvider<TFacade>
 		where TDocument : class, TFacade, IMongoDocument
 		where TFacade : class {
 		protected MongoDbStoreProviderBase(IOptions<MongoDbOptions> options)
@@ -31,7 +33,7 @@ namespace Deveel.Data {
 			//Options = options;
 		}
 
-		IStore<TFacade> IStoreProvider<TFacade>.GetTenantStore(string tenantId) 
+		IWebhookStore<TFacade> IWebhookStoreProvider<TFacade>.GetTenantStore(string tenantId) 
 			=> (MongoDbStoreBase<TDocument, TFacade>)base.CreateStore(tenantId);
 
 		//protected MongoDbOptions Options { get; }

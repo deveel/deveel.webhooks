@@ -15,7 +15,6 @@
 using System;
 using System.Threading.Tasks;
 using System.Threading;
-using Deveel.Data;
 
 namespace Deveel.Webhooks {
 	public interface IWebhookSubscriptionManager<TSubscription>

@@ -15,7 +15,7 @@
 using System;
 using System.Linq.Expressions;
 
-namespace Deveel.Data {
+namespace Deveel.Webhooks {
 	public sealed class PagedQuery<TItem> where TItem : class {
 		public PagedQuery(int page, int pageSize) {
 			if (page < 1)

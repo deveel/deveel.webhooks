@@ -16,32 +16,29 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-using Deveel.Webhooks.Storage;
-using Deveel.Webhooks;
-
-namespace Deveel.Data {
-	public static class StoreProviderExtensions {
-		public static Task<string> CreateAsync<TEntity>(this IStoreProvider<TEntity> provider, string tenantId, TEntity entity, CancellationToken cancellationToken = default)
+namespace Deveel.Webhooks {
+	public static class WebhookStoreProviderExtensions {
+		public static Task<string> CreateAsync<TEntity>(this IWebhookStoreProvider<TEntity> provider, string tenantId, TEntity entity, CancellationToken cancellationToken = default)
 			where TEntity : class
 			=> provider.GetTenantStore(tenantId).CreateAsync(entity, cancellationToken);
 
-		public static string Create<TEntity>(this IStoreProvider<TEntity> provider, string tenantId, TEntity entity)
+		public static string Create<TEntity>(this IWebhookStoreProvider<TEntity> provider, string tenantId, TEntity entity)
 			where TEntity : class
 			=> provider.GetTenantStore(tenantId).Create(entity);
 
-		public static Task<TEntity> FindByIdAsync<TEntity>(this IStoreProvider<TEntity> provider, string tenantId, string id, CancellationToken cancellationToken = default)
+		public static Task<TEntity> FindByIdAsync<TEntity>(this IWebhookStoreProvider<TEntity> provider, string tenantId, string id, CancellationToken cancellationToken = default)
 			where TEntity : class
 			=> provider.GetTenantStore(tenantId).FindByIdAsync(id, cancellationToken);
 
-		public static TEntity FindById<TEntity>(this IStoreProvider<TEntity> provider, string tenantId, string id)
+		public static TEntity FindById<TEntity>(this IWebhookStoreProvider<TEntity> provider, string tenantId, string id)
 			where TEntity : class
 			=> provider.GetTenantStore(tenantId).FindById(id);
 
-		public static Task<bool> DeleteAsync<TEntity>(this IStoreProvider<TEntity> provider, string tenantId, TEntity entity, CancellationToken cancellationToken = default)
+		public static Task<bool> DeleteAsync<TEntity>(this IWebhookStoreProvider<TEntity> provider, string tenantId, TEntity entity, CancellationToken cancellationToken = default)
 			where TEntity : class
 			=> provider.GetTenantStore(tenantId).DeleteAsync(entity, cancellationToken);
 
-		public static Task<bool> UpdateAsync<TEntity>(this IStoreProvider<TEntity> provider, string tenantId, TEntity entity, CancellationToken cancellationToken = default)
+		public static Task<bool> UpdateAsync<TEntity>(this IWebhookStoreProvider<TEntity> provider, string tenantId, TEntity entity, CancellationToken cancellationToken = default)
 			where TEntity : class
 			=> provider.GetTenantStore(tenantId).UpdateAsync(entity, cancellationToken);
 	}

@@ -49,7 +49,7 @@ namespace Deveel.Webhooks {
 			services.AddSingleton<IWebhookSerializer, JsonWebhookSerializer>();
 			services.AddSingleton<JsonWebhookSerializer>();
 
-			services.AddScoped<IWebhookServiceConfiguration, DefaultWebhookServiceConfiguration>();
+			services.AddScoped<IWebhookServiceConfiguration, WebhookServiceConfiguration>();
 
 			services.AddOptions<WebhookDeliveryOptions>();
 

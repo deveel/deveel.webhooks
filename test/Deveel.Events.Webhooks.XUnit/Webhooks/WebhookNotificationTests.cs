@@ -53,7 +53,6 @@ namespace Deveel.Webhooks {
 					options.SignWebhooks()
 						   .SecondsBeforeTimeOut(TimeOutSeconds))
 				.UseSubscriptionManager()
-				.AddDynamicLinqFilterEvaluator()
 				.AddDataFactory<TestDataFactory>()
 				.UseMongoDb(options => {
 					options.DatabaseName = "webhooks";
@@ -63,6 +62,7 @@ namespace Deveel.Webhooks {
 					options.MultiTenancy.TenantField = "TenantId";
 				});
 			})
+				.AddDynamicLinqFilterEvaluator()
 			.AddTestHttpClient(async request => {
 				try {
 					if (testTimeout) {

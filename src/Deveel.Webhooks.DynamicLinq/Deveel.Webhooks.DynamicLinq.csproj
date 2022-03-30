@@ -19,6 +19,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Webhooks\WebhookServiceBuilderExtensions.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Include="..\..\deveel-logo.png">
       <Pack>True</Pack>
       <PackagePath></PackagePath>

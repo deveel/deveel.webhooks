@@ -17,7 +17,7 @@ using System;
 using Newtonsoft.Json;
 
 namespace Deveel.Webhooks {
-	class WebhookDeliveryOptionsBuilder : IWebhookDeliveryOptionsBuilder {
+	public sealed class WebhookDeliveryOptionsBuilder : IWebhookDeliveryOptionsBuilder {
 		public WebhookDeliveryOptionsBuilder(WebhookDeliveryOptions options) {
 			Options = options;
 		}

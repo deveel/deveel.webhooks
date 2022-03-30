@@ -22,13 +22,13 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
 namespace Deveel.Webhooks {
-	class DefaultWebhookServiceConfiguration : IWebhookServiceConfiguration {
+	public class WebhookServiceConfiguration : IWebhookServiceConfiguration {
 		private readonly IEnumerable<IWebhookFilterEvaluator> filterEvaluators;
 		private readonly IEnumerable<IWebhookSerializer> serializers;
 		private readonly IEnumerable<IWebhookDataFactory> dataFactories;
 		private readonly IEnumerable<IWebhookSigner> signers;
 
-		public DefaultWebhookServiceConfiguration(IOptions<WebhookDeliveryOptions> options, 
+		public WebhookServiceConfiguration(IOptions<WebhookDeliveryOptions> options, 
 			IEnumerable<IWebhookSerializer> serializers, 
 			IEnumerable<IWebhookFilterEvaluator> filterEvaluators, 
 			IEnumerable<IWebhookDataFactory> dataFactories, 

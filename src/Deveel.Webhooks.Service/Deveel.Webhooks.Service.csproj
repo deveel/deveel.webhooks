@@ -1,8 +1,8 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.1</TargetFramework>
-    <VersionPrefix>1.0.3</VersionPrefix>
+    <TargetFramework>net5.0</TargetFramework>
+    <VersionPrefix>1.1.0</VersionPrefix>
     <RootNamespace>Deveel</RootNamespace>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
@@ -17,15 +17,6 @@
     <RepositoryType>git</RepositoryType>
     <PackageTags>webhook event schema management subscriptions subscription</PackageTags>
   </PropertyGroup>
-
-  <ItemGroup>
-    <Compile Remove="Webhooks\DefaultWebhookSubscriptionResolver.cs" />
-    <Compile Remove="Webhooks\IWebhookServiceBuilder.cs" />
-    <Compile Remove="Webhooks\IWebhookSubscriptionFactory.cs" />
-    <Compile Remove="Webhooks\IWebhookSubscriptionManager.cs" />
-    <Compile Remove="Webhooks\WebhookServiceBuilderExtensions.cs" />
-    <Compile Remove="Webhooks\WebhookSubscriptionManager.cs" />
-  </ItemGroup>
 
   <ItemGroup>
     <None Include="..\..\deveel-logo.png">

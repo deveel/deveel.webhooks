@@ -19,6 +19,15 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Webhooks\DefaultWebhookSubscriptionResolver.cs" />
+    <Compile Remove="Webhooks\IWebhookServiceBuilder.cs" />
+    <Compile Remove="Webhooks\IWebhookSubscriptionFactory.cs" />
+    <Compile Remove="Webhooks\IWebhookSubscriptionManager.cs" />
+    <Compile Remove="Webhooks\WebhookServiceBuilderExtensions.cs" />
+    <Compile Remove="Webhooks\WebhookSubscriptionManager.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Include="..\..\deveel-logo.png">
       <Pack>True</Pack>
       <PackagePath></PackagePath>

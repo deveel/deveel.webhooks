@@ -27,6 +27,8 @@ namespace Deveel.Webhooks {
 		public MongoDbWebhookSubscriptionStoreProvider(MongoDbOptions baseOptions) : base(baseOptions) {
 		}
 
+		protected override MongoDbStoreBase<MongoDbWebhookSubscription> CreateStore(MongoDbOptions options) => new MongoDbWebhookSubscriptionStrore(options);
+
 		IWebhookSubscriptionStore<MongoDbWebhookSubscription> IWebhookSubscriptionStoreProvider<MongoDbWebhookSubscription>.GetTenantStore(string tenantId)
 			=> (IWebhookSubscriptionStore<MongoDbWebhookSubscription>)GetStore(tenantId);
 	}

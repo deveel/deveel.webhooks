@@ -17,26 +17,28 @@ using System.Collections.Generic;
 using System.Linq;
 
 namespace Deveel.Webhooks {
-	public class MongoDbWebhookSubscriptionFactory : IWebhookSubscriptionFactory<MongoDbWebhookSubscription>,
-													 IWebhookSubscriptionFactory {
-		public virtual MongoDbWebhookSubscription Create(WebhookSubscriptionInfo subscriptionInfo) {
-			var doc = new MongoDbWebhookSubscription {
-				Name = subscriptionInfo.Name,
-				EventTypes = subscriptionInfo.EventTypes?.ToList(),
-				DestinationUrl = subscriptionInfo.DestinationUrl.ToString(),
-				RetryCount = subscriptionInfo.RetryCount,
-				Secret = subscriptionInfo.Secret,
-				LastStatusTime = subscriptionInfo.Active != null ?
+	public class MongoDbWebhookSubscriptionFactory<TSubscription> : IWebhookSubscriptionFactory<TSubscription> where TSubscription : MongoDbWebhookSubscription {
+		protected virtual TSubscription CreateSubscription() {
+			return Activator.CreateInstance<TSubscription>();
+		}
+
+		public virtual TSubscription Create(WebhookSubscriptionInfo subscriptionInfo) {
+			var doc = CreateSubscription();
+			doc.Name = subscriptionInfo.Name;
+			doc.EventTypes = subscriptionInfo.EventTypes?.ToList();
+			doc.DestinationUrl = subscriptionInfo.DestinationUrl.ToString();
+			doc.RetryCount = subscriptionInfo.RetryCount;
+			doc.Secret = subscriptionInfo.Secret;
+			doc.LastStatusTime = subscriptionInfo.Active != null ?
 					DateTimeOffset.UtcNow :
-					DateTimeOffset.MinValue,
-				Headers = subscriptionInfo.Headers != null
+					DateTimeOffset.MinValue;
+			doc.Headers = subscriptionInfo.Headers != null
 					? new Dictionary<string, string>(subscriptionInfo.Headers)
-					: null,
-				Filters = subscriptionInfo.Filters?.Select(MapFilter).ToList(),
-				Metadata = subscriptionInfo.Metadata != null
+					: null;
+			doc.Filters = subscriptionInfo.Filters?.Select(MapFilter).ToList();
+			doc.Metadata = subscriptionInfo.Metadata != null
 					? new Dictionary<string, object>(subscriptionInfo.Metadata)
-					: new Dictionary<string, object>()
-			};
+					: new Dictionary<string, object>();
 
 			if (subscriptionInfo.Active != null) {
 				doc.Status = subscriptionInfo.Active.Value ?
@@ -56,7 +58,11 @@ namespace Deveel.Webhooks {
 				Format = filter.Format
 			};
 
-		IWebhookSubscription IWebhookSubscriptionFactory<IWebhookSubscription>.Create(WebhookSubscriptionInfo subscriptionInfo)
-			=> Create(subscriptionInfo);
+		//IWebhookSubscription IWebhookSubscriptionFactory<IWebhookSubscription>.Create(WebhookSubscriptionInfo subscriptionInfo)
+		//	=> Create(subscriptionInfo);
+	}
+
+	public class MongoDbWebhookSubscriptionFactory : MongoDbWebhookSubscriptionFactory<MongoDbWebhookSubscription> {
+
 	}
 }

@@ -33,7 +33,7 @@ namespace Deveel.Webhooks {
 
 		private readonly string tenantId = Guid.NewGuid().ToString();
 
-		private IWebhookSubscriptionManager webhookManager;
+		private WebhookSubscriptionManager<MongoDbWebhookSubscription> webhookManager;
 		private IWebhookNotifier notifier;
 
 		private WebhookPayload lastWebhook;
@@ -48,7 +48,7 @@ namespace Deveel.Webhooks {
 				logging.AddXUnit(outputHelper, options => options.Filter = (category, level) => true);
 			});
 
-			services.AddWebhooks(builder => {
+			services.AddWebhooks<MongoDbWebhookSubscription>(builder => {
 				builder.ConfigureDelivery(options =>
 					options.SignWebhooks()
 						   .SecondsBeforeTimeOut(TimeOutSeconds))
@@ -84,7 +84,7 @@ namespace Deveel.Webhooks {
 
 			var provider = services.BuildServiceProvider();
 
-			webhookManager = provider.GetService<IWebhookSubscriptionManager>();
+			webhookManager = provider.GetService<WebhookSubscriptionManager<MongoDbWebhookSubscription>>();
 			notifier = provider.GetService<IWebhookNotifier>();
 		}
 

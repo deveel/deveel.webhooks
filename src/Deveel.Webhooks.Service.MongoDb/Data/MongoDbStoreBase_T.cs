@@ -26,7 +26,7 @@ using MongoDB.Bson.Serialization.Conventions;
 using MongoDB.Driver;
 
 namespace Deveel.Data {
-	public abstract class MongoDbStoreBase<TDocument> : IWebhookQueryableStore<TDocument>, IDisposable
+	public abstract class MongoDbStoreBase<TDocument> : IDisposable
 		where TDocument : class, IMongoDocument {
 		private bool disposed;
 

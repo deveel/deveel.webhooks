@@ -16,7 +16,7 @@ namespace Deveel.Webhooks {
 			return services.BuildServiceProvider().GetRequiredService<IWebhookServiceConfiguration>();
 		}
 
-		private static IWebhookServiceConfiguration Configure(Action<IWebhookServiceBuilder> configure = null)
+		private static IWebhookServiceConfiguration Configure(Action<WebhookServiceBuilder<MongoDbWebhookSubscription>> configure = null)
 			=> Configure(services => services.AddWebhooks(configure));
 
 		[Fact]
@@ -82,7 +82,7 @@ namespace Deveel.Webhooks {
 					});
 
 				services.AddSingleton<IConfiguration>(configBuilder.Build())
-					.AddWebhooks(webhooks => webhooks.ConfigureDelivery("Webhooks"));
+					.AddWebhooks<MongoDbWebhookSubscription>(webhooks => webhooks.ConfigureDelivery("Webhooks"));
 			});
 
 			Assert.NotNull(config);

@@ -26,16 +26,16 @@ namespace Deveel.Webhooks {
 		private readonly string tenantId = Guid.NewGuid().ToString("N");
 		private readonly string userId = Guid.NewGuid().ToString("N");
 
-		private readonly IWebhookSubscriptionManager webhookManager;
+		private readonly IWebhookSubscriptionManager<MongoDbWebhookSubscription> webhookManager;
 		private readonly IWebhookSubscriptionStoreProvider storeProvider;
 
-		private readonly IWebhookSubscriptionFactory subscriptionFactory;
+		private readonly IWebhookSubscriptionFactory<MongoDbWebhookSubscription> subscriptionFactory;
 
 		public WebhookManagementTests() {
 			mongoDbCluster = MongoDbRunner.Start(logger: NullLogger.Instance);
 
 			var services = new ServiceCollection();
-			services.AddWebhooks(buidler => {
+			services.AddWebhooks<MongoDbWebhookSubscription>(buidler => {
 				buidler.ConfigureDelivery(options =>
 					options.SignWebhooks())
 				.UseSubscriptionManager()
@@ -50,9 +50,9 @@ namespace Deveel.Webhooks {
 
 			var provider = services.BuildServiceProvider();
 
-			webhookManager = provider.GetService<IWebhookSubscriptionManager>();
+			webhookManager = provider.GetService<IWebhookSubscriptionManager<MongoDbWebhookSubscription>>();
 			storeProvider = provider.GetRequiredService<IWebhookSubscriptionStoreProvider>();
-			subscriptionFactory = provider.GetRequiredService<IWebhookSubscriptionFactory>();
+			subscriptionFactory = provider.GetRequiredService<IWebhookSubscriptionFactory<MongoDbWebhookSubscription>>();
 		}
 
 		private async Task<string> CreateSubscription(WebhookSubscriptionInfo subscriptionInfo) {
@@ -106,7 +106,7 @@ namespace Deveel.Webhooks {
 			var subscription = await webhookManager.GetSubscriptionAsync(tenantId, subscriptionId, CancellationToken.None);
 
 			Assert.NotNull(subscription);
-			Assert.Equal(subscriptionId, subscription.SubscriptionId);
+			Assert.Equal(subscriptionId, subscription.Id.ToString());
 			Assert.Contains("test.event", subscription.EventTypes);
 			Assert.NotNull(subscription.Filters);
 			Assert.NotEmpty(subscription.Filters);
@@ -134,15 +134,15 @@ namespace Deveel.Webhooks {
 				Name = "Second Test Callback"
 			});
 
-			var query = new PagedQuery<IWebhookSubscription>(1, 10);
+			var query = new PagedQuery<MongoDbWebhookSubscription>(1, 10);
 			var result = await webhookManager.GetSubscriptionsAsync(tenantId, query, default);
 
 			Assert.NotNull(result);
 			Assert.NotEmpty(result.Items);
 			Assert.Equal(2, result.TotalCount);
 			Assert.Equal(1, result.TotalPages);
-			Assert.Equal(subscriptionId1, result.Items.ElementAt(0).SubscriptionId);
-			Assert.Equal(subscriptionId2, result.Items.ElementAt(1).SubscriptionId);
+			Assert.Equal(subscriptionId1, result.Items.ElementAt(0).Id.ToString());
+			Assert.Equal(subscriptionId2, result.Items.ElementAt(1).Id.ToString());
 		}
 
 		[Fact]

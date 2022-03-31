@@ -15,6 +15,15 @@
 using System;
 
 namespace Deveel.Webhooks {
-	public interface IWebhookDeliveryResultStore<TResult> where TResult : class, IWebhookDeliveryResult {
+	/// <summary>
+	/// An exception that is thrown during the validation
+	/// of a webhook subscription to be created or updated
+	/// </summary>
+	public class WebhookSubscriptionValidationException : WebhookServiceException {
+		public WebhookSubscriptionValidationException() {
+		}
+
+		public WebhookSubscriptionValidationException(string message) : base(message) {
+		}
 	}
 }

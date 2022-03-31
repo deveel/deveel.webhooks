@@ -41,7 +41,4 @@ namespace Deveel.Webhooks {
 
 		Task SetStateAsync(TSubscription subscription, WebhookSubscriptionStateInfo stateInfo, CancellationToken cancellationToken);
 	}
-
-	public interface IWebhookSubscriptionStore : IWebhookSubscriptionStore<IWebhookSubscription> {
-	}
 }

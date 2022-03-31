@@ -19,8 +19,7 @@ using Deveel.Data;
 using Microsoft.Extensions.Options;
 
 namespace Deveel.Webhooks {
-	public class MongoDbWebhookSubscriptionStoreProvider<TSubscription> : MongoDbStoreProviderBase<TSubscription, IWebhookSubscription>,
-													IWebhookSubscriptionStoreProvider
+	public class MongoDbWebhookSubscriptionStoreProvider<TSubscription> : MongoDbStoreProviderBase<TSubscription>
 			where TSubscription : MongoDbWebhookSubscription {
 		public MongoDbWebhookSubscriptionStoreProvider(IOptions<MongoDbOptions> baseOptions)
 			: base(baseOptions) {
@@ -35,11 +34,5 @@ namespace Deveel.Webhooks {
 
 		public MongoDbWebhookSubscriptionStrore<TSubscription> GetStore(string tenantId)
 			=> (MongoDbWebhookSubscriptionStrore<TSubscription>)CreateStore(tenantId);
-
-		IWebhookSubscriptionStore<IWebhookSubscription> IWebhookSubscriptionStoreProvider<IWebhookSubscription>.GetTenantStore(string tenantId)
-			=> GetStore(tenantId);
-
-		//IWebhookStore<IWebhookSubscription> IWebhookStoreProvider<IWebhookSubscription>.GetTenantStore(string tenantId)
-		//	=> GetStore(tenantId);
 	}
 }

@@ -12,11 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+
 using System;
 
 namespace Deveel.Webhooks {
-	public interface IWebhookSubscriptionStoreProvider<TSubscription>
-		where TSubscription : class, IWebhookSubscription {
-		IWebhookSubscriptionStore<TSubscription> GetTenantStore(string tenantId);
+	/// <summary>
+	/// An exception thrown by a webhook operation
+	/// </summary>
+	public class WebhookException : Exception {
+		public WebhookException() {
+		}
+
+		public WebhookException(string message) : base(message) {
+		}
+
+		public WebhookException(string message, Exception innerException) : base(message, innerException) {
+		}
 	}
 }

@@ -14,7 +14,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -25,9 +24,7 @@ using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 
 namespace Deveel.Webhooks {
-	public class MongoDbWebhookSubscriptionStrore<TSubscription> : MongoDbStoreBase<TSubscription, IWebhookSubscription>,
-											 IWebhookSubscriptionStore,
-											 IWebhookSubscriptionQueryableStore<IWebhookSubscription>
+	public class MongoDbWebhookSubscriptionStrore<TSubscription> : MongoDbStoreBase<TSubscription>
 			where TSubscription : MongoDbWebhookSubscription {
 		public MongoDbWebhookSubscriptionStrore(IOptions<MongoDbOptions> options) : base(options) {
 		}
@@ -57,11 +54,6 @@ namespace Deveel.Webhooks {
 			return await result.ToListAsync(cancellationToken);
 		}
 
-		async Task<IList<IWebhookSubscription>> IWebhookSubscriptionStore<IWebhookSubscription>.GetByEventTypeAsync(string eventType, bool activeOnly, CancellationToken cancellationToken) {
-			var result = await GetByEventTypeAsync(eventType, activeOnly, cancellationToken);
-			return result.Cast<IWebhookSubscription>().ToList();
-		}
-
 		public Task SetStateAsync(TSubscription subscription, WebhookSubscriptionStateInfo stateInfo, CancellationToken cancellationToken) {
 			ThrowIfDisposed();
 			cancellationToken.ThrowIfCancellationRequested();
@@ -71,26 +63,5 @@ namespace Deveel.Webhooks {
 
 			return Task.CompletedTask;
 		}
-
-		Task IWebhookSubscriptionStore<IWebhookSubscription>.SetStateAsync(IWebhookSubscription subscription, WebhookSubscriptionStateInfo stateInfo, CancellationToken cancellationToken)
-			=> SetStateAsync((TSubscription)subscription, stateInfo, cancellationToken);
-
-		IQueryable<IWebhookSubscription> IWebhookSubscriptionQueryableStore<IWebhookSubscription>.AsQueryable() => Collection.AsQueryable();
-
-		async Task<IWebhookSubscription> IWebhookSubscriptionStore<IWebhookSubscription>.FindByIdAsync(string id, CancellationToken cancellationToken)
-			=> await FindByIdAsync(id, cancellationToken);
-
-		//async Task<PagedResult<IWebhookSubscription>> IStore<IWebhookSubscription>.GetPageAsync(PagedQuery<IWebhookSubscription> query, CancellationToken cancellationToken) {
-		//	var newQuery = new PagedQuery<MongoDbWebhookSubscription>(query.Page, query.PageSize);
-		//	if (query.Predicate != null)
-		//		newQuery.Predicate = item => query.Predicate.Compile().Invoke(item);
-
-		//	var result = await GetPageAsync(newQuery, cancellationToken);
-
-		//	return new PagedResult<IWebhookSubscription>(query, result.TotalCount, result.Items?.Cast<IWebhookSubscription>());
-		//}
-
-		//async Task<IWebhookSubscription> IStore<IWebhookSubscription>.FindByIdAsync(string id, CancellationToken cancellationToken) 
-		//	=> await base.FindByIdAsync(id, cancellationToken);
 	}
 }

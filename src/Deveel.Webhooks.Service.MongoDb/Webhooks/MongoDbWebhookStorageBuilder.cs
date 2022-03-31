@@ -17,19 +17,6 @@ namespace Deveel.Webhooks {
 
 		private IServiceCollection Services => builder.Services;
 
-		private static IServiceCollection ConfigureMongoDbOptions(IServiceCollection services, string sectionName, string connectionStringName = null) {
-			services.AddOptions<MongoDbOptions>()
-				.Configure<IConfiguration>((options, config) => {
-					var section = config.GetSection(sectionName);
-					if (section != null)
-						section.Bind(options);
-
-					if (!string.IsNullOrWhiteSpace(connectionStringName)) options.ConnectionString = config.GetConnectionString(connectionStringName);
-				});
-
-			return services;
-		}
-
 		private IServiceCollection AddSubscriptionFactory(IServiceCollection services) {
 			services.TryAddSingleton<IWebhookSubscriptionFactory<TSubscription>, MongoDbWebhookSubscriptionFactory<TSubscription>>();
 			services.TryAddSingleton<IWebhookSubscriptionFactory<MongoDbWebhookSubscription>, MongoDbWebhookSubscriptionFactory>();
@@ -39,15 +26,10 @@ namespace Deveel.Webhooks {
 		}
 
 		private void AddDefaultStorage() {
-				AddSubscriptionFactory(Services);
+			AddSubscriptionFactory(Services);
 
-				//Services.TryAddScoped<IWebhookSubscriptionStore, MongoDbWebhookSubscriptionStrore>();
-				//Services.TryAddScoped<IWebhookSubscriptionStore<IWebhookSubscription>, MongoDbWebhookSubscriptionStrore>();
-				Services.TryAddScoped<IWebhookSubscriptionStore<MongoDbWebhookSubscription>, MongoDbWebhookSubscriptionStrore>();
-
-				Services.TryAddScoped<IWebhookSubscriptionStoreProvider, MongoDbWebhookSubscriptionStoreProvider>();
-				Services.TryAddScoped<IWebhookSubscriptionStoreProvider<IWebhookSubscription>, MongoDbWebhookSubscriptionStoreProvider>();
-				Services.TryAddScoped<IWebhookSubscriptionStoreProvider<MongoDbWebhookSubscription>, MongoDbWebhookSubscriptionStoreProvider>();
+			Services.TryAddScoped<IWebhookSubscriptionStore<MongoDbWebhookSubscription>, MongoDbWebhookSubscriptionStrore>();
+			Services.TryAddScoped<IWebhookSubscriptionStoreProvider<MongoDbWebhookSubscription>, MongoDbWebhookSubscriptionStoreProvider>();
 		}
 
 		public MongoDbWebhookStorageBuilder<TSubscription> Configure(Action<IMongoDbOptionBuilder> configure) {
@@ -67,7 +49,14 @@ namespace Deveel.Webhooks {
 		}
 
 		public MongoDbWebhookStorageBuilder<TSubscription> Configure(string sectionName, string connectionStringName = null) {
-			ConfigureMongoDbOptions(Services, sectionName, connectionStringName);
+			Services.AddOptions<MongoDbOptions>()
+				.Configure<IConfiguration>((options, config) => {
+					var section = config.GetSection(sectionName);
+					if (section != null)
+						section.Bind(options);
+					if (!string.IsNullOrWhiteSpace(connectionStringName))
+						options.ConnectionString = config.GetConnectionString(connectionStringName);
+				});
 
 			return this;
 		}
@@ -75,8 +64,6 @@ namespace Deveel.Webhooks {
 		public MongoDbWebhookStorageBuilder<TSubscription> UseSubscriptionStore<TStore>()
 			where TStore : MongoDbWebhookSubscriptionStrore {
 			AddSubscriptionFactory(Services);
-			Services.AddSingleton<IWebhookSubscriptionStore, TStore>();
-			Services.AddSingleton<IWebhookSubscriptionStore<IWebhookSubscription>, TStore>();
 			Services.AddSingleton<IWebhookSubscriptionStore<MongoDbWebhookSubscription>, TStore>();
 
 			return this;
@@ -85,8 +72,6 @@ namespace Deveel.Webhooks {
 		public MongoDbWebhookStorageBuilder<TSubscription> UseSubscriptionStoreProvider<TProvider>()
 			where TProvider : MongoDbWebhookSubscriptionStoreProvider {
 			AddSubscriptionFactory(Services);
-			Services.AddSingleton<IWebhookSubscriptionStoreProvider, TProvider>();
-			Services.AddSingleton<IWebhookSubscriptionStoreProvider<IWebhookSubscription>, TProvider>();
 			Services.AddSingleton<IWebhookSubscriptionStoreProvider<MongoDbWebhookSubscription>, TProvider>();
 
 			return this;

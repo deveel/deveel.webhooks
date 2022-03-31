@@ -27,7 +27,7 @@ namespace Deveel.Webhooks {
 		private readonly string userId = Guid.NewGuid().ToString("N");
 
 		private readonly IWebhookSubscriptionManager<MongoDbWebhookSubscription> webhookManager;
-		private readonly IWebhookSubscriptionStoreProvider storeProvider;
+		private readonly IWebhookSubscriptionStoreProvider<MongoDbWebhookSubscription> storeProvider;
 
 		private readonly IWebhookSubscriptionFactory<MongoDbWebhookSubscription> subscriptionFactory;
 
@@ -51,7 +51,7 @@ namespace Deveel.Webhooks {
 			var provider = services.BuildServiceProvider();
 
 			webhookManager = provider.GetService<IWebhookSubscriptionManager<MongoDbWebhookSubscription>>();
-			storeProvider = provider.GetRequiredService<IWebhookSubscriptionStoreProvider>();
+			storeProvider = provider.GetRequiredService<IWebhookSubscriptionStoreProvider<MongoDbWebhookSubscription>>();
 			subscriptionFactory = provider.GetRequiredService<IWebhookSubscriptionFactory<MongoDbWebhookSubscription>>();
 		}
 

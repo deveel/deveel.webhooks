@@ -1,4 +1,19 @@
-﻿using System;
+﻿// Copyright 2022 Deveel
+// 
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+// 
+//     http://www.apache.org/licenses/LICENSE-2.0
+// 
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -37,6 +52,7 @@ namespace Deveel.Webhooks {
 
 			Services.AddOptions<WebhookDeliveryOptions>();
 
+			Services.AddSingleton<IWebhookSubscriptionValidator<TSubscription>, WebhookSubscriptionValidator<TSubscription>>();
 		}
 
 		public WebhookServiceBuilder<TSubscription> ConfigureDelivery(Action<WebhookDeliveryOptions> configure) {
@@ -163,5 +179,13 @@ namespace Deveel.Webhooks {
 		public WebhookServiceBuilder<TSubscription> UseSubscriptionManager()
 			=> UseSubscriptionManager<WebhookSubscriptionManager<TSubscription>>();
 
+
+		public WebhookServiceBuilder<TSubscription> AddSubscriptionValidator<TValidator>(ServiceLifetime lifetime = ServiceLifetime.Singleton)
+			where TValidator : class, IWebhookSubscriptionValidator<TSubscription> {
+			Services.Add(new ServiceDescriptor(typeof(IWebhookSubscriptionValidator<TSubscription>), typeof(TValidator), lifetime));
+			Services.Add(new ServiceDescriptor(typeof(TValidator), typeof(TValidator), lifetime));
+
+			return this;
+		}
 	}
 }

@@ -16,13 +16,10 @@ using System;
 
 namespace Deveel.Webhooks {
 	public sealed class WebhookSubscriptionStateInfo {
-		public WebhookSubscriptionStateInfo(WebhookSubscriptionStatus status, string userId = null) {
+		public WebhookSubscriptionStateInfo(WebhookSubscriptionStatus status) {
 			Status = status;
 			TimeStamp = DateTime.UtcNow;
-			UserId = userId;
 		}
-
-		public string UserId { get; set; }
 
 		public WebhookSubscriptionStatus Status { get; }
 

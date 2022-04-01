@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -35,7 +36,7 @@ namespace Deveel.Webhooks {
 
 		[Fact]
 		public async Task AddSubscription() {
-			var subscriptionId = await webhookManager.AddSubscriptionAsync(userId, new WebhookSubscriptionInfo("test.event", "https://callback.test.io/webhook"), CancellationToken.None);
+			var subscriptionId = await webhookManager.AddSubscriptionAsync(new WebhookSubscriptionInfo("test.event", "https://callback.test.io/webhook"), CancellationToken.None);
 
 			Assert.NotNull(subscriptionId);
 			var subscription = await GetSubscription(subscriptionId);
@@ -44,13 +45,27 @@ namespace Deveel.Webhooks {
 			Assert.Contains("test.event", subscription.EventTypes);
 		}
 
+		[Theory]
+		[InlineData("")]
+		[InlineData(null)]
+		[InlineData("ftp://dest.example.com")]
+		[InlineData("test data")]
+		public async Task AddSubscriptionWithInvalidDestination(string url) {
+			var subscription = new MongoDbWebhookSubscription { EventTypes = new List<string> { "test.event" }, DestinationUrl = url };
+			var error = await Assert.ThrowsAsync<WebhookSubscriptionValidationException>(() => webhookManager.AddSubscriptionAsync(subscription, default));
+
+			Assert.NotNull(error);
+			Assert.NotEmpty(error.Errors);
+			Assert.Single(error.Errors);
+		}
+
 		[Fact]
 		public async Task RemoveExistingSubscription() {
 			var subscriptionId = await CreateSubscription(new WebhookSubscriptionInfo("test.event", "https://callback.test.io/webhook") {
 				Name = "Test Callback"
 			});
 
-			var result = await webhookManager.RemoveSubscriptionAsync(userId, subscriptionId, default);
+			var result = await webhookManager.RemoveSubscriptionAsync(subscriptionId, default);
 
 			Assert.True(result);
 
@@ -62,7 +77,7 @@ namespace Deveel.Webhooks {
 		public async Task RemoveNotExistingSubscription() {
 			var subscriptionId = ObjectId.GenerateNewId().ToString();
 
-			await Assert.ThrowsAsync<SubscriptionNotFoundException>(() => webhookManager.RemoveSubscriptionAsync(userId, subscriptionId, default));
+			await Assert.ThrowsAsync<SubscriptionNotFoundException>(() => webhookManager.RemoveSubscriptionAsync(subscriptionId, default));
 		}
 
 
@@ -123,7 +138,7 @@ namespace Deveel.Webhooks {
 				Active = false
 			});
 
-			var result = await webhookManager.EnableSubscriptionAsync(userId, subscriptionId, default);
+			var result = await webhookManager.EnableSubscriptionAsync(subscriptionId, default);
 
 			Assert.True(result);
 
@@ -137,7 +152,7 @@ namespace Deveel.Webhooks {
 		public async Task ActivateNotExistingSubscription() {
 			var subscriptionId = ObjectId.GenerateNewId().ToString();
 
-			await Assert.ThrowsAsync<SubscriptionNotFoundException>(() => webhookManager.EnableSubscriptionAsync(userId, subscriptionId, default));
+			await Assert.ThrowsAsync<SubscriptionNotFoundException>(() => webhookManager.EnableSubscriptionAsync(subscriptionId, default));
 		}
 
 		[Fact]
@@ -147,7 +162,7 @@ namespace Deveel.Webhooks {
 				Active = true
 			});
 
-			var result = await webhookManager.EnableSubscriptionAsync(userId, subscriptionId, default);
+			var result = await webhookManager.EnableSubscriptionAsync(subscriptionId, default);
 
 			Assert.False(result);
 
@@ -164,7 +179,7 @@ namespace Deveel.Webhooks {
 				Active = true
 			});
 
-			var result = await webhookManager.DisableSubscriptionAsync(userId, subscriptionId, default);
+			var result = await webhookManager.DisableSubscriptionAsync(subscriptionId, default);
 
 			Assert.True(result);
 
@@ -178,7 +193,7 @@ namespace Deveel.Webhooks {
 		public async Task DisableNoyExistingSubscription() {
 			var subscriptionId = ObjectId.GenerateNewId().ToString();
 
-			await Assert.ThrowsAsync<SubscriptionNotFoundException>(() => webhookManager.DisableSubscriptionAsync(userId, subscriptionId, default));
+			await Assert.ThrowsAsync<SubscriptionNotFoundException>(() => webhookManager.DisableSubscriptionAsync(subscriptionId, default));
 		}
 
 		[Fact]
@@ -188,7 +203,7 @@ namespace Deveel.Webhooks {
 				Active = false
 			});
 
-			var result = await webhookManager.DisableSubscriptionAsync(userId, subscriptionId, default);
+			var result = await webhookManager.DisableSubscriptionAsync(subscriptionId, default);
 
 			Assert.False(result);
 

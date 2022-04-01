@@ -18,23 +18,19 @@ using System.Threading;
 using System.Threading.Tasks;
 
 namespace Deveel.Webhooks {
-	public interface IWebhookSubscriptionStore<TSubscription>
+	public interface IWebhookSubscriptionStore<TSubscription> : IDisposable
 		where TSubscription : class, IWebhookSubscription {
 
-		bool SupportsPaging { get; }
 
-
-		Task<string> CreateAsync(TSubscription entity, CancellationToken cancellationToken);
+		Task<string> CreateAsync(TSubscription subscription, CancellationToken cancellationToken);
 
 		Task<TSubscription> FindByIdAsync(string id, CancellationToken cancellationToken);
 
-		Task<bool> DeleteAsync(TSubscription entity, CancellationToken cancellationToken);
+		Task<bool> DeleteAsync(TSubscription subscription, CancellationToken cancellationToken);
 
-		Task<bool> UpdateAsync(TSubscription entity, CancellationToken cancellationToken);
+		Task<bool> UpdateAsync(TSubscription subscription, CancellationToken cancellationToken);
 
 		Task<int> CountAllAsync(CancellationToken cancellationToken);
-
-		Task<PagedResult<TSubscription>> GetPageAsync(PagedQuery<TSubscription> query, CancellationToken cancellationToken);
 
 
 		Task<IList<TSubscription>> GetByEventTypeAsync(string eventType, bool activeOnly, CancellationToken cancellationToken);

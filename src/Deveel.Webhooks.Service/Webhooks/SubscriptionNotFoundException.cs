@@ -15,7 +15,7 @@
 using System;
 
 namespace Deveel.Webhooks {
-	public sealed class SubscriptionNotFoundException : Exception {
+	public sealed class SubscriptionNotFoundException : WebhookServiceException {
 		public SubscriptionNotFoundException(string subscriptionId) : this(subscriptionId, $"Subscription {subscriptionId} was not found") {
 		}
 

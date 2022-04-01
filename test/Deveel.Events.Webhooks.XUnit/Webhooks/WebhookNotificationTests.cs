@@ -33,7 +33,7 @@ namespace Deveel.Webhooks {
 
 		private readonly string tenantId = Guid.NewGuid().ToString();
 
-		private WebhookSubscriptionManager<MongoDbWebhookSubscription> webhookManager;
+		private WebhookSubscriptionManagerProvider<MongoDbWebhookSubscription> webhookManagerProvider;
 		private IWebhookNotifier notifier;
 
 		private WebhookPayload lastWebhook;
@@ -84,7 +84,7 @@ namespace Deveel.Webhooks {
 
 			var provider = services.BuildServiceProvider();
 
-			webhookManager = provider.GetService<WebhookSubscriptionManager<MongoDbWebhookSubscription>>();
+			webhookManagerProvider = provider.GetService<WebhookSubscriptionManagerProvider<MongoDbWebhookSubscription>>();
 			notifier = provider.GetService<IWebhookNotifier>();
 		}
 
@@ -97,10 +97,11 @@ namespace Deveel.Webhooks {
 		}
 
 		private async Task<string> CreateSubscriptionAsync(WebhookSubscriptionInfo subscriptionInfo, bool enabled = true) {
-			var id = await webhookManager.AddSubscriptionAsync(tenantId, Guid.NewGuid().ToString("N"), subscriptionInfo, CancellationToken.None);
+			var webhookManager = webhookManagerProvider.GetManager(tenantId);
+			var id = await webhookManager.AddSubscriptionAsync(Guid.NewGuid().ToString("N"), subscriptionInfo, CancellationToken.None);
 
 			if (enabled)
-				await webhookManager.EnableSubscriptionAsync(tenantId, Guid.NewGuid().ToString("N"), id, CancellationToken.None);
+				await webhookManager.EnableSubscriptionAsync(Guid.NewGuid().ToString("N"), id, CancellationToken.None);
 
 			return id;
 		}

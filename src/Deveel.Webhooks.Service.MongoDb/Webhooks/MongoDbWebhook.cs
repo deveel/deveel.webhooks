@@ -8,11 +8,10 @@ using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Bson.Serialization.Options;
 
 namespace Deveel.Webhooks {
-	public class MongoDbWebhook : IWebhook, IMongoDocument {
-		string IWebhook.Id { get; }
+	public class MongoDbWebhook : IWebhook {
+		string IWebhook.Id => WebhookId;
 
-		[BsonId]
-		public ObjectId Id { get; set; }
+		public string WebhookId { get; set; }
 
 		public string Name { get; set; }
 

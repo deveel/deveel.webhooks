@@ -29,6 +29,10 @@ using Newtonsoft.Json.Linq;
 using Polly;
 
 namespace Deveel.Webhooks {
+	/// <summary>
+	/// A default implementation of the <see cref="IWebhookSender"/> service
+	/// </summary>
+	/// <seealso cref="IWebhookSender"/>
 	public class WebhookSender : IWebhookSender, IDisposable {
 		private readonly HttpClient httpClient;
 		private readonly bool disposeClient;
@@ -59,13 +63,11 @@ namespace Deveel.Webhooks {
 			: this(httpClient, false, configuration, logger) {
 		}
 
-		public WebhookSender(HttpClient httpClient,
-			IWebhookServiceConfiguration configuration)
+		public WebhookSender(HttpClient httpClient, IWebhookServiceConfiguration configuration)
 			: this(httpClient, configuration, NullLogger<WebhookSender>.Instance) {
 		}
 
-		public WebhookSender(IWebhookServiceConfiguration configuration,
-			ILogger<WebhookSender> logger)
+		public WebhookSender(IWebhookServiceConfiguration configuration, ILogger<WebhookSender> logger)
 			: this(new HttpClient(), true, configuration, logger) {
 		}
 
@@ -73,14 +75,11 @@ namespace Deveel.Webhooks {
 			: this(new HttpClient(), configuration, NullLogger<WebhookSender>.Instance) {
 		}
 
-		public WebhookSender(IHttpClientFactory httpClientFactory,
-			IWebhookServiceConfiguration configuration,
-			ILogger<WebhookSender> logger)
+		public WebhookSender(IHttpClientFactory httpClientFactory, IWebhookServiceConfiguration configuration, ILogger<WebhookSender> logger)
 			: this(httpClientFactory.CreateClient(), false, configuration, logger) {
 		}
 
-		public WebhookSender(IHttpClientFactory httpClientFactory,
-			IWebhookServiceConfiguration configuration)
+		public WebhookSender(IHttpClientFactory httpClientFactory, IWebhookServiceConfiguration configuration)
 			: this(httpClientFactory, configuration, NullLogger<WebhookSender>.Instance) {
 		}
 
@@ -120,6 +119,16 @@ namespace Deveel.Webhooks {
 			}
 		}
 
+		/// <summary>
+		/// Adds additional headers contained in the webhook to the HTTP request
+		/// used to notify it
+		/// </summary>
+		/// <param name="request">The HTTP request to notify the webhook</param>
+		/// <param name="webhook">The webhook object to be notified</param>
+		/// <exception cref="WebhookException">
+		/// Thrown if it was not possible to add one of the webhook additional headers to
+		/// the request object 
+		/// </exception>
 		protected virtual void AddAdditionalHeaders(HttpRequestMessage request, IWebhook webhook) {
 			if (webhook.Headers != null) {
 				foreach (var header in webhook.Headers) {
@@ -128,7 +137,7 @@ namespace Deveel.Webhooks {
 					if (request.Content.Headers.TryAddWithoutValidation(header.Key, header.Value))
 						continue;
 
-					throw new InvalidOperationException($"Invalid header in the webhook: {header.Key}");
+					throw new WebhookException($"Invalid header in the webhook: {header.Key}");
 				}
 			}
 		}
@@ -156,9 +165,12 @@ namespace Deveel.Webhooks {
 				AddAdditionalHeaders(request, webhook);
 
 				return request;
-			} catch (Exception ex) {
+			} catch(WebhookException ex) {
 				logger.LogError(ex, "Error while request object for webhook of type {EventType}", webhook.EventType);
 				throw;
+			} catch (Exception ex) {
+				logger.LogError(ex, "Error while request object for webhook of type {EventType}", webhook.EventType);
+				throw new WebhookException("An error occurred while building the request", ex);
 			}
 		}
 
@@ -167,12 +179,14 @@ namespace Deveel.Webhooks {
 			try {
 				var result = new WebhookDeliveryResult(webhook);
 
+				// generate the waiting times for the retries
 				var waitTimeCount = configuration.DeliveryOptions.MaxAttemptCount - 1 <= 0 ? 1 : configuration.DeliveryOptions.MaxAttemptCount - 1;
 				var waitTimes = new TimeSpan[waitTimeCount];
 				for (var i = 0; i < waitTimeCount; i++) {
 					waitTimes[i] = TimeSpan.FromSeconds(i * (i + 1));
 				}
 
+				// the retry policy
 				var policy = Policy.Handle<TaskCanceledException>()
 					.Or<TimeoutException>()
 					.Or<HttpRequestException>()
@@ -199,7 +213,7 @@ namespace Deveel.Webhooks {
 
 						attempt.Timeout();
 						throw;
-					} catch(HttpRequestException ex) {
+					} catch (HttpRequestException ex) {
 						logger.LogWarning(ex, "The delivery attempt {AttemptNumber} failed", attempt.Number);
 
 						if (response != null) {
@@ -209,21 +223,26 @@ namespace Deveel.Webhooks {
 						}
 
 						throw;
-					} catch(Exception ex) {
+					} catch (WebhookException ex) {
 						logger.LogError(ex, "The delivery attempt {AttemptNumber} caused an exception", attempt.Number);
 
 						attempt.Finish(null, $"Local error: {ex.Message}");
 						throw;
-					} 
-					//finally {
-					//	result.AddAttempt(attempt);
-					//}
+					} catch (Exception ex) {
+						logger.LogError(ex, "The delivery attempt {AttemptNumber} caused an exception", attempt.Number);
+
+						attempt.Finish(null, $"Local error: {ex.Message}");
+						throw new WebhookException("Could not send the webhook", ex);
+					}
 				});
 
 				return result;
-			} catch (Exception ex) {
+			} catch(WebException ex) {
 				logger.LogError(ex, "Error while sending a webhook of type {EventType}", webhook.EventType);
 				throw;
+			} catch (Exception ex) {
+				logger.LogError(ex, "Error while sending a webhook of type {EventType}", webhook.EventType);
+				throw new WebhookException("Could not send the webhook", ex);
 			}
 		}
 

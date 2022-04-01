@@ -14,16 +14,8 @@
 
 using System;
 
-using Deveel.Data;
-
-using Microsoft.Extensions.Options;
-
 namespace Deveel.Webhooks {
-	public class MongoDbWebhookSubscriptionStrore : MongoDbWebhookSubscriptionStrore<MongoDbWebhookSubscription> {
-		public MongoDbWebhookSubscriptionStrore(IOptions<MongoDbOptions> options) : base(options) {
-		}
-
-		public MongoDbWebhookSubscriptionStrore(MongoDbOptions options) : base(options) {
-		}
+	public interface IWebhookDeliveryResultStoreProvider<TResult> where TResult : class, IWebhookDeliveryResult {
+		IWebhookDeliveryResultStore<TResult> GetTenantStore(string tenantId);
 	}
 }

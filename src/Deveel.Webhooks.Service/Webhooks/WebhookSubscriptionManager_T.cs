@@ -25,140 +25,143 @@ namespace Deveel.Webhooks {
 	public class WebhookSubscriptionManager<TSubscription> : IWebhookSubscriptionManager<TSubscription>
 		where TSubscription : class, IWebhookSubscription {
 		private readonly IWebhookSubscriptionFactory<TSubscription> subscriptionFactory;
-		private readonly IWebhookSubscriptionStoreProvider<TSubscription> subscriptionStore;
 
-		protected WebhookSubscriptionManager(IWebhookSubscriptionStoreProvider<TSubscription> subscriptionStore,
+		protected WebhookSubscriptionManager(IWebhookSubscriptionStore<TSubscription> subscriptionStore,
 			IWebhookSubscriptionFactory<TSubscription> subscriptionFactory,
 			ILogger logger) {
-			this.subscriptionStore = subscriptionStore;
+			Store = subscriptionStore;
 			this.subscriptionFactory = subscriptionFactory;
 			Logger = logger;
 		}
 
-		public WebhookSubscriptionManager(IWebhookSubscriptionStoreProvider<TSubscription> subscriptionStore,
+		public WebhookSubscriptionManager(IWebhookSubscriptionStore<TSubscription> subscriptionStore,
 			IWebhookSubscriptionFactory<TSubscription> subscriptionFactory,
 			ILogger<WebhookSubscriptionManager<TSubscription>> logger)
 			: this(subscriptionStore, subscriptionFactory, (ILogger)logger) {
 		}
 
-		public WebhookSubscriptionManager(IWebhookSubscriptionStoreProvider<TSubscription> subscriptionStore,
+		public WebhookSubscriptionManager(IWebhookSubscriptionStore<TSubscription> subscriptionStore,
 			IWebhookSubscriptionFactory<TSubscription> subscriptionFactory)
 			: this(subscriptionStore, subscriptionFactory, NullLogger<WebhookSubscriptionManager<TSubscription>>.Instance) {
 		}
 
-		public ILogger Logger { get; }
+		protected ILogger Logger { get; }
 
-		private async Task<bool> SetStateAsync(string tenantId, string userId, string subscriptionId, WebhookSubscriptionStatus status, CancellationToken cancellationToken) {
+		protected IWebhookSubscriptionStore<TSubscription> Store { get; }
+
+		protected bool IsTenantStore => Store is IWebhookSubscriptionTenantStore<TSubscription>;
+
+		protected string TenantId => (Store is IWebhookSubscriptionTenantStore<TSubscription> tenantStore) ? tenantStore.TenantId : null;
+
+		private async Task<bool> SetStateAsync(string userId, string subscriptionId, WebhookSubscriptionStatus status, CancellationToken cancellationToken) {
 			try {
-				var subscription = await subscriptionStore.FindByIdAsync(tenantId, subscriptionId, cancellationToken);
+				var subscription = await Store.FindByIdAsync(subscriptionId, cancellationToken);
 				if (subscription == null) {
-					Logger.LogWarning("Could not find the subscription with ID {SubscriptionId} of Tenant {TenantId}: could not change state",
-						subscriptionId, tenantId);
+					Logger.LogWarning("Could not find the subscription with ID {SubscriptionId}: could not change state", subscriptionId);
 
 					throw new SubscriptionNotFoundException(subscriptionId);
 				}
 
 				if (subscription.Status == status) {
-					Logger.LogTrace("The subscription {SubscriptionId} of Tenant {TenantId} is already {Status}",
-						subscriptionId, tenantId, status);
+					Logger.LogTrace("The subscription {SubscriptionId} is already {Status}", subscriptionId, status);
 
 					return false;
 				}
 
 				var stateInfo = new WebhookSubscriptionStateInfo(status, userId);
 
-				await subscriptionStore.SetStateAsync(tenantId, subscription, stateInfo, cancellationToken);
-				await subscriptionStore.UpdateAsync(tenantId, subscription, cancellationToken);
+				await Store.SetStateAsync(subscription, stateInfo, cancellationToken);
+				await Store.UpdateAsync(subscription, cancellationToken);
 
-				await OnSubscriptionStateChangesAsync(tenantId, userId, subscription, status, cancellationToken);
+				await OnSubscriptionStateChangesAsync(userId, subscription, status, cancellationToken);
 
 				return true;
-			} catch (Exception ex) {
-				Logger.LogError(ex, "Error while trying to change the state of subscription {SubscriptionId} of tenant {TenantId}",
-					subscriptionId, tenantId);
+			} catch(WebhookException) {
 				throw;
+			} catch (Exception ex) {
+				Logger.LogError(ex, "Error while trying to change the state of subscription {SubscriptionId}", subscriptionId);
+				throw new WebhookException("Could not change the state of the subscription", ex);
 			}
 		}
 
-		protected virtual Task OnSubscriptionStateChangesAsync(string tenantId, string userId, TSubscription subscription, WebhookSubscriptionStatus status, CancellationToken cancellationToken) {
+		protected virtual Task OnSubscriptionStateChangesAsync(string userId, TSubscription subscription, WebhookSubscriptionStatus status, CancellationToken cancellationToken) {
 			return Task.CompletedTask;
 		}
 
-		protected virtual Task OnSubscriptionCreatedAsync(string tenantId, string userId, string id, TSubscription subscription, CancellationToken cancellationToken) {
+		protected virtual Task OnSubscriptionCreatedAsync(string userId, string id, TSubscription subscription, CancellationToken cancellationToken) {
 			return Task.CompletedTask;
 		}
 
-		protected virtual Task OnSubscriptionDeletedAsync(string tenantId, string userId, TSubscription subscription, CancellationToken cancellationToken) {
+		protected virtual Task OnSubscriptionDeletedAsync(string userId, TSubscription subscription, CancellationToken cancellationToken) {
 			return Task.CompletedTask;
 		}
 
-		public virtual async Task<string> AddSubscriptionAsync(string tenantId, string userId, WebhookSubscriptionInfo subscriptionInfo, CancellationToken cancellationToken) {
+		public virtual async Task<string> AddSubscriptionAsync(string userId, WebhookSubscriptionInfo subscriptionInfo, CancellationToken cancellationToken) {
 			try {
 				var subscription = subscriptionFactory.Create(subscriptionInfo);
-				var result = await subscriptionStore.CreateAsync(tenantId, subscription, cancellationToken);
+				var result = await Store.CreateAsync(subscription, cancellationToken);
 
-				Logger.LogInformation("New subscription with ID {SubscriptionId} for Tenant {TenantId}", result, tenantId);
+				Logger.LogInformation("New subscription with ID {SubscriptionId}", result);
 
-				await OnSubscriptionCreatedAsync(tenantId, userId, result, subscription, cancellationToken);
+				await OnSubscriptionCreatedAsync(userId, result, subscription, cancellationToken);
 
 				return result;
 			} catch (Exception ex) {
-				Logger.LogError(ex, "Error while creating a subscription for Tenant {TenantId}", tenantId);
+				Logger.LogError(ex, "Error while creating a subscription");
 				throw;
 			}
 		}
 
-		public virtual async Task<bool> RemoveSubscriptionAsync(string tenantId, string userId, string subscriptionId, CancellationToken cancellationToken) {
+		public virtual async Task<bool> RemoveSubscriptionAsync(string userId, string subscriptionId, CancellationToken cancellationToken) {
 			try {
-				var subscription = await subscriptionStore.FindByIdAsync(tenantId, subscriptionId, cancellationToken);
+				var subscription = await Store.FindByIdAsync(subscriptionId, cancellationToken);
 
 				if (subscription == null) {
-					Logger.LogWarning("Trying to delete the subscription {SubscriptionId} of Tenant {TenantId}, but it was not found",
-						subscriptionId, tenantId);
+					Logger.LogWarning("Trying to delete the subscription {SubscriptionId}, but it was not found", subscriptionId);
 
 					throw new SubscriptionNotFoundException(subscriptionId);
 				}
 
-				var result = await subscriptionStore.DeleteAsync(tenantId, subscription, cancellationToken);
+				var result = await Store.DeleteAsync(subscription, cancellationToken);
 
 				if (!result) {
-					Logger.LogWarning("The subscription {SubscriptionId} of Tenant {TenantId} was not deleted from the store",
-						subscriptionId, tenantId);
+					Logger.LogWarning("The subscription {SubscriptionId} was not deleted from the store", subscriptionId);
 				} else {
 					Logger.LogInformation("The subscription {SubscriptionId} of Tenant {TenantId} was deleted from the store");
 
-					await OnSubscriptionDeletedAsync(tenantId, userId, subscription, cancellationToken);
+					await OnSubscriptionDeletedAsync(userId, subscription, cancellationToken);
 				}
 
 				return result;
-			} catch (Exception ex) {
-				Logger.LogError(ex, "Error while delete subscription {SubscriptionId} of Tenant {TenantId}", subscriptionId, tenantId);
+			} catch(WebhookException) {
 				throw;
+			} catch (Exception ex) {
+				Logger.LogError(ex, "Error while delete subscription {SubscriptionId}", subscriptionId);
+				throw new WebhookException("Could not delete the subscription", ex);
 			}
 		}
 
-		public virtual Task<bool> DisableSubscriptionAsync(string tenantId, string userId, string subscriptionId, CancellationToken cancellationToken)
-			=> SetStateAsync(tenantId, userId, subscriptionId, WebhookSubscriptionStatus.Suspended, cancellationToken);
+		public virtual Task<bool> DisableSubscriptionAsync(string userId, string subscriptionId, CancellationToken cancellationToken)
+			=> SetStateAsync(userId, subscriptionId, WebhookSubscriptionStatus.Suspended, cancellationToken);
 
-		public virtual Task<bool> EnableSubscriptionAsync(string tenantId, string userId, string subscriptionId, CancellationToken cancellationToken)
-			=> SetStateAsync(tenantId, userId, subscriptionId, WebhookSubscriptionStatus.Active, cancellationToken);
+		public virtual Task<bool> EnableSubscriptionAsync(string userId, string subscriptionId, CancellationToken cancellationToken)
+			=> SetStateAsync(userId, subscriptionId, WebhookSubscriptionStatus.Active, cancellationToken);
 
-		public virtual async Task<TSubscription> GetSubscriptionAsync(string tenantId, string subscriptionId, CancellationToken cancellationToken) {
+		public virtual async Task<TSubscription> GetSubscriptionAsync(string subscriptionId, CancellationToken cancellationToken) {
 			try {
-				return await subscriptionStore.FindByIdAsync(tenantId, subscriptionId, cancellationToken);
+				return await Store.FindByIdAsync(subscriptionId, cancellationToken);
 			} catch (Exception ex) {
-				Logger.LogError(ex, "Error while retrieving the webhook subscription {SubscriptionId} of tenant {TenantId}",
-					subscriptionId, tenantId);
-				throw;
+				Logger.LogError(ex, "Error while retrieving the webhook subscription {SubscriptionId}", subscriptionId);
+				throw new WebhookException("Could not retrieve the subscription", ex);
 			}
 		}
 
-		public virtual async Task<PagedResult<TSubscription>> GetSubscriptionsAsync(string tenantId, PagedQuery<TSubscription> query, CancellationToken cancellationToken) {
+		public virtual async Task<PagedResult<TSubscription>> GetSubscriptionsAsync(PagedQuery<TSubscription> query, CancellationToken cancellationToken) {
 			try {
-				var store = subscriptionStore.GetTenantStore(tenantId);
-				if (store.SupportsPaging)
-					return await store.GetPageAsync(query, cancellationToken);
-				if (store is IWebhookSubscriptionQueryableStore<TSubscription> queryable) {
+				if (Store is IWebhookSubscriptionPagedStore<TSubscription> paged)
+					return await paged.GetPageAsync(query, cancellationToken);
+
+				if (Store is IWebhookSubscriptionQueryableStore<TSubscription> queryable) {
 					var totalCount = queryable.AsQueryable().Count(query.Predicate);
 					var items = queryable.AsQueryable()
 						.Skip(query.Offset)
@@ -170,17 +173,17 @@ namespace Deveel.Webhooks {
 
 				throw new NotSupportedException("Paged query is not supported by the store");
 			} catch (Exception ex) {
-				Logger.LogError(ex, "Error while retrieving a page of subscriptions for tenant {TenantId}", tenantId);
-				throw;
+				Logger.LogError(ex, "Error while retrieving a page of subscriptions");
+				throw new WebhookException("Could not retrieve the subscriptions", ex);
 			}
 		}
 
-		public virtual async Task<int> CountAllAsync(string tenantId, CancellationToken cancellationToken) {
+		public virtual async Task<int> CountAllAsync(CancellationToken cancellationToken) {
 			try {
-				return await subscriptionStore.CountAllAsync(tenantId, cancellationToken);
+				return await Store.CountAllAsync(cancellationToken);
 			} catch (Exception ex) {
-				Logger.LogError(ex, "Error while trying to count all webhook subscriptions of tenant {TenantId}", tenantId);
-				throw;
+				Logger.LogError(ex, "Error while trying to count all webhook subscriptions");
+				throw new WebhookException("Could not count the subscriptions", ex);
 			}
 		}
 	}

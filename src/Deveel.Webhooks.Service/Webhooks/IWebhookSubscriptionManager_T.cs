@@ -19,18 +19,18 @@ using System.Threading;
 namespace Deveel.Webhooks {
 	public interface IWebhookSubscriptionManager<TSubscription>
 		where TSubscription : class, IWebhookSubscription {
-		Task<string> AddSubscriptionAsync(string tenantId, string userId, WebhookSubscriptionInfo subscription, CancellationToken cancellationToken);
+		Task<string> AddSubscriptionAsync(string userId, WebhookSubscriptionInfo subscription, CancellationToken cancellationToken);
 
-		Task<bool> EnableSubscriptionAsync(string tenantId, string userId, string subscriptionId, CancellationToken cancellationToken);
+		Task<bool> EnableSubscriptionAsync(string userId, string subscriptionId, CancellationToken cancellationToken);
 
-		Task<bool> DisableSubscriptionAsync(string tenantId, string userId, string subscriptionId, CancellationToken cancellationToken);
+		Task<bool> DisableSubscriptionAsync(string userId, string subscriptionId, CancellationToken cancellationToken);
 
-		Task<TSubscription> GetSubscriptionAsync(string tenantId, string subscriptionId, CancellationToken cancellationToken);
+		Task<TSubscription> GetSubscriptionAsync(string subscriptionId, CancellationToken cancellationToken);
 
-		Task<PagedResult<TSubscription>> GetSubscriptionsAsync(string tenantId, PagedQuery<TSubscription> query, CancellationToken cancellationToken);
+		Task<PagedResult<TSubscription>> GetSubscriptionsAsync(PagedQuery<TSubscription> query, CancellationToken cancellationToken);
 
-		Task<bool> RemoveSubscriptionAsync(string tenantId, string userId, string subscriptionId, CancellationToken cancellationToken);
+		Task<bool> RemoveSubscriptionAsync(string userId, string subscriptionId, CancellationToken cancellationToken);
 
-		Task<int> CountAllAsync(string tenantId, CancellationToken cancellationToken);
+		Task<int> CountAllAsync(CancellationToken cancellationToken);
 	}
 }

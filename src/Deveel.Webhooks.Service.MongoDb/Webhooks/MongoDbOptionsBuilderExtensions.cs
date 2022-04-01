@@ -21,7 +21,7 @@ namespace Deveel.Webhooks {
 		public static IMongoDbOptionBuilder SetSubscriptionsCollection(this IMongoDbOptionBuilder builder, string collectionName)
 			=> builder.SetCollectionName(MongoDbWebhookStorageConstants.SubscriptionCollectionKey, collectionName);
 
-		public static IMongoDbOptionBuilder SetDeliveryResultsCollection(this IMongoDbOptionBuilder builder, string collectionName)
-			=> builder.SetCollectionName(MongoDbWebhookStorageConstants.DeliveryResultCollectionKey, collectionName);
+		public static IMongoDbOptionBuilder SetWebhooksCollection(this IMongoDbOptionBuilder builder, string collectionName)
+			=> builder.SetCollectionName(MongoDbWebhookStorageConstants.DeliveryResultsCollectionKey, collectionName);
 	}
 }

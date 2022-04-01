@@ -13,17 +13,11 @@
 // limitations under the License.
 
 using System;
-
-using Deveel.Data;
-
-using Microsoft.Extensions.Options;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Deveel.Webhooks {
-	public class MongoDbWebhookSubscriptionStrore : MongoDbWebhookSubscriptionStrore<MongoDbWebhookSubscription> {
-		public MongoDbWebhookSubscriptionStrore(IOptions<MongoDbOptions> options) : base(options) {
-		}
-
-		public MongoDbWebhookSubscriptionStrore(MongoDbOptions options) : base(options) {
-		}
+	public interface IWebhookSubscriptionValidator<TSubscription> where TSubscription : class, IWebhookSubscription {
+		Task<WebhookValidationResult> ValidateAsync(IWebhookSubscriptionManager<TSubscription> manager, TSubscription subscription, CancellationToken cancellationToken);
 	}
 }

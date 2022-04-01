@@ -20,10 +20,16 @@ namespace Deveel.Webhooks {
 	/// of a webhook subscription to be created or updated
 	/// </summary>
 	public class WebhookSubscriptionValidationException : WebhookServiceException {
-		public WebhookSubscriptionValidationException() {
+		public WebhookSubscriptionValidationException(string[] errors = null) : this("The webhook subscription is invalid", errors) {
 		}
 
-		public WebhookSubscriptionValidationException(string message) : base(message) {
+		public WebhookSubscriptionValidationException(string message, string[] errors = null) : base(message) {
+			Errors = errors;
 		}
+
+		/// <summary>
+		/// Gets a set of errors during the validation of the subscription
+		/// </summary>
+		public string[] Errors { get; }
 	}
 }

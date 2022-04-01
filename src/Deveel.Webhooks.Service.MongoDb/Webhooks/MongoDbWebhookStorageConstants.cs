@@ -17,6 +17,6 @@ using System;
 namespace Deveel.Webhooks {
 	public static class MongoDbWebhookStorageConstants {
 		public const string SubscriptionCollectionKey = "WebhookSubscriptions";
-		public const string DeliveryResultCollectionKey = "WebhookDeliveryResults";
+		public const string DeliveryResultsCollectionKey = "WebhookDeliveryResults";
 	}
 }

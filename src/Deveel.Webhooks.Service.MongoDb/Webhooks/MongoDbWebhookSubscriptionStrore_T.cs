@@ -24,7 +24,10 @@ using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 
 namespace Deveel.Webhooks {
-	public class MongoDbWebhookSubscriptionStrore<TSubscription> : MongoDbStoreBase<TSubscription>
+	public class MongoDbWebhookSubscriptionStrore<TSubscription> : MongoDbStoreBase<TSubscription>, 
+			IWebhookSubscriptionStore<TSubscription>,
+			IWebhookSubscriptionQueryableStore<TSubscription>,
+			IWebhookSubscriptionPagedStore<TSubscription>
 			where TSubscription : MongoDbWebhookSubscription {
 		public MongoDbWebhookSubscriptionStrore(IOptions<MongoDbOptions> options) : base(options) {
 		}
@@ -33,8 +36,6 @@ namespace Deveel.Webhooks {
 		}
 
 		protected override IMongoCollection<TSubscription> Collection => GetCollection(Options.SubscriptionsCollectionName());
-
-
 
 		public async Task<IList<TSubscription>> GetByEventTypeAsync(string eventType, bool activeOnly, CancellationToken cancellationToken) {
 			ThrowIfDisposed();

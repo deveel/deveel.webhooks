@@ -1,4 +1,18 @@
-﻿using System;
+﻿// Copyright 2022 Deveel
+// 
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+// 
+//     http://www.apache.org/licenses/LICENSE-2.0
+// 
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+using System;
 
 using Deveel.Data;
 using Microsoft.Extensions.Configuration;
@@ -28,8 +42,20 @@ namespace Deveel.Webhooks {
 		private void AddDefaultStorage() {
 			AddSubscriptionFactory(Services);
 
-			Services.TryAddScoped<IWebhookSubscriptionStore<MongoDbWebhookSubscription>, MongoDbWebhookSubscriptionStrore>();
-			Services.TryAddScoped<IWebhookSubscriptionStoreProvider<MongoDbWebhookSubscription>, MongoDbWebhookSubscriptionStoreProvider>();
+			Services.TryAddSingleton<IWebhookSubscriptionStore<MongoDbWebhookSubscription>, MongoDbWebhookSubscriptionStrore>();
+			Services.AddSingleton<MongoDbWebhookSubscriptionStrore>();
+			Services.TryAddSingleton<MongoDbWebhookSubscriptionStrore<MongoDbWebhookSubscription>>();
+			Services.TryAddSingleton<IWebhookSubscriptionStoreProvider<MongoDbWebhookSubscription>, MongoDbWebhookSubscriptionStoreProvider>();
+			Services.AddSingleton<MongoDbWebhookSubscriptionStoreProvider>();
+			Services.TryAddSingleton<MongoDbWebhookSubscriptionStoreProvider<MongoDbWebhookSubscription>>();
+
+
+			Services.TryAddSingleton<IWebhookDeliveryResultStore<MongoDbWebhookDeliveryResult>, MongoDbWebhookDeliveryResultStore>();
+			Services.AddSingleton<MongoDbWebhookDeliveryResultStore>();
+			Services.TryAddSingleton<MongoDbWebhookDeliveryResultStore<MongoDbWebhookDeliveryResult>>();
+			Services.TryAddSingleton<IWebhookDeliveryResultStoreProvider<MongoDbWebhookDeliveryResult>, MongoDbWebhookDeliveryResultStoreProvider>();
+			Services.AddSingleton<MongoDbWebhookDeliveryResultStoreProvider>();
+			Services.TryAddSingleton<MongoDbWebhookDeliveryResultStoreProvider<MongoDbWebhookDeliveryResult>>();
 		}
 
 		public MongoDbWebhookStorageBuilder<TSubscription> Configure(Action<IMongoDbOptionBuilder> configure) {
@@ -77,5 +103,30 @@ namespace Deveel.Webhooks {
 			return this;
 		}
 
+		public MongoDbWebhookStorageBuilder<TSubscription> UseDeliveryResultStore<TStore>()
+			where TStore : MongoDbWebhookDeliveryResultStore {
+			Services.AddSingleton<IWebhookDeliveryResultStore<MongoDbWebhookDeliveryResult>, TStore>();
+
+			return this;
+		}
+
+		public MongoDbWebhookStorageBuilder<TSubscription> UseDeliveryResultStoreProvider<TProvider>()
+			where TProvider : MongoDbWebhookDeliveryResultStoreProvider {
+			AddSubscriptionFactory(Services);
+			Services.AddSingleton<IWebhookDeliveryResultStoreProvider<MongoDbWebhookDeliveryResult>, TProvider>();
+
+			return this;
+		}
+
+		public MongoDbWebhookStorageBuilder<TSubscription> UseDeliveryResultLogger<TResult>()
+			where TResult : MongoDbWebhookDeliveryResult {
+
+			Services.AddSingleton<IWebhookDeliveryResultLogger, MongoDbWebhookDeliveryResultLogger<TResult>>();
+
+			return this;
+		}
+
+		public MongoDbWebhookStorageBuilder<TSubscription> UseDeliveryResultLogger()
+			=> UseDeliveryResultLogger<MongoDbWebhookDeliveryResult>();
 	}
 }

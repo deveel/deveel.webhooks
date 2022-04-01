@@ -19,11 +19,11 @@ using Deveel.Data;
 using Microsoft.Extensions.Options;
 
 namespace Deveel.Webhooks {
-	public class MongoDbWebhookSubscriptionStrore : MongoDbWebhookSubscriptionStrore<MongoDbWebhookSubscription> {
-		public MongoDbWebhookSubscriptionStrore(IOptions<MongoDbOptions> options) : base(options) {
+	public class MongoDbWebhookDeliveryResultStoreProvider : MongoDbWebhookDeliveryResultStoreProvider<MongoDbWebhookDeliveryResult> {
+		public MongoDbWebhookDeliveryResultStoreProvider(IOptions<MongoDbOptions> options) : base(options) {
 		}
 
-		public MongoDbWebhookSubscriptionStrore(MongoDbOptions options) : base(options) {
+		public MongoDbWebhookDeliveryResultStoreProvider(MongoDbOptions options) : base(options) {
 		}
 	}
 }

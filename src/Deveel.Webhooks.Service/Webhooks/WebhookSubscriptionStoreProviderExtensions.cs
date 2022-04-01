@@ -23,17 +23,9 @@ namespace Deveel.Webhooks {
 			where TSubscription : class, IWebhookSubscription
 			=> provider.GetTenantStore(tenantId).CreateAsync(subscription, cancellationToken);
 
-		public static string Create<TSubscription>(this IWebhookSubscriptionStoreProvider<TSubscription> provider, string tenantId, TSubscription subscription)
-			where TSubscription : class, IWebhookSubscription
-			=> provider.GetTenantStore(tenantId).Create(subscription);
-
 		public static Task<TSubscription> FindByIdAsync<TSubscription>(this IWebhookSubscriptionStoreProvider<TSubscription> provider, string tenantId, string id, CancellationToken cancellationToken = default)
 			where TSubscription : class, IWebhookSubscription
 			=> provider.GetTenantStore(tenantId).FindByIdAsync(id, cancellationToken);
-
-		public static TSubscription FindById<TSubscription>(this IWebhookSubscriptionStoreProvider<TSubscription> provider, string tenantId, string id)
-			where TSubscription : class, IWebhookSubscription
-			=> provider.GetTenantStore(tenantId).FindById(id);
 
 		public static Task<bool> DeleteAsync<TSubscription>(this IWebhookSubscriptionStoreProvider<TSubscription> provider, string tenantId, TSubscription subscription, CancellationToken cancellationToken = default)
 			where TSubscription : class, IWebhookSubscription

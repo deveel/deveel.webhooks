@@ -11,38 +11,34 @@ using Xunit;
 using Xunit.Abstractions;
 
 namespace Deveel.Webhooks {
-	[Trait("Category", "Webhooks")]
-	[Trait("Category", "Subscriptions")]
-	public class MultiTenantWebhookManagementTests : WebhookServiceTestBase {		
-		private readonly string tenantId = Guid.NewGuid().ToString("N");
+	public class WebhookManagementTests : WebhookServiceTestBase {
 		private readonly string userId = Guid.NewGuid().ToString("N");
 
-		private readonly IWebhookSubscriptionManagerProvider<MongoDbWebhookSubscription> webhookManagerProvider;
-		private readonly IWebhookSubscriptionStoreProvider<MongoDbWebhookSubscription> storeProvider;
-
+		private readonly IWebhookSubscriptionManager<MongoDbWebhookSubscription> webhookManager;
+		private readonly IWebhookSubscriptionStore<MongoDbWebhookSubscription> store;
 		private readonly IWebhookSubscriptionFactory<MongoDbWebhookSubscription> subscriptionFactory;
 
-		public MultiTenantWebhookManagementTests(ITestOutputHelper outputHelper) : base(outputHelper) {
-			webhookManagerProvider = Services.GetService<IWebhookSubscriptionManagerProvider<MongoDbWebhookSubscription>>();
-			storeProvider = Services.GetRequiredService<IWebhookSubscriptionStoreProvider<MongoDbWebhookSubscription>>();
+
+		public WebhookManagementTests(ITestOutputHelper outputHelper) : base(outputHelper) {
+			webhookManager = Services.GetService<IWebhookSubscriptionManager<MongoDbWebhookSubscription>>();
+			store = Services.GetRequiredService<IWebhookSubscriptionStore<MongoDbWebhookSubscription>>();
 			subscriptionFactory = Services.GetRequiredService<IWebhookSubscriptionFactory<MongoDbWebhookSubscription>>();
 		}
 
 		private async Task<string> CreateSubscription(WebhookSubscriptionInfo subscriptionInfo) {
 			var subscription = subscriptionFactory.Create(subscriptionInfo);
-			return await storeProvider.CreateAsync(tenantId, subscription);
+			return await store.CreateAsync(subscription);
 		}
 
 		private async Task<IWebhookSubscription> GetSubscription(string subscriptionId)
-			=> await storeProvider.FindByIdAsync(tenantId, subscriptionId);
+			=> await store.FindByIdAsync(subscriptionId);
 
 		[Fact]
 		public async Task AddSubscription() {
-			var webhookManager = webhookManagerProvider.GetManager(tenantId);
 			var subscriptionId = await webhookManager.AddSubscriptionAsync(userId, new WebhookSubscriptionInfo("test.event", "https://callback.test.io/webhook"), CancellationToken.None);
 
 			Assert.NotNull(subscriptionId);
-			var subscription = await storeProvider.FindByIdAsync(tenantId, subscriptionId);
+			var subscription = await GetSubscription(subscriptionId);
 
 			Assert.NotNull(subscription);
 			Assert.Contains("test.event", subscription.EventTypes);
@@ -54,7 +50,6 @@ namespace Deveel.Webhooks {
 				Name = "Test Callback"
 			});
 
-			var webhookManager = webhookManagerProvider.GetManager(tenantId);
 			var result = await webhookManager.RemoveSubscriptionAsync(userId, subscriptionId, default);
 
 			Assert.True(result);
@@ -67,7 +62,6 @@ namespace Deveel.Webhooks {
 		public async Task RemoveNotExistingSubscription() {
 			var subscriptionId = ObjectId.GenerateNewId().ToString();
 
-			var webhookManager = webhookManagerProvider.GetManager(tenantId);
 			await Assert.ThrowsAsync<SubscriptionNotFoundException>(() => webhookManager.RemoveSubscriptionAsync(userId, subscriptionId, default));
 		}
 
@@ -75,11 +69,10 @@ namespace Deveel.Webhooks {
 		[Fact]
 		public async Task GetExistingSubscription() {
 			var subscriptionId = await CreateSubscription(new WebhookSubscriptionInfo("test.event", "https://callback.test.io/webhook") {
-				Filter = WebhookFilter.WildcardFilter ,
+				Filter = WebhookFilter.WildcardFilter,
 				Name = "Test Callback"
 			});
 
-			var webhookManager = webhookManagerProvider.GetManager(tenantId);
 			var subscription = await webhookManager.GetSubscriptionAsync(subscriptionId, CancellationToken.None);
 
 			Assert.NotNull(subscription);
@@ -95,8 +88,7 @@ namespace Deveel.Webhooks {
 		public async Task GetNotExistingSubscription() {
 			var subscriptionId = ObjectId.GenerateNewId().ToString();
 
-			var webhookManager = webhookManagerProvider.GetManager(tenantId);
-			var subscription = await webhookManager.GetSubscriptionAsync( subscriptionId, CancellationToken.None);
+			var subscription = await webhookManager.GetSubscriptionAsync(subscriptionId, CancellationToken.None);
 
 			Assert.Null(subscription);
 		}
@@ -104,7 +96,7 @@ namespace Deveel.Webhooks {
 		[Fact]
 		public async Task GetPageOfSubscriptions() {
 			var subscriptionId1 = await CreateSubscription(new WebhookSubscriptionInfo("test.event", "https://callback.test.io/webhook") {
-				Filter =  WebhookFilter.WildcardFilter,
+				Filter = WebhookFilter.WildcardFilter,
 				Name = "Test Callback"
 			});
 
@@ -114,7 +106,6 @@ namespace Deveel.Webhooks {
 			});
 
 			var query = new PagedQuery<MongoDbWebhookSubscription>(1, 10);
-			var webhookManager = webhookManagerProvider.GetManager(tenantId);
 			var result = await webhookManager.GetSubscriptionsAsync(query, default);
 
 			Assert.NotNull(result);
@@ -132,7 +123,6 @@ namespace Deveel.Webhooks {
 				Active = false
 			});
 
-			var webhookManager = webhookManagerProvider.GetManager(tenantId);
 			var result = await webhookManager.EnableSubscriptionAsync(userId, subscriptionId, default);
 
 			Assert.True(result);
@@ -147,7 +137,6 @@ namespace Deveel.Webhooks {
 		public async Task ActivateNotExistingSubscription() {
 			var subscriptionId = ObjectId.GenerateNewId().ToString();
 
-			var webhookManager = webhookManagerProvider.GetManager(tenantId);
 			await Assert.ThrowsAsync<SubscriptionNotFoundException>(() => webhookManager.EnableSubscriptionAsync(userId, subscriptionId, default));
 		}
 
@@ -158,7 +147,6 @@ namespace Deveel.Webhooks {
 				Active = true
 			});
 
-			var webhookManager = webhookManagerProvider.GetManager(tenantId);
 			var result = await webhookManager.EnableSubscriptionAsync(userId, subscriptionId, default);
 
 			Assert.False(result);
@@ -176,7 +164,6 @@ namespace Deveel.Webhooks {
 				Active = true
 			});
 
-			var webhookManager = webhookManagerProvider.GetManager(tenantId);
 			var result = await webhookManager.DisableSubscriptionAsync(userId, subscriptionId, default);
 
 			Assert.True(result);
@@ -191,8 +178,6 @@ namespace Deveel.Webhooks {
 		public async Task DisableNoyExistingSubscription() {
 			var subscriptionId = ObjectId.GenerateNewId().ToString();
 
-			var webhookManager = webhookManagerProvider.GetManager(tenantId);
-
 			await Assert.ThrowsAsync<SubscriptionNotFoundException>(() => webhookManager.DisableSubscriptionAsync(userId, subscriptionId, default));
 		}
 
@@ -203,7 +188,6 @@ namespace Deveel.Webhooks {
 				Active = false
 			});
 
-			var webhookManager = webhookManagerProvider.GetManager(tenantId);
 			var result = await webhookManager.DisableSubscriptionAsync(userId, subscriptionId, default);
 
 			Assert.False(result);
@@ -221,10 +205,10 @@ namespace Deveel.Webhooks {
 				Active = false
 			});
 
-			var webhookManager = webhookManagerProvider.GetManager(tenantId);
 			var result = await webhookManager.CountAllAsync(default);
 
 			Assert.Equal(1, result);
 		}
+
 	}
 }

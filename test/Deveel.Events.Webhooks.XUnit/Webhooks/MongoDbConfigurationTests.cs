@@ -10,7 +10,7 @@ using Microsoft.Extensions.Options;
 
 using Xunit;
 
-namespace Deveel.Webhooks.Storage {
+namespace Deveel.Webhooks {
 	public static class MongoDbConfigurationTests {
 		[Fact]
 		public static void BuilderConfiguration() {
@@ -119,7 +119,7 @@ namespace Deveel.Webhooks.Storage {
 		#region MyMongoDbWebhookSubscriptionStore
 
 		class MyMongoDbWebhookSubscriptionStore : MongoDbWebhookSubscriptionStrore {
-			public MyMongoDbWebhookSubscriptionStore(IOptions<MongoDbOptions> options) 
+			public MyMongoDbWebhookSubscriptionStore(IOptions<MongoDbOptions> options)
 				: base(options) {
 			}
 		}

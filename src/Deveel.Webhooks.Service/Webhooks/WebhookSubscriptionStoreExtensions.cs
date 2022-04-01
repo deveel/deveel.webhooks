@@ -23,22 +23,8 @@ namespace Deveel.Webhooks {
 			where TSubscription : class, IWebhookSubscription
 			=> store.CreateAsync(entity, default);
 
-		public static string Create<TSubscription>(this IWebhookSubscriptionStore<TSubscription> store, TSubscription entity)
-			where TSubscription : class, IWebhookSubscription
-			=> store.CreateAsync(entity, default)
-				.ConfigureAwait(false)
-				.GetAwaiter()
-				.GetResult();
-
 		public static Task<TSubscription> FindByIdAsync<TSubscription>(this IWebhookSubscriptionStore<TSubscription> store, string id)
 			where TSubscription : class, IWebhookSubscription
 			=> store.FindByIdAsync(id, default);
-
-		public static TSubscription FindById<TSubscription>(this IWebhookSubscriptionStore<TSubscription> store, string id)
-			where TSubscription : class, IWebhookSubscription
-			=> store.FindByIdAsync(id, default)
-				.ConfigureAwait(false)
-				.GetAwaiter()
-				.GetResult();
 	}
 }

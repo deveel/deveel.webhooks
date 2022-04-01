@@ -21,9 +21,7 @@ using Xunit;
 using Xunit.Abstractions;
 
 namespace Deveel.Webhooks {
-	public class WebhookDeliveryResultLoggingTests : IDisposable {
-		private MongoDbRunner mongoDbCluster;
-
+	public class WebhookDeliveryResultLoggingTests : WebhookServiceTestBase {
 		private const int TimeOutSeconds = 2;
 		private bool testTimeout = false;
 
@@ -36,54 +34,45 @@ namespace Deveel.Webhooks {
 		private WebhookPayload lastWebhook;
 		private HttpResponseMessage testResponse;
 
-		public WebhookDeliveryResultLoggingTests(ITestOutputHelper outputHelper) {
-			mongoDbCluster = MongoDbRunner.Start(logger: NullLogger.Instance);
+		public WebhookDeliveryResultLoggingTests(ITestOutputHelper outputHelper) : base(outputHelper) {
+			webhookStore = Services.GetService<IWebhookSubscriptionStoreProvider<MongoDbWebhookSubscription>>();
+			deliveryResultStore = Services.GetRequiredService<IWebhookDeliveryResultStoreProvider<MongoDbWebhookDeliveryResult>>();
+			notifier = Services.GetService<IWebhookNotifier>();
+		}
 
-			var services = new ServiceCollection();
-
-			services.AddLogging(logging => {
-				logging.AddXUnit(outputHelper, options => options.Filter = (category, level) => true);
-			});
-
-			services.AddWebhooks<MongoDbWebhookSubscription>(builder => {
-				builder.ConfigureDelivery(options =>
-					options.SignWebhooks()
-						   .SecondsBeforeTimeOut(TimeOutSeconds))
-				.UseSubscriptionManager()
-				.UseMongoDb(options => {
-					options.DatabaseName = "webhooks";
-					options.ConnectionString = mongoDbCluster.ConnectionString;
-					options.SubscriptionsCollectionName("webhooks_subscription");
-					options.DeliveryResultsCollectionName("delivery_results");
-					options.MultiTenancy.Handling = MongoDbMultiTenancyHandling.TenantField;
-					options.MultiTenancy.TenantField = "TenantId";
-				})
-					.UseDeliveryResultLogger();
+		protected override void ConfigureWebhookService(WebhookServiceBuilder<MongoDbWebhookSubscription> builder) {
+			builder.ConfigureDelivery(options =>
+				options.SignWebhooks()
+					   .SecondsBeforeTimeOut(TimeOutSeconds))
+			.UseSubscriptionManager()
+			.UseMongoDb(options => {
+				options.DatabaseName = "webhooks";
+				options.ConnectionString = ConnectionString;
+				options.SubscriptionsCollectionName("webhooks_subscription");
+				options.DeliveryResultsCollectionName("delivery_results");
+				options.MultiTenancy.Handling = MongoDbMultiTenancyHandling.TenantField;
+				options.MultiTenancy.TenantField = "TenantId";
 			})
-			.AddTestHttpClient(async request => {
-				try {
-					if (testTimeout) {
-						await Task.Delay(TimeSpan.FromSeconds(TimeOutSeconds).Add(TimeSpan.FromSeconds(1)));
-						return new HttpResponseMessage(HttpStatusCode.RequestTimeout);
-					}
+				.UseDeliveryResultLogger();
+		}
 
-					var json = await request.Content.ReadAsStringAsync();
-					lastWebhook = Newtonsoft.Json.JsonConvert.DeserializeObject<WebhookPayload>(json);
-
-					if (testResponse != null)
-						return testResponse;
-
-					return new HttpResponseMessage(HttpStatusCode.Accepted);
-				} catch (Exception) {
-					return new HttpResponseMessage(HttpStatusCode.InternalServerError);
+		protected override async Task<HttpResponseMessage> OnRequestAsync(HttpRequestMessage httpRequest) {
+			try {
+				if (testTimeout) {
+					await Task.Delay(TimeSpan.FromSeconds(TimeOutSeconds).Add(TimeSpan.FromSeconds(1)));
+					return new HttpResponseMessage(HttpStatusCode.RequestTimeout);
 				}
-			});
 
-			var provider = services.BuildServiceProvider();
+				var json = await httpRequest.Content.ReadAsStringAsync();
+				lastWebhook = Newtonsoft.Json.JsonConvert.DeserializeObject<WebhookPayload>(json);
 
-			webhookStore = provider.GetService<IWebhookSubscriptionStoreProvider<MongoDbWebhookSubscription>>();
-			deliveryResultStore = provider.GetRequiredService<IWebhookDeliveryResultStoreProvider<MongoDbWebhookDeliveryResult>>();
-			notifier = provider.GetService<IWebhookNotifier>();
+				if (testResponse != null)
+					return testResponse;
+
+				return new HttpResponseMessage(HttpStatusCode.Accepted);
+			} catch (Exception) {
+				return new HttpResponseMessage(HttpStatusCode.InternalServerError);
+			}
 		}
 
 		private Task<string> CreateSubscriptionAsync(string name, string eventType, params IWebhookFilter[] filters) {
@@ -144,9 +133,5 @@ namespace Deveel.Webhooks {
 			Assert.NotEmpty(storedResult.DeliveryAttempts);
 		}
 
-
-		public void Dispose() {
-			mongoDbCluster?.Dispose();
-		}
 	}
 }

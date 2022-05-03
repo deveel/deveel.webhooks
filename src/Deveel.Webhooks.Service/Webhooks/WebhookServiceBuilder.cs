@@ -46,9 +46,9 @@ namespace Deveel.Webhooks {
 
 			Services.AddScoped<IWebhookServiceConfiguration, WebhookServiceConfiguration>();
 
-			Services.AddScoped<IWebhookSubscriptionManagerProvider<TSubscription>, WebhookSubscriptionManagerProvider<TSubscription>>();
-			Services.AddScoped<WebhookSubscriptionManagerProvider<TSubscription>>();
 			Services.AddScoped<IWebhookSubscriptionManager<TSubscription>, WebhookSubscriptionManager<TSubscription>>();
+			Services.AddScoped<IMultiTenantWebhookSubscriptionManager<TSubscription>, MultiTenantWebhookSubscriptionManager<TSubscription>>();
+			Services.AddScoped<MultiTenantWebhookSubscriptionManager<TSubscription>>();
 
 			Services.AddOptions<WebhookDeliveryOptions>();
 

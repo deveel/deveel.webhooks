@@ -41,9 +41,9 @@ namespace Deveel.Webhooks {
 			where TSubscription : class, IWebhookSubscription
 			=> provider.GetTenantStore(tenantId).GetByEventTypeAsync(eventType, activeOnly, cancellationToken);
 
-		public static Task SetStateAsync<TSubscripton>(this IWebhookSubscriptionStoreProvider<TSubscripton> provider, string tenantId, TSubscripton subscripton, WebhookSubscriptionStateInfo stateInfo, CancellationToken cancellationToken = default)
+		public static Task SetStateAsync<TSubscripton>(this IWebhookSubscriptionStoreProvider<TSubscripton> provider, string tenantId, TSubscripton subscripton, WebhookSubscriptionStatus status, CancellationToken cancellationToken = default)
 			where TSubscripton : class, IWebhookSubscription
-			=> provider.GetTenantStore(tenantId).SetStateAsync(subscripton, stateInfo, cancellationToken);
+			=> provider.GetTenantStore(tenantId).SetStateAsync(subscripton, status, cancellationToken);
 
 		public static Task<int> CountAllAsync<TSubscription>(this IWebhookSubscriptionStoreProvider<TSubscription> provider, string tenantId, CancellationToken cancellationToken = default)
 			where TSubscription : class, IWebhookSubscription

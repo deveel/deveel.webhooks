@@ -22,9 +22,12 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 
+using static System.Formats.Asn1.AsnWriter;
+
 namespace Deveel.Webhooks {
 	public class WebhookSubscriptionManager<TSubscription> : IWebhookSubscriptionManager<TSubscription>
 		where TSubscription : class, IWebhookSubscription {
+
 		private readonly IWebhookSubscriptionFactory<TSubscription> subscriptionFactory;
 
 		protected WebhookSubscriptionManager(IWebhookSubscriptionStore<TSubscription> subscriptionStore, 
@@ -67,10 +70,6 @@ namespace Deveel.Webhooks {
 
 		protected IEnumerable<IWebhookSubscriptionValidator<TSubscription>> Validators { get; }
 
-		protected bool IsTenantStore => Store is IWebhookSubscriptionTenantStore<TSubscription>;
-
-		protected string TenantId => (Store is IWebhookSubscriptionTenantStore<TSubscription> tenantStore) ? tenantStore.TenantId : null;
-
 		private async Task<bool> SetStateAsync(string subscriptionId, WebhookSubscriptionStatus status, CancellationToken cancellationToken) {
 			try {
 				var subscription = await Store.FindByIdAsync(subscriptionId, cancellationToken);
@@ -80,24 +79,39 @@ namespace Deveel.Webhooks {
 					throw new SubscriptionNotFoundException(subscriptionId);
 				}
 
-				if (subscription.Status == status) {
-					Logger.LogTrace("The subscription {SubscriptionId} is already {Status}", subscriptionId, status);
-
-					return false;
-				}
-
-				var stateInfo = new WebhookSubscriptionStateInfo(status);
-
-				await Store.SetStateAsync(subscription, stateInfo, cancellationToken);
-				await Store.UpdateAsync(subscription, cancellationToken);
-
-				return true;
+				return await SetStateAsync(subscription, status, cancellationToken);
 			} catch(WebhookException) {
 				throw;
 			} catch (Exception ex) {
 				Logger.LogError(ex, "Error while trying to change the state of subscription {SubscriptionId}", subscriptionId);
 				throw new WebhookException("Could not change the state of the subscription", ex);
 			}
+		}
+
+		public async Task<bool> SetStateAsync(TSubscription subscription, WebhookSubscriptionStatus status, CancellationToken cancellationToken) {
+			try {
+				if (subscription.Status == status) {
+					Logger.LogTrace("The subscription {SubscriptionId} is already {Status}", subscription.SubscriptionId, status);
+					return false;
+				}
+
+				await Store.SetStateAsync(subscription, status, cancellationToken);
+				await Store.UpdateAsync(subscription, cancellationToken);
+
+				await OnSubscriptionStatusChangedAsync(subscription, status, cancellationToken);
+
+				Logger.LogInformation("The status of subscription {SubscriptionId} was changed to {Status}", subscription.SubscriptionId, status);
+
+				return true;
+			} catch (WebhookException) {
+				throw;
+			} catch (Exception ex) {
+				Logger.LogError(ex, "Error while trying to change the state of subscription {SubscriptionId}", subscription.SubscriptionId);
+				throw new WebhookException("Could not change the state of the subscription", ex);
+			}
+		}
+		protected virtual Task OnSubscriptionStatusChangedAsync(TSubscription subscription, WebhookSubscriptionStatus newStatus, CancellationToken cancellationToken) {
+			return Task.CompletedTask;
 		}
 
 		protected virtual async Task ValidateSubscriptionAsync(TSubscription subscription, CancellationToken cancellationToken) {
@@ -136,6 +150,8 @@ namespace Deveel.Webhooks {
 
 				Logger.LogInformation("New subscription with ID {SubscriptionId}", result);
 
+				await OnSubscriptionCreatedAsync(subscription, cancellationToken);
+
 				return result;
 			} catch (WebhookException) {
 				throw;
@@ -145,6 +161,34 @@ namespace Deveel.Webhooks {
 			}
 		}
 
+		protected virtual Task OnSubscriptionCreatedAsync(TSubscription subscription, CancellationToken cancellationToken) {
+			return Task.CompletedTask;
+		}
+
+		public virtual async Task<bool> RemoveSubscriptionAsync(TSubscription subscription, CancellationToken cancellationToken) {
+			try {
+				var result = await Store.DeleteAsync(subscription, cancellationToken);
+
+				if (!result) {
+					Logger.LogWarning("The subscription {SubscriptionId} was not deleted from the store", subscription.SubscriptionId);
+				} else {
+					Logger.LogInformation("The subscription {SubscriptionId} was deleted from the store", subscription.SubscriptionId);
+
+					await OnSubscriptionRemovedAsync(subscription, cancellationToken);
+				}
+
+				return result;
+			} catch (WebhookException) {
+				throw;
+			} catch (Exception ex) {
+				Logger.LogError(ex, "Error while delete subscription {SubscriptionId}", subscription.SubscriptionId);
+				throw new WebhookException("Could not delete the subscription", ex);
+			}
+		}
+
+		protected virtual Task OnSubscriptionRemovedAsync(TSubscription subscription, CancellationToken cancellationToken) {
+			return Task.CompletedTask;
+		}
 
 		public virtual async Task<bool> RemoveSubscriptionAsync(string subscriptionId, CancellationToken cancellationToken) {
 			try {
@@ -156,15 +200,7 @@ namespace Deveel.Webhooks {
 					throw new SubscriptionNotFoundException(subscriptionId);
 				}
 
-				var result = await Store.DeleteAsync(subscription, cancellationToken);
-
-				if (!result) {
-					Logger.LogWarning("The subscription {SubscriptionId} was not deleted from the store", subscriptionId);
-				} else {
-					Logger.LogInformation("The subscription {SubscriptionId} was deleted from the store", subscriptionId);
-				}
-
-				return result;
+				return await RemoveSubscriptionAsync(subscription, cancellationToken);
 			} catch(WebhookException) {
 				throw;
 			} catch (Exception ex) {
@@ -176,8 +212,15 @@ namespace Deveel.Webhooks {
 		public virtual Task<bool> DisableSubscriptionAsync(string subscriptionId, CancellationToken cancellationToken)
 			=> SetStateAsync(subscriptionId, WebhookSubscriptionStatus.Suspended, cancellationToken);
 
+		public virtual Task<bool> DisableSubscriptionAsync(TSubscription subscription, CancellationToken cancellationToken)
+			=> SetStateAsync(subscription, WebhookSubscriptionStatus.Suspended, cancellationToken);
+
 		public virtual Task<bool> EnableSubscriptionAsync(string subscriptionId, CancellationToken cancellationToken)
 			=> SetStateAsync(subscriptionId, WebhookSubscriptionStatus.Active, cancellationToken);
+
+		public virtual Task<bool> EnableSubscriptionAsync(TSubscription subscription, CancellationToken cancellationToken)
+			=> SetStateAsync(subscription, WebhookSubscriptionStatus.Active, cancellationToken);
+
 
 		public virtual async Task<TSubscription> GetSubscriptionAsync(string subscriptionId, CancellationToken cancellationToken) {
 			try {

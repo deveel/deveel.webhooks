@@ -25,13 +25,19 @@ namespace Deveel.Webhooks {
 
 		Task<bool> EnableSubscriptionAsync(string subscriptionId, CancellationToken cancellationToken);
 
+		Task<bool> EnableSubscriptionAsync(TSubscription subscription, CancellationToken cancellationToken);
+
 		Task<bool> DisableSubscriptionAsync(string subscriptionId, CancellationToken cancellationToken);
+
+		Task<bool> DisableSubscriptionAsync(TSubscription subscription, CancellationToken cancellationToken);
 
 		Task<TSubscription> GetSubscriptionAsync(string subscriptionId, CancellationToken cancellationToken);
 
 		Task<PagedResult<TSubscription>> GetSubscriptionsAsync(PagedQuery<TSubscription> query, CancellationToken cancellationToken);
 
 		Task<bool> RemoveSubscriptionAsync(string subscriptionId, CancellationToken cancellationToken);
+
+		Task<bool> RemoveSubscriptionAsync(TSubscription subscription, CancellationToken cancellationToken);
 
 		Task<int> CountAllAsync(CancellationToken cancellationToken);
 	}

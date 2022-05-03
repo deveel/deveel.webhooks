@@ -55,12 +55,12 @@ namespace Deveel.Webhooks {
 			return await result.ToListAsync(cancellationToken);
 		}
 
-		public Task SetStateAsync(TSubscription subscription, WebhookSubscriptionStateInfo stateInfo, CancellationToken cancellationToken) {
+		public Task SetStateAsync(TSubscription subscription, WebhookSubscriptionStatus status, CancellationToken cancellationToken) {
 			ThrowIfDisposed();
 			cancellationToken.ThrowIfCancellationRequested();
 
-			subscription.Status = stateInfo.Status;
-			subscription.LastStatusTime = stateInfo.TimeStamp;
+			subscription.Status = status;
+			subscription.LastStatusTime = DateTimeOffset.UtcNow;
 
 			return Task.CompletedTask;
 		}

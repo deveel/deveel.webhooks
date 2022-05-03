@@ -13,16 +13,12 @@
 // limitations under the License.
 
 using System;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace Deveel.Webhooks {
-	public sealed class WebhookSubscriptionStateInfo {
-		public WebhookSubscriptionStateInfo(WebhookSubscriptionStatus status) {
-			Status = status;
-			TimeStamp = DateTime.UtcNow;
-		}
-
-		public WebhookSubscriptionStatus Status { get; }
-
-		public DateTimeOffset TimeStamp { get; set; }
+	public interface IMultiTenantWebhookSubscriptionValidator<TSubscription>
+		where TSubscription : class, IWebhookSubscription {
+		Task<WebhookValidationResult> ValidateAsync(IMultiTenantWebhookSubscriptionManager<TSubscription> manager, string tenantId, TSubscription subscription, CancellationToken cancellationToken);
 	}
 }

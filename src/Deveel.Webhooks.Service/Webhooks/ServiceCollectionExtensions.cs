@@ -61,56 +61,5 @@ namespace Deveel.Webhooks {
 			return builder;
 		}
 
-
-		///// <summary>
-		///// Adds the default services to support the webhook
-		///// management provided by the framework.
-		///// </summary>
-		///// <param name="services">The collection of services</param>
-		///// <param name="configure">A builder used to configure the service</param>
-		///// <returns></returns>
-		//public static IServiceCollection AddWebhooks(this IServiceCollection services, Action<IWebhookServiceBuilder> configure = null) {
-		//	services.TryAddScoped<IWebhookNotifier, WebhookNotifier>();
-		//	services.AddScoped<WebhookNotifier>();
-
-		//	services.TryAddScoped<IWebhookSender, WebhookSender>();
-		//	services.AddScoped<WebhookSender>();
-
-		//	services.AddSingleton<IWebhookSigner, Sha256WebhookSigner>();
-		//	services.AddSingleton<Sha256WebhookSigner>();
-
-		//	services.AddSingleton<IWebhookSerializer, JsonWebhookSerializer>();
-		//	services.AddSingleton<JsonWebhookSerializer>();
-
-		//	services.AddScoped<IWebhookServiceConfiguration, WebhookServiceConfiguration>();
-
-		//	services.AddOptions<WebhookDeliveryOptions>();
-
-		//	if (configure != null) {
-		//		var builder = new WebhookConfigurationBuilderImpl(services);
-
-		//		configure.Invoke(builder);
-		//	}
-
-		//	//} else {
-		//	//	// add the default configurations ...
-		//	//	services.AddOptions<WebhookDeliveryOptions>();
-		//	//}
-
-		//	return services;
-		//}
-
-		//class WebhookConfigurationBuilderImpl : IWebhookServiceBuilder {
-		//	public IServiceCollection Services { get; }
-
-		//	public void ConfigureServices(Action<IServiceCollection> configure) {
-		//		configure?.Invoke(Services);
-		//	}
-
-		//	public WebhookConfigurationBuilderImpl(IServiceCollection services) {
-		//		Services = services;
-		//	}
-		//}
-
 	}
 }

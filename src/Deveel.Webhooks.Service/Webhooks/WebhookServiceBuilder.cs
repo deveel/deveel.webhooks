@@ -53,6 +53,7 @@ namespace Deveel.Webhooks {
 			Services.AddOptions<WebhookDeliveryOptions>();
 
 			Services.AddSingleton<IWebhookSubscriptionValidator<TSubscription>, WebhookSubscriptionValidator<TSubscription>>();
+			Services.AddSingleton<IMultiTenantWebhookSubscriptionValidator<TSubscription>, MultiTenantWebhookSubscriptionValidator<TSubscription>>();
 		}
 
 		public WebhookServiceBuilder<TSubscription> ConfigureDelivery(Action<WebhookDeliveryOptions> configure) {

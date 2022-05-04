@@ -18,16 +18,18 @@ using System.Threading;
 using System.Threading.Tasks;
 
 namespace Deveel.Webhooks {
-	public class WebhookSubscriptionValidator<TSubscription> : IWebhookSubscriptionValidator<TSubscription> where TSubscription : class, IWebhookSubscription {
-		public virtual Task<WebhookValidationResult> ValidateAsync(IWebhookSubscriptionManager<TSubscription> manager, TSubscription subscription, CancellationToken cancellationToken) {
-			cancellationToken.ThrowIfCancellationRequested();
-
-			var result = Validate(manager, subscription);
+	public class MultiTenantWebhookSubscriptionValidator<TSubscription> : IMultiTenantWebhookSubscriptionValidator<TSubscription>
+		where TSubscription : class, IWebhookSubscription {
+		public virtual Task<WebhookValidationResult> ValidateAsync(IMultiTenantWebhookSubscriptionManager<TSubscription> manager, string tenantId, TSubscription subscription, CancellationToken cancellationToken) {
+			var result = Validate(manager, tenantId, subscription);
 
 			return Task.FromResult(result);
 		}
 
-		public virtual WebhookValidationResult Validate(IWebhookSubscriptionManager<TSubscription> manager, TSubscription subscription) {
+		public virtual WebhookValidationResult Validate(IMultiTenantWebhookSubscriptionManager<TSubscription> manager, string tenantId, TSubscription subscription) {
+			if (String.IsNullOrWhiteSpace(tenantId))
+				return WebhookValidationResult.Failed("The tenant ID is required in a multi-tenant context");
+
 			if (String.IsNullOrWhiteSpace(subscription.DestinationUrl))
 				return WebhookValidationResult.Failed("The destination URL of the webhook is missing");
 

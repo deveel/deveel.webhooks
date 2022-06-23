@@ -20,7 +20,7 @@
 
 | Concept                                              | Description                                |
 | ---------------------------------------------------- | ------------------------------------------ |
-| **[Webook](concept_webhook.md)**                     | What is it a 'Webhook' and why I need it?  |
+| **[Webhook](concept_webhook.md)**                     | What is it a 'Webhook' and why I need it?  |
 | **[Subscriptions](concept_webhook_subscription.md)** | How does a subscription to an event works? |
 | **[Receivers](concept_webhook_receiver.md)**         | What is a receiver of webooks?             |
 

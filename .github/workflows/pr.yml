@@ -1,0 +1,30 @@
+name: Webhooks PR Build
+
+on:
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-20.04
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Setup .NET 6.0
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 6.0.x
+    
+    - name: Add Deveel GitHub NuGet Source
+      run: dotnet nuget add source "https://nuget.pkg.github.com/deveel/index.json" -n "Deveel GitHub" -u ${{ secrets.DEVEEL_NUGET_USER }} -p ${{ secrets.DEVEEL_NUGET_TOKEN }} --store-password-in-clear-text
+      
+    - name: Restore dependencies
+      run: dotnet restore
+      
+    - name: Build
+      run: dotnet build --no-restore -c Release
+    
+    - name: Test
+      run: dotnet test --no-build --verbosity normal -c Release /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:Exclude="[*.XUnit]*"

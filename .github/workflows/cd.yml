@@ -3,8 +3,6 @@ name: Webhooks CD
 on:
   push:
     branches: [ main ]
-  pull_request:
-    branches: [ main ]
 
 jobs:
   build:
@@ -12,12 +10,12 @@ jobs:
     runs-on: ubuntu-20.04
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
 
-    - name: Setup .NET 5.0
-      uses: actions/setup-dotnet@v1
+    - name: Setup .NET 6.0
+      uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: 5.0.x
+        dotnet-version: 6.0.x
     
     - name: Add Deveel GitHub NuGet Source
       run: dotnet nuget add source "https://nuget.pkg.github.com/deveel/index.json" -n "Deveel GitHub" -u ${{ secrets.DEVEEL_NUGET_USER }} -p ${{ secrets.DEVEEL_NUGET_TOKEN }} --store-password-in-clear-text
@@ -32,7 +30,7 @@ jobs:
       run: dotnet test --no-build --verbosity normal -c Release /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:Exclude="[*.XUnit]*"
       
     - name: Collect to Codecov
-      uses: codecov/codecov-action@v2.1.0
+      uses: codecov/codecov-action@v3
       with:
         token: ${{ secrets.OCM_CODECOV_TOKEN }}
 

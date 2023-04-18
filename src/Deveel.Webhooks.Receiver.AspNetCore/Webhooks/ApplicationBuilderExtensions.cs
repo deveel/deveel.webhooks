@@ -33,5 +33,14 @@ namespace Deveel.Webhooks {
 				builder => builder.UseMiddleware<WebhookDelegatedReceiverMiddleware<TWebhook>>(receiver)
 			);
 		}
+
+		public static IApplicationBuilder UseWebhookReceiver<TWebhook>(this IApplicationBuilder app, string path, Action<HttpContext, TWebhook> receiver)
+			where TWebhook : class {
+			return app.MapWhen(
+				context => context.Request.Method == "POST" && context.Request.Path.Equals(path),
+				builder => builder.UseMiddleware<WebhookDelegatedReceiverMiddleware<TWebhook>>(receiver)
+			);
+		}
+
 	}
 }

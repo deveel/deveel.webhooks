@@ -14,10 +14,7 @@ namespace Deveel.Webhooks.Receiver.TestApi {
 			builder.Services.AddAuthorization();
 			builder.Services
 				.AddWebhooks<TestWebhook>()
-				// .UseReceiver<TestWebhookReceiver>()
-				.UseJsonParser(json => {
-					return JsonConvert.DeserializeObject<TestWebhook>(json);
-				})
+				.UseNewtonsoftJsonParser()
 				.AddHandler<TestWebhookHandler>();
 
 			var secret = builder.Configuration["Webhook:Receiver:Signature:Secret"];
@@ -29,7 +26,7 @@ namespace Deveel.Webhooks.Receiver.TestApi {
 					options.Signature.ParameterName = "X-Webhook-Signature-256";
 					options.Signature.Location = WebhookSignatureLocation.Header;
 				})
-				.UseJsonParser(json => JsonConvert.DeserializeObject<TestSignedWebhook>(json))
+				.UseNewtonsoftJsonParser()
 				.UseSigner<Sha256WebhookSigner>()
 				.AddHandler<TestSignedWebhookHandler>();
 
@@ -42,10 +39,10 @@ namespace Deveel.Webhooks.Receiver.TestApi {
 			app.UseAuthorization();
 
 			app.UseWebhookReceiver<TestWebhook>("/webhook");
-			app.UseWebhookReceiver<TestWebhook>("/webhook/handled", async (context, webhook, ct) => {
+			app.UseWebhookReceiver<TestWebhook>("/webhook/handled", (context, webhook) => {
 				var logger = context.RequestServices.GetRequiredService<ILoggerFactory>().CreateLogger("test");
 
-				logger.LogInformation(JsonConvert.ToString(webhook));
+				logger.LogInformation(JsonConvert.SerializeObject(webhook));
 			});
 
 			app.UseWebhookReceiver<TestSignedWebhook>("/webhook/signed");

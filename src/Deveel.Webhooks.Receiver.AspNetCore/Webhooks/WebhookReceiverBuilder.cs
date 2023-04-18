@@ -4,11 +4,15 @@ using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Options;
+
+using Newtonsoft.Json;
 
 namespace Deveel.Webhooks {
 	public sealed class WebhookReceiverBuilder {
@@ -25,6 +29,8 @@ namespace Deveel.Webhooks {
 			RegisterReceiverMiddleware();
 			RegisterVerifierMiddleware();
 			RegisterDefaultReceiver();
+
+			UseJsonParser();
 		}
 
 		public Type WebhookType { get; }
@@ -111,6 +117,45 @@ namespace Deveel.Webhooks {
 
 			if (typeof(TParser).IsClass && !typeof(TParser).IsAbstract)
 				Services.Add(new ServiceDescriptor(typeof(TParser), typeof(TParser), lifetime));
+
+			return this;
+		}
+
+		public WebhookReceiverBuilder UseJsonParser<TParser>(TParser parser)
+			where TParser : class {
+			var parserType = typeof(IWebhookJsonParser<>).MakeGenericType(WebhookType);
+
+			if (!parserType.IsAssignableFrom(typeof(TParser)))
+				throw new ArgumentException($"The type '{typeof(TParser)}' is not assignable to '{parserType}'");
+
+			Services.RemoveAll(parserType);
+			Services.AddSingleton(parserType, parser);
+
+			Services.AddSingleton(parser);
+
+			return this;
+		}
+
+		public WebhookReceiverBuilder UseJsonParser(JsonSerializerOptions options = null) {
+			var parserType = typeof(IWebhookJsonParser<>).MakeGenericType(WebhookType);
+			var jsonParserType = typeof(SystemTextWebhookJsonParser<>).MakeGenericType(WebhookType);
+			var parser = Activator.CreateInstance(jsonParserType, new[] {options});
+
+			Services.RemoveAll(parserType);
+			Services.AddSingleton(parserType, parser);
+			Services.AddSingleton(jsonParserType, parser);
+
+			return this;
+		}
+
+		public WebhookReceiverBuilder UseNewtonsoftJsonParser(JsonSerializerSettings settings = null) {
+			var parserType = typeof(IWebhookJsonParser<>).MakeGenericType(WebhookType);
+			var jsonParserType = typeof(NewtonsoftWebhookJsonParser<>).MakeGenericType(WebhookType);
+			var parser = Activator.CreateInstance(jsonParserType, new[] { settings });
+
+			Services.RemoveAll(parserType);
+			Services.AddSingleton(parserType, parser);
+			Services.AddSingleton(jsonParserType, parser);
 
 			return this;
 		}

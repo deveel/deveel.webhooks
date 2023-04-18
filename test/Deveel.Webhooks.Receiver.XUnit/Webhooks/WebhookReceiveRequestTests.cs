@@ -50,6 +50,23 @@ namespace Deveel.Webhooks {
 			Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 		}
 
+		[Fact]
+		public async Task ReceiveHandledTestWebhook() {
+			var client = CreateClient();
+
+			var response = await client.SendAsync(new HttpRequestMessage(HttpMethod.Post, "/webhook/handled") {
+				Content = new StringContent(JsonConvert.SerializeObject(new TestWebhook {
+					Id = Guid.NewGuid().ToString("N"),
+					Event = "test",
+					TimeStamp = DateTimeOffset.Now,
+				}), Encoding.UTF8, "application/json")
+			});
+
+			Assert.True(response.IsSuccessStatusCode);
+			Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+		}
+
+
 		private string GetSha256Signature(string json) {
 			var config = appFactory.Services.GetRequiredService<IConfiguration>();
 

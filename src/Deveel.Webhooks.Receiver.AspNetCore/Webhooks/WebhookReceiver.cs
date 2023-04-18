@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -101,16 +100,6 @@ namespace Deveel.Webhooks {
 			return String.Equals(computedSignature, signature, StringComparison.OrdinalIgnoreCase);
 		}
 
-		//private bool ValidateSha256Signature(string signature, string jsonBody, string secret) {
-		//	var key = Encoding.ASCII.GetBytes(secret);
-
-		//	using var sha256 = new HMACSHA256(key);
-		//	var hash = sha256.ComputeHash(Encoding.UTF8.GetBytes(jsonBody));
-		//	var computedSignature = BitConverter.ToString(hash);
-
-		//	return String.Equals(signature, computedSignature, StringComparison.Ordinal);
-		//}
-
 		protected async Task<ValidateResult> TryValidateWebhook(HttpRequest request) {
 			using var reader = new StreamReader(request.Body, Encoding.UTF8);
 			var jsonBody = await reader.ReadToEndAsync();
@@ -125,21 +114,31 @@ namespace Deveel.Webhooks {
 		}
 
 		public virtual async Task<WebhookReceiveResult<TWebhook>> ReceiveAsync(HttpRequest request, CancellationToken cancellationToken) {
-			if (ValidateSignature()) {
-				var result = await TryValidateWebhook(request);
+			if (String.IsNullOrWhiteSpace(request.ContentType) ||
+				!request.ContentType.StartsWith("application/json"))
+				return new WebhookReceiveResult<TWebhook>(null, null);
 
-				if (result.SignatureValidated && !(result.IsValid ?? false)) {
-					return new WebhookReceiveResult<TWebhook>(null, false);
-				} else if ((result.SignatureValidated && (result.IsValid ?? false)) ||
-					!result.SignatureValidated) {
-					var signatureValid = result.SignatureValidated && (result.IsValid ?? false);
-					var webhook = await ParseJsonAsync(result.JsonBody, cancellationToken);
-					return new WebhookReceiveResult<TWebhook>(webhook, signatureValid);
+			try {
+				if (ValidateSignature()) {
+					var result = await TryValidateWebhook(request);
+
+					if (result.SignatureValidated && !(result.IsValid ?? false)) {
+						return new WebhookReceiveResult<TWebhook>(null, false);
+					} else if ((result.SignatureValidated && (result.IsValid ?? false)) ||
+						!result.SignatureValidated) {
+						var signatureValid = result.SignatureValidated && (result.IsValid ?? false);
+						var webhook = await ParseJsonAsync(result.JsonBody, cancellationToken);
+						return new WebhookReceiveResult<TWebhook>(webhook, signatureValid);
+					} else {
+						throw new NotSupportedException();
+					}
 				} else {
-					throw new NotSupportedException();
+					return await ParseJsonAsync(request.Body, cancellationToken);
 				}
-			} else {
-				return await ParseJsonAsync(request.Body, cancellationToken);
+			} catch (WebhookException) {
+				throw;
+			} catch(Exception ex) {
+				throw new WebhookException("Could not receive the webhook", ex);
 			}
 		}
 

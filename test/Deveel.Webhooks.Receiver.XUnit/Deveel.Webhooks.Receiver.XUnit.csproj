@@ -9,17 +9,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="..\..\src\Deveel.Webhooks\Webhooks\IWebhookSigner.cs" Link="Webhooks\IWebhookSigner.cs" />
-    <Compile Include="..\..\src\Deveel.Webhooks\Webhooks\Sha256WebhookSigner.cs" Link="Webhooks\Sha256WebhookSigner.cs" />
-    <Compile Include="..\..\src\Deveel.Webhooks\Webhooks\WebhookSignatureAlgorithms.cs" Link="Webhooks\WebhookSignatureAlgorithms.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="coverlet.msbuild" Version="3.2.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="MartinCostello.Logging.XUnit" Version="0.3.0" />
     <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.2.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="6.0.16" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.1" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.5.0" />
     <PackageReference Include="xunit" Version="2.4.2" />
@@ -35,7 +31,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Deveel.Webhooks.Receiver.AspNetCore\Deveel.Webhooks.Receiver.AspNetCore.csproj" />
-    <ProjectReference Include="..\..\src\Deveel.Webhooks.Receiver\Deveel.Webhooks.Receiver.csproj" />
+    <ProjectReference Include="..\Deveel.Webhooks.Receiver.TestApi\Deveel.Webhooks.Receiver.TestApi.csproj" />
   </ItemGroup>
 
 </Project>

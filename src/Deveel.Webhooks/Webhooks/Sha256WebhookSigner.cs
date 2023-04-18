@@ -34,7 +34,7 @@ namespace Deveel.Webhooks {
 				var data = Encoding.UTF8.GetBytes(serializedBody);
 				var sha256 = hasher.ComputeHash(data);
 
-				signature = BitConverter.ToString(sha256);
+				signature = Convert.ToBase64String(sha256);
 			}
 
 			return signature;

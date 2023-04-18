@@ -19,7 +19,7 @@ using System.Threading;
 using Microsoft.AspNetCore.Http;
 
 namespace Deveel.Webhooks {
-	public interface IWebhookReceiver<T> where T : class {
-		Task<T> ReceiveAsync(HttpRequest request, CancellationToken cancellationToken);
+	public interface IWebhookReceiver<TWebhook> where TWebhook : class {
+		Task<WebhookReceiveResult<TWebhook>> ReceiveAsync(HttpRequest request, CancellationToken cancellationToken);
 	}
 }

@@ -16,9 +16,12 @@
 
 # Deveel Webhooks Documentation
 
+Here you can find a documentation of the `Deveel Webhooks` framework, to help you getting started with the libraries and functions that compose it and to understand how it works.
+
+
 ## Basic Concepts
 
-| Concept                                              | Description                                |
+| Topic                                              | Description                                |
 | ---------------------------------------------------- | ------------------------------------------ |
 | **[Webhook](concept_webhook.md)**                     | What is it a 'Webhook' and why I need it?  |
 | **[Subscriptions](concept_webhook_subscription.md)** | How does a subscription to an event works? |

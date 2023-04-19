@@ -343,70 +343,6 @@
             Returns a <see cref="T:System.Threading.Tasks.Task"/> that completes when the result is handled.
             </returns>
         </member>
-        <member name="T:Deveel.Webhooks.IWebhookSigner">
-            <summary>
-            Provides functions for the signing of a webhook payload
-            </summary>
-        </member>
-        <member name="P:Deveel.Webhooks.IWebhookSigner.Algorithms">
-            <summary>
-            Gets the list of algorithms supported by this signer
-            </summary>
-        </member>
-        <member name="M:Deveel.Webhooks.IWebhookSigner.SignWebhook(System.String,System.String)">
-            <summary>
-            Signs the given JSON body using the provided secret
-            as a key for the signature
-            </summary>
-            <param name="jsonBody">The JSON-formatted body of a webhook to sign</param>
-            <param name="secret">The secret used as a key for the signature</param>
-            <remarks>
-            A typical implementation of this method would return a string that
-            contains the signature, prefixed by the algorithm used to sign the
-            webhook in the format <c>[algorithm]=[signature]</c>.
-            </remarks>
-            <returns>
-            Returns a string representing the signature of the given body
-            </returns>
-        </member>
-        <member name="T:Deveel.Webhooks.IWebhookSignerProvider`1">
-            <summary>
-            Implements a provider of <see cref="T:Deveel.Webhooks.IWebhookSigner"/> instances
-            for given algorithms.
-            </summary>
-            <typeparam name="TWebhook">The type of webhook to provide signers for</typeparam>
-        </member>
-        <member name="M:Deveel.Webhooks.IWebhookSignerProvider`1.GetSigner(System.String)">
-            <summary>
-            Gets the signer for the given algorithm.
-            </summary>
-            <param name="algorithm">The name of the algorithm handled by
-            the signer to lookup for</param>
-            <returns>
-            Returns an instance of <see cref="T:Deveel.Webhooks.IWebhookSigner"/> that supports
-            the given algorithm, or <c>null</c> if no such signer is available.
-            </returns>
-        </member>
-        <member name="T:Deveel.Webhooks.IWebhookSigner`1">
-            <summary>
-            Defines a contract for a service that can verify the signature of a
-            specific type of webhook.
-            </summary>
-            <typeparam name="TWebhook">The type of webhook to sign</typeparam>
-            <remarks>
-            <para>
-            Webhook signers are typically implementing the same behavior,
-            and this contract is a way to define a constraint usage of the signer
-            within a receiver context.
-            </para>
-            <para>
-            In some advanced scenarios, it is possible to have multiple signers
-            for the same algorithm but specific for a given type of webhook, according
-            to the different needs of the provider.
-            </para>
-            </remarks>
-            <see cref="T:Deveel.Webhooks.IWebhookSigner"/>
-        </member>
         <member name="T:Deveel.Webhooks.IWebhookVerificationResult">
             <summary>
             Represents the result of a verification of a webhook request.
@@ -451,41 +387,6 @@
             <returns>
             Returns the options for the verifier of the given type.
             </returns>
-        </member>
-        <member name="T:Deveel.Webhooks.Sha256WebhookSigner">
-            <summary>
-            A default implementation of the <see cref="T:Deveel.Webhooks.IWebhookSigner"/> that handles
-            a typical webhook signature using the SHA-256 algorithm.
-            </summary>
-        </member>
-        <member name="P:Deveel.Webhooks.Sha256WebhookSigner.Algorithms">
-            <inheritdoc/>
-        </member>
-        <member name="M:Deveel.Webhooks.Sha256WebhookSigner.ComputeHash(System.String,System.String)">
-            <summary>
-            Computes the hash of the given <paramref name="jsonBody"/> using the
-            provided secret,
-            </summary>
-            <param name="jsonBody">The JSON-formatted string that represents the webhook to sign</param>
-            <param name="secret">A secret used as key for the signature</param>
-            <returns>
-            Returns a byte array representing the hash of the given body
-            </returns>
-            <exception cref="T:System.ArgumentException">
-            Thrown when the <paramref name="secret"/> is <c>null</c> or empty
-            </exception>
-        </member>
-        <member name="M:Deveel.Webhooks.Sha256WebhookSigner.GetSignatureString(System.Byte[])">
-            <summary>
-            Gets the string representation of the signature, given the hash
-            </summary>
-            <param name="hash">The byte hash of the signature</param>
-            <returns>
-            Returns a string representing the signature of the given body
-            </returns>
-        </member>
-        <member name="M:Deveel.Webhooks.Sha256WebhookSigner.SignWebhook(System.String,System.String)">
-            <inheritdoc/>
         </member>
         <member name="T:Deveel.Webhooks.SystemTextWebhookJsonParser`1">
             <summary>
@@ -1156,22 +1057,6 @@
         </member>
         <member name="M:Deveel.Webhooks.WebhookRequestVerifier`1.VerifyRequestAsync(Microsoft.AspNetCore.Http.HttpRequest,System.Threading.CancellationToken)">
             <inheritdoc/>
-        </member>
-        <member name="T:Deveel.Webhooks.WebhookSignatureLocation">
-            <summary>
-            Enumerates the possible locations where the signature of a webhook
-            can be found within a HTTP request object.
-            </summary>
-        </member>
-        <member name="F:Deveel.Webhooks.WebhookSignatureLocation.Header">
-            <summary>
-            The signature is found in the HTTP header of the request.
-            </summary>
-        </member>
-        <member name="F:Deveel.Webhooks.WebhookSignatureLocation.QueryString">
-            <summary>
-            The signature is found in the query string of the request.
-            </summary>
         </member>
         <member name="T:Deveel.Webhooks.WebhookSignatureOptions">
             <summary>

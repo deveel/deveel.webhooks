@@ -98,10 +98,11 @@ namespace Deveel.Webhooks {
 			if (provider == null)
 				throw new InvalidOperationException($"No signature provider found for the algorithm '{configuration.DeliveryOptions.SignatureAlgorithm}' configured for the instance");
 
-			var signature = provider.Sign(serializedBody, secret);
+			var signature = provider.SignWebhook(serializedBody, secret);
 
 			if (configuration.DeliveryOptions.SignatureLocation == WebhookSignatureLocation.Header) {
-				request.Headers.Add(configuration.DeliveryOptions.SignatureHeaderName, $"{provider.Algorithm}={signature}");
+				// request.Headers.Add(configuration.DeliveryOptions.SignatureHeaderName, $"{provider.Algorithm}={signature}");
+				request.Headers.Add(configuration.DeliveryOptions.SignatureHeaderName, signature);
 			} else if (configuration.DeliveryOptions.SignatureLocation == WebhookSignatureLocation.QueryString) {
 				var originalUrl = new UriBuilder(request.RequestUri);
 				var queryString = new StringBuilder(originalUrl.Query);
@@ -112,7 +113,8 @@ namespace Deveel.Webhooks {
 				queryString.Append('=');
 				queryString.Append(signature);
 				queryString.Append('&');
-				queryString.Append($"sig_alg={provider.Algorithm}");
+				// queryString.Append($"sig_alg={provider.Algorithm}");
+				queryString.Append($"sig_alg={provider.Algorithms[0]}");
 
 				originalUrl.Query = queryString.ToString();
 				request.RequestUri = originalUrl.Uri;

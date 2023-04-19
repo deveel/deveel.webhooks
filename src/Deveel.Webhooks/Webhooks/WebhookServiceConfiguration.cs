@@ -108,7 +108,7 @@ namespace Deveel.Webhooks {
 					if (String.IsNullOrWhiteSpace(algorithm))
 						return DefaultSigner;
 
-					return base.Items.Where(x => x.Algorithm == algorithm)
+					return base.Items.Where(x => x.Algorithms.Any(alg => String.Equals(alg, algorithm, StringComparison.OrdinalIgnoreCase)))
 						.FirstOrDefault();
 				}
 			}
@@ -122,11 +122,11 @@ namespace Deveel.Webhooks {
 				}
 			}
 
-			public bool Contains(string algorithm) => base.Items.Where(x => x.Algorithm == algorithm).Any();
+			public bool Contains(string algorithm) => base.Items.Where(x => x.Algorithms.Any(alg => String.Equals(alg, algorithm, StringComparison.OrdinalIgnoreCase))).Any();
 
 			public int IndexOf(string algorithm) {
 				for (int i = 0; i < Count; i++) {
-					if (this[i].Algorithm == algorithm)
+					if (this[i].Algorithms.Any(alg => String.Equals(alg, algorithm, StringComparison.OrdinalIgnoreCase)))
 						return i;
 				}
 

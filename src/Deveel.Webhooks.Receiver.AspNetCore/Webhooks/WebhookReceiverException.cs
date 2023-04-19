@@ -13,12 +13,25 @@
 // limitations under the License.
 
 using System;
-using System.Threading.Tasks;
-
-using Microsoft.AspNetCore.Http;
 
 namespace Deveel.Webhooks {
-	class WebhookRequestVerfierMiddleware<TWebhook> : IMiddleware where TWebhook : class {
-		public Task InvokeAsync(HttpContext context, RequestDelegate next) => throw new NotImplementedException();
+	/// <summary>
+	/// An exception thrown when an error occurs during the processing of a webhook
+	/// </summary>
+	public class WebhookReceiverException : Exception {
+		/// <inheritdoc/>
+		public WebhookReceiverException(string message, Exception innerException) 
+			: base(message, innerException) {
+		}
+
+        /// <inheritdoc/>
+        public WebhookReceiverException(string message) 
+			: base(message) {
+		}
+
+        /// <inheritdoc/>
+        public WebhookReceiverException() {
+
+		}
 	}
 }

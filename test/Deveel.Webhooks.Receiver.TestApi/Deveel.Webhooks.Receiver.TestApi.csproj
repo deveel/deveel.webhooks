@@ -8,6 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\Deveel.Webhooks.Receiver.AspNetCore.NewtonsoftJson\Deveel.Webhooks.Receiver.AspNetCore.NewtonsoftJson.csproj" />
     <ProjectReference Include="..\..\src\Deveel.Webhooks.Receiver.AspNetCore\Deveel.Webhooks.Receiver.AspNetCore.csproj" />
   </ItemGroup>
 

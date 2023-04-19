@@ -1,30 +1,53 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.CompilerServices;
+﻿// Copyright 2022-2023 Deveel
+// 
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+// 
+//     http://www.apache.org/licenses/LICENSE-2.0
+// 
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 using System.Text;
 using System.Text.Json;
-using System.Threading;
-using System.Threading.Tasks;
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Options;
-
-using Newtonsoft.Json;
 
 namespace Deveel.Webhooks {
-	public sealed class WebhookReceiverBuilder {
-		public WebhookReceiverBuilder(Type webhookType, IServiceCollection services) {
-			if (webhookType == null)
-				throw new ArgumentNullException(nameof(webhookType));
-
-			if (!webhookType.IsClass || webhookType.IsAbstract)
+    /// <summary>
+    /// An object that can be used to configure a receiver of webhooks
+    /// </summary>
+    /// <typeparam name="TWebhook">The type of webhooks to receive</typeparam>
+    /// <remarks>
+    /// When constructing the builder a set of default services are registered,
+    /// such as the middleware for the receiver and the verifier, a default JSON
+    /// parser and the default receiver service.
+    /// </remarks>
+    public sealed class WebhookReceiverBuilder<TWebhook> where TWebhook : class {
+		/// <summary>
+		/// Initializes a new instance of the <see cref="WebhookReceiverBuilder{TWebhook}"/> class
+		/// </summary>
+		/// <param name="services">
+		/// The service collection to which the receiver is added
+		/// </param>
+		/// <exception cref="ArgumentException">
+		/// Thrown if the type <typeparamref name="TWebhook"/> is not a non-abstract class
+		/// </exception>
+		/// <exception cref="ArgumentNullException">
+		/// Thrown if the <paramref name="services"/> argument is <c>null</c>
+		/// </exception>
+		public WebhookReceiverBuilder(IServiceCollection services) {
+			if (!typeof(TWebhook).IsClass || typeof(TWebhook).IsAbstract)
 				throw new ArgumentException("The webhook type must be a non-abstract class");
 
-			WebhookType = webhookType;
 			Services = services ?? throw new ArgumentNullException(nameof(services));
+
+			Services.TryAddSingleton(this);
 
 			RegisterReceiverMiddleware();
 			RegisterVerifierMiddleware();
@@ -33,48 +56,67 @@ namespace Deveel.Webhooks {
 			UseJsonParser();
 		}
 
-		public Type WebhookType { get; }
+		/// <summary>
+		/// Constructs a new instance of the <see cref="WebhookReceiverBuilder{TWebhook}"/> class
+		/// instantiating a new service collection
+		/// </summary>
+		public WebhookReceiverBuilder()
+			: this(new ServiceCollection()) {
+        }
 
+		/// <summary>
+		/// Gets the service collection to which the receiver is added
+		/// </summary>
 		public IServiceCollection Services { get; }
 
 		private void RegisterReceiverMiddleware() {
-			var middlewareType = typeof(WebhookRceiverMiddleware<>).MakeGenericType(WebhookType);
-			Services.AddScoped(middlewareType);
+			Services.AddScoped<WebhookReceiverMiddleware<TWebhook>>();
 		}
 
 		private void RegisterVerifierMiddleware() {
-			var middlewareType = typeof(WebhookRequestVerfierMiddleware<>).MakeGenericType(WebhookType);
-			Services.AddScoped(middlewareType);
+			Services.AddScoped<WebhookRequestVerfierMiddleware<TWebhook>>();
 		}
 
 		private void RegisterDefaultReceiver() {
-			var receiverType = typeof(IWebhookReceiver<>).MakeGenericType(WebhookType);
-			var defaultReceiverType = typeof(WebhookReceiver<>).MakeGenericType(WebhookType);
-
-			Services.TryAddScoped(receiverType, defaultReceiverType);
-			Services.TryAddScoped(defaultReceiverType, defaultReceiverType);
+			Services.TryAddScoped<IWebhookReceiver<TWebhook>, WebhookReceiver<TWebhook>>();
+			Services.TryAddScoped<WebhookReceiver<TWebhook>>();
 		}
 
-		public WebhookReceiverBuilder UseReceiver<TReceiver>() {
-			var receiverType = typeof(IWebhookReceiver<>).MakeGenericType(WebhookType);
-			if (!receiverType.IsAssignableFrom(typeof(TReceiver)))
-				throw new ArgumentException($"The type '{typeof(TReceiver)}' must be assignable from '{receiverType}'");
+		/// <summary>
+		/// Registers an implementation of the <see cref="IWebhookReceiver{TWebhook}"/>
+		/// that is used to receive the webhooks
+		/// </summary>
+		/// <typeparam name="TReceiver">
+		/// The type of the receiver to use for the webhooks of type <typeparamref name="TWebhook"/>
+		/// </typeparam>
+		/// <returns>
+		/// Returns the current builder instance with the receiver registered
+		/// </returns>
+		public WebhookReceiverBuilder<TWebhook> UseReceiver<TReceiver>()
+			where TReceiver : class, IWebhookReceiver<TWebhook> {
 
-			Services.RemoveAll(receiverType);
-			Services.AddScoped(receiverType, typeof(TReceiver));
+			Services.AddScoped<IWebhookReceiver<TWebhook>, TReceiver>();
 
-			if (typeof(TReceiver).IsClass && !typeof(TReceiver).IsAbstract)
+			if (!typeof(TReceiver).IsAbstract)
 				Services.AddScoped(typeof(TReceiver), typeof(TReceiver));
 
 			return this;
 		}
 
-		public WebhookReceiverBuilder AddHandler<THandler>() {
-			var handlerType = typeof(IWebhookHandler<>).MakeGenericType(WebhookType);
-			if (!handlerType.IsAssignableFrom(typeof(THandler)))
-				throw new ArgumentException($"The type '{typeof(THandler)}' must be assignable from '{handlerType}'");
+		/// <summary>
+		/// Registers an handler for the webhooks of type <typeparamref name="TWebhook"/>
+		/// that were received.
+		/// </summary>
+		/// <typeparam name="THandler">
+		/// The type of the handler to use for the webhooks of type <typeparamref name="TWebhook"/>
+		/// </typeparam>
+		/// <returns>
+		/// Returns the current builder instance with the handler registered
+		/// </returns>
+		public WebhookReceiverBuilder<TWebhook> AddHandler<THandler>() 
+			where THandler : class, IWebhookHandler<TWebhook> {
 
-			Services.AddScoped(handlerType, typeof(THandler));
+			Services.AddScoped<IWebhookHandler<TWebhook>, THandler>();
 
 			if (typeof(THandler).IsClass && !typeof(THandler).IsAbstract)
 				Services.AddScoped(typeof(THandler), typeof(THandler));
@@ -82,38 +124,58 @@ namespace Deveel.Webhooks {
 			return this;
 		}
 
-		public WebhookReceiverBuilder ConfigureOptions<TOptions>(string sectionName) where TOptions : class {
-			var optionType = typeof(WebhookReceiverOptions<>).MakeGenericType(WebhookType);
-			if (!optionType.IsAssignableFrom(typeof(TOptions)))
-				throw new ArgumentException($"The options type '{typeof(TOptions)}' is not assignable from '{optionType}'");
-
+		/// <summary>
+		/// Configures the receiver with the options from the given section path
+		/// within the configuration of the application
+		/// </summary>
+		/// <param name="sectionPath">
+		/// The path to the section within the configuration of the application
+		/// where the options are defined
+		/// </param>
+		/// <returns>
+		/// Returns the current builder instance with the options configured
+		/// </returns>
+		public WebhookReceiverBuilder<TWebhook> Configure(string sectionPath) {
 			// TODO: Validate the configured options
-			Services.AddOptions<TOptions>()
-				.BindConfiguration(sectionName);
+			Services.AddOptions<WebhookReceiverOptions>(typeof(TWebhook).Name)
+				.BindConfiguration(sectionPath);
 
 			return this;
 		}
 
-		public WebhookReceiverBuilder ConfigureOptions<TOptions>(Action<TOptions> configure) where TOptions : class {
-			var optionType = typeof(WebhookReceiverOptions<>).MakeGenericType(WebhookType);
-			if (!optionType.IsAssignableFrom(typeof(TOptions)))
-				throw new ArgumentException($"The options type '{typeof(TOptions)}' is not assignable to '{optionType}'");
-
+		/// <summary>
+		/// Configures the receiver with the given options
+		/// </summary>
+		/// <param name="configure">
+		/// A delegate that is used to configure the options of the receiver
+		/// </param>
+		/// <returns>
+		/// Returns the current builder instance with the options configured
+		/// </returns>
+		public WebhookReceiverBuilder<TWebhook> Configure(Action<WebhookReceiverOptions> configure) {
 			// TODO: Validate the configured options
-			Services.AddOptions<TOptions>()
+			Services.AddOptions<WebhookReceiverOptions>(typeof(TWebhook).Name)
 				.Configure(configure);
 
 			return this;
 		}
 
-		public WebhookReceiverBuilder UseJsonParser<TParser>(ServiceLifetime lifetime = ServiceLifetime.Singleton) {
-			var parserType = typeof(IWebhookJsonParser<>).MakeGenericType(WebhookType);
+		/// <summary>
+		/// Registers a parser that is used to parse the JSON body of webhooks received
+		/// </summary>
+		/// <typeparam name="TParser">
+		/// The type of the parser to use for the webhooks of type <typeparamref name="TWebhook"/>
+		/// </typeparam>
+		/// <param name="lifetime">
+		/// A value that specifies the lifetime of the parser service (defaults to <see cref="ServiceLifetime.Singleton"/>)
+		/// </param>
+		/// <returns>
+		/// Returns the current builder instance with the parser registered
+		/// </returns>
+		public WebhookReceiverBuilder<TWebhook> UseJsonParser<TParser>(ServiceLifetime lifetime = ServiceLifetime.Singleton)
+			where TParser : class, IWebhookJsonParser<TWebhook> {
 
-			if (!parserType.IsAssignableFrom(typeof(TParser)))
-				throw new ArgumentException($"The type '{typeof(TParser)}' is not assignable to '{parserType}'");
-
-			Services.RemoveAll(parserType);
-			Services.Add(new ServiceDescriptor(parserType, typeof(TParser), lifetime));
+			Services.Add(new ServiceDescriptor(typeof(IWebhookJsonParser<TWebhook>), typeof(TParser), lifetime));
 
 			if (typeof(TParser).IsClass && !typeof(TParser).IsAbstract)
 				Services.Add(new ServiceDescriptor(typeof(TParser), typeof(TParser), lifetime));
@@ -121,111 +183,144 @@ namespace Deveel.Webhooks {
 			return this;
 		}
 
-		public WebhookReceiverBuilder UseJsonParser<TParser>(TParser parser)
-			where TParser : class {
-			var parserType = typeof(IWebhookJsonParser<>).MakeGenericType(WebhookType);
-
-			if (!parserType.IsAssignableFrom(typeof(TParser)))
-				throw new ArgumentException($"The type '{typeof(TParser)}' is not assignable to '{parserType}'");
-
-			Services.RemoveAll(parserType);
-			Services.AddSingleton(parserType, parser);
-
+		/// <summary>
+		/// Registers a parser that is used to parse the JSON body of webhooks received
+		/// </summary>
+		/// <typeparam name="TParser">
+		/// The type of the parser to use for the webhooks of type <typeparamref name="TWebhook"/>
+		/// </typeparam>
+		/// <param name="parser">
+		/// An instance of the parser to use for the webhooks of type <typeparamref name="TWebhook"/>
+		/// </param>
+		/// <returns>
+		/// Returns the current builder instance with the parser registered
+		/// </returns>
+		public WebhookReceiverBuilder<TWebhook> UseJsonParser<TParser>(TParser parser)
+			where TParser : class, IWebhookJsonParser<TWebhook> {
+			Services.AddSingleton(typeof(IWebhookJsonParser<TWebhook>), parser);
 			Services.AddSingleton(parser);
 
 			return this;
 		}
 
-		public WebhookReceiverBuilder UseJsonParser(JsonSerializerOptions options = null) {
-			var parserType = typeof(IWebhookJsonParser<>).MakeGenericType(WebhookType);
-			var jsonParserType = typeof(SystemTextWebhookJsonParser<>).MakeGenericType(WebhookType);
-			var parser = Activator.CreateInstance(jsonParserType, new[] {options});
-
-			Services.RemoveAll(parserType);
-			Services.AddSingleton(parserType, parser);
-			Services.AddSingleton(jsonParserType, parser);
-
-			return this;
-		}
-
-		public WebhookReceiverBuilder UseNewtonsoftJsonParser(JsonSerializerSettings settings = null) {
-			var parserType = typeof(IWebhookJsonParser<>).MakeGenericType(WebhookType);
-			var jsonParserType = typeof(NewtonsoftWebhookJsonParser<>).MakeGenericType(WebhookType);
-			var parser = Activator.CreateInstance(jsonParserType, new[] { settings });
-
-			Services.RemoveAll(parserType);
-			Services.AddSingleton(parserType, parser);
-			Services.AddSingleton(jsonParserType, parser);
+		/// <summary>
+		/// Registers a default parser that is used to parse the JSON body of webhooks received
+		/// </summary>
+		/// <param name="options">
+		/// An optional set of options that are used to configure the JSON parser behavior
+		/// </param>
+		/// <returns>
+		/// Returns the current builder instance with the parser registered
+		/// </returns>
+		public WebhookReceiverBuilder<TWebhook> UseJsonParser(JsonSerializerOptions? options = null) {
+			Services.AddSingleton<IWebhookJsonParser<TWebhook>>(_ => new SystemTextWebhookJsonParser<TWebhook>(options));
+			Services.AddSingleton(_ => new SystemTextWebhookJsonParser<TWebhook>(options));
 
 			return this;
 		}
 
-		public WebhookReceiverBuilder UseJsonParser<TWebhook>(Func<Stream, CancellationToken, Task<TWebhook>> parser)
-			where TWebhook : class {
-			if (typeof(TWebhook) != WebhookType)
-				throw new ArgumentException($"The parser must return webhooks of type '{WebhookType}'");
+		/// <summary>
+		/// Registers a function as parser that is used to parse the JSON body of webhooks received
+		/// </summary>
+		/// <param name="parser">
+		/// The function that is used to parse the JSON body of webhooks received
+		/// </param>
+		/// <returns>
+		/// Returns the current builder instance with the parser registered
+		/// </returns>
+		/// <exception cref="ArgumentNullException">
+		/// Thrown when the given <paramref name="parser"/> is <c>null</c>
+		/// </exception>
+		public WebhookReceiverBuilder<TWebhook> UseJsonParser(Func<Stream, CancellationToken, Task<TWebhook>> parser) {
+            if (parser is null)
+                throw new ArgumentNullException(nameof(parser));
 
-			var parserType = typeof(IWebhookJsonParser<>).MakeGenericType(WebhookType);
-
-			Services.RemoveAll(parserType);
-			Services.AddSingleton(parserType, new DelegatedJsonParser<TWebhook>(parser));
-
-			return this;
-		}
-
-		public WebhookReceiverBuilder UseJsonParser<TWebhook>(Func<string, TWebhook> parser)
-			where TWebhook : class {
-			if (typeof(TWebhook) != WebhookType)
-				throw new ArgumentException($"The parser must return webhooks of type '{WebhookType}'");
-
-			var parserType = typeof(IWebhookJsonParser<>).MakeGenericType(WebhookType);
-
-			Services.RemoveAll(parserType);
-			Services.AddSingleton(parserType, new DelegatedJsonParser<TWebhook>(parser));
+            Services.AddSingleton<IWebhookJsonParser<TWebhook>>(_ => new DelegatedJsonParser(parser));
 
 			return this;
 		}
 
-		public WebhookReceiverBuilder UseSigner<TSigner>() where TSigner : class, IWebhookSigner {
-			var signerType = typeof(IWebhookSigner<>).MakeGenericType(WebhookType);
-			
-			if (!signerType.IsAssignableFrom(typeof(TSigner))) {
-				var signer = (IWebhookSigner) Activator.CreateInstance(typeof(TSigner));
-				var wrapperType = typeof(WebhookSignerWrapper<>).MakeGenericType(WebhookType);
-				var wrapper = Activator.CreateInstance(wrapperType, new[] { signer });
-				Services.AddSingleton(signerType, wrapper);
+        /// <summary>
+        /// Registers a function as parser that is used to parse the JSON body of webhooks received
+        /// </summary>
+        /// <param name="parser">
+        /// The function that is used to parse the JSON body of webhooks received
+        /// </param>
+        /// <returns>
+        /// Returns the current builder instance with the parser registered
+        /// </returns>
+        /// <exception cref="ArgumentNullException">
+        /// Thrown when the given <paramref name="parser"/> is <c>null</c>
+        /// </exception>
+        public WebhookReceiverBuilder<TWebhook> UseJsonParser(Func<string, TWebhook> parser) {
+            if (parser is null)
+                throw new ArgumentNullException(nameof(parser));
+
+            Services.AddSingleton<IWebhookJsonParser<TWebhook>>(_ => new DelegatedJsonParser(parser));
+
+			return this;
+		}
+
+		/// <summary>
+		/// Registers a service that is used to sign the payload of webhooks received
+		/// </summary>
+		/// <typeparam name="TSigner">
+		/// The type of the signer to use for the webhooks of type <typeparamref name="TWebhook"/>
+		/// </typeparam>
+		/// <returns>
+		/// Returns the current builder instance with the signer registered
+		/// </returns>
+		public WebhookReceiverBuilder<TWebhook> UseSigner<TSigner>() where TSigner : class, IWebhookSigner {			
+			if (!typeof(IWebhookSigner<TWebhook>).IsAssignableFrom(typeof(TSigner))) {
+				Services.AddSingleton<IWebhookSigner<TWebhook>>(provider => {
+					var signer = provider.GetRequiredService<TSigner>();
+					return new WebhookSignerWrapper(signer);
+				});
 			} else {
-				Services.AddSingleton(signerType, typeof(TSigner));
+				Services.AddSingleton(provider => (IWebhookSigner<TWebhook>) provider.GetRequiredService<TSigner>());
 			}
 
-			var providerType = typeof(IWebhookSignerProvider<>).MakeGenericType(WebhookType);
-			var defaultProviderType = typeof(DefaultWebhookSignerProvider<>).MakeGenericType(WebhookType);
-			Services.TryAddSingleton(providerType, defaultProviderType);
+            Services.TryAddSingleton<TSigner>();
+            Services.TryAddSingleton<IWebhookSignerProvider<TWebhook>, DefaultWebhookSignerProvider>();
 
 			return this;
 		}
 
-		public WebhookReceiverBuilder UseSigner<TSigner>(TSigner provider)
+		/// <summary>
+		/// Registers a service that is used to sign the payload of webhooks received
+		/// </summary>
+		/// <typeparam name="TSigner">
+		/// The type of the signer to use for the webhooks of type <typeparamref name="TWebhook"/>
+		/// </typeparam>
+		/// <param name="signer">
+		/// The instance of the signer to use for the webhooks of type <typeparamref name="TWebhook"/>
+		/// </param>
+		/// <returns>
+		/// Returns the current builder instance with the signer registered
+		/// </returns>
+		/// <exception cref="ArgumentNullException">
+		/// Thrown when the given <paramref name="signer"/> is <c>null</c>
+		/// </exception>
+		public WebhookReceiverBuilder<TWebhook> UseSigner<TSigner>(TSigner signer)
 			where TSigner : class, IWebhookSigner {
-			var signerType = typeof(IWebhookSigner<>).MakeGenericType(WebhookType);
+            if (signer is null)
+                throw new ArgumentNullException(nameof(signer));
 
-			if (!signerType.IsAssignableFrom(typeof(TSigner))) {
-				var wrapperType = typeof(WebhookSignerWrapper<>).MakeGenericType(WebhookType);
-				var wrapper = Activator.CreateInstance(wrapperType, new[] { provider });
-				Services.AddSingleton(signerType, wrapper);
+            if (!typeof(IWebhookSigner<TWebhook>).IsAssignableFrom(typeof(TSigner))) {
+				Services.AddSingleton<IWebhookSigner<TWebhook>>(_ => new WebhookSignerWrapper(signer));
 			} else {
-				Services.AddSingleton(signerType, typeof(TSigner));
+				Services.AddSingleton(provider => (IWebhookSigner<TWebhook>) provider.GetRequiredService<TSigner>());
 			}
 
-			var providerType = typeof(IWebhookSignerProvider<>).MakeGenericType(WebhookType);
-			var defaultProviderType = typeof(DefaultWebhookSignerProvider<>).MakeGenericType(WebhookType);
-			Services.TryAddSingleton(providerType, defaultProviderType);
+			Services.TryAddSingleton(signer);
+            Services.TryAddSingleton<IWebhookSignerProvider<TWebhook>, DefaultWebhookSignerProvider>();
 
-			return this;
+            return this;
 		}
 
-		class DefaultWebhookSignerProvider<TWebhook> : IWebhookSignerProvider<TWebhook>
-			where TWebhook : class {
+        #region DefaultWebhookSignerProvider
+
+        class DefaultWebhookSignerProvider : IWebhookSignerProvider<TWebhook> {
 			private readonly IDictionary<string, IWebhookSigner> signers;
 
 			public DefaultWebhookSignerProvider(IEnumerable<IWebhookSigner<TWebhook>> signers) {
@@ -240,7 +335,7 @@ namespace Deveel.Webhooks {
 				}
 			}
 
-			public IWebhookSigner GetSigner(string algorithm) {
+			public IWebhookSigner? GetSigner(string algorithm) {
 				if (!signers.TryGetValue(algorithm, out var signer))
 					return null;
 
@@ -248,9 +343,11 @@ namespace Deveel.Webhooks {
 			}
 		}
 
-		#region WebhookSignatureProviderWrapper
+        #endregion
 
-		class WebhookSignerWrapper<TWebhook> : IWebhookSigner<TWebhook> where TWebhook : class {
+        #region WebhookSignatureProviderWrapper
+
+        class WebhookSignerWrapper : IWebhookSigner<TWebhook> {
 			private readonly IWebhookSigner signer;
 
 			public WebhookSignerWrapper(IWebhookSigner signer) {
@@ -266,9 +363,9 @@ namespace Deveel.Webhooks {
 
 		#region DelegatedJsonParser
 
-		class DelegatedJsonParser<TWebhook> : IWebhookJsonParser<TWebhook> where TWebhook : class {
-			private readonly Func<Stream, CancellationToken, Task<TWebhook>> streamParser;
-			private readonly Func<string, TWebhook> syncStringParser;
+		class DelegatedJsonParser : IWebhookJsonParser<TWebhook> {
+			private readonly Func<Stream, CancellationToken, Task<TWebhook>>? streamParser;
+			private readonly Func<string, TWebhook>? syncStringParser;
 
 			public DelegatedJsonParser(Func<string, TWebhook> syncStringParser) {
 				this.syncStringParser = syncStringParser;
@@ -278,7 +375,7 @@ namespace Deveel.Webhooks {
 				this.streamParser = parser;
 			}
 
-			public async Task<TWebhook> ParseWebhookAsync(Stream utf8Stream, CancellationToken cancellationToken = default) {
+			public async Task<TWebhook?> ParseWebhookAsync(Stream utf8Stream, CancellationToken cancellationToken = default) {
 				if (streamParser != null) {
 					return await streamParser(utf8Stream, cancellationToken);
 				} else if (syncStringParser != null) {
@@ -288,7 +385,7 @@ namespace Deveel.Webhooks {
 					return syncStringParser(json);
 				}
 
-				throw new NotSupportedException();
+				return null;
 			}
 		}
 

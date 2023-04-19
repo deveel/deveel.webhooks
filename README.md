@@ -9,7 +9,7 @@ Although this integration model is widely adopted by major service providers (li
 Anyway, a typical implementation consists of the following elements:
 
 * Webhooks are transported through _HTTP POST_ callbacks
-* The webhook payload is represented as a JSON object (or alternatively as XML or Form)
+* The webhook payload is formatted as a JSON object (or alternatively, in lesser common scenarios, as XML or Form)
 * The webhook payload includes properties that describe the type of event and the time-stamp of the occurrence
 * An optional signature in the header of the request or a query-string parameter ensures the authenticity of the caller
 

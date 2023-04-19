@@ -1,4 +1,4 @@
-﻿// Copyright 2022 Deveel
+﻿// Copyright 2022-2023 Deveel
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,8 +15,19 @@
 using System;
 
 namespace Deveel.Webhooks {
+	/// <summary>
+	/// Enumerates the possible locations where the signature of a webhook
+	/// can be found within a HTTP request object.
+	/// </summary>
 	public enum WebhookSignatureLocation {
+		/// <summary>
+		/// The signature is found in the HTTP header of the request.
+		/// </summary>
 		Header,
+
+		/// <summary>
+		/// The signature is found in the query string of the request.
+		/// </summary>
 		QueryString
 	}
 }

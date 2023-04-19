@@ -20,7 +20,7 @@ namespace Deveel.Webhooks.Receiver.TestApi {
 			var secret = builder.Configuration["Webhook:Receiver:Signature:Secret"];
 
 			builder.Services.AddWebhooks<TestSignedWebhook>()
-				.ConfigureOptions<WebhookReceiverOptions<TestSignedWebhook>>(options => {
+				.Configure(options => {
 					options.VerifySignature = true;
 					options.Signature.Secret = secret;
 					options.Signature.ParameterName = "X-Webhook-Signature-256";

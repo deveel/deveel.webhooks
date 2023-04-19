@@ -32,6 +32,7 @@
 | **[Basic Usage - Sending Webhooks](basic_usage_send.md)**              | Manually sending webhooks (no subscriptions)                          |
 | **[Basic Usage - Subscription Management](basic_usage_management.md)** | Manage subscriptions to events (no sending)                           |
 | **[Basic Usage - Notify Webhooks](basic_usage_notify.md)**             | Notify webhooks subscribers (management, transformations and sending) |
+| **[Basic Usage - Receiving Webhooks](basic_usage_receive.md)**         | Receive webhooks from external sources                                |
 
 ## Extending
 

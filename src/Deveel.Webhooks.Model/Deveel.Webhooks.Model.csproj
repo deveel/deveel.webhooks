@@ -29,4 +29,8 @@
     </None>
   </ItemGroup>
 
+	<ItemGroup>
+		<None Include="..\..\apl-2.licenseheader" Link="apl-2.licenseheader" />
+	</ItemGroup>
+
 </Project>

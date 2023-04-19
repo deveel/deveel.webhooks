@@ -7,11 +7,11 @@ using Newtonsoft.Json;
 namespace Deveel.Webhooks.Handlers {
 	public class TestWebhookHandler : IWebhookHandler<TestWebhook> {
 		private readonly ILogger<TestWebhookHandler> _logger;
-		private readonly WebhookReceiverOptions<TestWebhook> options;
+		private readonly WebhookReceiverOptions options;
 
-		public TestWebhookHandler(IOptions<WebhookReceiverOptions<TestWebhook>> options, ILogger<TestWebhookHandler> logger) {
+		public TestWebhookHandler(IOptionsSnapshot<WebhookReceiverOptions> options, ILogger<TestWebhookHandler> logger) {
 			_logger = logger;
-			this.options = options.Value;
+			this.options = options.Get(nameof(TestWebhook));
 		}
 
 		public Task HandleAsync(TestWebhook webhook, CancellationToken cancellationToken = default) {

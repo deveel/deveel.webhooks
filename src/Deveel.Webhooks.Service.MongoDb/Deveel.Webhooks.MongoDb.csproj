@@ -33,7 +33,11 @@
     </None>
   </ItemGroup>
 
-  <ItemGroup>
+	<ItemGroup>
+		<None Include="..\..\apl-2.licenseheader" Link="apl-2.licenseheader" />
+	</ItemGroup>
+
+	<ItemGroup>
     <PackageReference Include="MongoDB.Driver" Version="2.19.1" />
   </ItemGroup>
 

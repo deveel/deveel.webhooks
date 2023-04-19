@@ -23,12 +23,12 @@ using Microsoft.Extensions.Options;
 namespace Deveel.Webhooks {
 	class WebhookRequestVerfierMiddleware<TWebhook> : IMiddleware where TWebhook : class {
         private readonly WebhookReceiverOptions options;
-		private readonly IWebhookRequestVerifier<TWebhook>? requestVerifier;
+		private readonly IWebhookRequestVerifier<TWebhook> requestVerifier;
         private readonly ILogger logger;
 
         public WebhookRequestVerfierMiddleware(
             IOptionsSnapshot<WebhookReceiverOptions> options,
-            IWebhookRequestVerifier<TWebhook>? requestVerifier = null, 
+            IWebhookRequestVerifier<TWebhook> requestVerifier, 
             ILogger<WebhookRequestVerfierMiddleware<TWebhook>>? logger = null) {
             this.options = options.GetReceiverOptions<TWebhook>();
             this.requestVerifier = requestVerifier;
@@ -37,28 +37,18 @@ namespace Deveel.Webhooks {
 
         public async Task InvokeAsync(HttpContext context, RequestDelegate next) {
             try {
-                WebhookVerificationResult? result = null;
-
-                if (requestVerifier != null) {
-                    result = await requestVerifier.VerifyRequestAsync(context.Request, context.RequestAborted);
-                }
+                var result = await requestVerifier.VerifyRequestAsync(context.Request, context.RequestAborted);
 
                 await next.Invoke(context);
 
-                if (result != null && !context.Response.HasStarted) {
-                    if (result?.IsVerified ?? false) {
-
-                    } else {
-
-                    }
+                if (!context.Response.HasStarted) {
+					await requestVerifier.HandleResultAsync(result, context.Response, context.RequestAborted);
                 }
             } catch (WebhookReceiverException ex) {
                 if (!context.Response.HasStarted) {
                     
                 }
             }
-
-
         }
 	}
 }

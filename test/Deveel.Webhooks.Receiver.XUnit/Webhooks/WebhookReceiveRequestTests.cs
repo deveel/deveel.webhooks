@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Formats.Asn1;
 using System.Net;
 using System.Net.Http;
 using System.Text;
@@ -19,7 +20,7 @@ using Xunit;
 using Xunit.Abstractions;
 
 namespace Deveel.Webhooks {
-    public class WebhookReceiveRequestTests : IDisposable {
+	public class WebhookReceiveRequestTests : IDisposable {
 		private readonly WebApplicationFactory<Program> appFactory;
 
 		public WebhookReceiveRequestTests(ITestOutputHelper outputHelper) {
@@ -139,6 +140,28 @@ namespace Deveel.Webhooks {
 
 			Assert.False(response.IsSuccessStatusCode);
 			Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+		}
+
+		[Fact]
+		public async Task VerifyReceiver() {
+			var client = CreateClient();
+
+			var token = appFactory.Services.GetRequiredService<IConfiguration>()["Webhook:Receiver:VerificationToken"];
+
+			var response = await client.GetAsync($"/webhook/signed?token={token}");
+
+			Assert.True(response.IsSuccessStatusCode);
+			Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
+		}
+
+		[Fact]
+		public async Task VerifyReceiver_InvalidToken() {
+			var client = CreateClient();
+
+			var response = await client.GetAsync($"/webhook/signed?token={Guid.NewGuid().ToString("N")}");
+
+			Assert.False (response.IsSuccessStatusCode);
+			Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
 		}
 	}
 }

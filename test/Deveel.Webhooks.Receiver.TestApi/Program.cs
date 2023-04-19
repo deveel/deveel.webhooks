@@ -11,7 +11,7 @@ namespace Deveel.Webhooks.Receiver.TestApi {
 			builder.Services.AddLogging();
 
 			// Add services to the container.
-			// builder.Services.AddAuthorization();
+			builder.Services.AddAuthorization();
 			builder.Services
 				.AddWebhooks<TestWebhook>()
 				.UseNewtonsoftJsonParser()
@@ -26,19 +26,23 @@ namespace Deveel.Webhooks.Receiver.TestApi {
 					options.Signature.ParameterName = "X-Webhook-Signature-256";
 					options.Signature.Location = WebhookSignatureLocation.Header;
 				})
+				.UseVerifier(options => {
+					options.VerificationToken = builder.Configuration["Webhook:Receiver:VerificationToken"];
+					options.VerificationTokenQueryName = "token";
+				})
 				.UseNewtonsoftJsonParser()
-				.UseSigner<Sha256WebhookSigner>()
+				.UseSha256Signer()
 				.AddHandler<TestSignedWebhookHandler>();
 
 			var app = builder.Build();
 
-            // app.UseDeveloperExceptionPage();
+            app.UseDeveloperExceptionPage();
 
             // Configure the HTTP request pipeline.
 
-            // app.UseHttpsRedirection();
+            app.UseHttpsRedirection();
 
-			// app.UseAuthorization();
+			app.UseAuthorization();
 
 			app.UseWebhookReceiver<TestWebhook>("/webhook");
 			app.UseWebhookReceiver<TestWebhook>("/webhook/handled", (context, webhook) => {
@@ -47,6 +51,7 @@ namespace Deveel.Webhooks.Receiver.TestApi {
 				logger.LogInformation(JsonConvert.SerializeObject(webhook));
 			});
 
+			app.UseWebhookVerfier<TestSignedWebhook>("/webhook/signed");
 			app.UseWebhookReceiver<TestSignedWebhook>("/webhook/signed");
 
 			app.Run();

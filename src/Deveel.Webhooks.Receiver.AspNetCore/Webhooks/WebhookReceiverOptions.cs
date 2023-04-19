@@ -47,11 +47,5 @@ namespace Deveel.Webhooks {
 		/// from the sender is invalid (<c>400</c> by default).
 		/// </summary>
 		public int? InvalidStatusCode { get; set; } = 400;
-
-		/// <summary>
-		/// Gets or sets the options for the verification of the webhook
-		/// requests by the sender.
-		/// </summary>
-		public WebhookVerificationOptions? Verification { get; set; } = new WebhookVerificationOptions();
 	}
 }

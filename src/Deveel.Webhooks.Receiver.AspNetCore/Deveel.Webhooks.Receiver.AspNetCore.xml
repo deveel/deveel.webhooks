@@ -299,9 +299,19 @@
             The type of webhook that is being verified
             </typeparam>
             <remarks>
+            <para>
             In several case scenarios, providers of webhooks require a verification
             of the party to ensure they are the ones who should be receiving the
             webhooks, and not a malicious party.
+            </para>
+            <para>
+            The process of verification is usually a two-step process, where the
+            request is first validated, and then the instance of the result of the 
+            validation is passed back to the verifier to handle the result towards 
+            the sender: this mechanism is used to ensure that the verification process
+            is specific for the provider of the webhook, since the different methodologies
+            implemented by various providers.
+            </para>
             </remarks>
         </member>
         <member name="M:Deveel.Webhooks.IWebhookRequestVerifier`1.VerifyRequestAsync(Microsoft.AspNetCore.Http.HttpRequest,System.Threading.CancellationToken)">
@@ -318,6 +328,19 @@
             <returns>
             Returns a <see cref="T:Deveel.Webhooks.WebhookVerificationResult"/> that indicates the result
             of the verification operation.
+            </returns>
+        </member>
+        <member name="M:Deveel.Webhooks.IWebhookRequestVerifier`1.HandleResultAsync(Deveel.Webhooks.IWebhookVerificationResult,Microsoft.AspNetCore.Http.HttpResponse,System.Threading.CancellationToken)">
+            <summary>
+            Handles the result of the verification of a webhook request.
+            </summary>
+            <param name="result">The result of the verification that should be handled</param>
+            <param name="httpResponse">The HTTP response used to notify the sender</param>
+            <param name="cancellationToken">
+            A token that can be used to cancel the operation
+            </param>
+            <returns>
+            Returns a <see cref="T:System.Threading.Tasks.Task"/> that completes when the result is handled.
             </returns>
         </member>
         <member name="T:Deveel.Webhooks.IWebhookSigner">
@@ -384,6 +407,20 @@
             </remarks>
             <see cref="T:Deveel.Webhooks.IWebhookSigner"/>
         </member>
+        <member name="T:Deveel.Webhooks.IWebhookVerificationResult">
+            <summary>
+            Represents the result of a verification of a webhook request.
+            </summary>
+            <remarks>
+            This contract is used by implementations of <see cref="T:Deveel.Webhooks.IWebhookRequestVerifier`1"/>
+            to proceed with a two-step verification of a webhook request.
+            </remarks>
+        </member>
+        <member name="P:Deveel.Webhooks.IWebhookVerificationResult.IsVerified">
+            <summary>
+            Gets whether the request is verified or not.
+            </summary>
+        </member>
         <member name="T:Deveel.Webhooks.OptionsSnapshotExtensions">
             <summary>
             Extends the <see cref="T:Microsoft.Extensions.Options.IOptionsSnapshot`1"/> interface
@@ -399,6 +436,20 @@
             <param name="options">The instance of the <see cref="T:Microsoft.Extensions.Options.IOptionsSnapshot`1"/> to extend</param>
             <returns>
             Returns the options for the receiver of the given type.
+            </returns>
+        </member>
+        <member name="M:Deveel.Webhooks.OptionsSnapshotExtensions.GetVerificationOptions``1(Microsoft.Extensions.Options.IOptionsSnapshot{Deveel.Webhooks.WebhookVerificationOptions})">
+            <summary>
+            Gets the options for the webhook verifier of the given type.
+            </summary>
+            <typeparam name="TWebhook">
+            The type of webhook handled by the verifier
+            </typeparam>
+            <param name="options">
+            The instance of the <see cref="T:Microsoft.Extensions.Options.IOptionsSnapshot`1"/> to extend
+            </param>
+            <returns>
+            Returns the options for the verifier of the given type.
             </returns>
         </member>
         <member name="T:Deveel.Webhooks.Sha256WebhookSigner">
@@ -737,6 +788,42 @@
             Returns the current builder instance with the receiver registered
             </returns>
         </member>
+        <member name="M:Deveel.Webhooks.WebhookReceiverBuilder`1.UseVerifier``1">
+            <summary>
+            Registers an implementation of the <see cref="T:Deveel.Webhooks.IWebhookRequestVerifier`1"/>
+            that is used to verify the webhooks verification requests from
+            senders
+            </summary>
+            <typeparam name="TVerifier">
+            The type of the verifier to use for the webhooks of type <typeparamref name="TWebhook"/>
+            </typeparam>
+            <returns>
+            Returns the current builder instance with the verifier registered
+            </returns>
+        </member>
+        <member name="M:Deveel.Webhooks.WebhookReceiverBuilder`1.UseVerifier(System.Action{Deveel.Webhooks.WebhookVerificationOptions})">
+            <summary>
+            Registers the default implementation of the <see cref="T:Deveel.Webhooks.IWebhookRequestVerifier`1"/>
+            </summary>
+            <param name="configure">
+            A delegate that can be used to configure the options for the verifier
+            </param>
+            <returns>
+            Returns the current builder instance with the verifier registered
+            </returns>
+            <seealso cref="T:Deveel.Webhooks.WebhookRequestVerifier`1"/>
+        </member>
+        <member name="M:Deveel.Webhooks.WebhookReceiverBuilder`1.UserVerifier(System.String)">
+            <summary>
+            Registers the default implementation of the <see cref="T:Deveel.Webhooks.IWebhookRequestVerifier`1"/>
+            </summary>
+            <param name="sectionPath">
+            The path to the section in the configuration that contains the options
+            </param>
+            <returns>
+            Return the current builder instance with the verifier registered
+            </returns>
+        </member>
         <member name="M:Deveel.Webhooks.WebhookReceiverBuilder`1.AddHandler``1">
             <summary>
             Registers an handler for the webhooks of type <typeparamref name="TWebhook"/>
@@ -847,6 +934,15 @@
             <typeparam name="TSigner">
             The type of the signer to use for the webhooks of type <typeparamref name="TWebhook"/>
             </typeparam>
+            <returns>
+            Returns the current builder instance with the signer registered
+            </returns>
+        </member>
+        <member name="M:Deveel.Webhooks.WebhookReceiverBuilder`1.UseSha256Signer">
+            <summary>
+            Registers the default implementation of <see cref="T:Deveel.Webhooks.IWebhookSigner"/> that is used 
+            to sign the payload of webhooks received with a SHA256 hash
+            </summary>
             <returns>
             Returns the current builder instance with the signer registered
             </returns>
@@ -972,6 +1068,90 @@
             from the sender is invalid (<c>400</c> by default).
             </summary>
         </member>
+        <member name="T:Deveel.Webhooks.WebhookRequestVerifier`1">
+            <summary>
+            A default implementation of a verifier of a webhook request that performs
+            a simple check for a token in the request matching one configured.
+            </summary>
+            <typeparam name="TWebhook">
+            The type of webhook that is being verified
+            </typeparam>
+        </member>
+        <member name="M:Deveel.Webhooks.WebhookRequestVerifier`1.#ctor(Microsoft.Extensions.Options.IOptionsSnapshot{Deveel.Webhooks.WebhookVerificationOptions})">
+            <summary>
+            Constructs a <see cref="T:Deveel.Webhooks.WebhookRequestVerifier`1"/> instance with a
+            selector that resolves the options for the given type of webhook.
+            </summary>
+            <param name="options">
+            The provider of the options for the verification of the webhook request
+            </param>
+        </member>
+        <member name="M:Deveel.Webhooks.WebhookRequestVerifier`1.#ctor(Deveel.Webhooks.WebhookVerificationOptions)">
+            <summary>
+            Constructs a <see cref="T:Deveel.Webhooks.WebhookRequestVerifier`1"/> instance with the given options
+            </summary>
+            <param name="options"></param>
+            <exception cref="T:System.ArgumentNullException"></exception>
+        </member>
+        <member name="P:Deveel.Webhooks.WebhookRequestVerifier`1.VerificationOptions">
+            <summary>
+            Gets the options for the verification of the webhook request
+            </summary>
+        </member>
+        <member name="M:Deveel.Webhooks.WebhookRequestVerifier`1.OnSuccessAsync(Deveel.Webhooks.IWebhookVerificationResult,Microsoft.AspNetCore.Http.HttpResponse,System.Threading.CancellationToken)">
+            <summary>
+            Responds to the sender with a successful verification of the request.
+            </summary>
+            <param name="result">
+            The result of the verification of the request
+            </param>
+            <param name="httpResponse">
+            The HTTP response object used to respond to the sender
+            </param>
+            <param name="cancellationToken">
+            A token that can be used to cancel the operation
+            </param>
+            <returns>
+            Returns a <see cref="T:System.Threading.Tasks.Task"/> that completes when the response is sent
+            </returns>
+        </member>
+        <member name="M:Deveel.Webhooks.WebhookRequestVerifier`1.OnNotAuthenticatedAsync(Deveel.Webhooks.IWebhookVerificationResult,Microsoft.AspNetCore.Http.HttpResponse,System.Threading.CancellationToken)">
+            <summary>
+            Responds to the sender with a failed verification of the request.
+            </summary>
+            <param name="result">
+            The failed result of the verification of the request
+            </param>
+            <param name="httpResponse">
+            The HTTP response object used to respond to the sender
+            </param>
+            <param name="cancellationToken">
+            A token that can be used to cancel the operation
+            </param>
+            <returns>
+            Returns a <see cref="T:System.Threading.Tasks.Task"/> that completes when the response is sent
+            </returns>
+        </member>
+        <member name="M:Deveel.Webhooks.WebhookRequestVerifier`1.HandleResultAsync(Deveel.Webhooks.IWebhookVerificationResult,Microsoft.AspNetCore.Http.HttpResponse,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Deveel.Webhooks.WebhookRequestVerifier`1.TryGetVerificationToken(Microsoft.AspNetCore.Http.HttpRequest,System.String@)">
+            <summary>
+            Tries to get the verification token from the given request.
+            </summary>
+            <param name="request">
+            The HTTP request object that carries the data used for the verification
+            </param>
+            <param name="token">
+            A string that contains the token, if found in the request
+            </param>
+            <returns>
+            Returns <c>true</c> if the token is found in the request, or <c>false</c> otherwise
+            </returns>
+        </member>
+        <member name="M:Deveel.Webhooks.WebhookRequestVerifier`1.VerifyRequestAsync(Microsoft.AspNetCore.Http.HttpRequest,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
         <member name="T:Deveel.Webhooks.WebhookSignatureLocation">
             <summary>
             Enumerates the possible locations where the signature of a webhook
@@ -1020,20 +1200,48 @@
             signature is invalid (<c>400</c> by default).
             </summary>
         </member>
-        <member name="T:Deveel.Webhooks.WebhookVerificationResult">
+        <member name="T:Deveel.Webhooks.WebhookVerificationOptions">
             <summary>
-            Represents the result of a verification of a webhook request.
+            Provides the configuration options for the default verification 
+            of a webhook request.
             </summary>
         </member>
-        <member name="M:Deveel.Webhooks.WebhookVerificationResult.#ctor(System.Boolean,System.Object)">
+        <member name="P:Deveel.Webhooks.WebhookVerificationOptions.VerificationToken">
+            <summary>
+            Gets or sets a token that is matched against the value
+            sent by the provider to verify the identity of the receiver.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.WebhookVerificationOptions.VerificationTokenQueryName">
+            <summary>
+            Gets or sets the name of the query parameter that contains
+            the verification token.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.WebhookVerificationOptions.SuccessStatusCode">
+            <summary>
+            Gets or sets the HTTP status code to return when the request
+            is successfully verified (<c>204</c> by default).
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.WebhookVerificationOptions.NotAuthenticatedStatusCode">
+            <summary>
+            Gets or sets the HTTP status code to return when the request
+            is not authenticated (<c>403</c> by default).
+            </summary>
+        </member>
+        <member name="T:Deveel.Webhooks.WebhookVerificationResult">
+            <summary>
+            Represents a default implementation of a result 
+            of the verification of a webhook request.
+            </summary>
+        </member>
+        <member name="M:Deveel.Webhooks.WebhookVerificationResult.#ctor(System.Boolean)">
             <summary>
             Constructs the result of a verification of a webhook request.
             </summary>
             <param name="isVerified">
             Whether the request is verified or not
-            </param>
-            <param name="challenge">
-            An optional response to be sent back to the sender of the webhook
             </param>
         </member>
         <member name="P:Deveel.Webhooks.WebhookVerificationResult.IsVerified">
@@ -1041,24 +1249,16 @@
             Gets whether the request is verified or not.
             </summary>
         </member>
-        <member name="P:Deveel.Webhooks.WebhookVerificationResult.Challenge">
-            <summary>
-            Gets an optional response to be sent back to the sender of the webhook.
-            </summary>
-        </member>
-        <member name="M:Deveel.Webhooks.WebhookVerificationResult.Verified(System.Object)">
+        <member name="P:Deveel.Webhooks.WebhookVerificationResult.Verified">
             <summary>
             Creates a new result of a successful verification of a webhook request
             </summary>
-            <param name="challenge">
-            An optional response to be sent back to the sender of the webhook
-            </param>
             <returns>
             Returns an instance of <see cref="T:Deveel.Webhooks.WebhookVerificationResult"/> that
             represents a successful verification of a webhook request.
             </returns>
         </member>
-        <member name="M:Deveel.Webhooks.WebhookVerificationResult.Failed">
+        <member name="P:Deveel.Webhooks.WebhookVerificationResult.Failed">
             <summary>
             Creates a new result of a failed verification of a webhook request
             </summary>

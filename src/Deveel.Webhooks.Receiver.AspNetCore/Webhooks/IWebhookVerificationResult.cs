@@ -12,14 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-
-using Microsoft.Extensions.Logging;
-
 namespace Deveel.Webhooks {
-    static partial class LoggerExtensions {
-        [LoggerMessage(EventId = -20222, Level = LogLevel.Warning,
-            Message = "It was not possible to resolve any webhook receiver for the type '{WebhookType}'")]
-        public static partial void WarnReceiverNotRegistered(this ILogger logger, Type webhookType);
-    }
+	/// <summary>
+	/// Represents the result of a verification of a webhook request.
+	/// </summary>
+	/// <remarks>
+	/// This contract is used by implementations of <see cref="IWebhookRequestVerifier{TWebhook}"/>
+	/// to proceed with a two-step verification of a webhook request.
+	/// </remarks>
+	public interface IWebhookVerificationResult {
+		/// <summary>
+		/// Gets whether the request is verified or not.
+		/// </summary>
+		public bool IsVerified { get; }
+	}
 }

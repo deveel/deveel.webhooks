@@ -50,7 +50,6 @@ namespace Deveel.Webhooks {
 			Services.TryAddSingleton(this);
 
 			RegisterReceiverMiddleware();
-			RegisterVerifierMiddleware();
 			RegisterDefaultReceiver();
 
 			UseJsonParser();
@@ -99,6 +98,66 @@ namespace Deveel.Webhooks {
 
 			if (!typeof(TReceiver).IsAbstract)
 				Services.AddScoped(typeof(TReceiver), typeof(TReceiver));
+
+			return this;
+		}
+
+		/// <summary>
+		/// Registers an implementation of the <see cref="IWebhookRequestVerifier{TWebhook}"/>
+		/// that is used to verify the webhooks verification requests from
+		/// senders
+		/// </summary>
+		/// <typeparam name="TVerifier">
+		/// The type of the verifier to use for the webhooks of type <typeparamref name="TWebhook"/>
+		/// </typeparam>
+		/// <returns>
+		/// Returns the current builder instance with the verifier registered
+		/// </returns>
+		public WebhookReceiverBuilder<TWebhook> UseVerifier<TVerifier>()
+			where TVerifier : class, IWebhookRequestVerifier<TWebhook> {
+			RegisterVerifierMiddleware();
+
+			Services.AddScoped<IWebhookRequestVerifier<TWebhook>, TVerifier>();
+
+			if (!typeof(TVerifier).IsAbstract)
+				Services.AddScoped(typeof(TVerifier), typeof(TVerifier));
+
+			return this;
+		}
+
+		/// <summary>
+		/// Registers the default implementation of the <see cref="IWebhookRequestVerifier{TWebhook}"/>
+		/// </summary>
+		/// <param name="configure">
+		/// A delegate that can be used to configure the options for the verifier
+		/// </param>
+		/// <returns>
+		/// Returns the current builder instance with the verifier registered
+		/// </returns>
+		/// <seealso cref="WebhookRequestVerifier{TWebhook}"/>
+		public WebhookReceiverBuilder<TWebhook> UseVerifier(Action<WebhookVerificationOptions> configure) {
+			UseVerifier<WebhookRequestVerifier<TWebhook>>();
+
+			Services.AddOptions<WebhookVerificationOptions>(typeof(TWebhook).Name)
+				.Configure(configure);
+
+			return this;
+		}
+
+		/// <summary>
+		/// Registers the default implementation of the <see cref="IWebhookRequestVerifier{TWebhook}"/>
+		/// </summary>
+		/// <param name="sectionPath">
+		/// The path to the section in the configuration that contains the options
+		/// </param>
+		/// <returns>
+		/// Return the current builder instance with the verifier registered
+		/// </returns>
+		public WebhookReceiverBuilder<TWebhook> UserVerifier(string sectionPath) {
+			UseVerifier<WebhookRequestVerifier<TWebhook>>();
+
+			Services.AddOptions<WebhookVerificationOptions>(typeof(TWebhook).Name)
+				.BindConfiguration(sectionPath);
 
 			return this;
 		}
@@ -285,6 +344,16 @@ namespace Deveel.Webhooks {
 
 			return this;
 		}
+
+		/// <summary>
+		/// Registers the default implementation of <see cref="IWebhookSigner"/> that is used 
+		/// to sign the payload of webhooks received with a SHA256 hash
+		/// </summary>
+		/// <returns>
+		/// Returns the current builder instance with the signer registered
+		/// </returns>
+		public WebhookReceiverBuilder<TWebhook> UseSha256Signer()
+			=> UseSigner<Sha256WebhookSigner>();
 
 		/// <summary>
 		/// Registers a service that is used to sign the payload of webhooks received

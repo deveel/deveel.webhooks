@@ -31,5 +31,20 @@ namespace Deveel.Webhooks {
         /// </returns>
         public static WebhookReceiverOptions GetReceiverOptions<TWebhook>(this IOptionsSnapshot<WebhookReceiverOptions> options)
             => options.Get(typeof(TWebhook).Name);
+
+		/// <summary>
+		/// Gets the options for the webhook verifier of the given type.
+		/// </summary>
+		/// <typeparam name="TWebhook">
+		/// The type of webhook handled by the verifier
+		/// </typeparam>
+		/// <param name="options">
+		/// The instance of the <see cref="IOptionsSnapshot{TOptions}"/> to extend
+		/// </param>
+		/// <returns>
+		/// Returns the options for the verifier of the given type.
+		/// </returns>
+		public static WebhookVerificationOptions GetVerificationOptions<TWebhook>(this IOptionsSnapshot<WebhookVerificationOptions> options)
+			=> options.Get(typeof(TWebhook).Name);
     }
 }

@@ -61,5 +61,15 @@ namespace Deveel.Webhooks {
 		/// </param>
 		public static implicit operator WebhookReceiveResult<TWebhook>(TWebhook? webhook)
 			=> new WebhookReceiveResult<TWebhook>(webhook, null);
+
+		/// <summary>
+		/// Gets whether the signature of the webhook was validated.
+		/// </summary>
+		public bool SignatureValidated => SignatureValid.HasValue;
+
+		/// <summary>
+		/// Gets whether the webhook was successfully received.
+		/// </summary>
+		public bool Successful => Webhook != null && (!SignatureValidated || SignatureValid == true);
 	}
 }

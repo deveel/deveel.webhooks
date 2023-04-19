@@ -13,39 +13,71 @@
 // limitations under the License.
 
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Extensions.Options;
 
 namespace Deveel.Webhooks {
-    class WebhookReceiverMiddleware<TWebhook> : IMiddleware where TWebhook : class {
-		private readonly IEnumerable<IWebhookHandler<TWebhook>> handlers;
+	class WebhookReceiverMiddleware<TWebhook> : IMiddleware where TWebhook : class {
+		private readonly IEnumerable<IWebhookHandler<TWebhook>>? handlers;
 		private readonly IWebhookReceiver<TWebhook> receiver;
+		private readonly WebhookReceiverOptions options;
+		private readonly ILogger logger;
 
-		public WebhookReceiverMiddleware(IWebhookReceiver<TWebhook> receiver, IEnumerable<IWebhookHandler<TWebhook>> handlers) {
+		public WebhookReceiverMiddleware(
+			IOptionsSnapshot<WebhookReceiverOptions> options,
+			IWebhookReceiver<TWebhook> receiver,
+			IEnumerable<IWebhookHandler<TWebhook>>? handlers = null,
+			ILogger<WebhookReceiverMiddleware<TWebhook>>? logger = null) {
+			this.options = options.GetReceiverOptions<TWebhook>();
 			this.receiver = receiver;
 			this.handlers = handlers;
+			this.logger = logger ?? NullLogger<WebhookReceiverMiddleware<TWebhook>>.Instance;
 		}
+
+		private int SuccessStatusCode => options.ResponseStatusCode ?? 200;
+
+		private int FailureStatusCode => options.ErrorStatusCode ?? 500;
+
+		private int InvalidStatusCode => options.InvalidStatusCode ?? 400;
 
 		public async Task InvokeAsync(HttpContext context, RequestDelegate next) {
 			try {
 				var result = await receiver.ReceiveAsync(context.Request, context.RequestAborted);
 				
-				if (result.SignatureValid != null && !result.SignatureValid.Value) {
-					// TODO: get this from the configuration
-					context.Response.StatusCode = 400;
-				} else if (result.Webhook == null) {
-					context.Response.StatusCode = 400;
-				} else if (handlers != null) {
+				if (handlers != null && result.Successful && result.Webhook != null) {
 					foreach (var handler in handlers) {
 						await handler.HandleAsync(result.Webhook, context.RequestAborted);
 					}
-				} else {
-					await next(context);
 				}
-			} catch (Exception ex) {
+
+				await next.Invoke(context);
+
+				if (!context.Response.HasStarted) {
+					if (result.Successful) {
+                        context.Response.StatusCode = SuccessStatusCode;
+                    } else if (result.SignatureValidated && !result.SignatureValid.Value) {
+						context.Response.StatusCode = InvalidStatusCode;
+					} else {
+						context.Response.StatusCode = FailureStatusCode;
+					}
+
+					// TODO: should we emit anything here?
+                    await context.Response.WriteAsync("");
+				}
+			} catch (WebhookReceiverException ex) {
 				// TODO: log this error ...
 
-				context.Response.StatusCode = 500;
+				if (!context.Response.HasStarted) {
+					context.Response.StatusCode = FailureStatusCode;
+
+					// TODO: should we emit anything here?
+					await context.Response.WriteAsync("");
+				}
+
 				// TODO: should we emit anything here?
 			}
+
 		}
 	}
 }

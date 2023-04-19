@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Net;
 using System.Net.Http;
-using System.Net.Http.Json;
-using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -16,13 +14,12 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 
 using Xunit;
 using Xunit.Abstractions;
 
 namespace Deveel.Webhooks {
-	public class WebhookReceiveRequestTests : IDisposable {
+    public class WebhookReceiveRequestTests : IDisposable {
 		private readonly WebApplicationFactory<Program> appFactory;
 
 		public WebhookReceiveRequestTests(ITestOutputHelper outputHelper) {
@@ -47,7 +44,7 @@ namespace Deveel.Webhooks {
 			});
 
 			Assert.True(response.IsSuccessStatusCode);
-			Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+			Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
 		}
 
 		[Fact]
@@ -63,7 +60,7 @@ namespace Deveel.Webhooks {
 			});
 
 			Assert.True(response.IsSuccessStatusCode);
-			Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+			Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
 		}
 
 
@@ -97,7 +94,7 @@ namespace Deveel.Webhooks {
 			var response = await client.SendAsync(request);
 
 			Assert.True(response.IsSuccessStatusCode);
-			Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+			Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
 		}
 
 		[Fact]

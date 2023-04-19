@@ -16,9 +16,49 @@ using System;
 using System.Threading.Tasks;
 
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Extensions.Options;
 
 namespace Deveel.Webhooks {
 	class WebhookRequestVerfierMiddleware<TWebhook> : IMiddleware where TWebhook : class {
-		public Task InvokeAsync(HttpContext context, RequestDelegate next) => throw new NotImplementedException();
+        private readonly WebhookReceiverOptions options;
+		private readonly IWebhookRequestVerifier<TWebhook>? requestVerifier;
+        private readonly ILogger logger;
+
+        public WebhookRequestVerfierMiddleware(
+            IOptionsSnapshot<WebhookReceiverOptions> options,
+            IWebhookRequestVerifier<TWebhook>? requestVerifier = null, 
+            ILogger<WebhookRequestVerfierMiddleware<TWebhook>>? logger = null) {
+            this.options = options.GetReceiverOptions<TWebhook>();
+            this.requestVerifier = requestVerifier;
+            this.logger = logger ?? NullLogger<WebhookRequestVerfierMiddleware<TWebhook>>.Instance;
+        }
+
+        public async Task InvokeAsync(HttpContext context, RequestDelegate next) {
+            try {
+                WebhookVerificationResult? result = null;
+
+                if (requestVerifier != null) {
+                    result = await requestVerifier.VerifyRequestAsync(context.Request, context.RequestAborted);
+                }
+
+                await next.Invoke(context);
+
+                if (result != null && !context.Response.HasStarted) {
+                    if (result?.IsVerified ?? false) {
+
+                    } else {
+
+                    }
+                }
+            } catch (WebhookReceiverException ex) {
+                if (!context.Response.HasStarted) {
+                    
+                }
+            }
+
+
+        }
 	}
 }

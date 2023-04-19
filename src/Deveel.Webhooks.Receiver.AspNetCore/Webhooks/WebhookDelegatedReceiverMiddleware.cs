@@ -14,6 +14,9 @@
 
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Extensions.Options;
 
 namespace Deveel.Webhooks {
     class WebhookDelegatedReceiverMiddleware<TWebhook> where TWebhook : class {
@@ -33,34 +36,65 @@ namespace Deveel.Webhooks {
 			syncHandler = handler;
 		}
 
+		private WebhookReceiverOptions GetOptions(HttpContext context) {
+			var snapshot = context?.RequestServices?.GetService<IOptionsSnapshot<WebhookReceiverOptions>>();
+			return snapshot?.GetReceiverOptions<TWebhook>() ?? new WebhookReceiverOptions();
+		}
+
+		private ILogger GetLogger(HttpContext context) {
+			var loggerFactory = context?.RequestServices?.GetService<ILoggerFactory>();
+            return loggerFactory?.CreateLogger<WebhookDelegatedReceiverMiddleware<TWebhook>>() ?? 
+				NullLogger<WebhookDelegatedReceiverMiddleware<TWebhook>>.Instance;
+		}
+
 
 		public async Task InvokeAsync(HttpContext context) {
-			try {
-				var receiver = context.RequestServices.GetService<IWebhookReceiver<TWebhook>>();
-				if (receiver == null) {
-					await next(context);
-				} else {
-					var result = await receiver.ReceiveAsync(context.Request, context.RequestAborted);
+            var options = GetOptions(context);
+			var logger = GetLogger(context);
 
-					if (result.SignatureValid != null && !result.SignatureValid.Value) {
-						// TODO: get this from the configuration
-						context.Response.StatusCode = 400;
-					} else if (result.Webhook == null) {
-						context.Response.StatusCode = 400;
-					} else if (asyncHandler != null) {
-						await asyncHandler(context, result.Webhook, context.RequestAborted);
-					} else if (syncHandler != null) {
-						syncHandler(context, result.Webhook);
-					} else {
-						await next(context);
+            try {
+				var receiver = context.RequestServices.GetService<IWebhookReceiver<TWebhook>>();
+				
+				WebhookReceiveResult<TWebhook>? result = null;
+
+				if (receiver != null) {
+					result = await receiver.ReceiveAsync(context.Request, context.RequestAborted);
+
+					if (result != null && result.Value.Successful && result.Value.Webhook != null) {
+						if (asyncHandler != null) {
+							await asyncHandler(context, result.Value.Webhook, context.RequestAborted);
+						} else if (syncHandler != null) {
+							syncHandler(context, result.Value.Webhook);
+						}
 					}
+				} else {
+					logger.WarnReceiverNotRegistered(typeof(TWebhook));
 				}
-			} catch (Exception ex) {
+
+				await next.Invoke(context);
+
+				if (!context.Response.HasStarted && result != null) {
+					if ((result?.SignatureValidated ?? false) && !(result?.SignatureValid ?? false)) {
+						context.Response.StatusCode = options?.InvalidStatusCode ?? 400;
+					} else if ((result?.Successful ?? false)) {
+						context.Response.StatusCode = options?.ResponseStatusCode ?? 204;
+					}
+
+					// TODO: should we emit anything here?
+					await context.Response.WriteAsync("");
+				}
+			} catch (WebhookReceiverException ex) {
 				// TODO: log this error ...
 
-				context.Response.StatusCode = 500;
+				if (!context.Response.HasStarted) {
+					context.Response.StatusCode = options?.ErrorStatusCode ?? 500;
+					await context.Response.WriteAsync("");
+				}
+
 				// TODO: should we emit anything here?
 			}
+
+
 		}
 	}
 }

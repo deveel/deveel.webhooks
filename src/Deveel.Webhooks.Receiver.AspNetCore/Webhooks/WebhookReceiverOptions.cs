@@ -28,13 +28,13 @@ namespace Deveel.Webhooks {
 		/// <summary>
 		/// Gets or sets the options for the signature verification.
 		/// </summary>
-		public WebhookSignatureOptions Signature { get; set; } = new WebhookSignatureOptions();
+		public WebhookSignatureOptions? Signature { get; set; } = new WebhookSignatureOptions();
 
 		/// <summary>
 		/// Gets or sets the HTTP status code to return when the webhook
 		/// processing is successful (<c>201</c> by default).
 		/// </summary>
-		public int? ResponseStatusCode { get; set; } = 201;
+		public int? ResponseStatusCode { get; set; } = 204;
 
 		/// <summary>
 		/// Gets or sets the HTTP status code to return when the webhook
@@ -47,5 +47,11 @@ namespace Deveel.Webhooks {
 		/// from the sender is invalid (<c>400</c> by default).
 		/// </summary>
 		public int? InvalidStatusCode { get; set; } = 400;
+
+		/// <summary>
+		/// Gets or sets the options for the verification of the webhook
+		/// requests by the sender.
+		/// </summary>
+		public WebhookVerificationOptions? Verification { get; set; } = new WebhookVerificationOptions();
 	}
 }

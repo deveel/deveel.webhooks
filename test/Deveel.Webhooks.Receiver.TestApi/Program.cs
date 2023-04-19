@@ -11,7 +11,7 @@ namespace Deveel.Webhooks.Receiver.TestApi {
 			builder.Services.AddLogging();
 
 			// Add services to the container.
-			builder.Services.AddAuthorization();
+			// builder.Services.AddAuthorization();
 			builder.Services
 				.AddWebhooks<TestWebhook>()
 				.UseNewtonsoftJsonParser()
@@ -32,11 +32,13 @@ namespace Deveel.Webhooks.Receiver.TestApi {
 
 			var app = builder.Build();
 
-			// Configure the HTTP request pipeline.
+            // app.UseDeveloperExceptionPage();
 
-			app.UseHttpsRedirection();
+            // Configure the HTTP request pipeline.
 
-			app.UseAuthorization();
+            // app.UseHttpsRedirection();
+
+			// app.UseAuthorization();
 
 			app.UseWebhookReceiver<TestWebhook>("/webhook");
 			app.UseWebhookReceiver<TestWebhook>("/webhook/handled", (context, webhook) => {

@@ -914,6 +914,16 @@
             The webhook instance that was received
             </param>
         </member>
+        <member name="P:Deveel.Webhooks.WebhookReceiveResult`1.SignatureValidated">
+            <summary>
+            Gets whether the signature of the webhook was validated.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.WebhookReceiveResult`1.Successful">
+            <summary>
+            Gets whether the webhook was successfully received.
+            </summary>
+        </member>
         <member name="T:Deveel.Webhooks.WebhookReceiverException">
             <summary>
             An exception thrown when an error occurs during the processing of a webhook

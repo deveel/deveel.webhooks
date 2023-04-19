@@ -16,7 +16,7 @@
 
 # Getting Started
 
-The overall design of this little framework is open and extensible (implementing the traditional [Open-Closed Principle](https://en.wikipedia.org/wiki/Open%E2%80%93closed_principle)), that means base contracts can be extended, composed or replaced.
+The overall design of this framework is open and extensible (implementing the traditional [Open-Closed Principle](https://en.wikipedia.org/wiki/Open%E2%80%93closed_principle)), that means base contracts can be extended, composed or replaced.
 
 It is possible to use its components as they are provided, or use the base contracts to extend single functions, while still using the rest of the provisioning.
 
@@ -38,13 +38,13 @@ Or by editing your `.csproj` file and adding a `<PackageReference>` entry.
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>ne5.0</TargetFramework>
     ...
 
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Deveel.Webhooks" Version="1.0.1-alpha1" />
+    <PackageReference Include="Deveel.Webhooks" Version="1.1.6" />
     ...
   </ItemGroup>
 </Project>
@@ -56,17 +56,17 @@ This provides all the functions that are needed to send webhooks to a given dest
 
 The libraries currently provided by the framework are the following:
 
-| Library                             | Description                                                                                                       | NuGet                                                                  |
-| ----------------------------------- | ----------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------- |
-| **Deveel.Webhooks.Model**           | The foundation library that defines the webhooks information model                                                | [Package](https://www.nuget.org/packages/Deveel.Webhooks.Model/)       |
-| **Deveel.Webhooks**                 | Provides the foundation contracts of the webhook service and basic implementations for the sending functions      | [Package](https://www.nuget.org/packages/Deveel.Webhooks/)             |
-| **Deveel.Webhooks.Service**         | Implements the functions to manage and resolve webhook subscriptions                                              | [Package](https://www.nuget.org/packages/Deveel.Webhooks.Service/)     |
-| **Deveel.Webhooks.Service.MongoDb** | An implementation of the webhoom management data layer that is backed by [MongoDB](https://mongodb.com) databases | [Package](https://www.nuget.org/packages/Deveel.Webhooks.MongoDb/)     |
-| **Deveel.Webhooks.DynamicLinq**     | The webhook subscription filtering engine that uses the [Dynamic LINQ](https://dynamic-linq.net/) expressions     | [Package](https://www.nuget.org/packages/Deveel.Webhooks.DynamicLinq/) |
+| Library                             | Description                                                                                                       | NuGet                                                                  | GitHub (prerelease) |
+| ----------------------------------- | ----------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------- |---------------------|
+| **Deveel.Webhooks**                 | Provides the foundation contracts of the webhook service and basic implementations for the sending functions      | ![Nuget](https://img.shields.io/nuget/dt/Deveel.Webhooks?label=Deveel.Webhooks&logo=nuget) | [![GitHub](https://img.shields.io/static/v1?label=Deveel.Webhooks&message=Pre-Release&color=yellow&logo=github)](https://github.com/deveel/deveel.webhooks/pkgs/nuget/Deveel.Webhooks) |
+| **Deveel.Webhooks.Service**         | Implements the functions to manage and resolve webhook subscriptions                                              | ![Nuget](https://img.shields.io/nuget/dt/Deveel.Webhooks.Service?label=Deveel.Webhooks.Service&logo=nuget)| [![GitHub](https://img.shields.io/static/v1?label=Deveel.Webhooks.Service&message=Pre-Release&color=yellow&logo=github)](https://github.com/deveel/deveel.webhooks/pkgs/nuget/Deveel.Webhooks.Service) |
+| **Deveel.Webhooks.MongoDb**         | An implementation of the webhoom management data layer that is backed by [MongoDB](https://mongodb.com) databases | ![Nuget](https://img.shields.io/nuget/dt/Deveel.Webhooks.MongoDb?label=Deveel.Webhooks.MongoDb&logo=nuget) | [![GitHub](https://img.shields.io/static/v1?label=Deveel.Webhooks.MongoDb&message=Pre-Release&color=yellow&logo=github)](https://github.com/deveel/deveel.webhooks/pkgs/nuget/Deveel.Webhooks.MongoDb) |
+| **Deveel.Webhooks.DynamicLinq**     | The webhook subscription filtering engine that uses the [Dynamic LINQ](https://dynamic-linq.net/) expressions     | ![Nuget](https://img.shields.io/nuget/dt/Deveel.Webhooks.DynamicLinq?label=Deveel.Webhooks.DynamicLinq&logo=nuget) | [![GitHub](https://img.shields.io/static/v1?label=Deveel.Webhooks.DynamicLinq&message=Pre-Release&color=yellow&logo=github)](https://github.com/deveel/deveel.webhooks/pkgs/nuget/Deveel.Webhooks.DynamicLinq) |
+| **Deveel.Webhooks.Receiver.AspNetCore** | An implementation of the webhook receiver that is backed by [ASP.NET Core](https://dotnet.microsoft.com/apps/aspnet) | ![Nuget](https://img.shields.io/nuget/dt/Deveel.Webhooks?label=Deveel.Webhooks.Receiver.AspNetCore&logo=nuget) | [![GitHub](https://img.shields.io/static/v1?label=Deveel.Webhooks.Receiver.AspNetCore&message=Pre-Release&color=yellow&logo=github)](https://github.com/deveel/deveel.webhooks/pkgs/nuget/Deveel.Webhooks.Receiver.AspNetCore) |
 
 You can obtain the stable versions of these libraries from the [NuGet Official](https://nuget.org) channel.
 
-For the _nighly builds_ and previews you can restore from the [Deveel Package Manager](https://github.com/orgs/deveel/packages).
+To get the latest pre-release versions of the packages you can restore from the [Deveel Package Manager](https://github.com/orgs/deveel/packages).
 
 ## Adding the Webhook Service
 

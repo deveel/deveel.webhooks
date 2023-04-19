@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
 		<TargetFramework>net6.0</TargetFramework>
@@ -14,19 +14,11 @@
 		<PackageIcon>deveel-logo.png</PackageIcon>
 		<RepositoryUrl>https://github.com/deveel/deveel.webhooks</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
-		<PackageTags>webhooks receiver receivers aspnet core httprequest</PackageTags>
-		<Description>Provides an implementation of the webhook receivers supporting the ASP.NET Core infrastructure</Description>
+		<PackageTags>webhooks receiver receivers aspnet core aspnetcore httpcontext httprequest newtonsoft json jsonparser</PackageTags>
+		<Description>Extends the ASP.NET Core receivers with webhook parsers implemented using the Newtonsoft.Json library</Description>
 		<PackageProjectUrl>https://deveel.com</PackageProjectUrl>
-		<DocumentationFile>.\Deveel.Webhooks.Receiver.AspNetCore.xml</DocumentationFile>
-		<GenerateDocumentationFile>true</GenerateDocumentationFile>
+		<DocumentationFile>.\Deveel.Webhooks.Receiver.AspNetCore.NewtonsoftJson</DocumentationFile>
 	</PropertyGroup>
-
-	<ItemGroup>
-		<PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
-		<PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="6.0.0" />
-		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="6.0.0" />
-		<PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="6.0.0" />
-	</ItemGroup>
 
 	<ItemGroup>
 		<None Include="..\..\deveel-logo.png">
@@ -41,5 +33,13 @@
 
 	<ItemGroup>
 		<None Include="..\..\apl-2.licenseheader" Link="apl-2.licenseheader" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\Deveel.Webhooks.Receiver.AspNetCore\Deveel.Webhooks.Receiver.AspNetCore.csproj" />
 	</ItemGroup>
 </Project>

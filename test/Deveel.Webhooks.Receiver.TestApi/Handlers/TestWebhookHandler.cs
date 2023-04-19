@@ -2,21 +2,18 @@
 
 using Microsoft.Extensions.Options;
 
-using Newtonsoft.Json;
-
 namespace Deveel.Webhooks.Handlers {
 	public class TestWebhookHandler : IWebhookHandler<TestWebhook> {
-		private readonly ILogger<TestWebhookHandler> _logger;
 		private readonly WebhookReceiverOptions options;
+		private readonly IWebhookCallback<TestWebhook> callback;
 
-		public TestWebhookHandler(IOptionsSnapshot<WebhookReceiverOptions> options, ILogger<TestWebhookHandler> logger) {
-			_logger = logger;
-			this.options = options.Get(nameof(TestWebhook));
+		public TestWebhookHandler(IOptionsSnapshot<WebhookReceiverOptions> options, IWebhookCallback<TestWebhook> callback) {
+			this.options = options.GetReceiverOptions<TestWebhook>();
+			this.callback = callback;
 		}
 
 		public Task HandleAsync(TestWebhook webhook, CancellationToken cancellationToken = default) {
-			_logger.LogInformation(JsonConvert.SerializeObject(webhook));
-
+			callback.OnWebhookHandled(webhook);
 			return Task.CompletedTask;
 		}
 	}

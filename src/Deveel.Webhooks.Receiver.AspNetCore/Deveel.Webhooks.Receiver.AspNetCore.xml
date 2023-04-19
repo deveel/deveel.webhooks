@@ -1020,6 +1020,11 @@
             Gets whether the webhook was successfully received.
             </summary>
         </member>
+        <member name="P:Deveel.Webhooks.WebhookReceiveResult`1.SignatureFailed">
+            <summary>
+            Gets whether the webhook was received but the signature was invalid.
+            </summary>
+        </member>
         <member name="T:Deveel.Webhooks.WebhookReceiverException">
             <summary>
             An exception thrown when an error occurs during the processing of a webhook

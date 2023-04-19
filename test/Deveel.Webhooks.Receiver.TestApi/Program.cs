@@ -1,8 +1,6 @@
 using Deveel.Webhooks.Handlers;
 using Deveel.Webhooks.Model;
 
-using Newtonsoft.Json;
-
 namespace Deveel.Webhooks.Receiver.TestApi {
 	public class Program {
 		public static void Main(string[] args) {
@@ -46,9 +44,14 @@ namespace Deveel.Webhooks.Receiver.TestApi {
 
 			app.UseWebhookReceiver<TestWebhook>("/webhook");
 			app.UseWebhookReceiver<TestWebhook>("/webhook/handled", (context, webhook) => {
-				var logger = context.RequestServices.GetRequiredService<ILoggerFactory>().CreateLogger("test");
+				var callback = context.RequestServices.GetRequiredService<IWebhookCallback<TestWebhook>>();
 
-				logger.LogInformation(JsonConvert.SerializeObject(webhook));
+				callback.OnWebhookHandled(webhook);
+			});
+
+			app.UseWebhookReceiver<TestWebhook>("/webhook/handled/async", async (context, webhook, token) => {
+				var callback = context.RequestServices.GetRequiredService<IWebhookCallback<TestWebhook>>();
+				callback.OnWebhookHandled(webhook);
 			});
 
 			app.UseWebhookVerfier<TestSignedWebhook>("/webhook/signed");

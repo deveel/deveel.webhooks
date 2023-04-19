@@ -18,8 +18,44 @@ using Microsoft.Extensions.Logging;
 
 namespace Deveel.Webhooks {
     static partial class LoggerExtensions {
+		[LoggerMessage(EventId = 10001, Level = LogLevel.Debug, 
+			Message = "A Webhook has arrived")]
+		public static partial void TraceWebhookArrived(this ILogger logger);
+
+		[LoggerMessage(EventId = 10002, Level = LogLevel.Debug, 
+			Message = "A Webhook has been received")]
+		public static partial void TraceWebhookReceived(this ILogger logger);
+
+		[LoggerMessage(EventId = 10003, Level = LogLevel.Debug, 
+			Message = "The webhook of has been handled by '{HandlerType}'")]
+		public static partial void TraceWebhookHandled(this ILogger logger, Type handlerType);
+
+		[LoggerMessage(EventId = 10004, Level = LogLevel.Debug, 
+						Message = "A request of verification has arrived")]
+		public static partial void TraceVerificationRequest(this ILogger logger);
+
+		[LoggerMessage(EventId = 10005, Level = LogLevel.Debug, 
+									Message = "The verification request has been completed successfully")]
+		public static partial void TraceSuccessVerification(this ILogger logger);
+
+		[LoggerMessage(EventId = -20226, Level = LogLevel.Warning, 
+			Message = "The verification request has failed")]
+		public static partial void WarnVerificationFailed(this ILogger logger);
+
         [LoggerMessage(EventId = -20222, Level = LogLevel.Warning,
-            Message = "It was not possible to resolve any webhook receiver for the type '{WebhookType}'")]
-        public static partial void WarnReceiverNotRegistered(this ILogger logger, Type webhookType);
+            Message = "It was not possible to resolve any webhook receiver")]
+        public static partial void WarnReceiverNotRegistered(this ILogger logger);
+
+		[LoggerMessage(EventId = -20225, Level = LogLevel.Warning, 
+			Message = "It was not possible to verify the signature of the webhook")]
+		public static partial void WarnInvalidSignature(this ILogger logger);
+
+		[LoggerMessage(EventId = -20224, Level = LogLevel.Warning, 
+						Message = "The received webhook is invalid")]
+		public static partial void WarnInvalidWebhook(this ILogger logger);
+
+		[LoggerMessage(EventId = -20223, Level = LogLevel.Error,
+						Message = "It was not possible to receive a webhook for an unhandled error")]
+		public static partial void LogUnhandledReceiveError(this ILogger logger, Exception error);
     }
 }

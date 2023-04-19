@@ -69,11 +69,11 @@ namespace Deveel.Webhooks {
 		public IServiceCollection Services { get; }
 
 		private void RegisterReceiverMiddleware() {
-			Services.AddScoped<WebhookReceiverMiddleware<TWebhook>>();
+			Services.TryAddScoped<WebhookReceiverMiddleware<TWebhook>>();
 		}
 
 		private void RegisterVerifierMiddleware() {
-			Services.AddScoped<WebhookRequestVerfierMiddleware<TWebhook>>();
+			Services.TryAddScoped<WebhookRequestVerfierMiddleware<TWebhook>>();
 		}
 
 		private void RegisterDefaultReceiver() {
@@ -272,8 +272,8 @@ namespace Deveel.Webhooks {
 		/// Returns the current builder instance with the parser registered
 		/// </returns>
 		public WebhookReceiverBuilder<TWebhook> UseJsonParser(JsonSerializerOptions? options = null) {
-			Services.AddSingleton<IWebhookJsonParser<TWebhook>>(_ => new SystemTextWebhookJsonParser<TWebhook>(options));
-			Services.AddSingleton(_ => new SystemTextWebhookJsonParser<TWebhook>(options));
+			Services.TryAddSingleton<IWebhookJsonParser<TWebhook>>(_ => new SystemTextWebhookJsonParser<TWebhook>(options));
+			Services.TryAddSingleton(_ => new SystemTextWebhookJsonParser<TWebhook>(options));
 
 			return this;
 		}
@@ -294,7 +294,7 @@ namespace Deveel.Webhooks {
             if (parser is null)
                 throw new ArgumentNullException(nameof(parser));
 
-            Services.AddSingleton<IWebhookJsonParser<TWebhook>>(_ => new DelegatedJsonParser(parser));
+            Services.TryAddSingleton<IWebhookJsonParser<TWebhook>>(_ => new DelegatedJsonParser(parser));
 
 			return this;
 		}
@@ -315,7 +315,7 @@ namespace Deveel.Webhooks {
             if (parser is null)
                 throw new ArgumentNullException(nameof(parser));
 
-            Services.AddSingleton<IWebhookJsonParser<TWebhook>>(_ => new DelegatedJsonParser(parser));
+            Services.TryAddSingleton<IWebhookJsonParser<TWebhook>>(_ => new DelegatedJsonParser(parser));
 
 			return this;
 		}

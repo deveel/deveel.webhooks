@@ -53,6 +53,8 @@ namespace Deveel.Webhooks {
 			var logger = GetLogger(context);
 
             try {
+				logger.TraceWebhookArrived();
+
 				var receiver = context.RequestServices.GetService<IWebhookReceiver<TWebhook>>();
 				
 				WebhookReceiveResult<TWebhook>? result = null;
@@ -60,15 +62,31 @@ namespace Deveel.Webhooks {
 				if (receiver != null) {
 					result = await receiver.ReceiveAsync(context.Request, context.RequestAborted);
 
-					if (result != null && result.Value.Successful && result.Value.Webhook != null) {
-						if (asyncHandler != null) {
-							await asyncHandler(context, result.Value.Webhook, context.RequestAborted);
-						} else if (syncHandler != null) {
-							syncHandler(context, result.Value.Webhook);
+					if (result?.Successful ?? false) {
+						var webhook = result?.Webhook;
+
+						if (webhook == null) {
+							logger.WarnInvalidWebhook();
+						} else {
+							logger.TraceWebhookReceived();
+
+							if (asyncHandler != null) {
+								await asyncHandler(context, webhook, context.RequestAborted);
+
+								logger.TraceWebhookHandled(typeof(Func<TWebhook, CancellationToken, Task>));
+							} else if (syncHandler != null) {
+								syncHandler(context, webhook);
+
+								logger.TraceWebhookHandled(typeof(Action<TWebhook>));
+							}
 						}
+					} else {
+						logger.WarnInvalidWebhook();
 					}
+				} else if (result?.SignatureFailed ?? false) {
+					logger.WarnInvalidSignature();
 				} else {
-					logger.WarnReceiverNotRegistered(typeof(TWebhook));
+					logger.WarnReceiverNotRegistered();
 				}
 
 				await next.Invoke(context);
@@ -84,17 +102,14 @@ namespace Deveel.Webhooks {
 					await context.Response.WriteAsync("");
 				}
 			} catch (WebhookReceiverException ex) {
-				// TODO: log this error ...
+				logger.LogUnhandledReceiveError(ex);
 
 				if (!context.Response.HasStarted) {
 					context.Response.StatusCode = options?.ErrorStatusCode ?? 500;
+					// TODO: should we emit anything here?
 					await context.Response.WriteAsync("");
 				}
-
-				// TODO: should we emit anything here?
 			}
-
-
 		}
 	}
 }

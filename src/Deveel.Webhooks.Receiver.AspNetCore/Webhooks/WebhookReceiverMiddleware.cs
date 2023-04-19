@@ -43,11 +43,23 @@ namespace Deveel.Webhooks {
 
 		public async Task InvokeAsync(HttpContext context, RequestDelegate next) {
 			try {
+				logger.TraceWebhookArrived();
+
 				var result = await receiver.ReceiveAsync(context.Request, context.RequestAborted);
-				
+
+				if (result.Successful) {
+					logger.TraceWebhookReceived();
+				} else if (result.SignatureFailed) {
+					logger.WarnInvalidSignature();
+				} else if (!result.Successful) {
+					logger.WarnInvalidWebhook();
+				}
+
 				if (handlers != null && result.Successful && result.Webhook != null) {
 					foreach (var handler in handlers) {
 						await handler.HandleAsync(result.Webhook, context.RequestAborted);
+
+						logger.TraceWebhookHandled(handler.GetType());
 					}
 				}
 
@@ -56,7 +68,7 @@ namespace Deveel.Webhooks {
 				if (!context.Response.HasStarted) {
 					if (result.Successful) {
                         context.Response.StatusCode = SuccessStatusCode;
-                    } else if (result.SignatureValidated && !result.SignatureValid.Value) {
+                    } else if (result.SignatureFailed) {
 						context.Response.StatusCode = InvalidStatusCode;
 					} else {
 						context.Response.StatusCode = FailureStatusCode;
@@ -66,7 +78,7 @@ namespace Deveel.Webhooks {
                     await context.Response.WriteAsync("");
 				}
 			} catch (WebhookReceiverException ex) {
-				// TODO: log this error ...
+				logger.LogUnhandledReceiveError(ex);
 
 				if (!context.Response.HasStarted) {
 					context.Response.StatusCode = FailureStatusCode;
@@ -74,8 +86,6 @@ namespace Deveel.Webhooks {
 					// TODO: should we emit anything here?
 					await context.Response.WriteAsync("");
 				}
-
-				// TODO: should we emit anything here?
 			}
 
 		}

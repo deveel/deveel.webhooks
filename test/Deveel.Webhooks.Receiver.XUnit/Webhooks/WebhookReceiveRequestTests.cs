@@ -1,15 +1,16 @@
 ﻿using System;
-using System.Formats.Asn1;
 using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 
+using Deveel.Webhooks.Handlers;
 using Deveel.Webhooks.Model;
 using Deveel.Webhooks.Receiver.TestApi;
 
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -22,10 +23,22 @@ using Xunit.Abstractions;
 namespace Deveel.Webhooks {
 	public class WebhookReceiveRequestTests : IDisposable {
 		private readonly WebApplicationFactory<Program> appFactory;
+		private TestWebhook lastWebhook;
 
 		public WebhookReceiveRequestTests(ITestOutputHelper outputHelper) {
 			appFactory = new WebApplicationFactory<Program>()
-				.WithWebHostBuilder(builder => builder.ConfigureLogging(logging => logging.AddXUnit(outputHelper).SetMinimumLevel(LogLevel.Trace)));
+				.WithWebHostBuilder(builder => builder
+					.ConfigureTestServices(ConfigureServices)
+					.ConfigureLogging(logging => logging.AddXUnit(outputHelper, opt => opt.Filter = (cat, level) => true)
+						.SetMinimumLevel(LogLevel.Trace)));
+		}
+
+		private void ConfigureServices(IServiceCollection services) {
+			services.AddWebhooks<TestWebhook>()
+				.UseCallback(webhook => lastWebhook = webhook);
+
+			services.AddWebhooks<TestSignedWebhook>()
+				.UseCallback(webhook => lastWebhook = webhook);
 		}
 
 		public void Dispose() => appFactory?.Dispose();
@@ -46,6 +59,9 @@ namespace Deveel.Webhooks {
 
 			Assert.True(response.IsSuccessStatusCode);
 			Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
+
+			Assert.NotNull(lastWebhook);
+			Assert.Equal("test", lastWebhook.Event);
 		}
 
 		[Fact]
@@ -62,7 +78,26 @@ namespace Deveel.Webhooks {
 
 			Assert.True(response.IsSuccessStatusCode);
 			Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
+
+			Assert.NotNull(lastWebhook);
 		}
+
+		[Fact]
+		public async Task ReceiveAsyncHandledTestWebhook() {
+			var client = CreateClient();
+
+			var response = await client.SendAsync(new HttpRequestMessage(HttpMethod.Post, "/webhook/handled/async") {
+				Content = new StringContent(JsonConvert.SerializeObject(new TestWebhook {
+					Id = Guid.NewGuid().ToString("N"),
+					Event = "test",
+					TimeStamp = DateTimeOffset.Now,
+				}), Encoding.UTF8, "application/json")
+			});
+
+			Assert.True(response.IsSuccessStatusCode);
+			Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
+		}
+
 
 
 		private string GetSha256Signature(string json) {

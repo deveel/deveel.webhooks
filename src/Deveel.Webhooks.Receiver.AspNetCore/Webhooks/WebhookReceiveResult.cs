@@ -71,5 +71,10 @@ namespace Deveel.Webhooks {
 		/// Gets whether the webhook was successfully received.
 		/// </summary>
 		public bool Successful => Webhook != null && (!SignatureValidated || SignatureValid == true);
+
+		/// <summary>
+		/// Gets whether the webhook was received but the signature was invalid.
+		/// </summary>
+		public bool SignatureFailed => SignatureValidated && SignatureValid == false;
 	}
 }

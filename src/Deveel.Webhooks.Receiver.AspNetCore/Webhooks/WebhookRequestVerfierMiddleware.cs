@@ -35,18 +35,35 @@ namespace Deveel.Webhooks {
             this.logger = logger ?? NullLogger<WebhookRequestVerfierMiddleware<TWebhook>>.Instance;
         }
 
+		private int FailureStatusCode => options.ErrorStatusCode ?? 500;
+
         public async Task InvokeAsync(HttpContext context, RequestDelegate next) {
             try {
+				logger.TraceVerificationRequest();
+
                 var result = await requestVerifier.VerifyRequestAsync(context.Request, context.RequestAborted);
+
+				if (result != null) {
+					if (result.IsVerified) {
+						logger.TraceSuccessVerification();
+					} else {
+						logger.WarnVerificationFailed();
+					}
+				}
 
                 await next.Invoke(context);
 
-                if (!context.Response.HasStarted) {
+                if (!context.Response.HasStarted && result != null) {
 					await requestVerifier.HandleResultAsync(result, context.Response, context.RequestAborted);
                 }
             } catch (WebhookReceiverException ex) {
+				logger.LogUnhandledReceiveError(ex);
+
                 if (!context.Response.HasStarted) {
-                    
+					context.Response.StatusCode = FailureStatusCode;
+
+					// TODO: Should we emit anything here?
+					await context.Response.WriteAsync("");
                 }
             }
         }

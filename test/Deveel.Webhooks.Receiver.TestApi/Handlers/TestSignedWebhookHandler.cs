@@ -4,14 +4,14 @@ using Newtonsoft.Json;
 
 namespace Deveel.Webhooks.Handlers {
 	public class TestSignedWebhookHandler : IWebhookHandler<TestSignedWebhook> {
-		private readonly ILogger<TestSignedWebhookHandler> _logger;
+		private readonly IWebhookCallback<TestSignedWebhook> _callback;
 
-		public TestSignedWebhookHandler(ILogger<TestSignedWebhookHandler> logger) {
-			_logger = logger;
+		public TestSignedWebhookHandler(IWebhookCallback<TestSignedWebhook> callback) {
+			_callback = callback;
 		}
 
 		public Task HandleAsync(TestSignedWebhook webhook, CancellationToken cancellationToken = default) {
-			_logger.LogInformation(JsonConvert.SerializeObject(webhook));
+			_callback.OnWebhookHandled(webhook);
 
 			return Task.CompletedTask;
 		}

@@ -2,14 +2,14 @@
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
-    <VersionPrefix>1.1.6</VersionPrefix>
+    <VersionPrefix>1.1.7</VersionPrefix>
     <RootNamespace>Deveel</RootNamespace>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <Authors>antonello</Authors>
-    <Company>Deveel</Company>
+    <Company>Deveel AS</Company>
     <Description>An implementation of the Deveel Webhooks storage layer based on MongoDb</Description>
-    <Copyright>Copyright (C) 2021-2022</Copyright>
+    <Copyright>Copyright (C) 2021-2023 Deveel AS</Copyright>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <PackageProjectUrl>https://deveel.com</PackageProjectUrl>
     <PackageIcon>deveel-logo.png</PackageIcon>

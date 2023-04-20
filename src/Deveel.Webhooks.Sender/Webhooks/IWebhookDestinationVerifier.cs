@@ -21,14 +21,17 @@ namespace Deveel.Webhooks {
         /// <summary>
         /// Verifies that the given destination is valid and reachable.
         /// </summary>
-        /// <param name="destinationUrl">
-        /// The URL of the destination to verify.
-        /// </param>
-        /// <param name="cancellationToken"></param>
+		/// <param name="destination">
+		/// The object that describes the destination of a webhook and the
+		/// configurations to be used by the verifier.
+		/// </param>
+        /// <param name="cancellationToken">
+		/// A cancellation token used to cancel the operation.
+		/// </param>
         /// <returns>
         /// Returns <c>true</c> if the destination is valid and reachable,
         /// otherwise it returns <c>false</c>.
         /// </returns>
-        Task<bool> VerifyDestinationAsync(Uri destinationUrl, CancellationToken cancellationToken);
+        Task<bool> VerifyDestinationAsync(WebhookDestination destination, CancellationToken cancellationToken);
     }
 }

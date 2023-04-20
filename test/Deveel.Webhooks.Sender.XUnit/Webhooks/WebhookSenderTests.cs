@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
+﻿using System.Net;
 using System.Net.Http.Json;
-using System.Text;
-using System.Threading.Tasks;
 using System.Web;
 
 using Microsoft.Extensions.DependencyInjection;
@@ -57,7 +52,7 @@ namespace Deveel.Webhooks {
 					return new HttpResponseMessage(HttpStatusCode.OK);
 				});
 
-			mockHandler.When(HttpMethod.Get, "http://localhost:808/webhooks/verify")
+			mockHandler.When(HttpMethod.Get, "http://localhost:8080/webhooks/verify")
 				.Respond(request => {
 					var query = HttpUtility.ParseQueryString(request.RequestUri!.Query);
 					var token = query["token"];
@@ -76,7 +71,7 @@ namespace Deveel.Webhooks {
 					options.DefaultHeaders = new Dictionary<string, string> {
 						{"X-Test", "true"}
                     };
-					options.Retry.TimeOut = TimeSpan.FromMilliseconds(retryTimeoutMs);
+					options.Retry.Timeout = TimeSpan.FromMilliseconds(retryTimeoutMs);
 					options.Signature.Location = WebhookSignatureLocation.QueryString;
 					options.Signature.AlgorithmQueryParameter = "sig_alg";
 					options.Signature.QueryParameter = "sig";
@@ -210,10 +205,8 @@ namespace Deveel.Webhooks {
                 TimeStamp = DateTimeOffset.Now
             };
 
-			var destination = new WebhookDestination("http://localhost:8080/webhooks") {
-				Sign = true,
-				Secret = Guid.NewGuid().ToString()
-			};
+			var destination = new WebhookDestination("http://localhost:8080/webhooks")
+				.WithSignature(options => options.Secret = Guid.NewGuid().ToString());
 
             var result = await sender.SendAsync(destination, webhook);
             Assert.NotNull(result);
@@ -235,7 +228,7 @@ namespace Deveel.Webhooks {
 
 			var json = await lastRequest.Content!.ReadAsStringAsync();
 
-			var expectedSignature = WebhookSignature.Create(alg, json, destination.Secret);
+			var expectedSignature = WebhookSignature.Create(alg, json, destination.Signature!.Secret);
 
 			Assert.Equal(expectedSignature, signature);
         }
@@ -251,7 +244,12 @@ namespace Deveel.Webhooks {
             };
 
 			var destination = new WebhookDestination("http://localhost:8080/webhooks")
-				.WithVerification(new Uri("https://localhost:8080/webhooks/verify"));
+				.WithVerification(options => {
+					options.VerificationUrl = new Uri("http://localhost:8080/webhooks/verify");
+					options.Parameters = new Dictionary<string, object> {
+						{ "token", receiverToken }
+					};
+				});
 
             var result = await sender.SendAsync(destination, webhook);
             Assert.NotNull(result);
@@ -262,7 +260,61 @@ namespace Deveel.Webhooks {
             Assert.NotNull(lastWebhook);
         }
 
-        class TestWebhook {
+		[Fact]
+		public async Task SendWebhook_InvalidReceiverToken() {
+			var sender = GetSender<TestWebhook>();
+
+			var webhook = new TestWebhook {
+				Id = "123",
+				Event = "test",
+				TimeStamp = DateTimeOffset.Now
+			};
+
+			var destination = new WebhookDestination("http://localhost:8080/webhooks")
+				.WithVerification(options => {
+					options.VerificationUrl = new Uri("http://localhost:8080/webhooks/verify");
+					options.Parameters = new Dictionary<string, object> {
+						{ "token", Guid.NewGuid().ToString("N") }
+					};
+				});
+
+			var result = await Assert.ThrowsAsync<WebhookVerificationException>(() => sender.SendAsync(destination, webhook));
+
+			Assert.NotNull(result);
+
+			Assert.Null(lastRequest);
+			Assert.Null(lastWebhook);
+		}
+
+		[Fact]
+		public async Task SendWebhook_InvalidReceiverAddress() {
+			var sender = GetSender<TestWebhook>();
+
+			var webhook = new TestWebhook {
+				Id = "123",
+				Event = "test",
+				TimeStamp = DateTimeOffset.Now
+			};
+
+			var destination = new WebhookDestination("http://localhost:8080/webhooks")
+				.WithVerification(options => {
+					options.VerificationUrl = new Uri("http://localhost:8083/webhooks/verify");
+					options.Parameters = new Dictionary<string, object> {
+						{ "token", receiverToken }
+					};
+				});
+
+			var result = await Assert.ThrowsAsync<WebhookVerificationException>(() => sender.SendAsync(destination, webhook));
+
+			Assert.NotNull(result);
+
+			Assert.Null(lastRequest);
+			Assert.Null(lastWebhook);
+		}
+
+
+
+		class TestWebhook {
 			public string Id { get; set; }
 
 			public string Event { get; set; }

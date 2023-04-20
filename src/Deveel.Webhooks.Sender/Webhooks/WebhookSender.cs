@@ -34,12 +34,7 @@ namespace Deveel.Webhooks {
 	/// overloads that accept an instance of <see cref="IHttpClientFactory"/>, to ensure
 	/// a proper management of the <see cref="HttpClient"/> instances.
 	/// </remarks>
-    public class WebhookSender<TWebhook> : IWebhookSender<TWebhook>, IDisposable where TWebhook : class {
-		private readonly IHttpClientFactory? httpClientFactory;
-		private bool disposeClient;
-		private HttpClient? httpClient;
-		private bool disposed = false;
-
+    public class WebhookSender<TWebhook> : WebhookSenderClient, IWebhookSender<TWebhook>, IDisposable where TWebhook : class {
 		private readonly IWebhookSignerProvider<TWebhook>? signerProvider;
 		private readonly IWebhookJsonSerializer<TWebhook>? jsonSerializer;
 		private readonly IWebhookDestinationVerifier<TWebhook>? verifier;
@@ -96,11 +91,11 @@ namespace Deveel.Webhooks {
 		/// Thrown when the <paramref name="options"/> or the <paramref name="httpClientFactory"/>
 		/// are <c>null</c>
 		/// </exception>
-		protected WebhookSender(WebhookSenderOptions options, IHttpClientFactory httpClientFactory) {
+		protected WebhookSender(WebhookSenderOptions options, IHttpClientFactory httpClientFactory) 
+			: base(httpClientFactory) {
 			if (options is null) throw new ArgumentNullException(nameof(options));
 
 			SenderOptions = options;
-			this.httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
 		}
 
 		/// <summary>
@@ -120,7 +115,7 @@ namespace Deveel.Webhooks {
 		/// The provided <paramref name="httpClient"/> will not be disposed when
 		/// the sender is disposed.
 		/// </remarks>
-		protected WebhookSender(WebhookSenderOptions options, HttpClient httpClient) {
+		protected WebhookSender(WebhookSenderOptions options, HttpClient httpClient) : base(httpClient) {
 			if (options is null)
 				throw new ArgumentNullException(nameof(options));
 
@@ -128,8 +123,6 @@ namespace Deveel.Webhooks {
 				throw new ArgumentNullException(nameof(httpClient));
 
 			SenderOptions = options;
-			this.httpClient = httpClient;
-			disposeClient = false;
 		}
 
 		/// <summary>
@@ -137,61 +130,14 @@ namespace Deveel.Webhooks {
 		/// </summary>
 		protected WebhookSenderOptions SenderOptions { get; }
 
-		/// <summary>
-		/// Throws an exception if the sender has been disposed
-		/// </summary>
-		/// <exception cref="ObjectDisposedException">
-		/// Thrown when the sender has been disposed
-		/// </exception>
-		protected void ThrowIfDisposed() {
-			if (disposed)
-				throw new ObjectDisposedException(GetType().Name);
-		}
+		/// <inheritdoc/>
+		protected override WebhookRetryOptions? Retry => SenderOptions.Retry;
 
-        /// <summary>
-        /// Create a HTTP client to use for sending the webhook
-        /// </summary>
-        /// <remarks>
-        /// <list type="bullet">
-        ///   <item>
-        ///   When the sender was constructed with a <see cref="IHttpClientFactory"/>,
-        ///   this method will use it to create a new instance of <see cref="HttpClient"/>.
-        ///   </item>
-        ///   <item>
-        ///   When the sender was constructed with a <see cref="HttpClient"/>, this method
-        ///   returns the same instance.
-        ///   </item>
-        ///   <item>
-        ///   When neither a <see cref="IHttpClientFactory"/> or a <see cref="HttpClient"/>
-        ///   where provided, this method will create a new instance of <see cref="HttpClient"/>
-        ///   that will be disposed when the sender is disposed.
-        ///   </item>
-        /// </list>
-        /// </remarks>
-        /// <returns>
-        /// Returns an instance of <see cref="HttpClient"/> to use for sending the webhook,
-        /// that can be already existing (when explicitly specified) or a new one (from the factory).
-        /// </returns>
-        /// <exception cref="ObjectDisposedException">
-        /// Thrown when the sender has been disposed
-        /// </exception>
-        protected HttpClient CreateClient() {
-			ThrowIfDisposed();
+		/// <inheritdoc/>
+		protected override string? HttpClientName => SenderOptions.HttpClientName;
 
-			if (httpClientFactory != null) {
-				if (String.IsNullOrWhiteSpace(SenderOptions.HttpClientName))
-					return httpClientFactory.CreateClient();
-
-				return httpClientFactory.CreateClient(SenderOptions.HttpClientName);
-			}
-
-			if (httpClient == null) {
-				httpClient = new HttpClient();
-				disposeClient = true;
-			}
-
-			return httpClient;
-		}
+		/// <inheritdoc/>
+		protected override TimeSpan? Timeout => SenderOptions.Timeout;
 
 		/// <summary>
 		/// Gets a service that is used to compute the signature of a webhook,
@@ -252,9 +198,9 @@ namespace Deveel.Webhooks {
         /// <summary>
         /// Verifies that the receiver is valid and can receive webhooks.
         /// </summary>
-        /// <param name="verificationUrl">
-        /// The URL to use to verify the receiver.
-        /// </param>
+		/// <param name="destination">
+		/// The webhook receiver to verify.
+		/// </param>
         /// <param name="cancellationToken">
         /// A cancellation token that can be used to cancel the operation.
         /// </param>
@@ -267,39 +213,11 @@ namespace Deveel.Webhooks {
         /// <exception cref="WebhookVerificationException">
         /// Thrown if the verification failed through an unhandled error.
         /// </exception>
-        protected virtual Task<bool> VerifyDestinationAsync(Uri verificationUrl, CancellationToken cancellationToken) {
+        protected virtual Task<bool> VerifyDestinationAsync(WebhookDestination destination, CancellationToken cancellationToken) {
 			if (verifier == null)
 				throw new NotSupportedException("No verification service is available");
 
-			return verifier.VerifyDestinationAsync(verificationUrl, cancellationToken);
-		}
-
-        /// <summary>
-        /// Verifies that the receiver is valid and can receive webhooks.
-        /// </summary>
-        /// <param name="destination">
-        /// The webhook receiver to verify.
-        /// </param>
-        /// <param name="cancellationToken">
-        /// A cancellation token that can be used to cancel the operation.
-        /// </param>
-		/// <remarks>
-		/// This method will use the <see cref="WebhookDestination.VerificationUrl"/> if
-		/// specified, or the <see cref="WebhookDestination.Url"/> otherwise.
-		/// </remarks>
-        /// <returns>
-        /// Returns <c>true</c> if the receiver is valid and can receive webhooks,
-        /// otherwise <c>false</c>.
-        /// </returns>
-        /// <exception cref="WebhookVerificationException">
-        /// Thrown if the verification failed through an unhandled error.
-        /// </exception>
-        /// <exception cref="NotSupportedException">
-        /// Thrown if the verification is not supported by the sender.
-        /// </exception>
-        protected virtual Task<bool> VerifyDestinationAsync(WebhookDestination destination, CancellationToken cancellationToken) {
-			var verificationUrl = destination.VerificationUrl ?? destination.Url;
-			return VerifyDestinationAsync(verificationUrl, cancellationToken);
+			return verifier.VerifyDestinationAsync(destination, cancellationToken);
 		}
 
 		/// <summary>
@@ -337,6 +255,9 @@ namespace Deveel.Webhooks {
 		/// <param name="jsonBody">
 		/// The JSON-formmatted string that represents the body of the webhook.
 		/// </param>
+		/// <param name="algorithm">
+		/// The signing algorithm to use.
+		/// </param>
 		/// <param name="secret">
 		/// A secret used to sign the webhook.
 		/// </param>
@@ -344,7 +265,8 @@ namespace Deveel.Webhooks {
 		/// Thrown when the <paramref name="request"/> is <c>null</c>.
 		/// </exception>
 		/// <exception cref="ArgumentException">
-		/// Thrown when the <paramref name="jsonBody"/> or <paramref name="secret"/> are <c>null</c> or empty.
+		/// Thrown when the <paramref name="jsonBody"/>, <paramref name="algorithm"/> or <paramref name="secret"/> 
+		/// are <c>null</c> or empty.
 		/// </exception>
 		/// <exception cref="WebhookSenderException">
 		/// Thrown when the signature location is set to <see cref="WebhookSignatureLocation.Header"/>, but
@@ -361,7 +283,6 @@ namespace Deveel.Webhooks {
             if (String.IsNullOrWhiteSpace(jsonBody))
                 throw new ArgumentException($"'{nameof(jsonBody)}' cannot be null or whitespace.", nameof(jsonBody));
 
-
             var signature = ComputeSignature(algorithm, jsonBody, secret);
 
 			if (SenderOptions.Signature.Location == WebhookSignatureLocation.Header) {
@@ -374,24 +295,14 @@ namespace Deveel.Webhooks {
 				if (String.IsNullOrWhiteSpace(SenderOptions.Signature.QueryParameter))
                     throw new WebhookSenderException("The query parameter for the signature is not set");
 
-				var originalUrl = new UriBuilder(request.RequestUri!);
-				var queryString = new StringBuilder(originalUrl.Query);
-				if (queryString.Length > 0)
-					queryString.Append('&');
+				var uri = request.RequestUri!
+					.AddQueryParameter(SenderOptions.Signature.QueryParameter, signature);
 
-				queryString.Append(SenderOptions.Signature.QueryParameter);
-				queryString.Append('=');
-				queryString.Append(signature);
 				if (!String.IsNullOrWhiteSpace(SenderOptions.Signature.AlgorithmQueryParameter)) {
-					queryString.Append('&');
-					// queryString.Append($"sig_alg={provider.Algorithm}");
-					queryString.Append(SenderOptions.Signature.AlgorithmQueryParameter);
-					queryString.Append('=');
-					queryString.Append(algorithm);
+					uri = uri.AddQueryParameter(SenderOptions.Signature.AlgorithmQueryParameter, algorithm);
 				}
 
-				originalUrl.Query = queryString.ToString();
-				request.RequestUri = originalUrl.Uri;
+				request.RequestUri = uri;
 			}
 		}
 
@@ -440,7 +351,6 @@ namespace Deveel.Webhooks {
 
 		private WebhookDestination CreateDestination(WebhookDestination source) {
 			var result = new WebhookDestination(source.Url) {
-				Secret = source.Secret,
 				Sign = source.Sign,
 				Headers = new Dictionary<string, string>(),
 				Verify = source.Verify ?? SenderOptions.VerifyReceivers
@@ -459,26 +369,19 @@ namespace Deveel.Webhooks {
 			}
 
 			if (source.Signature == null) {
-				result.Signature = SenderOptions.Signature;
+				result.Signature = new WebhookDestinationSignatureOptions(SenderOptions.Signature);
 			} else {
-				result.Signature = new WebhookSenderSignatureOptions {
-					Algorithm = source.Signature.Algorithm ?? SenderOptions.Signature?.Algorithm,
-					HeaderName = source.Signature.HeaderName ?? SenderOptions.Signature?.HeaderName,
-					Location = source.Signature.Location ?? SenderOptions.Signature?.Location,
-					QueryParameter = source.Signature.QueryParameter ?? SenderOptions.Signature?.QueryParameter,
-					AlgorithmQueryParameter = source.Signature.AlgorithmQueryParameter ?? SenderOptions.Signature?.AlgorithmQueryParameter
-				};
+				result.Signature = source.Signature.Merge(SenderOptions.Signature);
 			}
 
 			if (source.Retry == null) {
-				result.Retry = SenderOptions.Retry;
+				result.Retry = new WebhookRetryOptions(SenderOptions.Retry);
 			} else {
-				result.Retry = new WebhookRetryOptions {
-					MaxRetries = source.Retry.MaxRetries ?? SenderOptions.Retry?.MaxRetries,
-					MaxDelay = source.Retry.MaxDelay ?? SenderOptions.Retry?.MaxDelay,
-					TimeOut = source.Retry.TimeOut ?? SenderOptions.Retry?.TimeOut
-				};
+				result.Retry = source.Retry.Merge(SenderOptions.Retry);
 			}
+
+			if (source.Verification != null)
+				result.Verification = new WebhookDestinationVerificationOptions(source.Verification);
 
 			return result;
 		}
@@ -489,11 +392,11 @@ namespace Deveel.Webhooks {
 
 				var jsonBody = await SerializeAsync(webhook, cancellationToken);
 
-				if (destination.Sign ?? false && !String.IsNullOrWhiteSpace(destination.Secret)) {
+				if (destination.Sign ?? false && !String.IsNullOrWhiteSpace(destination.Signature.Secret)) {
 					if (String.IsNullOrWhiteSpace(SenderOptions.Signature.Algorithm))
 						throw new WebhookSenderException("The signature algorithm is not set");
 
-					SignWebhookRequest(request, SenderOptions.Signature.Algorithm, jsonBody, destination.Secret!);
+					SignWebhookRequest(request, SenderOptions.Signature.Algorithm, jsonBody, destination.Signature!.Secret!);
 				}
 
 				request.Content = new StringContent(jsonBody, Encoding.UTF8, "application/json");
@@ -505,32 +408,6 @@ namespace Deveel.Webhooks {
 			} catch(Exception ex) {
 				throw new WebhookSenderException("An error occurred while creating the request", ex);
 			}
-		}
-
-		private IAsyncPolicy CreateRetryPolicy(WebhookDestination destination) {
-			// TODO: Validate that the sum of the retry delays is less than the timeout
-			var maxRetries = (destination?.Retry?.MaxRetries ?? SenderOptions?.Retry?.MaxRetries) ?? 0;
-			var maxDelay = (destination?.Retry?.MaxDelay ?? SenderOptions?.Retry?.MaxDelay) ?? TimeSpan.FromMilliseconds(300);
-
-			// the retry policy
-			return Policy
-				.Handle<HttpRequestException>()
-				.Or<TaskCanceledException>()
-				.Or<TimeoutException>()
-				.WaitAndRetryAsync(maxRetries,
-					attempt => maxDelay);
-		}
-
-		private AsyncPolicy<HttpResponseMessage> CreateTryTimeoutPolicy(WebhookDestination destination) {
-			// TODO: Validate that the timeout is not less than the retry timeout
-			var timeOut = (destination?.Retry?.TimeOut ?? SenderOptions.Retry?.TimeOut) ?? Timeout.InfiniteTimeSpan;
-			return Policy.TimeoutAsync<HttpResponseMessage>(timeOut);
-		}
-
-		private AsyncPolicy CreateTeimoutPolicy() {
-			// TODO: Validate that the timeout is not less than the retry timeout
-			var timeOut = SenderOptions.Timeout ?? Timeout.InfiniteTimeSpan;
-            return Policy.TimeoutAsync(timeOut);
 		}
 
 		/// <summary>
@@ -579,7 +456,7 @@ namespace Deveel.Webhooks {
 
 		private async Task TrySendAsync(WebhookDestination destination, TWebhook webhook, WebhookDeliveryResult<TWebhook> result, CancellationToken cancellationToken) {
 			var attempt = result.StartAttempt();
-            var timeoutPolicy = CreateTryTimeoutPolicy(destination);
+            var timeoutPolicy = CreateTryTimeoutPolicy<HttpResponseMessage>(destination.Retry?.Timeout);
 
             HttpResponseMessage? response = null;
 
@@ -623,30 +500,10 @@ namespace Deveel.Webhooks {
 				}
 
                 await OnAttemptCompletedAsync(destination, webhook, attempt, cancellationToken);
+
+				response?.Dispose();
             }
         }
-
-		/// <summary>
-		/// Sends the request to the given request through the HTTP channel.
-		/// </summary>
-		/// <param name="request">
-		/// The HTTP request to be sent.
-		/// </param>
-		/// <param name="cancellationToken">
-		/// A cancellation token that can be used to cancel the operation.
-		/// </param>
-		/// <returns>
-		/// Returns a response message that was received from the remote destination.
-		/// </returns>
-		protected virtual Task<HttpResponseMessage> SendRequestAsync(HttpRequestMessage request, CancellationToken cancellationToken) {
-            // we don't dispose the client, because it might be a singleton...
-            // 1. if the client is coming from the IHttpClientFactory, it will be disposed by the factory
-            // 2. if the client was set at the constructor, it will be disposed by the caller
-            // 3. if the client was created by the sender, it will be disposed when the sender is disposed
-
-            var client = CreateClient();
-			return client.SendAsync(request, cancellationToken);
-		}
 
 		/// <summary>
 		///  Sends a webhook to the given destination.
@@ -695,8 +552,9 @@ namespace Deveel.Webhooks {
 			try {
 				var destination = CreateDestination(receiver);
 
+				// TODO: should we really verify the destination for every send?
 				if (destination.Verify ?? false) {
-					var verified = await VerifyDestinationAsync(destination.Url, cancellationToken);
+					var verified = await VerifyDestinationAsync(destination, cancellationToken);
 
 					if (!verified)
                         throw new WebhookVerificationException("The destination is not valid");
@@ -704,10 +562,11 @@ namespace Deveel.Webhooks {
 
 				var result = new WebhookDeliveryResult<TWebhook>(destination, webhook);
 
-				var timeoutPolicy = CreateTeimoutPolicy();
+				var timeoutPolicy = CreateTimeoutPolicy();
 
-				var retryPolicy = CreateRetryPolicy(destination);
-				var policy = Policy.WrapAsync(timeoutPolicy, retryPolicy);
+				var retryPolicy = CreateRetryPolicy(destination.Retry?.MaxRetries, destination.Retry?.MaxDelay);
+				var policy = timeoutPolicy.WrapAsync(retryPolicy);
+
 				var captured = await policy.ExecuteAndCaptureAsync(token => TrySendAsync(receiver, webhook, result, token), cancellationToken);
 
 				// TODO: Should we handle the managed state? All the states are in the result object
@@ -724,28 +583,6 @@ namespace Deveel.Webhooks {
 			} catch(Exception ex) {
 				throw new WebhookSenderException("An error occurred while sending the webhook", ex);
 			}
-		}
-
-		/// <summary>
-		/// Deisposes the sender.
-		/// </summary>
-		/// <param name="disposing">
-		/// Whether the method is called from the <see cref="Dispose()"/> method.
-		/// </param>
-		protected virtual void Dispose(bool disposing) {
-			if (!disposed) {
-				if (disposing && disposeClient) {
-					httpClient?.Dispose();
-				}
-
-				disposed = true;
-			}
-		}
-
-		/// <inheritdoc/>
-		public void Dispose() {
-			Dispose(true);
-			GC.SuppressFinalize(this);
 		}
 	}
 }

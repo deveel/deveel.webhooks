@@ -84,14 +84,10 @@ namespace Deveel.Webhooks {
 		public bool? Verify { get; set; }
 
 		/// <summary>
-		/// Gets or sets the URL of the verification endpoint.
+		/// Gets or sets the options for the verification of the destination
 		/// </summary>
-		public Uri? VerificationUrl { get; set; }
-
-		/// <summary>
-		/// Gets or sets the receiver-specific secret used to sign a webhook.
-		/// </summary>
-		public string? Secret { get; set; }
+		public WebhookDestinationVerificationOptions? Verification { get; set; } 
+			= new WebhookDestinationVerificationOptions();
 
 		/// <summary>
 		/// Gets or sets a set of additional headers to be sent with the webhook.
@@ -106,7 +102,7 @@ namespace Deveel.Webhooks {
 		/// <summary>
 		/// Gets or sets the options for the signature of the webhook.
 		/// </summary>
-		public WebhookSenderSignatureOptions? Signature { get; set; } = new WebhookSenderSignatureOptions();
+		public WebhookDestinationSignatureOptions? Signature { get; set; } = new WebhookDestinationSignatureOptions();
 
 		/// <summary>
 		/// Gets or sets the options for the retry of the webhook delivery.
@@ -162,7 +158,7 @@ namespace Deveel.Webhooks {
 		/// <exception cref="ArgumentNullException">
 		/// Thrown if the <paramref name="signature"/> is <c>null</c>.
 		/// </exception>
-		public WebhookDestination WithSignature(WebhookSenderSignatureOptions signature) {
+		public WebhookDestination WithSignature(WebhookDestinationSignatureOptions signature) {
             Signature = signature ?? throw new ArgumentNullException(nameof(signature));
 			Sign = true;
             return this;
@@ -178,27 +174,46 @@ namespace Deveel.Webhooks {
 		/// Returns this instance of the <see cref="WebhookDestination"/> with
 		/// the signature options set.
 		/// </returns>
-		public WebhookDestination WithSignature(Action<WebhookSenderSignatureOptions> signature) {
-			var options = new WebhookSenderSignatureOptions();
+		public WebhookDestination WithSignature(Action<WebhookDestinationSignatureOptions> signature) {
+			var options = new WebhookDestinationSignatureOptions();
             signature(options);
             return WithSignature(options);
 		}
 
+
 		/// <summary>
-		/// Sets the receiver-specific secret used to sign a webhook.
+		/// Sets the options for the verification of the destination.
 		/// </summary>
-		/// <param name="verificationUrl">
-		/// An optional URL to be used for verification of the destination.
-		/// If this is not specified, the <see cref="Url"/> will be used.
+		/// <param name="options">
+		/// The options that should be used for the verification of the destination.
 		/// </param>
 		/// <returns>
 		/// Returns this instance of the <see cref="WebhookDestination"/> with
 		/// the verification options set.
 		/// </returns>
-		public WebhookDestination WithVerification(Uri? verificationUrl = null) {
+		/// <exception cref="ArgumentNullException">
+		/// Thrown if the <paramref name="options"/> is <c>null</c>.
+		/// </exception>
+		public WebhookDestination WithVerification(WebhookDestinationVerificationOptions options) {
 			Verify = true;
-            VerificationUrl = verificationUrl;
+			Verification = options ?? throw new ArgumentNullException(nameof(options));
             return this;
+		}
+
+		/// <summary>
+		/// Sets the options for the verification of the destination.
+		/// </summary>
+		/// <param name="configure">
+		/// The function that configures the options for the verification of the destination.
+		/// </param>
+		/// <returns>
+		/// Returns this instance of the <see cref="WebhookDestination"/> with
+		/// the verification options set.
+		/// </returns>
+		public WebhookDestination WithVerification(Action<WebhookDestinationVerificationOptions> configure) {
+			var options = new WebhookDestinationVerificationOptions();
+			configure(options);
+			return WithVerification(options);
 		}
 	}
 }

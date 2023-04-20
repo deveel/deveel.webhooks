@@ -19,6 +19,25 @@ namespace Deveel.Webhooks {
 	/// </summary>
     public class WebhookSenderSignatureOptions {
 		/// <summary>
+		/// Creates a new empty instance of the options.
+		/// </summary>
+		public WebhookSenderSignatureOptions() {
+		}
+
+		/// <summary>
+		/// Creates a new instance of the options copying
+		/// from the given <paramref name="options"/>.
+		/// </summary>
+		/// <param name="options"></param>
+		public WebhookSenderSignatureOptions(WebhookSenderSignatureOptions options) {
+			Location = options.Location;
+			Algorithm = options.Algorithm;
+			AlgorithmQueryParameter = options.AlgorithmQueryParameter;
+			HeaderName = options.HeaderName;
+			QueryParameter = options.QueryParameter;
+		}
+
+		/// <summary>
 		/// Gets or sets the location of the signature in the request.
 		/// If this is not set, the signature is not sent.
 		/// </summary>

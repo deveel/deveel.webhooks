@@ -51,6 +51,8 @@ namespace Deveel.Webhooks {
 			UseSender<WebhookSender<TWebhook>>();
 			UseJsonSerializer<SystemTextWebhookJsonSerializer<TWebhook>>();
 			UseSigner<Sha256WebhookSigner>();
+
+			UseDestinationVerifier(_ => { });
 		}
 
 		/// <summary>
@@ -151,6 +153,43 @@ namespace Deveel.Webhooks {
             Services.TryAddSingleton<IWebhookSignerProvider<TWebhook>, DefaultWebhookSignerProvider>();
 
             return this;
+		}
+
+		/// <summary>
+		/// Registers a service used to verify receivers of webhooks before
+		/// attempting to deliver them.
+		/// </summary>
+		/// <param name="sectionPath">
+		/// The path of the section within the configuration that
+		/// is used to configure the verifier.
+		/// </param>
+		/// <returns>
+		/// Returns the instance of the builder, to allow chaining
+		/// </returns>
+		public WebhookSenderBuilder<TWebhook> UseDestinationVerifier(string sectionPath) {
+			Services.AddOptions<WebhookDestinationVerifierOptions>(typeof(TWebhook).Name)
+				.BindConfiguration(sectionPath);
+
+			Services.TryAddScoped<IWebhookDestinationVerifier<TWebhook>, WebhookDestinationVerifier<TWebhook>>();
+			Services.TryAddScoped<WebhookDestinationVerifier<TWebhook>>();
+
+			return this;
+		}
+
+		/// <summary>
+		/// Registers a service used to verify receivers of webhooks before
+		/// attempting to deliver them.
+		/// </summary>
+		/// <param name="configure"></param>
+		/// <returns></returns>
+		public WebhookSenderBuilder<TWebhook> UseDestinationVerifier(Action<WebhookDestinationVerifierOptions> configure) {
+			Services.AddOptions<WebhookDestinationVerifierOptions>(typeof(TWebhook).Name)
+				.Configure(configure);
+
+			Services.TryAddScoped<IWebhookDestinationVerifier<TWebhook>, WebhookDestinationVerifier<TWebhook>>();
+			Services.TryAddScoped<WebhookDestinationVerifier<TWebhook>>();
+
+			return this;
 		}
 
         #region DefaultWebhookSignerProvider

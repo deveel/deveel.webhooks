@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Net.Http.Json;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web;
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -13,36 +15,87 @@ using RichardSzalay.MockHttp;
 using Xunit.Abstractions;
 
 namespace Deveel.Webhooks {
-	public class WebhookSenderTests {
-		private readonly IServiceProvider serviceProvider;
+	public class WebhookSenderTests : IDisposable {
+		private readonly IServiceScope serviceScope;
 		private HttpRequestMessage? lastRequest;
 		private TestWebhook? lastWebhook;
 
+		private string receiverToken;
+
 		public WebhookSenderTests(ITestOutputHelper outputHelper) {
-			serviceProvider = ConfigureServices(outputHelper);
+			var services = ConfigureServices(outputHelper);
+			serviceScope = services.CreateScope();
+
+			receiverToken = Guid.NewGuid().ToString("N");
 		}
 
 		private IServiceProvider ConfigureServices(ITestOutputHelper outputHelper) {
-			var mockRequest = new MockHttpMessageHandler();
-			mockRequest.When(HttpMethod.Post, "http://localhost:8080/webhooks")
+			var retryTimeoutMs = 500;
+
+			var mockHandler = new MockHttpMessageHandler();
+			mockHandler.When(HttpMethod.Post, "http://localhost:8080/webhooks")
 				.Respond(async request => {
 					lastRequest = request;
 					lastWebhook = await request.Content.ReadFromJsonAsync<TestWebhook>();
 					return new HttpResponseMessage(System.Net.HttpStatusCode.OK);
 				});
 
+			mockHandler.When(HttpMethod.Post, "http://localhost:8080/webhooks/timeout")
+				.Respond(async request => {
+                    lastRequest = request;
+                    lastWebhook = await request.Content.ReadFromJsonAsync<TestWebhook>();
+
+					return new HttpResponseMessage(HttpStatusCode.RequestTimeout);
+                });
+
+			mockHandler.When(HttpMethod.Post, "http://localhost:8081/webhooks")
+				.Respond(async request => {
+					lastRequest = request;
+					lastWebhook = await request.Content.ReadFromJsonAsync<TestWebhook>();
+					await Task.Delay(TimeSpan.FromMilliseconds(retryTimeoutMs + 100));
+
+					return new HttpResponseMessage(HttpStatusCode.OK);
+				});
+
+			mockHandler.When(HttpMethod.Get, "http://localhost:808/webhooks/verify")
+				.Respond(request => {
+					var query = HttpUtility.ParseQueryString(request.RequestUri!.Query);
+					var token = query["token"];
+
+					var valid = token == receiverToken;
+
+					return new HttpResponseMessage(valid ? HttpStatusCode.OK : HttpStatusCode.Unauthorized);
+				});
+
 			var services = new ServiceCollection()
-				.AddSingleton<IHttpClientFactory>(new MockHttpClientFactory("", mockRequest.ToHttpClient()))
+				.AddSingleton<IHttpClientFactory>(new MockHttpClientFactory("", mockHandler.ToHttpClient()))
 				.AddLogging(logging => logging.AddXUnit(outputHelper).SetMinimumLevel(LogLevel.Trace));
 
-			services.AddWebhookSender<TestWebhook>();
+			services.AddWebhookSender<TestWebhook>()
+				.Configure(options => {
+					options.DefaultHeaders = new Dictionary<string, string> {
+						{"X-Test", "true"}
+                    };
+					options.Retry.TimeOut = TimeSpan.FromMilliseconds(retryTimeoutMs);
+					options.Signature.Location = WebhookSignatureLocation.QueryString;
+					options.Signature.AlgorithmQueryParameter = "sig_alg";
+					options.Signature.QueryParameter = "sig";
+				});
 
 			return services.BuildServiceProvider();
 		}
 
+
+		public void Dispose() {
+            serviceScope?.Dispose();
+        }
+
+		private IWebhookSender<TWebhook> GetSender<TWebhook>() where TWebhook : class
+			=> serviceScope.ServiceProvider.GetRequiredService<IWebhookSender<TWebhook>>();
+
 		[Fact]
 		public async Task SendWebhook() {
-			var sender = serviceProvider.GetRequiredService<IWebhookSender<TestWebhook>>();
+			var sender = GetSender<TestWebhook>();
 
 			var webhook = new TestWebhook {
 				Id = "123",
@@ -65,7 +118,151 @@ namespace Deveel.Webhooks {
 			Assert.Equal(webhook.TimeStamp, lastWebhook!.TimeStamp);
 		}
 
-		class TestWebhook {
+        [Fact]
+        public async Task SendWebhook_TimeoutError_NoRetries() {
+            var sender = GetSender<TestWebhook>();
+
+            var webhook = new TestWebhook {
+                Id = "123",
+                Event = "test",
+                TimeStamp = DateTimeOffset.Now
+            };
+
+            var destination = new WebhookDestination("http://localhost:8081/webhooks");
+            var result = await sender.SendAsync(destination, webhook);
+
+            Assert.NotNull(result);
+            Assert.False(result.Successful);
+            Assert.Equal(1, result.AttemptCount); // The first attempt is not a retry
+			Assert.Equal((int)HttpStatusCode.RequestTimeout, result.LastAttempt!.ResponseCode);
+
+            Assert.NotNull(lastRequest);
+            Assert.NotNull(lastWebhook);
+
+            Assert.Equal(webhook.Id, lastWebhook!.Id);
+            Assert.Equal(webhook.Event, lastWebhook!.Event);
+            Assert.Equal(webhook.TimeStamp, lastWebhook!.TimeStamp);
+        }
+
+        [Fact]
+        public async Task SendWebhook_TimeoutErrorRetried() {
+            var sender = GetSender<TestWebhook>();
+
+            var webhook = new TestWebhook {
+                Id = "123",
+                Event = "test",
+                TimeStamp = DateTimeOffset.Now
+            };
+
+			var destination = new WebhookDestination("http://localhost:8081/webhooks")
+				.WithRetry(options => options.MaxRetries = 3);
+
+			var result = await sender.SendAsync(destination, webhook);
+
+            Assert.NotNull(result);
+            Assert.False(result.Successful);
+            Assert.Equal(4, result.AttemptCount); // The first attempt is not a retry
+            Assert.Equal((int)HttpStatusCode.RequestTimeout, result.LastAttempt!.ResponseCode);
+
+            Assert.NotNull(lastRequest);
+            Assert.NotNull(lastWebhook);
+
+            Assert.Equal(webhook.Id, lastWebhook!.Id);
+            Assert.Equal(webhook.Event, lastWebhook!.Event);
+            Assert.Equal(webhook.TimeStamp, lastWebhook!.TimeStamp);
+        }
+
+        [Fact]
+        public async Task SendWebhook_TimeoutResponse() {
+            var sender = GetSender<TestWebhook>();
+
+            var webhook = new TestWebhook {
+                Id = "123",
+                Event = "test",
+                TimeStamp = DateTimeOffset.Now
+            };
+
+            var destination = new WebhookDestination("http://localhost:8080/webhooks/timeout");
+            var result = await sender.SendAsync(destination, webhook);
+
+            Assert.NotNull(result);
+            Assert.False(result.Successful);
+            Assert.Equal(1, result.AttemptCount); // The first attempt is not a retry
+            Assert.Equal((int)HttpStatusCode.RequestTimeout, result.LastAttempt!.ResponseCode);
+
+            Assert.NotNull(lastRequest);
+            Assert.NotNull(lastWebhook);
+
+            Assert.Equal(webhook.Id, lastWebhook!.Id);
+            Assert.Equal(webhook.Event, lastWebhook!.Event);
+            Assert.Equal(webhook.TimeStamp, lastWebhook!.TimeStamp);
+        }
+
+
+
+        [Fact]
+		public async Task SendWebhookWithSignature() {
+            var sender = GetSender<TestWebhook>();
+
+            var webhook = new TestWebhook {
+                Id = "123",
+                Event = "test",
+                TimeStamp = DateTimeOffset.Now
+            };
+
+			var destination = new WebhookDestination("http://localhost:8080/webhooks") {
+				Sign = true,
+				Secret = Guid.NewGuid().ToString()
+			};
+
+            var result = await sender.SendAsync(destination, webhook);
+            Assert.NotNull(result);
+            Assert.True(result.Successful);
+            Assert.Equal(1, result.AttemptCount);
+
+            Assert.NotNull(lastRequest);
+            Assert.NotNull(lastWebhook);
+
+			var queryString = HttpUtility.ParseQueryString(lastRequest.RequestUri!.Query);
+
+			Assert.True(queryString.HasKeys());
+			Assert.Contains("sig_alg", queryString.AllKeys);
+			Assert.Contains("sig", queryString.AllKeys);
+
+			Assert.Equal("sha256", queryString["sig_alg"]);
+			var alg = queryString["sig_alg"];
+			var signature = queryString["sig"];
+
+			var json = await lastRequest.Content!.ReadAsStringAsync();
+
+			var expectedSignature = WebhookSignature.Create(alg, json, destination.Secret);
+
+			Assert.Equal(expectedSignature, signature);
+        }
+
+		[Fact]
+		public async Task SendWebhook_ValidReceiver() {
+            var sender = GetSender<TestWebhook>();
+
+            var webhook = new TestWebhook {
+                Id = "123",
+                Event = "test",
+                TimeStamp = DateTimeOffset.Now
+            };
+
+			var destination = new WebhookDestination("http://localhost:8080/webhooks")
+				.WithVerification(new Uri("https://localhost:8080/webhooks/verify"));
+
+            var result = await sender.SendAsync(destination, webhook);
+            Assert.NotNull(result);
+            Assert.True(result.Successful);
+            Assert.Equal(1, result.AttemptCount);
+
+            Assert.NotNull(lastRequest);
+            Assert.NotNull(lastWebhook);
+        }
+
+        class TestWebhook {
 			public string Id { get; set; }
 
 			public string Event { get; set; }

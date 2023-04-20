@@ -12,17 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Security.Cryptography;
-
 namespace Deveel.Webhooks {
     /// <summary>
-    /// A default implementation of the <see cref="IWebhookSigner"/> that handles
-    /// a typical webhook signature using the SHA-256 algorithm.
+    /// A service that verifies the destination of a webhook, before
+    /// attempting a delivery.
     /// </summary>
-    public class Sha256WebhookSigner : WebhookSignerBase {
-		/// <inheritdoc/>
-		public override string[] Algorithms => new[] { "sha256", "sha-256" };
-
-        protected override KeyedHashAlgorithm CreateHasher(byte[] key) => new HMACSHA256(key);
+    /// <typeparam name="TWebhook">
+    /// The type of the webhook that is delivered, used to
+    /// segregate the verification service to a given scope.
+    /// </typeparam>
+    /// <remarks>
+    /// Implementations of this interface are scoped to a given type 
+    /// of webhook.
+    /// </remarks>
+    public interface IWebhookDestinationVerifier<TWebhook> : IWebhookDestinationVerifier {
     }
 }

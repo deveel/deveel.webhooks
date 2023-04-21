@@ -1,4 +1,4 @@
-﻿// Copyright 2022 Deveel
+﻿// Copyright 2022-2023 Deveel
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,31 +20,29 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Deveel.Webhooks {
-	public static class WebhookServiceBuilderExtensions {
-		public static MongoDbWebhookStorageBuilder<TSubscription> UseMongoDb<TSubscription>(this WebhookServiceBuilder<TSubscription> builder)
+	public static class WebhookSubscriptionBuilderExtensions {
+		public static MongoDbWebhookStorageBuilder<TSubscription> UseMongoDb<TSubscription>(this WebhookSubscriptionBuilder<TSubscription> builder)
 			where TSubscription : MongoDbWebhookSubscription
 			=> new MongoDbWebhookStorageBuilder<TSubscription>(builder);
 
-		public static WebhookServiceBuilder<TSubscription> UseMongoDb<TSubscription>(this WebhookServiceBuilder<TSubscription> builder, Action<MongoDbWebhookStorageBuilder<TSubscription>> configure = null)
+		public static WebhookSubscriptionBuilder<TSubscription> UseMongoDb<TSubscription>(this WebhookSubscriptionBuilder<TSubscription> builder, Action<MongoDbWebhookStorageBuilder<TSubscription>> configure = null)
 			where TSubscription : MongoDbWebhookSubscription {
 			var storageBuilder = builder.UseMongoDb();
-			if (configure != null) {
-				configure(storageBuilder);
-			}
+			configure?.Invoke(storageBuilder);
 
 			return builder;
 		}
 
-		public static MongoDbWebhookStorageBuilder<TSubscription> UseMongoDb<TSubscription>(this WebhookServiceBuilder<TSubscription> builder, string sectionName, string connectionStringName = null)
+		public static MongoDbWebhookStorageBuilder<TSubscription> UseMongoDb<TSubscription>(this WebhookSubscriptionBuilder<TSubscription> builder, string sectionName, string connectionStringName = null)
 			where TSubscription : MongoDbWebhookSubscription
 			=> builder.UseMongoDb().Configure(sectionName, connectionStringName);
 
 
-		public static MongoDbWebhookStorageBuilder<TSubscription> UseMongoDb<TSubscription>(this WebhookServiceBuilder<TSubscription> builder, Action<MongoDbOptions> configure)
+		public static MongoDbWebhookStorageBuilder<TSubscription> UseMongoDb<TSubscription>(this WebhookSubscriptionBuilder<TSubscription> builder, Action<MongoDbOptions> configure)
 			where TSubscription : MongoDbWebhookSubscription
 			=> builder.UseMongoDb().Configure(configure);
 
-		public static MongoDbWebhookStorageBuilder<TSubscription> UseMongoDb<TSubscription>(this WebhookServiceBuilder<TSubscription> builder, Action<IMongoDbOptionBuilder> configure)
+		public static MongoDbWebhookStorageBuilder<TSubscription> UseMongoDb<TSubscription>(this WebhookSubscriptionBuilder<TSubscription> builder, Action<IMongoDbOptionBuilder> configure)
 			where TSubscription : MongoDbWebhookSubscription
 			=> builder.UseMongoDb().Configure(configure);
 	}

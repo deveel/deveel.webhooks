@@ -1,4 +1,4 @@
-﻿// Copyright 2022 Deveel
+﻿// Copyright 2022-2023 Deveel
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@ namespace Deveel.Webhooks {
 		/// <param name="eventType">The type of event</param>
 		/// <param name="data">The data provided by the event</param>
 		/// <exception cref="ArgumentException">
-		/// If the <param name="eventType">event type</param> is null or an empty string
+		/// If the <paramref name="eventType"/> is null or an empty string
 		/// </exception>
 		/// <exception cref="ArgumentNullException">
 		/// If the data provided are null

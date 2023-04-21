@@ -12,6 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Collections.Concurrent;
+using System.Collections.ObjectModel;
+
 namespace Deveel.Webhooks {
 	/// <summary>
 	/// An object that presents a summary of the delivery of a webhook
@@ -32,7 +35,7 @@ namespace Deveel.Webhooks {
 	/// </para>
 	/// </remarks>
     public sealed class WebhookDeliveryResult<TWebhook> where TWebhook : class {
-		private readonly List<WebhookDeliveryAttempt> attempts = new List<WebhookDeliveryAttempt>();
+		private readonly ConcurrentBag<WebhookDeliveryAttempt> attempts = new ConcurrentBag<WebhookDeliveryAttempt>();
 
 		/// <summary>
 		/// Constructs a new delivery result for the given webhook to the given destination.
@@ -52,13 +55,8 @@ namespace Deveel.Webhooks {
 		/// Gets a read-only list of the delivery attempts that were made
 		/// </summary>
 		/// <seealso cref="WebhookDeliveryAttempt"/>
-		public IReadOnlyList<WebhookDeliveryAttempt> Attempts {
-			get {
-				lock (attempts) {
-					return attempts.AsReadOnly();
-				}
-			}
-		}
+		public IReadOnlyList<WebhookDeliveryAttempt> Attempts 
+			=> attempts.OrderBy(x => x.Number).ToList().AsReadOnly();
 
 		/// <summary>
 		/// Gets the object that describes the destination of the webhook.
@@ -81,13 +79,7 @@ namespace Deveel.Webhooks {
 		/// <summary>
 		/// Gets a flag indicating if at least one attempt was made to deliver
 		/// </summary>
-		public bool HasAttempted {
-			get {
-				lock (attempts) {
-					return attempts.Count > 0;
-				}
-			}
-		}
+		public bool HasAttempted => attempts.Count > 0;
 
 		/// <summary>
 		/// Gets a boolean value indicating if at least one delivery attempt was successful.
@@ -98,13 +90,7 @@ namespace Deveel.Webhooks {
 		/// <summary>
 		/// Gets the number of attempts made to deliver the webhook.
 		/// </summary>
-		public int AttemptCount {
-			get {
-				lock (attempts) {
-					return attempts.Count;
-				}
-			}
-		}
+		public int AttemptCount => attempts.Count;
 
 		/// <summary>
 		/// Starts a new delivery attempt for the webhook.
@@ -118,12 +104,10 @@ namespace Deveel.Webhooks {
 		/// to track the delivery attempt status.
 		/// </returns>
 		public WebhookDeliveryAttempt StartAttempt() {
-			lock (attempts) {
-				var attempt = WebhookDeliveryAttempt.Start(attempts.Count + 1);
-				attempts.Add(attempt);
+			var attempt = WebhookDeliveryAttempt.Start(attempts.Count + 1);
+			attempts.Add(attempt);
 
-				return attempt;
-			}
+			return attempt;
 		}
 	}
 }

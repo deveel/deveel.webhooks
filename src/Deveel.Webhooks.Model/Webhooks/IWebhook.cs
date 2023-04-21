@@ -1,4 +1,4 @@
-﻿// Copyright 2022 Deveel
+﻿// Copyright 2022-2023 Deveel
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -27,38 +27,10 @@ namespace Deveel.Webhooks {
 		string Id { get; }
 
 		/// <summary>
-		/// Gets the name of the webhook (eg. the name of the
-		/// subscription)
-		/// </summary>
-		string Name { get; }
-
-		/// <summary>
-		/// Gets the format of the content of the webhook
-		/// </summary>
-		string Format { get; }
-
-		/// <summary>
 		/// If the webhook was originated by a subscription,
 		/// this gets its unique identifier.
 		/// </summary>
 		string SubscriptionId { get; }
-
-		/// <summary>
-		/// Gets the URL of the receiver.
-		/// </summary>
-		string DestinationUrl { get; }
-
-		/// <summary>
-		/// Gets an optional secret used to compute the signature 
-		/// of the webhook
-		/// </summary>
-		string Secret { get; }
-
-		/// <summary>
-		/// Gets a set of additional headers to be included
-		/// in the webhook during the delivery.
-		/// </summary>
-		IDictionary<string, string> Headers { get; }
 
 		/// <summary>
 		/// Gets the exact time of the event occurrence.

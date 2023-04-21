@@ -1,4 +1,4 @@
-﻿// Copyright 2022 Deveel
+﻿// Copyright 2022-2023 Deveel
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -46,7 +46,7 @@ namespace Deveel.Webhooks {
 
 		public List<string> EventTypes { get; set; }
 
-		string[] IWebhookSubscription.EventTypes => EventTypes?.ToArray();
+		IEnumerable<string> IWebhookSubscription.EventTypes => EventTypes?.ToArray();
 
 		public IList<MongoDbWebhookFilter> Filters { get; set; }
 
@@ -55,5 +55,9 @@ namespace Deveel.Webhooks {
 
 		[BsonDictionaryOptions(DictionaryRepresentation.ArrayOfDocuments)]
 		public IDictionary<string, object> Metadata { get; set; }
+
+		public DateTimeOffset? CreatedAt { get; set; }
+
+		public DateTimeOffset? UpdatedAt { get; set; }
 	}
 }

@@ -2,7 +2,9 @@
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
-    <VersionPrefix>1.2.0</VersionPrefix>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <VersionPrefix>2.0.1</VersionPrefix>
     <RootNamespace>Deveel</RootNamespace>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>

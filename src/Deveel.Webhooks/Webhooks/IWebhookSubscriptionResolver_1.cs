@@ -1,4 +1,4 @@
-﻿// Copyright 2022 Deveel
+﻿// Copyright 2022-2023 Deveel
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,21 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-
 namespace Deveel.Webhooks {
 	/// <summary>
-	/// Provides the functions to obtain the configurations of the webhook service
+	/// Defines the contract for a resolver of a <see cref="IWebhookSubscription"/>
+	/// that is specific to a given webhook type.
 	/// </summary>
-	public interface IWebhookServiceConfiguration {
-		/// <summary>
-		/// Gets a collection of the data factories registered in the service
-		/// </summary>
-		IWebhookDataFactoryCollection DataFactories { get; }
-
-		/// <summary>
-		/// Gets all the registered filter evaluating engines.
-		/// </summary>
-		IWebhookFilterEvaluatorCollection FilterEvaluators { get; }
+	/// <typeparam name="TWebhook">
+	/// The type of the webhook that is scoped for the resolver.
+	/// </typeparam>
+	/// <seealso cref="IWebhookSubscriptionResolver"/>
+	public interface IWebhookSubscriptionResolver<TWebhook> : IWebhookSubscriptionResolver 
+		where TWebhook : class {
 	}
 }

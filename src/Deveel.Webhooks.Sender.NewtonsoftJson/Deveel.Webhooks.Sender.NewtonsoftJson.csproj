@@ -5,7 +5,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
 	  <RootNamespace>Deveel</RootNamespace>
-	  <VersionPrefix>1.2.0</VersionPrefix>
+	  <VersionPrefix>2.0.1</VersionPrefix>
 	  <RootNamespace>Deveel</RootNamespace>
 	  <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
 	  <Authors>antonello</Authors>

@@ -15,7 +15,7 @@ namespace Deveel.Webhooks {
 		[Fact]
 		public static void BuilderConfiguration() {
 			var provider = new ServiceCollection()
-				.AddWebhooks<MongoDbWebhookSubscription>(webhooks => {
+				.AddWebhookSubscriptions<MongoDbWebhookSubscription>(webhooks => {
 					webhooks.UseMongoDb(mongo => mongo
 						.SetConnectionString("mongodb://127.0.0.1:2709")
 						.SetDatabaseName("test")
@@ -49,7 +49,7 @@ namespace Deveel.Webhooks {
 
 			var provider = new ServiceCollection()
 				.AddSingleton<IConfiguration>(config.Build())
-				.AddWebhooks<MongoDbWebhookSubscription>(webhooks => {
+				.AddWebhookSubscriptions<MongoDbWebhookSubscription>(webhooks => {
 					webhooks.UseMongoDb("MongoDb:Webhooks");
 				})
 				.BuildServiceProvider();
@@ -80,7 +80,7 @@ namespace Deveel.Webhooks {
 
 			var provider = new ServiceCollection()
 				.AddSingleton<IConfiguration>(config.Build())
-				.AddWebhooks<MongoDbWebhookSubscription>(webhooks => {
+				.AddWebhookSubscriptions<MongoDbWebhookSubscription>(webhooks => {
 					webhooks.UseMongoDb("MongoDb:Webhooks", "MongoDb");
 				})
 				.BuildServiceProvider();
@@ -103,7 +103,7 @@ namespace Deveel.Webhooks {
 		[Fact]
 		public static void ConfigureCustomStorage() {
 			var provider = new ServiceCollection()
-				.AddWebhooks<MongoDbWebhookSubscription>(webhook => webhook.UseMongoDb(builder =>
+				.AddWebhookSubscriptions<MongoDbWebhookSubscription>(webhook => webhook.UseMongoDb(builder =>
 					builder.Configure(options => {
 						options.ConnectionString = "mongodb://127.0.0.1:2709";
 						options.DatabaseName = "test";

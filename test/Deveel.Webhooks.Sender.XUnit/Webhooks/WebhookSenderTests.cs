@@ -31,14 +31,14 @@ namespace Deveel.Webhooks {
 			mockHandler.When(HttpMethod.Post, "http://localhost:8080/webhooks")
 				.Respond(async request => {
 					lastRequest = request;
-					lastWebhook = await request.Content.ReadFromJsonAsync<TestWebhook>();
+					lastWebhook = await request.Content!.ReadFromJsonAsync<TestWebhook>();
 					return new HttpResponseMessage(System.Net.HttpStatusCode.OK);
 				});
 
 			mockHandler.When(HttpMethod.Post, "http://localhost:8080/webhooks/timeout")
 				.Respond(async request => {
                     lastRequest = request;
-                    lastWebhook = await request.Content.ReadFromJsonAsync<TestWebhook>();
+                    lastWebhook = await request.Content!.ReadFromJsonAsync<TestWebhook>();
 
 					return new HttpResponseMessage(HttpStatusCode.RequestTimeout);
                 });
@@ -46,7 +46,7 @@ namespace Deveel.Webhooks {
 			mockHandler.When(HttpMethod.Post, "http://localhost:8081/webhooks")
 				.Respond(async request => {
 					lastRequest = request;
-					lastWebhook = await request.Content.ReadFromJsonAsync<TestWebhook>();
+					lastWebhook = await request.Content!.ReadFromJsonAsync<TestWebhook>();
 					await Task.Delay(TimeSpan.FromMilliseconds(retryTimeoutMs + 100));
 
 					return new HttpResponseMessage(HttpStatusCode.OK);
@@ -225,13 +225,17 @@ namespace Deveel.Webhooks {
 			Assert.Contains("sig_alg", queryString.AllKeys);
 			Assert.Contains("sig", queryString.AllKeys);
 
+			Assert.NotNull(queryString["sig_alg"]);
 			Assert.Equal("sha256", queryString["sig_alg"]);
+
 			var alg = queryString["sig_alg"];
 			var signature = queryString["sig"];
 
+			Assert.NotNull(alg);
+
 			var json = await lastRequest.Content!.ReadAsStringAsync();
 
-			var expectedSignature = WebhookSignature.Create(alg, json, destination.Signature!.Secret);
+			var expectedSignature = WebhookSignature.Create(alg, json, destination.Signature!.Secret!);
 
 			Assert.Equal(expectedSignature, signature);
         }

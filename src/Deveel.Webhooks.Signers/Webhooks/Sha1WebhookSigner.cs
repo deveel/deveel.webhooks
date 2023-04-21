@@ -1,4 +1,4 @@
-﻿// Copyright 2022 Deveel
+﻿// Copyright 2022-2023 Deveel
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -13,19 +13,14 @@
 // limitations under the License.
 
 using System;
+using System.Security.Cryptography;
 
 namespace Deveel.Webhooks {
-	/// <summary>
-	/// An enumeration of the common fields
-	/// of a webhook.
-	/// </summary>
-	[Flags]
-	public enum WebhookFields {
-		None = 0,
-		Name = 1,
-		EventId = 2,
-		EventName = 4,
-		TimeStamp = 8,
-		All = Name | EventId | EventName | TimeStamp
-	}
+    public class Sha1WebhookSigner : WebhookSignerBase {
+        public override string[] Algorithms => new[] { "SHA-1", "SHA1" };
+
+        protected override KeyedHashAlgorithm CreateHasher(byte[] key) {
+            return new HMACSHA1(key);
+        }
+    }
 }

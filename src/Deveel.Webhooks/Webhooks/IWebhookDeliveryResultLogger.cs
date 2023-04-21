@@ -1,4 +1,4 @@
-﻿// Copyright 2022 Deveel
+﻿// Copyright 2022-2023 Deveel
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,7 +17,29 @@ using System.Threading;
 using System.Threading.Tasks;
 
 namespace Deveel.Webhooks {
+	/// <summary>
+	/// Defines a service that is able to log the result of 
+	/// a delivery of a webhook
+	/// </summary>
+	/// <typeparam name="TWebhook">
+	/// The type of the webhook that is delivered
+	/// </typeparam>
 	public interface IWebhookDeliveryResultLogger<TWebhook> where TWebhook : class {
-		Task LogResultAsync(string tenantId, WebhookDeliveryResult<TWebhook> result, CancellationToken cancellationToken);
+		/// <summary>
+		/// Logs the result of a delivery of a webhook
+		/// </summary>
+		/// <param name="subscription">
+		/// The subscription that was used to deliver the webhook
+		/// </param>
+		/// <param name="result">
+		/// The result of the delivery of the webhook
+		/// </param>
+		/// <param name="cancellationToken">
+		/// A token that can be used to cancel the operation
+		/// </param>
+		/// <returns>
+		/// Returns a task that when completed will log the result of the delivery
+		/// </returns>
+		Task LogResultAsync(IWebhookSubscription subscription, WebhookDeliveryResult<TWebhook> result, CancellationToken cancellationToken = default);
 	}
 }

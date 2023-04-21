@@ -15,13 +15,13 @@ namespace Deveel.Webhooks {
 	public class WebhookManagementTests : WebhookServiceTestBase {
 		private readonly string userId = Guid.NewGuid().ToString("N");
 
-		private readonly IWebhookSubscriptionManager<MongoDbWebhookSubscription> webhookManager;
+		private readonly WebhookSubscriptionManager<MongoDbWebhookSubscription> webhookManager;
 		private readonly IWebhookSubscriptionStore<MongoDbWebhookSubscription> store;
 		private readonly IWebhookSubscriptionFactory<MongoDbWebhookSubscription> subscriptionFactory;
 
 
 		public WebhookManagementTests(ITestOutputHelper outputHelper) : base(outputHelper) {
-			webhookManager = Services.GetService<IWebhookSubscriptionManager<MongoDbWebhookSubscription>>();
+			webhookManager = Services.GetService<WebhookSubscriptionManager<MongoDbWebhookSubscription>>();
 			store = Services.GetRequiredService<IWebhookSubscriptionStore<MongoDbWebhookSubscription>>();
 			subscriptionFactory = Services.GetRequiredService<IWebhookSubscriptionFactory<MongoDbWebhookSubscription>>();
 		}

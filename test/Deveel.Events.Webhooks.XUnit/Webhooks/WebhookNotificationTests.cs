@@ -2,6 +2,8 @@
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Json;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -12,6 +14,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 using MongoDB.Driver;
 
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 using Xunit;
@@ -37,31 +40,33 @@ namespace Deveel.Webhooks {
 			notifier = Services.GetService<IWebhookNotifier<Webhook>>();
 		}
 
-		protected override void ConfigureWebhookService(WebhookServiceBuilder<MongoDbWebhookSubscription> builder) {
+		protected override void ConfigureWebhookService(WebhookSubscriptionBuilder<MongoDbWebhookSubscription> builder) {
 			builder
-				//.ConfigureDelivery((WebhookDeliveryOptions options) => { })
-				////options.SignWebhooks()
-				////	   .SecondsBeforeTimeOut(TimeOutSeconds))
-			.UseSubscriptionManager()
-			.AddDataFactory<TestDataFactory>()
-			.UseMongoDb(options => {
-				options.DatabaseName = "webhooks";
-				options.ConnectionString = ConnectionString;
-				options.SubscriptionsCollectionName("webhooks_subscription");
-				options.MultiTenancy.Handling = MongoDbMultiTenancyHandling.TenantField;
-				options.MultiTenancy.TenantField = "TenantId";
-			});
+				.UseManager()
+				.UseNotifier<Webhook>(config => config
+					.UseFactory<DefaultWebhookFactory>()
+					.AddDataTranformer<TestDataFactory>()
+					.UseSender(options => {
+						options.Retry.MaxRetries = 2;
+						options.Retry.Timeout = TimeSpan.FromSeconds(TimeOutSeconds);
+					}))
+				.UseMongoDb(options => {
+					options.DatabaseName = "webhooks";
+					options.ConnectionString = ConnectionString;
+					options.SubscriptionsCollectionName("webhooks_subscription");
+					options.MultiTenancy.Handling = MongoDbMultiTenancyHandling.TenantField;
+					options.MultiTenancy.TenantField = "TenantId";
+				});
 		}
 
 		protected override async Task<HttpResponseMessage> OnRequestAsync(HttpRequestMessage httpRequest) {
 			try {
 				if (testTimeout) {
-					await Task.Delay(TimeSpan.FromSeconds(TimeOutSeconds).Add(TimeSpan.FromSeconds(1)));
+					await Task.Delay(TimeSpan.FromSeconds(TimeOutSeconds + 2));
 					return new HttpResponseMessage(HttpStatusCode.RequestTimeout);
 				}
 
-				var json = await httpRequest.Content.ReadAsStringAsync();
-				lastWebhook = Newtonsoft.Json.JsonConvert.DeserializeObject<Webhook>(json);
+				lastWebhook = await httpRequest.Content.ReadFromJsonAsync<Webhook>();
 
 				if (testResponse != null)
 					return testResponse;
@@ -101,25 +106,31 @@ namespace Deveel.Webhooks {
 
 			Assert.NotNull(result);
 			Assert.NotEmpty(result);
+			Assert.Single(result);
 			Assert.True(result.HasSuccessful);
 			Assert.False(result.HasFailed);
 			Assert.NotEmpty(result.Successful);
 			Assert.Empty(result.Failed);
-			Assert.Equal(subscriptionId, result.First().Webhook.SubscriptionId);
-			Assert.True(result[subscriptionId].Successful);
-			Assert.True(result[subscriptionId].HasAttempted);
-			Assert.Single(result[subscriptionId].Attempts);
-			Assert.NotNull(result[subscriptionId].LastAttempt);
-			Assert.True(result[subscriptionId].LastAttempt.HasResponse);
+
+			Assert.Single(result[subscriptionId]);
+
+			var webhookResult = result[subscriptionId][0];
+
+			Assert.Equal(subscriptionId, webhookResult.Webhook.SubscriptionId);
+			Assert.True(webhookResult.Successful);
+			Assert.True(webhookResult.HasAttempted);
+			Assert.Single(webhookResult.Attempts);
+			Assert.NotNull(webhookResult.LastAttempt);
+			Assert.True(webhookResult.LastAttempt.HasResponse);
 
 			Assert.NotNull(lastWebhook);
 			Assert.Equal("data.created", lastWebhook.EventType);
 			Assert.Equal(notification.Id, lastWebhook.Id);
 			Assert.Equal(notification.TimeStamp, lastWebhook.TimeStamp);
 
-			var testData = Assert.IsType<JObject>(lastWebhook.Data);
+			var testData = Assert.IsType<JsonElement>(lastWebhook.Data);
 
-			Assert.Equal("test-data", testData.Value<string>("data_type"));
+			Assert.Equal("test-data", testData.GetProperty("data_type").GetString());
 		}
 
 		[Fact]
@@ -138,21 +149,26 @@ namespace Deveel.Webhooks {
 			Assert.False(result.HasFailed);
 			Assert.NotEmpty(result.Successful);
 			Assert.Empty(result.Failed);
-			Assert.Equal(subscriptionId, result.First().Webhook.SubscriptionId);
-			Assert.True(result[subscriptionId].HasAttempted);
-			Assert.True(result[subscriptionId].Successful);
-			Assert.Single(result[subscriptionId].Attempts);
-			Assert.True(result[subscriptionId].LastAttempt.HasResponse);
+
+			Assert.Single(result[subscriptionId]);
+
+			var webhookResult = result[subscriptionId][0];
+
+			Assert.Equal(subscriptionId, webhookResult.Webhook.SubscriptionId);
+			Assert.True(webhookResult.HasAttempted);
+			Assert.True(webhookResult.Successful);
+			Assert.Single(webhookResult.Attempts);
+			Assert.True(webhookResult.LastAttempt.HasResponse);
 
 			Assert.NotNull(lastWebhook);
 			Assert.Equal("data.modified", lastWebhook.EventType);
 			Assert.Equal(notification.Id, lastWebhook.Id);
 			Assert.Equal(notification.TimeStamp, lastWebhook.TimeStamp);
 
-			var eventData = Assert.IsType<JObject>(lastWebhook.Data);
+			var eventData = Assert.IsType<JsonElement>(lastWebhook.Data);
 
-			Assert.Equal("test", eventData.Value<string>("type"));
-			Assert.True(eventData.ContainsKey("creationTime"));
+			Assert.Equal("test", eventData.GetProperty("type").GetString());
+			Assert.True(eventData.TryGetProperty("creationTime", out var creationTime));
 		}
 
 
@@ -170,9 +186,15 @@ namespace Deveel.Webhooks {
 
 			Assert.NotNull(result);
 			Assert.NotEmpty(result);
-			Assert.Equal(subscriptionId, result.First().Webhook.SubscriptionId);
-			Assert.True(result[subscriptionId].Successful);
-			Assert.Single(result[subscriptionId].Attempts);
+			Assert.Single(result);
+
+			Assert.Single(result[subscriptionId]);
+
+			var webhookResult = result[subscriptionId][0];
+
+			Assert.Equal(subscriptionId, webhookResult.Webhook.SubscriptionId);
+			Assert.True(webhookResult.Successful);
+			Assert.Single(webhookResult.Attempts);
 
 			Assert.NotNull(lastWebhook);
 			Assert.Equal("data.created", lastWebhook.EventType);
@@ -193,9 +215,15 @@ namespace Deveel.Webhooks {
 
 			Assert.NotNull(result);
 			Assert.NotEmpty(result);
-			Assert.Equal(subscriptionId, result.First().Webhook.SubscriptionId);
-			Assert.True(result[subscriptionId].Successful);
-			Assert.Single(result[subscriptionId].Attempts);
+			Assert.Single(result);
+
+			Assert.Single(result[subscriptionId]);
+
+			var webhookResult = result[subscriptionId][0];
+
+			Assert.Equal(subscriptionId, webhookResult.Webhook.SubscriptionId);
+			Assert.True(webhookResult.Successful);
+			Assert.Single(webhookResult.Attempts);
 
 			Assert.NotNull(lastWebhook);
 			Assert.Equal("data.created", lastWebhook.EventType);
@@ -221,9 +249,15 @@ namespace Deveel.Webhooks {
 
 			Assert.NotNull(result);
 			Assert.NotEmpty(result);
-			Assert.Equal(subscriptionId, result.First().Webhook.SubscriptionId);
-			Assert.True(result[subscriptionId].Successful);
-			Assert.Single(result[subscriptionId].Attempts);
+			Assert.Single(result);
+
+			Assert.Single(result[subscriptionId]);
+
+			var webhookResult = result[subscriptionId][0];
+
+			Assert.Equal(subscriptionId, webhookResult.Webhook.SubscriptionId);
+			Assert.True(webhookResult.Successful);
+			Assert.Single(webhookResult.Attempts);
 
 			Assert.NotNull(lastWebhook);
 			Assert.Equal("data.created", lastWebhook.EventType);
@@ -242,12 +276,18 @@ namespace Deveel.Webhooks {
 
 			Assert.NotNull(result);
 			Assert.NotEmpty(result);
+			Assert.Single(result);
 			Assert.NotEmpty(result.Failed);
 			Assert.True(result.HasFailed);
-			Assert.Equal(subscriptionId, result.First().Webhook.SubscriptionId);
-			Assert.False(result[subscriptionId].Successful);
-			Assert.Single(result[subscriptionId].Attempts);
-			Assert.Equal((int)HttpStatusCode.InternalServerError, result[subscriptionId].Attempts.ElementAt(0).ResponseCode);
+
+			Assert.Single(result[subscriptionId]);
+
+			var webhookResult = result[subscriptionId][0];
+
+			Assert.Equal(subscriptionId, webhookResult.Webhook.SubscriptionId);
+			Assert.False(webhookResult.Successful);
+			Assert.Equal(3, webhookResult.Attempts.Count);
+			Assert.Equal((int)HttpStatusCode.InternalServerError, webhookResult.Attempts[0].ResponseCode);
 		}
 
 		[Fact]
@@ -261,10 +301,16 @@ namespace Deveel.Webhooks {
 
 			Assert.NotNull(result);
 			Assert.NotEmpty(result);
-			Assert.Equal(subscriptionId, result.First().Webhook.SubscriptionId);
-			Assert.False(result[subscriptionId].Successful);
-			Assert.Single(result[subscriptionId].Attempts);
-			Assert.Equal((int)HttpStatusCode.RequestTimeout, result[subscriptionId].Attempts.ElementAt(0).ResponseCode);
+			Assert.Single(result);
+
+			Assert.Single(result[subscriptionId]);
+
+			var webhookResult = result[subscriptionId][0];
+
+			Assert.Equal(subscriptionId, webhookResult.Webhook.SubscriptionId);
+			Assert.False(webhookResult.Successful);
+			Assert.Equal(3, webhookResult.Attempts.Count);
+			Assert.Equal((int)HttpStatusCode.RequestTimeout, webhookResult.Attempts.ElementAt(0).ResponseCode);
 		}
 
 

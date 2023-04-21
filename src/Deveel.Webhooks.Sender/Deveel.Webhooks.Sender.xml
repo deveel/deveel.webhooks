@@ -216,6 +216,12 @@
             the result of the delivery attempts to the destination.
             </returns>
         </member>
+        <member name="T:Deveel.Webhooks.IWebhookXmlSerializer`1">
+            <summary>
+            Provides a contract for serializing a webhook to a XML stream.
+            </summary>
+            <typeparam name="TWebhook"></typeparam>
+        </member>
         <member name="T:Deveel.Webhooks.SystemTextWebhookJsonSerializer`1">
             <summary>
             An implementation of <see cref="T:Deveel.Webhooks.IWebhookJsonSerializer`1"/> that

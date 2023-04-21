@@ -1,4 +1,4 @@
-﻿// Copyright 2022 Deveel
+﻿// Copyright 2022-2023 Deveel
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,11 +20,11 @@ using System.Threading;
 using System.Threading.Tasks;
 
 namespace Deveel.Webhooks {
-	class LinqWebhookFilterEvaluator : IWebhookFilterEvaluator {
+	class LinqWebhookFilterEvaluator<TWebhook> : IWebhookFilterEvaluator<TWebhook> where TWebhook : class {
 		public string Format => "linq";
 
-		private Func<IWebhook, bool> Compile(IEnumerable<string> filters) {
-			Func<IWebhook, bool> evalFilter = null;
+		private Func<TWebhook, bool> Compile(IEnumerable<string> filters) {
+			Func<TWebhook, bool> evalFilter = null;
 			bool empty = true;
 
 			foreach (var filter in filters) {
@@ -34,14 +34,14 @@ namespace Deveel.Webhooks {
 				} else {
 					var config = ParsingConfig.Default;
 					var parameters = new[] {
-						Expression.Parameter(typeof(IWebhook), "hook")
+						Expression.Parameter(typeof(TWebhook), "hook")
 					};
 
-					var compiled = (Func<IWebhook, bool>)DynamicExpressionParser.ParseLambda(config, parameters, typeof(bool), filter).Compile();
+					var compiled = (Func<TWebhook, bool>)DynamicExpressionParser.ParseLambda(config, parameters, typeof(bool), filter).Compile();
 					if (evalFilter == null) {
 						evalFilter = compiled;
 					} else {
-						var prev = (Func<IWebhook, bool>)evalFilter.Clone();
+						var prev = (Func<TWebhook, bool>)evalFilter.Clone();
 						evalFilter = hook => prev(hook) && compiled(hook);
 					}
 				}
@@ -55,7 +55,7 @@ namespace Deveel.Webhooks {
 			return evalFilter;
 		}
 
-		public Task<bool> MatchesAsync(WebhookFilterRequest request, IWebhook webhook, CancellationToken cancellationToken) {
+		public Task<bool> MatchesAsync(WebhookSubscriptionFilter request, TWebhook webhook, CancellationToken cancellationToken) {
 			if (request is null)
 				throw new ArgumentNullException(nameof(request));
 			if (webhook is null)

@@ -2,7 +2,9 @@
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
-    <VersionPrefix>1.2.0</VersionPrefix>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <VersionPrefix>2.0.1</VersionPrefix>
     <RootNamespace>Deveel</RootNamespace>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
@@ -16,6 +18,8 @@
     <RepositoryType>git</RepositoryType>
     <PackageTags>events webhooks abstractions core</PackageTags>
     <PackageProjectUrl>https://deveel.com</PackageProjectUrl>
+    <DocumentationFile>./Deveel.Webhooks.xml</DocumentationFile>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
@@ -37,13 +41,12 @@
     <PackageReference Include="Microsoft.Extensions.Http" Version="6.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="6.0.0" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="6.0.0" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="Polly" Version="7.2.3" />
     <PackageReference Include="Polly.Extensions.Http" Version="3.0.0" />
   </ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\Deveel.Webhooks.Sender.NewtonsoftJson\Deveel.Webhooks.Sender.NewtonsoftJson.csproj" />
+	  <ProjectReference Include="..\Deveel.Webhooks.Model\Deveel.Webhooks.Model.csproj" />
 	  <ProjectReference Include="..\Deveel.Webhooks.Sender\Deveel.Webhooks.Sender.csproj" />
 	</ItemGroup>
 

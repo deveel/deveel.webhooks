@@ -29,13 +29,8 @@ namespace Deveel.Webhooks {
 			mongoDbCluster = MongoDbRunner.Start(logger: NullLogger.Instance);
 
 			return new ServiceCollection()
-				.AddWebhooks<MongoDbWebhookSubscription>(buidler => {
-					// buidler.ConfigureDelivery((WebhookDeliveryOptions options) => { });
-					// options.SignWebhooks());
-
-				ConfigureWebhookService(buidler);
-			})
-				.AddDynamicLinqFilterEvaluator()
+				.AddWebhookSubscriptions<MongoDbWebhookSubscription>(buidler => ConfigureWebhookService(buidler))
+				.AddDynamicLinqFilterEvaluator<Webhook>()
 				.AddTestHttpClient(OnRequestAsync)
 				.AddLogging(logging => logging.AddXUnit(outputHelper))
 				.BuildServiceProvider();
@@ -45,7 +40,7 @@ namespace Deveel.Webhooks {
 			return Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK));
 		}
 
-		protected virtual void ConfigureWebhookService(WebhookServiceBuilder<MongoDbWebhookSubscription> builder) {
+		protected virtual void ConfigureWebhookService(WebhookSubscriptionBuilder<MongoDbWebhookSubscription> builder) {
 			builder.UseMongoDb(options => {
 				options.DatabaseName = "webhooks";
 				options.ConnectionString = mongoDbCluster.ConnectionString;

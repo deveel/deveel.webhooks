@@ -29,21 +29,22 @@ namespace Deveel.Webhooks {
 
 		private IWebhookSubscriptionStoreProvider<MongoDbWebhookSubscription> webhookStore;
 		private IWebhookDeliveryResultStoreProvider<MongoDbWebhookDeliveryResult> deliveryResultStore;
-		private IWebhookNotifier notifier;
+		private IWebhookNotifier<Webhook> notifier;
 
-		private WebhookPayload lastWebhook;
+		private Webhook lastWebhook;
 		private HttpResponseMessage testResponse;
 
 		public WebhookDeliveryResultLoggingTests(ITestOutputHelper outputHelper) : base(outputHelper) {
 			webhookStore = Services.GetService<IWebhookSubscriptionStoreProvider<MongoDbWebhookSubscription>>();
 			deliveryResultStore = Services.GetRequiredService<IWebhookDeliveryResultStoreProvider<MongoDbWebhookDeliveryResult>>();
-			notifier = Services.GetService<IWebhookNotifier>();
+			notifier = Services.GetService<IWebhookNotifier<Webhook>>();
 		}
 
 		protected override void ConfigureWebhookService(WebhookServiceBuilder<MongoDbWebhookSubscription> builder) {
-			builder.ConfigureDelivery(options =>
-				options.SignWebhooks()
-					   .SecondsBeforeTimeOut(TimeOutSeconds))
+			builder
+				//.ConfigureDelivery(options =>
+				//options.SignWebhooks()
+				//	   .SecondsBeforeTimeOut(TimeOutSeconds))
 			.UseSubscriptionManager()
 			.UseMongoDb(options => {
 				options.DatabaseName = "webhooks";
@@ -64,7 +65,7 @@ namespace Deveel.Webhooks {
 				}
 
 				var json = await httpRequest.Content.ReadAsStringAsync();
-				lastWebhook = Newtonsoft.Json.JsonConvert.DeserializeObject<WebhookPayload>(json);
+				lastWebhook = Newtonsoft.Json.JsonConvert.DeserializeObject<Webhook>(json);
 
 				if (testResponse != null)
 					return testResponse;
@@ -122,7 +123,7 @@ namespace Deveel.Webhooks {
 
 			Assert.NotNull(lastWebhook);
 			Assert.Equal("data.created", lastWebhook.EventType);
-			Assert.Equal(notification.Id, lastWebhook.EventId);
+			Assert.Equal(notification.Id, lastWebhook.Id);
 			Assert.Equal(notification.TimeStamp, lastWebhook.TimeStamp);
 
 			var storedResult = await deliveryResultStore.FindByWebhookIdAsync(tenantId, webhookResult.Webhook.Id);

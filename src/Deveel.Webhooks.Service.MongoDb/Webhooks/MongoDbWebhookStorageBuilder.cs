@@ -118,15 +118,16 @@ namespace Deveel.Webhooks {
 			return this;
 		}
 
-		public MongoDbWebhookStorageBuilder<TSubscription> UseDeliveryResultLogger<TResult>()
+		public MongoDbWebhookStorageBuilder<TSubscription> UseDeliveryResultLogger<TWebhook, TResult>()
+			where TWebhook : class, IWebhook
 			where TResult : MongoDbWebhookDeliveryResult {
 
-			Services.AddSingleton<IWebhookDeliveryResultLogger, MongoDbWebhookDeliveryResultLogger<TResult>>();
+			Services.AddSingleton<IWebhookDeliveryResultLogger<TWebhook>, MongoDbWebhookDeliveryResultLogger<TWebhook, TResult>>();
 
 			return this;
 		}
 
 		public MongoDbWebhookStorageBuilder<TSubscription> UseDeliveryResultLogger()
-			=> UseDeliveryResultLogger<MongoDbWebhookDeliveryResult>();
+			=> UseDeliveryResultLogger<Webhook, MongoDbWebhookDeliveryResult>();
 	}
 }

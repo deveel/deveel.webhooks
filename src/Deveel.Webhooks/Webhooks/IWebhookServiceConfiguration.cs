@@ -20,21 +20,6 @@ namespace Deveel.Webhooks {
 	/// </summary>
 	public interface IWebhookServiceConfiguration {
 		/// <summary>
-		/// Gets a set of options to configure the delivery behavior.
-		/// </summary>
-		WebhookDeliveryOptions DeliveryOptions { get; }
-
-		/// <summary>
-		/// Gets a collection of the registered webhook serializers.
-		/// </summary>
-		IWebhookSerializerCollection Serializers { get; }
-
-		/// <summary>
-		/// Gets a collection the registered webhook signers.
-		/// </summary>
-		IWebhookSignerCollection Signers { get; }
-
-		/// <summary>
 		/// Gets a collection of the data factories registered in the service
 		/// </summary>
 		IWebhookDataFactoryCollection DataFactories { get; }

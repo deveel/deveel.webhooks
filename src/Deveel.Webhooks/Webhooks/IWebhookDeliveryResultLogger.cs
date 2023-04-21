@@ -17,7 +17,7 @@ using System.Threading;
 using System.Threading.Tasks;
 
 namespace Deveel.Webhooks {
-	public interface IWebhookDeliveryResultLogger {
-		Task LogResultAsync(string tenantId, IWebhookDeliveryResult result, CancellationToken cancellationToken);
+	public interface IWebhookDeliveryResultLogger<TWebhook> where TWebhook : class {
+		Task LogResultAsync(string tenantId, WebhookDeliveryResult<TWebhook> result, CancellationToken cancellationToken);
 	}
 }

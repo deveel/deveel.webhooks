@@ -30,8 +30,8 @@ namespace Deveel.Webhooks {
 
 			return new ServiceCollection()
 				.AddWebhooks<MongoDbWebhookSubscription>(buidler => {
-				buidler.ConfigureDelivery(options =>
-					options.SignWebhooks());
+					// buidler.ConfigureDelivery((WebhookDeliveryOptions options) => { });
+					// options.SignWebhooks());
 
 				ConfigureWebhookService(buidler);
 			})

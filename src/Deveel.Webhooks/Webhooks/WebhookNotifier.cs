@@ -25,10 +25,10 @@ namespace Deveel.Webhooks {
 	/// <summary>
 	/// The default implementation of the webhook notifier
 	/// </summary>
-	public class WebhookNotifier<TWebhook> : IWebhookNotifier where TWebhook : class, IWebhook {
+	public class WebhookNotifier<TWebhook> : IWebhookNotifier<TWebhook> where TWebhook : class, IWebhook {
 		private readonly IWebhookServiceConfiguration configuration;
 		private readonly IWebhookSubscriptionResolver subscriptionResolver;
-		private readonly IWebhookDeliveryResultLogger deliveryResultLogger;
+		private readonly IWebhookDeliveryResultLogger<TWebhook> deliveryResultLogger;
 		private readonly IWebhookSender<TWebhook> sender;
 		private readonly IWebhookFactory<TWebhook> webhookFactory;
 
@@ -39,7 +39,7 @@ namespace Deveel.Webhooks {
 			IWebhookSender<TWebhook> sender,
 			IWebhookSubscriptionResolver subscriptionResolver,
 			IWebhookFactory<TWebhook> webhookFactory,
-			IWebhookDeliveryResultLogger deliveryResultLogger = null,
+			IWebhookDeliveryResultLogger<TWebhook> deliveryResultLogger = null,
 			ILogger<WebhookNotifier<TWebhook>> logger = null) {
 			this.sender = sender;
 			this.subscriptionResolver = subscriptionResolver;
@@ -96,16 +96,16 @@ namespace Deveel.Webhooks {
 			return await filterEvaluator.MatchesAsync(filterRequest, webhook, cancellationToken);
 		}
 
-		protected virtual Task OnWebhookDeliveryResultAsync(string tenantId, IWebhookSubscription subscription, IWebhook webhook, WebhookDeliveryResult result, CancellationToken cancellationToken) {
+		protected virtual Task OnWebhookDeliveryResultAsync(string tenantId, IWebhookSubscription subscription, IWebhook webhook, WebhookDeliveryResult<TWebhook> result, CancellationToken cancellationToken) {
 			OnWebhookDeliveryResult(tenantId, subscription, webhook, result);
 			return Task.CompletedTask;
 		}
 
-		protected virtual void OnWebhookDeliveryResult(string tenantId, IWebhookSubscription subscription, IWebhook webhook, WebhookDeliveryResult result) {
+		protected virtual void OnWebhookDeliveryResult(string tenantId, IWebhookSubscription subscription, IWebhook webhook, WebhookDeliveryResult<TWebhook> result) {
 
 		}
 
-		protected virtual async Task LogDeliveryResult(string tenantId, IWebhookDeliveryResult deliveryResult, CancellationToken cancellationToken) {
+		protected virtual async Task LogDeliveryResult(string tenantId, WebhookDeliveryResult<TWebhook> deliveryResult, CancellationToken cancellationToken) {
 			try {
 				if (deliveryResultLogger != null)
 					await deliveryResultLogger.LogResultAsync(tenantId, deliveryResult, cancellationToken);
@@ -115,7 +115,7 @@ namespace Deveel.Webhooks {
 			}
 		}
 
-		private void TraceDeliveryResult(WebhookDeliveryResult deliveryResult) {
+		private void TraceDeliveryResult(WebhookDeliveryResult<TWebhook> deliveryResult) {
 			if (!deliveryResult.HasAttempted) {
 				Logger.LogTrace("The delivery was not attempted");
 			} else if (deliveryResult.Successful) {
@@ -128,10 +128,10 @@ namespace Deveel.Webhooks {
 				foreach (var attempt in deliveryResult.Attempts) {
 					if (attempt.Failed) {
 						Logger.LogTrace("Attempt {AttemptNumber} Failed - [{StartDate} - {EndDate}] {StatusCode}: {ErrorMessage}",
-							attempt.Number, attempt.StartedAt, attempt.EndedAt, attempt.ResponseStatusCode, attempt.ResponseMessage);
+							attempt.Number, attempt.StartedAt, attempt.CompletedAt, attempt.ResponseCode, attempt.ResponseMessage);
 					} else {
 						Logger.LogTrace("Attempt {AttemptNumber} Successful - [{StartDate} - {EndDate}] {StatusCode}",
-							attempt.Number, attempt.StartedAt, attempt.EndedAt, attempt.ResponseStatusCode);
+							attempt.Number, attempt.StartedAt, attempt.CompletedAt, attempt.ResponseCode);
 					}
 				}
 			}
@@ -141,8 +141,8 @@ namespace Deveel.Webhooks {
 			return await subscriptionResolver.ResolveSubscriptionsAsync(tenantId, eventInfo.EventType, true, cancellationToken);
 		}
 
-		public virtual async Task<WebhookNotificationResult> NotifyAsync(string tenantId, EventInfo eventInfo, CancellationToken cancellationToken) {
-			var result = new WebhookNotificationResult();
+		public virtual async Task<WebhookNotificationResult<TWebhook>> NotifyAsync(string tenantId, EventInfo eventInfo, CancellationToken cancellationToken) {
+			var result = new WebhookNotificationResult<TWebhook>();
 
 			try {
 				var subscriptions = await ResolveSubscriptionsAsync(tenantId, eventInfo, cancellationToken);
@@ -195,7 +195,7 @@ namespace Deveel.Webhooks {
 
 						await OnWebhookDeliveryErrorAsync(tenantId, subscription, webhook, ex, cancellationToken);
 
-						result.AddDelivery(WebhookDeliveryResult.Fail(webhook));
+						// result.AddDelivery(new WebhookDeliveryResult<TWebhook>(destination, webhook));
 					}
 				}
 
@@ -210,9 +210,11 @@ namespace Deveel.Webhooks {
 			return Task.CompletedTask;
 		}
 
-		protected virtual Task<WebhookDeliveryResult> SendAsync(string tenantId, TWebhook webhook, CancellationToken cancellationToken) {
+		protected virtual Task<WebhookDeliveryResult<TWebhook>> SendAsync(string tenantId, TWebhook webhook, CancellationToken cancellationToken) {
 			try {
-				return sender.SendAsync(webhook, cancellationToken);
+				// TODO: build the destination in fully
+				var destination = new WebhookDestination(webhook.DestinationUrl);
+				return sender.SendAsync(destination, webhook, cancellationToken);
 			} catch (Exception ex) {
 				Logger.LogError(ex, "The webhook sender failed to send a webhook for event {EventType} to tenant {TenantId} because of an error",
 					webhook.EventType, tenantId);

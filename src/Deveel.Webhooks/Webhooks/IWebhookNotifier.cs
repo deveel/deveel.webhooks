@@ -21,7 +21,7 @@ namespace Deveel.Webhooks {
 	/// A service that resolves subscriptions to events, prepares
 	/// and delivers webhooks to the subscribers.
 	/// </summary>
-	public interface IWebhookNotifier {
+	public interface IWebhookNotifier<TWebhook> where TWebhook : class, IWebhook {
 		/// <summary>
 		/// Notifies to the subscribers the occurrence of the
 		/// given event.
@@ -34,6 +34,6 @@ namespace Deveel.Webhooks {
 		/// Returns an object that describes the aggregated final result of 
 		/// the notification process executed.
 		/// </returns>
-		Task<WebhookNotificationResult> NotifyAsync(string tenantId, EventInfo eventInfo, CancellationToken cancellationToken);
+		Task<WebhookNotificationResult<TWebhook>> NotifyAsync(string tenantId, EventInfo eventInfo, CancellationToken cancellationToken);
 	}
 }

@@ -11,35 +11,38 @@ using Microsoft.Extensions.Logging;
 using MongoDB.Bson;
 
 namespace Deveel.Webhooks {
-	public class MongoDbWebhookDeliveryResultLogger<TResult> : IWebhookDeliveryResultLogger
+	public class MongoDbWebhookDeliveryResultLogger<TWebhook, TResult> : IWebhookDeliveryResultLogger<TWebhook>
+		where TWebhook : class, IWebhook
 		where TResult : MongoDbWebhookDeliveryResult {
-		public MongoDbWebhookDeliveryResultLogger(MongoDbWebhookDeliveryResultStoreProvider<TResult> storeProvider, ILogger<MongoDbWebhookDeliveryResultLogger<TResult>> logger) {
+		public MongoDbWebhookDeliveryResultLogger(
+			MongoDbWebhookDeliveryResultStoreProvider<TResult> storeProvider, 
+			ILogger<MongoDbWebhookDeliveryResultLogger<TWebhook, TResult>> logger) {
 			StoreProvider = storeProvider;
 			Logger = logger;
 		}
 
 		protected MongoDbWebhookDeliveryResultStoreProvider<TResult> StoreProvider { get; }
 
-		protected ILogger<MongoDbWebhookDeliveryResultLogger<TResult>> Logger { get; }
+		protected ILogger<MongoDbWebhookDeliveryResultLogger<TWebhook, TResult>> Logger { get; }
 
 		protected virtual TResult CreateNewResult() {
 			return Activator.CreateInstance<TResult>();
 		}
 
-		protected virtual TResult ConvertResult(IWebhookDeliveryResult result) {
+		protected virtual TResult ConvertResult(WebhookDeliveryResult<TWebhook> result) {
 			var obj = CreateNewResult();
 
 			obj.Webhook = ConvertWebhook(result.Webhook);
-			obj.DeliveryAttempts = result.DeliveryAttempts?.Select(ConvertDeliveryAttempt).ToList();
+			obj.DeliveryAttempts = result.Attempts?.Select(ConvertDeliveryAttempt).ToList();
 
 			return obj;
 		}
 
-		private MongoDbWebhookDeliveryAttempt ConvertDeliveryAttempt(IWebhookDeliveryAttempt attempt) {
+		private MongoDbWebhookDeliveryAttempt ConvertDeliveryAttempt(WebhookDeliveryAttempt attempt) {
 			return new MongoDbWebhookDeliveryAttempt {
 				StartedAt = attempt.StartedAt,
-				EndedAt = attempt.EndedAt,
-				ResponseStatusCode = attempt.ResponseStatusCode,
+				EndedAt = attempt.CompletedAt,
+				ResponseStatusCode = attempt.ResponseCode,
 				ResponseMessage = attempt.ResponseMessage
 			};
 		}
@@ -93,7 +96,7 @@ namespace Deveel.Webhooks {
 			return BsonValue.Create(value);
 		}
 
-		public async Task LogResultAsync(string tenantId, IWebhookDeliveryResult result, CancellationToken cancellationToken) {
+		public async Task LogResultAsync(string tenantId, WebhookDeliveryResult<TWebhook> result, CancellationToken cancellationToken) {
 			if (result is null) 
 				throw new ArgumentNullException(nameof(result));
 

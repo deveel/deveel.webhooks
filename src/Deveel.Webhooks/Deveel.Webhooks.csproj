@@ -42,8 +42,9 @@
     <PackageReference Include="Polly.Extensions.Http" Version="3.0.0" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\Deveel.Webhooks.Model\Deveel.Webhooks.Model.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+	  <ProjectReference Include="..\Deveel.Webhooks.Sender.NewtonsoftJson\Deveel.Webhooks.Sender.NewtonsoftJson.csproj" />
+	  <ProjectReference Include="..\Deveel.Webhooks.Sender\Deveel.Webhooks.Sender.csproj" />
+	</ItemGroup>
 
 </Project>

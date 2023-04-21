@@ -32,7 +32,7 @@ namespace Deveel.Webhooks {
 		public IServiceCollection Services { get; }
 
 		internal void AddDefaults() {
-			Services.TryAddScoped<IWebhookNotifier, WebhookNotifier<Webhook>>();
+			Services.TryAddScoped<IWebhookNotifier<Webhook>, WebhookNotifier<Webhook>>();
 			Services.AddScoped<WebhookNotifier<Webhook>>();
 
 			Services.TryAddScoped<IWebhookSender<Webhook>, WebhookSender<Webhook>>();
@@ -43,8 +43,8 @@ namespace Deveel.Webhooks {
 			Services.AddSingleton<IWebhookSigner, Sha256WebhookSigner>();
 			Services.AddSingleton<Sha256WebhookSigner>();
 
-			Services.AddSingleton<IWebhookSerializer, JsonWebhookSerializer>();
-			Services.AddSingleton<JsonWebhookSerializer>();
+			Services.AddSingleton<IWebhookJsonSerializer<Webhook>, NewtonsoftWebhookJsonSerializer<Webhook>>();
+			Services.AddSingleton<NewtonsoftWebhookJsonSerializer<Webhook>>();
 
 			Services.AddScoped<IWebhookServiceConfiguration, WebhookServiceConfiguration>();
 
@@ -52,50 +52,50 @@ namespace Deveel.Webhooks {
 			Services.AddScoped<IMultiTenantWebhookSubscriptionManager<TSubscription>, MultiTenantWebhookSubscriptionManager<TSubscription>>();
 			Services.AddScoped<MultiTenantWebhookSubscriptionManager<TSubscription>>();
 
-			Services.AddOptions<WebhookDeliveryOptions>();
+			// Services.AddOptions<WebhookDeliveryOptions>();
 
 			Services.AddSingleton<IWebhookSubscriptionValidator<TSubscription>, WebhookSubscriptionValidator<TSubscription>>();
 			Services.AddSingleton<IMultiTenantWebhookSubscriptionValidator<TSubscription>, MultiTenantWebhookSubscriptionValidator<TSubscription>>();
 		}
 
-		public WebhookServiceBuilder<TSubscription> ConfigureDelivery(Action<WebhookDeliveryOptions> configure) {
-			if (configure != null)
-				Services.AddOptions<WebhookDeliveryOptions>().Configure(configure);
+		//public WebhookServiceBuilder<TSubscription> ConfigureDelivery(Action<WebhookDeliveryOptions> configure) {
+		//	if (configure != null)
+		//		Services.AddOptions<WebhookDeliveryOptions>().Configure(configure);
 
-			return this;
-		}
+		//	return this;
+		//}
 
-		public WebhookServiceBuilder<TSubscription> ConfigureDelivery(WebhookDeliveryOptions options) {
-			Services.AddSingleton(options);
-			return this;
-		}
+		//public WebhookServiceBuilder<TSubscription> ConfigureDelivery(WebhookDeliveryOptions options) {
+		//	Services.AddSingleton(options);
+		//	return this;
+		//}
 
-		public WebhookServiceBuilder<TSubscription>  ConfigureDelivery(string sectionName) {
-			Services.AddOptions<WebhookDeliveryOptions>()
-				.Configure<IConfiguration>((options, config) => {
-					var section = config.GetSection(sectionName);
-					if (section != null)
-						section.Bind(options);
-				});
+		//public WebhookServiceBuilder<TSubscription>  ConfigureDelivery(string sectionName) {
+		//	Services.AddOptions<WebhookDeliveryOptions>()
+		//		.Configure<IConfiguration>((options, config) => {
+		//			var section = config.GetSection(sectionName);
+		//			if (section != null)
+		//				section.Bind(options);
+		//		});
 
-			return this;
-		}
+		//	return this;
+		//}
 
-		public WebhookServiceBuilder<TSubscription> ConfigureDelivery(Action<IWebhookDeliveryOptionsBuilder> options) {
-			Services
-				.AddOptions<WebhookDeliveryOptions>()
-				.Configure(opts => {
-					var optionsBuilder = new WebhookDeliveryOptionsBuilder(opts);
-					options(optionsBuilder);
-				});
+		//public WebhookServiceBuilder<TSubscription> ConfigureDelivery(Action<IWebhookDeliveryOptionsBuilder> options) {
+		//	Services
+		//		.AddOptions<WebhookDeliveryOptions>()
+		//		.Configure(opts => {
+		//			var optionsBuilder = new WebhookDeliveryOptionsBuilder(opts);
+		//			options(optionsBuilder);
+		//		});
 
-			return this;
-		}
+		//	return this;
+		//}
 
-		public WebhookServiceBuilder<TSubscription> ConfigureDefaultDelivery() {
-			Services.AddOptions<WebhookDeliveryOptions>();
-			return this;
-		}
+		//public WebhookServiceBuilder<TSubscription> ConfigureDefaultDelivery() {
+		//	Services.AddOptions<WebhookDeliveryOptions>();
+		//	return this;
+		//}
 
 		/// <summary>
 		/// Replaces the notifier service with another one.
@@ -105,9 +105,10 @@ namespace Deveel.Webhooks {
 		/// <returns>
 		/// Returns the instance of the builder.
 		/// </returns>
-		public WebhookServiceBuilder<TSubscription> UseNotifier<TNotifier>()
-			where TNotifier : class, IWebhookNotifier {
-			Services.UseService<IWebhookNotifier, TNotifier>();
+		public WebhookServiceBuilder<TSubscription> UseNotifier<TWebhook, TNotifier>()
+			where TWebhook : class, IWebhook
+			where TNotifier : class, IWebhookNotifier<TWebhook> {
+			Services.UseService<IWebhookNotifier<TWebhook>, TNotifier>();
 			return this;
 		}
 
@@ -118,7 +119,7 @@ namespace Deveel.Webhooks {
 		/// <returns></returns>
 		public WebhookServiceBuilder<TSubscription> UseDefaultNotifier<TWebhook>()
 			where TWebhook : class, IWebhook
-			=> UseNotifier<WebhookNotifier<TWebhook>>();
+			=> UseNotifier<TWebhook, WebhookNotifier<TWebhook>>();
 
 		public WebhookServiceBuilder<TSubscription> AddDataFactory<TFactory>(ServiceLifetime lifetime = ServiceLifetime.Scoped)
 			where TFactory : class, IWebhookDataFactory {
@@ -152,18 +153,20 @@ namespace Deveel.Webhooks {
 			where TWebhook : class, IWebhook
 			=> UseSender<WebhookSender<TWebhook>, TWebhook>();
 
-		public WebhookServiceBuilder<TSubscription> AddSerializer<TSerializer>(ServiceLifetime lifetime = ServiceLifetime.Singleton)
-			where TSerializer : class, IWebhookSerializer {
+		public WebhookServiceBuilder<TSubscription> AddSerializer<TWebhook, TSerializer>(ServiceLifetime lifetime = ServiceLifetime.Singleton)
+			where TWebhook : class, IWebhook
+			where TSerializer : class, IWebhookJsonSerializer<TWebhook> {
 			
-			Services.Add(new ServiceDescriptor(typeof(IWebhookSerializer), typeof(TSerializer), lifetime));
+			Services.Add(new ServiceDescriptor(typeof(IWebhookJsonSerializer<TWebhook>), typeof(TSerializer), lifetime));
 			Services.Add(new ServiceDescriptor(typeof(TSerializer), typeof(TSerializer), lifetime));
 
 			return this;
 		}
 
-		public WebhookServiceBuilder<TSubscription> AddSerializer<TSerializer>(TSerializer serializer)
-			where TSerializer : class, IWebhookSerializer {
-			Services.Add(new ServiceDescriptor(typeof(IWebhookSerializer), serializer));
+		public WebhookServiceBuilder<TSubscription> AddSerializer<TWebhook, TSerializer>(TSerializer serializer) 
+			where TWebhook : class, IWebhook
+			where TSerializer : class, IWebhookJsonSerializer<TWebhook> {
+			Services.Add(new ServiceDescriptor(typeof(IWebhookJsonSerializer<TWebhook>), serializer));
 			Services.Add(new ServiceDescriptor(typeof(TSerializer), serializer));
 
 			return this;

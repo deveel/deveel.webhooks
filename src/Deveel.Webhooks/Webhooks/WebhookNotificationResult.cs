@@ -17,14 +17,15 @@ using System.Collections.Generic;
 using System.Linq;
 
 namespace Deveel.Webhooks {
-	public sealed class WebhookNotificationResult : IEnumerable<WebhookDeliveryResult> {
-		private readonly List<WebhookDeliveryResult> deliveryResults;
+	public sealed class WebhookNotificationResult<TWebhook> : IEnumerable<WebhookDeliveryResult<TWebhook>>
+		where TWebhook : class, IWebhook {
+		private readonly List<WebhookDeliveryResult<TWebhook>> deliveryResults;
 
 		public WebhookNotificationResult() {
-			deliveryResults = new List<WebhookDeliveryResult>();
+			deliveryResults = new List<WebhookDeliveryResult<TWebhook>>();
 		}
 
-		public void AddDelivery(WebhookDeliveryResult result) {
+		public void AddDelivery(WebhookDeliveryResult<TWebhook> result) {
 			lock (this) {
 				deliveryResults.Add(result);
 			}
@@ -32,19 +33,19 @@ namespace Deveel.Webhooks {
 
 		public bool HasSuccessful => Successful?.Any() ?? false;
 
-		public IEnumerable<WebhookDeliveryResult> Successful
+		public IEnumerable<WebhookDeliveryResult<TWebhook>> Successful
 			=> deliveryResults.Where(x => x.Successful);
 
 		public bool HasFailed => Failed?.Any() ?? false;
 
-		public IEnumerable<WebhookDeliveryResult> Failed
+		public IEnumerable<WebhookDeliveryResult<TWebhook>> Failed
 			=> deliveryResults.Where(x => !x.Successful);
 
 		public bool IsEmpty => deliveryResults.Count == 0;
 
-		public WebhookDeliveryResult this[string subscriptionId] => deliveryResults.ToDictionary(x => x.Webhook.SubscriptionId, y => y)[subscriptionId];
+		public WebhookDeliveryResult<TWebhook> this[string subscriptionId] => deliveryResults.ToDictionary(x => x.Webhook.SubscriptionId, y => y)[subscriptionId];
 
-		public IEnumerator<WebhookDeliveryResult> GetEnumerator() => deliveryResults.GetEnumerator();
+		public IEnumerator<WebhookDeliveryResult<TWebhook>> GetEnumerator() => deliveryResults.GetEnumerator();
 
 		IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 	}

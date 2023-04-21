@@ -20,7 +20,7 @@ namespace Deveel.Webhooks {
 	/// <summary>
 	/// A service that sends webhooks to the final receivers.
 	/// </summary>
-	public interface IWebhookSender {
+	public interface IWebhookSender<TWebhook> where TWebhook : class {
 		/// <summary>
 		/// Sends a single webhook to the given recipient.
 		/// </summary>
@@ -30,6 +30,6 @@ namespace Deveel.Webhooks {
 		/// Returns an object that describes the final result of
 		/// the delivery operation.
 		/// </returns>
-		Task<WebhookDeliveryResult> SendAsync(IWebhook webhook, CancellationToken cancellationToken);
+		Task<WebhookDeliveryResult> SendAsync(TWebhook webhook, CancellationToken cancellationToken);
 	}
 }

@@ -32,11 +32,13 @@ namespace Deveel.Webhooks {
 		public IServiceCollection Services { get; }
 
 		internal void AddDefaults() {
-			Services.TryAddScoped<IWebhookNotifier, WebhookNotifier>();
-			Services.AddScoped<WebhookNotifier>();
+			Services.TryAddScoped<IWebhookNotifier, WebhookNotifier<Webhook>>();
+			Services.AddScoped<WebhookNotifier<Webhook>>();
 
-			Services.TryAddScoped<IWebhookSender, WebhookSender>();
-			Services.AddScoped<WebhookSender>();
+			Services.TryAddScoped<IWebhookSender<Webhook>, WebhookSender<Webhook>>();
+			Services.AddScoped<WebhookSender<Webhook>>();
+
+			Services.AddSingleton<IWebhookFactory<Webhook>, DefaultWehbookFactory>();
 
 			Services.AddSingleton<IWebhookSigner, Sha256WebhookSigner>();
 			Services.AddSingleton<Sha256WebhookSigner>();
@@ -114,8 +116,9 @@ namespace Deveel.Webhooks {
 		/// </summary>
 		/// <param name="builder"></param>
 		/// <returns></returns>
-		public WebhookServiceBuilder<TSubscription> UseNotifier()
-			=> UseNotifier<WebhookNotifier>();
+		public WebhookServiceBuilder<TSubscription> UseDefaultNotifier<TWebhook>()
+			where TWebhook : class, IWebhook
+			=> UseNotifier<WebhookNotifier<TWebhook>>();
 
 		public WebhookServiceBuilder<TSubscription> AddDataFactory<TFactory>(ServiceLifetime lifetime = ServiceLifetime.Scoped)
 			where TFactory : class, IWebhookDataFactory {
@@ -138,14 +141,16 @@ namespace Deveel.Webhooks {
 			return this;
 		}
 
-		public WebhookServiceBuilder<TSubscription> UseSender<TSender>()
-			where TSender : class, IWebhookSender {
-			Services.UseService<IWebhookSender, TSender>();
+		public WebhookServiceBuilder<TSubscription> UseSender<TSender, TWebhook>()
+			where TSender : class, IWebhookSender<TWebhook>
+			where TWebhook : class {
+			Services.UseService<IWebhookSender<TWebhook>, TSender>();
 			return this;
 		}
 
-		public WebhookServiceBuilder<TSubscription> UseDefaultSender()
-			=> UseSender<WebhookSender>();
+		public WebhookServiceBuilder<TSubscription> UseDefaultSender<TWebhook>()
+			where TWebhook : class, IWebhook
+			=> UseSender<WebhookSender<TWebhook>, TWebhook>();
 
 		public WebhookServiceBuilder<TSubscription> AddSerializer<TSerializer>(ServiceLifetime lifetime = ServiceLifetime.Singleton)
 			where TSerializer : class, IWebhookSerializer {

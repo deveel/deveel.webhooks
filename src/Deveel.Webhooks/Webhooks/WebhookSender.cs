@@ -33,7 +33,7 @@ namespace Deveel.Webhooks {
 	/// A default implementation of the <see cref="IWebhookSender"/> service
 	/// </summary>
 	/// <seealso cref="IWebhookSender"/>
-	public class WebhookSender : IWebhookSender, IDisposable {
+	public class WebhookSender<TWebhook> : IWebhookSender<TWebhook>, IDisposable where TWebhook : class, IWebhook {
 		private readonly HttpClient httpClient;
 		private readonly bool disposeClient;
 		private readonly IWebhookServiceConfiguration configuration;
@@ -59,28 +59,28 @@ namespace Deveel.Webhooks {
 
 		public WebhookSender(HttpClient httpClient,
 			IWebhookServiceConfiguration configuration,
-			ILogger<WebhookSender> logger)
+			ILogger<WebhookSender<TWebhook>> logger)
 			: this(httpClient, false, configuration, logger) {
 		}
 
 		public WebhookSender(HttpClient httpClient, IWebhookServiceConfiguration configuration)
-			: this(httpClient, configuration, NullLogger<WebhookSender>.Instance) {
+			: this(httpClient, configuration, NullLogger<WebhookSender<TWebhook>>.Instance) {
 		}
 
-		public WebhookSender(IWebhookServiceConfiguration configuration, ILogger<WebhookSender> logger)
+		public WebhookSender(IWebhookServiceConfiguration configuration, ILogger<WebhookSender<TWebhook>> logger)
 			: this(new HttpClient(), true, configuration, logger) {
 		}
 
 		public WebhookSender(IWebhookServiceConfiguration configuration)
-			: this(new HttpClient(), configuration, NullLogger<WebhookSender>.Instance) {
+			: this(new HttpClient(), configuration, NullLogger<WebhookSender<TWebhook>>.Instance) {
 		}
 
-		public WebhookSender(IHttpClientFactory httpClientFactory, IWebhookServiceConfiguration configuration, ILogger<WebhookSender> logger)
+		public WebhookSender(IHttpClientFactory httpClientFactory, IWebhookServiceConfiguration configuration, ILogger<WebhookSender<TWebhook>> logger)
 			: this(httpClientFactory.CreateClient(), false, configuration, logger) {
 		}
 
 		public WebhookSender(IHttpClientFactory httpClientFactory, IWebhookServiceConfiguration configuration)
-			: this(httpClientFactory, configuration, NullLogger<WebhookSender>.Instance) {
+			: this(httpClientFactory, configuration, NullLogger<WebhookSender<TWebhook>>.Instance) {
 		}
 
 		#endregion
@@ -148,7 +148,7 @@ namespace Deveel.Webhooks {
 			return new HttpRequestMessage(HttpMethod.Post, webhook.DestinationUrl);
 		}
 
-		private async Task<HttpRequestMessage> BuildRequestAsync(IWebhook webhook, CancellationToken cancellationToken) {
+		private async Task<HttpRequestMessage> BuildRequestAsync(TWebhook webhook, CancellationToken cancellationToken) {
 			try {
 				var request = CreateWebhookRequestMessage(webhook);
 
@@ -177,7 +177,7 @@ namespace Deveel.Webhooks {
 		}
 
 		/// <inheritdoc />
-		public async Task<WebhookDeliveryResult> SendAsync(IWebhook webhook, CancellationToken cancellationToken) {
+		public async Task<WebhookDeliveryResult> SendAsync(TWebhook webhook, CancellationToken cancellationToken) {
 			try {
 				var result = new WebhookDeliveryResult(webhook);
 

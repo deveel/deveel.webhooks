@@ -25,48 +25,28 @@ namespace Deveel.Webhooks {
 	/// <summary>
 	/// The default implementation of the webhook notifier
 	/// </summary>
-	public class WebhookNotifier : IWebhookNotifier {
+	public class WebhookNotifier<TWebhook> : IWebhookNotifier where TWebhook : class, IWebhook {
 		private readonly IWebhookServiceConfiguration configuration;
 		private readonly IWebhookSubscriptionResolver subscriptionResolver;
 		private readonly IWebhookDeliveryResultLogger deliveryResultLogger;
-		private readonly IWebhookSender sender;
+		private readonly IWebhookSender<TWebhook> sender;
+		private readonly IWebhookFactory<TWebhook> webhookFactory;
 
 		#region .ctor
 
 		public WebhookNotifier(
 			IWebhookServiceConfiguration configuration,
-			IWebhookSender sender,
+			IWebhookSender<TWebhook> sender,
 			IWebhookSubscriptionResolver subscriptionResolver,
-			IWebhookDeliveryResultLogger deliveryResultLogger,
-			ILogger<WebhookNotifier> logger) {
+			IWebhookFactory<TWebhook> webhookFactory,
+			IWebhookDeliveryResultLogger deliveryResultLogger = null,
+			ILogger<WebhookNotifier<TWebhook>> logger = null) {
 			this.sender = sender;
 			this.subscriptionResolver = subscriptionResolver;
+			this.webhookFactory = webhookFactory;
 			this.configuration = configuration;
 			this.deliveryResultLogger = deliveryResultLogger;
-			Logger = logger;
-		}
-
-		public WebhookNotifier(
-			IWebhookServiceConfiguration configuration,
-			IWebhookSender sender,
-			IWebhookSubscriptionResolver subscriptionResolver,
-			ILogger<WebhookNotifier> logger)
-			: this(configuration, sender, subscriptionResolver, null, logger) {
-		}
-
-		public WebhookNotifier(
-			IWebhookServiceConfiguration configuration,
-			IWebhookSender sender,
-			IWebhookSubscriptionResolver subscriptionResolver,
-			IWebhookDeliveryResultLogger deliveryResultLogger)
-			: this(configuration, sender, subscriptionResolver, deliveryResultLogger, NullLogger<WebhookNotifier>.Instance) {
-		}
-
-		public WebhookNotifier(
-			IWebhookServiceConfiguration configuration,
-			IWebhookSender sender,
-			IWebhookSubscriptionResolver subscriptionResolver)
-			: this(configuration, sender, subscriptionResolver, (IWebhookDeliveryResultLogger) null) {
+			Logger = logger ?? NullLogger<WebhookNotifier<TWebhook>>.Instance;
 		}
 
 		#endregion
@@ -230,7 +210,7 @@ namespace Deveel.Webhooks {
 			return Task.CompletedTask;
 		}
 
-		protected virtual Task<WebhookDeliveryResult> SendAsync(string tenantId, IWebhook webhook, CancellationToken cancellationToken) {
+		protected virtual Task<WebhookDeliveryResult> SendAsync(string tenantId, TWebhook webhook, CancellationToken cancellationToken) {
 			try {
 				return sender.SendAsync(webhook, cancellationToken);
 			} catch (Exception ex) {
@@ -240,7 +220,7 @@ namespace Deveel.Webhooks {
 			}
 		}
 
-		protected virtual async Task<IWebhook> CreateWebhook(IWebhookSubscription subscription, EventInfo eventInfo, CancellationToken cancellationToken) {
+		protected virtual async Task<TWebhook> CreateWebhook(IWebhookSubscription subscription, EventInfo eventInfo, CancellationToken cancellationToken) {
 			object data;
 
 			try {
@@ -256,45 +236,52 @@ namespace Deveel.Webhooks {
 				return null;
 			}
 
-			return new Webhook {
-				SubscriptionId = subscription.SubscriptionId,
-				Name = subscription.Name,
-				EventType = eventInfo.EventType,
-				DestinationUrl = subscription.DestinationUrl,
-				Headers = subscription.Headers == null
-					? null
-					: new Dictionary<string, string>(subscription.Headers),
-				Data = data,
-				Secret = subscription.Secret,
+			var newEvent = new EventInfo(eventInfo.EventType, data) { 
 				Id = eventInfo.Id,
 				TimeStamp = eventInfo.TimeStamp
 			};
+
+			return await webhookFactory.CreateAsync(subscription, newEvent, cancellationToken);
+
+			//return new Webhook {
+			//	SubscriptionId = subscription.SubscriptionId,
+			//	Name = subscription.Name,
+			//	EventType = eventInfo.EventType,
+			//	DestinationUrl = subscription.DestinationUrl,
+			//	Headers = subscription.Headers == null
+			//		? null
+			//		: new Dictionary<string, string>(subscription.Headers),
+			//	Data = data,
+			//	Secret = subscription.Secret,
+			//	Id = eventInfo.Id,
+			//	TimeStamp = eventInfo.TimeStamp
+			//};
 		}
 
-		#region Webhook
+		//#region Webhook
 
-		class Webhook : IWebhook {
-			public string Name { get; set; }
+		//class Webhook : IWebhook {
+		//	public string Name { get; set; }
 
-			public string EventType { get; set; }
+		//	public string EventType { get; set; }
 
-			public string DestinationUrl { get; set; }
+		//	public string DestinationUrl { get; set; }
 
-			public string Secret { get; set; }
+		//	public string Secret { get; set; }
 
-			public IDictionary<string, string> Headers { get; set; }
+		//	public IDictionary<string, string> Headers { get; set; }
 
-			public string Id { get; set; }
+		//	public string Id { get; set; }
 
-			public DateTimeOffset TimeStamp { get; set; }
+		//	public DateTimeOffset TimeStamp { get; set; }
 
-			public object Data { get; set; }
+		//	public object Data { get; set; }
 
-			public string SubscriptionId { get; set; }
+		//	public string SubscriptionId { get; set; }
 
-			public string Format { get; set; }
-		}
+		//	public string Format { get; set; }
+		//}
 
-		#endregion
+		//#endregion
 	}
 }

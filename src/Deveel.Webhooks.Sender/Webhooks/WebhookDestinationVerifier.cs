@@ -185,7 +185,7 @@ namespace Deveel.Webhooks {
 		/// <exception cref="WebhookVerificationException">
 		/// Thrown when an error occurs while verifying the destination.
 		/// </exception>
-		public virtual async Task<bool> VerifyDestinationAsync(WebhookDestination destination, CancellationToken cancellationToken) {
+		public virtual async Task<DestinationVerificationResult> VerifyDestinationAsync(WebhookDestination destination, CancellationToken cancellationToken) {
 			try {
 				if (!(destination.Verify ?? false) ||
 					destination.Verification == null ||
@@ -206,9 +206,14 @@ namespace Deveel.Webhooks {
 
 				// TODO: configure the expected status code
 				if (capture.Outcome == OutcomeType.Successful) {
-					return (int)capture.Result < 400;
+					var httpStatusCode = (int)capture.Result;
+
+					if (httpStatusCode < 400)
+						return DestinationVerificationResult.Success(httpStatusCode);
+
+					return DestinationVerificationResult.Failed(httpStatusCode);
 				} else if (capture.FinalException is HttpRequestException error) {
-					return false;
+					return DestinationVerificationResult.Failed(error.StatusCode == null ? 0 : (int)error.StatusCode);
 				} else if (capture.FinalException is WebhookVerificationException) {
 					throw capture.FinalException;
 				} else {

@@ -32,6 +32,6 @@ namespace Deveel.Webhooks {
         /// Returns <c>true</c> if the destination is valid and reachable,
         /// otherwise it returns <c>false</c>.
         /// </returns>
-        Task<bool> VerifyDestinationAsync(WebhookDestination destination, CancellationToken cancellationToken);
+        Task<DestinationVerificationResult> VerifyDestinationAsync(WebhookDestination destination, CancellationToken cancellationToken = default);
     }
 }

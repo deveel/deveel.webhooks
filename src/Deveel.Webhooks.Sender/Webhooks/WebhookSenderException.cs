@@ -28,5 +28,11 @@ namespace Deveel.Webhooks {
         /// <inheritdoc/>
         public WebhookSenderException(string? message, Exception? innerException) : base(message, innerException) {
 		}
+
+		/// <summary>
+		/// Gets the status code of the HTTP response if
+		/// the exception is caused by a <see cref="HttpRequestException"/>.
+		/// </summary>
+		public int? StatusCode => (int?) (InnerException as HttpRequestException)?.StatusCode;
 	}
 }

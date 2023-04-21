@@ -88,6 +88,9 @@ namespace Deveel.Webhooks {
 		private IWebhookSender<TWebhook> GetSender<TWebhook>() where TWebhook : class
 			=> serviceScope.ServiceProvider.GetRequiredService<IWebhookSender<TWebhook>>();
 
+		private IWebhookDestinationVerifier<TWebhook> GetVerifier<TWebhook>() where TWebhook : class
+			=> serviceScope.ServiceProvider.GetRequiredService<IWebhookDestinationVerifier<TWebhook>>();
+
 		[Fact]
 		public async Task SendWebhook() {
 			var sender = GetSender<TestWebhook>();
@@ -234,8 +237,8 @@ namespace Deveel.Webhooks {
         }
 
 		[Fact]
-		public async Task SendWebhook_ValidReceiver() {
-            var sender = GetSender<TestWebhook>();
+		public async Task Validate_ValidReceiver() {
+            var sender = GetVerifier<TestWebhook>();
 
             var webhook = new TestWebhook {
                 Id = "123",
@@ -251,18 +254,14 @@ namespace Deveel.Webhooks {
 					};
 				});
 
-            var result = await sender.SendAsync(destination, webhook);
-            Assert.NotNull(result);
-            Assert.True(result.Successful);
-            Assert.Equal(1, result.AttemptCount);
+            var result = await sender.VerifyDestinationAsync(destination);
 
-            Assert.NotNull(lastRequest);
-            Assert.NotNull(lastWebhook);
+			Assert.True(result.Successful);
         }
 
 		[Fact]
-		public async Task SendWebhook_InvalidReceiverToken() {
-			var sender = GetSender<TestWebhook>();
+		public async Task Validate_InvalidReceiverToken() {
+			var sender = GetVerifier<TestWebhook>();
 
 			var webhook = new TestWebhook {
 				Id = "123",
@@ -278,17 +277,16 @@ namespace Deveel.Webhooks {
 					};
 				});
 
-			var result = await Assert.ThrowsAsync<WebhookVerificationException>(() => sender.SendAsync(destination, webhook));
+			var result = await sender.VerifyDestinationAsync(destination);
 
-			Assert.NotNull(result);
-
-			Assert.Null(lastRequest);
-			Assert.Null(lastWebhook);
+			Assert.False(result.Successful);
+			Assert.NotNull(result.StatusCode);
+			Assert.Equal(401, result.StatusCode);
 		}
 
 		[Fact]
-		public async Task SendWebhook_InvalidReceiverAddress() {
-			var sender = GetSender<TestWebhook>();
+		public async Task Verify_InvalidReceiverAddress() {
+			var sender = GetVerifier<TestWebhook>();
 
 			var webhook = new TestWebhook {
 				Id = "123",
@@ -304,12 +302,11 @@ namespace Deveel.Webhooks {
 					};
 				});
 
-			var result = await Assert.ThrowsAsync<WebhookVerificationException>(() => sender.SendAsync(destination, webhook));
+			var result = await sender.VerifyDestinationAsync(destination);
 
-			Assert.NotNull(result);
-
-			Assert.Null(lastRequest);
-			Assert.Null(lastWebhook);
+			Assert.False(result.Successful);
+			Assert.NotNull(result.StatusCode);
+			Assert.Equal(404, result.StatusCode);
 		}
 
 

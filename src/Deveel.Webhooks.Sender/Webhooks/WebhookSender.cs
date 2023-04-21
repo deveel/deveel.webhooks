@@ -195,31 +195,6 @@ namespace Deveel.Webhooks {
             return signer.SignWebhook(jsonBody, secret);
         }
 
-        /// <summary>
-        /// Verifies that the receiver is valid and can receive webhooks.
-        /// </summary>
-		/// <param name="destination">
-		/// The webhook receiver to verify.
-		/// </param>
-        /// <param name="cancellationToken">
-        /// A cancellation token that can be used to cancel the operation.
-        /// </param>
-        /// <returns>
-        /// Returns <c>true</c> if the receiver is valid and can receive webhooks,
-        /// </returns>
-        /// <exception cref="NotSupportedException">
-        /// Thrown if the verification is not supported by the sender.
-        /// </exception>
-        /// <exception cref="WebhookVerificationException">
-        /// Thrown if the verification failed through an unhandled error.
-        /// </exception>
-        protected virtual Task<bool> VerifyDestinationAsync(WebhookDestination destination, CancellationToken cancellationToken) {
-			if (verifier == null)
-				throw new NotSupportedException("No verification service is available");
-
-			return verifier.VerifyDestinationAsync(destination, cancellationToken);
-		}
-
 		/// <summary>
 		/// Serializes the given webhook to a JSON string.
 		/// </summary>
@@ -533,11 +508,6 @@ namespace Deveel.Webhooks {
 		/// The general behavior of this implementation is as follows:
 		/// <list type="number">
 		/// <item>
-		/// If the verification of the receiver is enable, either through the destination specification itself
-		/// (see <see cref="WebhookDestination.Verify"/>) or through the sender configuration (see <see cref="WebhookSenderOptions.VerifyReceivers"/>),
-		/// the sender attempts to verify the receiver using the <see cref="VerifyDestinationAsync(WebhookDestination, CancellationToken)"/> method.
-		/// </item>
-		/// <item>
 		/// The sender attempts to send the webhook to the destination, retrying for so many times as specified in the destination:
 		/// a first attempt is always made, and then the number of retries specified in the destination specification
 		/// (<see cref="WebhookDestination.Retry"/>) or from the sender configuration (see <see cref="WebhookSenderOptions.Retry"/>).
@@ -551,14 +521,6 @@ namespace Deveel.Webhooks {
 		public virtual async Task<WebhookDeliveryResult<TWebhook>> SendAsync(WebhookDestination receiver, TWebhook webhook, CancellationToken cancellationToken) {
 			try {
 				var destination = CreateDestination(receiver);
-
-				// TODO: should we really verify the destination for every send?
-				if (destination.Verify ?? false) {
-					var verified = await VerifyDestinationAsync(destination, cancellationToken);
-
-					if (!verified)
-                        throw new WebhookVerificationException("The destination is not valid");
-				}
 
 				var result = new WebhookDeliveryResult<TWebhook>(destination, webhook);
 

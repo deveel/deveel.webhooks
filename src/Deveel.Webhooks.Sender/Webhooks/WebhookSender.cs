@@ -327,8 +327,7 @@ namespace Deveel.Webhooks {
 		private WebhookDestination CreateDestination(WebhookDestination source) {
 			var result = new WebhookDestination(source.Url) {
 				Sign = source.Sign,
-				Headers = new Dictionary<string, string>(),
-				Verify = source.Verify ?? SenderOptions.VerifyReceivers
+				Headers = new Dictionary<string, string>()
 			};
 
 			if (SenderOptions.DefaultHeaders != null) {

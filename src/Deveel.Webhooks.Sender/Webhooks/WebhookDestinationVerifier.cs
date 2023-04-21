@@ -187,8 +187,7 @@ namespace Deveel.Webhooks {
 		/// </exception>
 		public virtual async Task<DestinationVerificationResult> VerifyDestinationAsync(WebhookDestination destination, CancellationToken cancellationToken) {
 			try {
-				if (!(destination.Verify ?? false) ||
-					destination.Verification == null ||
+				if (destination.Verification == null ||
 					destination.Verification.Parameters == null)
 					throw new WebhookVerificationException("The destination is not configured to be verified");
 

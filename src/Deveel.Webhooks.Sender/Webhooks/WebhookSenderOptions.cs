@@ -55,13 +55,5 @@ namespace Deveel.Webhooks {
 		/// </summary>
 		public WebhookSenderSignatureOptions Signature { get; set; } 
 			= new WebhookSenderSignatureOptions();
-
-		/// <summary>
-		/// Gets or sets a value indicating whether the sender should
-		/// by default verify the validity of the receivers before sending
-		/// any webhook to them. This value is overridden by any specification
-		/// in the <see cref="WebhookDestination.Verify"/>
-		/// </summary>
-		public bool? VerifyReceivers { get; set; }
 	}
 }

@@ -78,12 +78,6 @@ namespace Deveel.Webhooks {
 		public Uri Url { get; }
 
 		/// <summary>
-		/// Gets or sets a value indicating whether the receiver
-		/// should be verified before attempting the delivery of a webhook.
-		/// </summary>
-		public bool? Verify { get; set; }
-
-		/// <summary>
 		/// Gets or sets the options for the verification of the destination
 		/// </summary>
 		public WebhookDestinationVerificationOptions? Verification { get; set; } 
@@ -195,7 +189,6 @@ namespace Deveel.Webhooks {
 		/// Thrown if the <paramref name="options"/> is <c>null</c>.
 		/// </exception>
 		public WebhookDestination WithVerification(WebhookDestinationVerificationOptions options) {
-			Verify = true;
 			Verification = options ?? throw new ArgumentNullException(nameof(options));
             return this;
 		}

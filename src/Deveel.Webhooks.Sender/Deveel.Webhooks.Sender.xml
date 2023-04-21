@@ -514,12 +514,6 @@
             Gets the absolute URL of the destination.
             </summary>
         </member>
-        <member name="P:Deveel.Webhooks.WebhookDestination.Verify">
-            <summary>
-            Gets or sets a value indicating whether the receiver
-            should be verified before attempting the delivery of a webhook.
-            </summary>
-        </member>
         <member name="P:Deveel.Webhooks.WebhookDestination.Verification">
             <summary>
             Gets or sets the options for the verification of the destination
@@ -1529,14 +1523,6 @@
             Gets or sets the options for the signature of the webhooks. Any
             specification in the <see cref="P:Deveel.Webhooks.WebhookDestination.Signature"/>
             will override the value of these configurations.
-            </summary>
-        </member>
-        <member name="P:Deveel.Webhooks.WebhookSenderOptions.VerifyReceivers">
-            <summary>
-            Gets or sets a value indicating whether the sender should
-            by default verify the validity of the receivers before sending
-            any webhook to them. This value is overridden by any specification
-            in the <see cref="P:Deveel.Webhooks.WebhookDestination.Verify"/>
             </summary>
         </member>
         <member name="T:Deveel.Webhooks.WebhookSenderSignatureOptions">

@@ -1,4 +1,7 @@
-﻿using Newtonsoft.Json;
+﻿// Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+#pragma warning disable CS8618
+
+using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
 namespace Deveel.Webhooks.Model {

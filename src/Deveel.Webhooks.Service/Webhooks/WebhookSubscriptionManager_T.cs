@@ -1,4 +1,4 @@
-﻿// Copyright 2022 Deveel
+﻿// Copyright 2022-2023 Deveel
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -25,7 +25,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 using static System.Formats.Asn1.AsnWriter;
 
 namespace Deveel.Webhooks {
-	public class WebhookSubscriptionManager<TSubscription> : IWebhookSubscriptionManager<TSubscription>
+	public class WebhookSubscriptionManager<TSubscription>
 		where TSubscription : class, IWebhookSubscription {
 
 		private readonly IWebhookSubscriptionFactory<TSubscription> subscriptionFactory;

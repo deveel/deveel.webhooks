@@ -1,4 +1,4 @@
-﻿// Copyright 2022 Deveel
+﻿// Copyright 2022-2023 Deveel
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -13,39 +13,110 @@
 // limitations under the License.
 
 using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
+using System.Collections.Concurrent;
+using System.Collections.ObjectModel;
 
 namespace Deveel.Webhooks {
-	public sealed class WebhookNotificationResult : IEnumerable<WebhookDeliveryResult> {
-		private readonly List<WebhookDeliveryResult> deliveryResults;
+	/// <summary>
+	/// Repsents an aggregated result of the notification of an event.
+	/// </summary>
+	/// <typeparam name="TWebhook">
+	/// The type of the webhook notified.
+	/// </typeparam>
+	public sealed class WebhookNotificationResult<TWebhook> : IEnumerable<KeyValuePair<string, IList<WebhookDeliveryResult<TWebhook>>>>
+		where TWebhook : class {
+		private readonly ConcurrentDictionary<string, IList<WebhookDeliveryResult<TWebhook>>> deliveryResults;
 
-		public WebhookNotificationResult() {
-			deliveryResults = new List<WebhookDeliveryResult>();
+		/// <summary>
+		/// Constructs a notification result for the given event.
+		/// </summary>
+		/// <param name="eventInfo">
+		/// The information of the event that was notified through webhooks.
+		/// </param>
+		/// <exception cref="ArgumentNullException">
+		/// Thrown when the given <paramref name="eventInfo"/> is <c>null</c>.
+		/// </exception>
+		public WebhookNotificationResult(EventInfo eventInfo) {
+			deliveryResults = new ConcurrentDictionary<string, IList<WebhookDeliveryResult<TWebhook>>>();
+			EventInfo = eventInfo;
 		}
 
-		public void AddDelivery(WebhookDeliveryResult result) {
+		/// <summary>
+		/// Gets the information of the event that was notified.
+		/// </summary>
+		public EventInfo EventInfo { get; }
+
+		/// <summary>
+		/// Adds a delivery result for the given subscription.
+		/// </summary>
+		/// <param name="subscriptionId">
+		/// The identifier of the subscription that was notified.
+		/// </param>
+		/// <param name="result">
+		/// The result of the delivery of the notification.
+		/// </param>
+		public void AddDelivery(string subscriptionId, WebhookDeliveryResult<TWebhook> result) {
 			lock (this) {
-				deliveryResults.Add(result);
+				deliveryResults.AddOrUpdate(subscriptionId, new List<WebhookDeliveryResult<TWebhook>> { result }, (s, list) => {
+					list.Add(result);
+					return list;
+				});
 			}
 		}
 
-		public bool HasSuccessful => Successful?.Any() ?? false;
-
-		public IEnumerable<WebhookDeliveryResult> Successful
-			=> deliveryResults.Where(x => x.Successful);
-
-		public bool HasFailed => Failed?.Any() ?? false;
-
-		public IEnumerable<WebhookDeliveryResult> Failed
-			=> deliveryResults.Where(x => !x.Successful);
-
-		public bool IsEmpty => deliveryResults.Count == 0;
-
-		public WebhookDeliveryResult this[string subscriptionId] => deliveryResults.ToDictionary(x => x.Webhook.SubscriptionId, y => y)[subscriptionId];
-
-		public IEnumerator<WebhookDeliveryResult> GetEnumerator() => deliveryResults.GetEnumerator();
+		/// <inheritdoc/>
+		public IEnumerator<KeyValuePair<string, IList<WebhookDeliveryResult<TWebhook>>>> GetEnumerator()
+			=> deliveryResults.GetEnumerator();
 
 		IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
+		/// <summary>
+		/// Gets a value indicating if the notification has any 
+		/// successful deliveries
+		/// </summary>
+		public bool HasSuccessful => Successful?.Any() ?? false;
+
+		/// <summary>
+		/// Gets the list of successful deliveries.
+		/// </summary>
+		public IEnumerable<KeyValuePair<string, IList<WebhookDeliveryResult<TWebhook>>>> Successful
+			=> deliveryResults.Where(x => x.Value.Any(y => y.Successful));
+
+		/// <summary>
+		/// Gets a value indicating if the notification has any
+		/// deliveries that failed.
+		/// </summary>
+		public bool HasFailed => Failed?.Any() ?? false;
+
+		/// <summary>
+		/// Gets the list of deliveries that failed.
+		/// </summary>
+		public IEnumerable<KeyValuePair<string, IList<WebhookDeliveryResult<TWebhook>>>> Failed
+			=> deliveryResults.Where(x => x.Value.All(y => !y.Successful));
+
+		/// <summary>
+		/// Gets a value indicating if the notification has any 
+		/// deliveries at all
+		/// </summary>
+		public bool IsEmpty => deliveryResults.Count == 0;
+
+		/// <summary>
+		/// Gets the list of delivery results for the given subscription.
+		/// </summary>
+		/// <param name="subscriptionId">
+		/// The identifier of the subscription.
+		/// </param>
+		/// <returns>
+		/// Returns a list of <see cref="WebhookDeliveryResult{TWebhook}"/> for the given
+		/// subscription, if any.
+		/// </returns>
+		public IReadOnlyList<WebhookDeliveryResult<TWebhook>>? this[string subscriptionId] {
+			get {
+				if (!deliveryResults.TryGetValue(subscriptionId, out var results))
+					return null;
+
+				return new ReadOnlyCollection<WebhookDeliveryResult<TWebhook>>(results);
+			}
+		}
 	}
 }

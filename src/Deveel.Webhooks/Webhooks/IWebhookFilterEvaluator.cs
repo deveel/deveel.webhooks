@@ -1,4 +1,4 @@
-﻿// Copyright 2022 Deveel
+﻿// Copyright 2022-2023 Deveel
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ namespace Deveel.Webhooks {
 	/// Provides a contract to evaluate filters of webhook
 	/// subscriptions
 	/// </summary>
-	public interface IWebhookFilterEvaluator {
+	public interface IWebhookFilterEvaluator<TWebhook> where TWebhook : class {
 		/// <summary>
 		/// Gets the format of the field handled
 		/// </summary>
@@ -40,6 +40,6 @@ namespace Deveel.Webhooks {
 		/// match the conditions given against the provided webhook instance,
 		/// <strong>false</strong> otherwise.
 		/// </returns>
-		Task<bool> MatchesAsync(WebhookFilterRequest filterRequest, IWebhook webhook, CancellationToken cancellationToken);
+		Task<bool> MatchesAsync(WebhookSubscriptionFilter filterRequest, TWebhook webhook, CancellationToken cancellationToken);
 	}
 }

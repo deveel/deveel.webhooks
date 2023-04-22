@@ -1,4 +1,4 @@
-﻿// Copyright 2022 Deveel
+﻿// Copyright 2022-2023 Deveel
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,69 +12,73 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using System.Collections.Generic;
 using System.Linq.Dynamic.Core;
 using System.Linq.Expressions;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Deveel.Webhooks {
-	class LinqWebhookFilterEvaluator : IWebhookFilterEvaluator {
-		public string Format => "linq";
+	public sealed class LinqWebhookFilterEvaluator<TWebhook> : IWebhookFilterEvaluator<TWebhook> where TWebhook : class {
+		private readonly IDictionary<string, Func<object, bool>> filterCache;
+		private readonly IWebhookJsonSerializer<TWebhook> jsonSerializer;
 
-		private Func<IWebhook, bool> Compile(IEnumerable<string> filters) {
-			Func<IWebhook, bool> evalFilter = null;
-			bool empty = true;
-
-			foreach (var filter in filters) {
-				if (WebhookFilter.IsWildcard(filter)) {
-					evalFilter = hook => true;
-					break;
-				} else {
-					var config = ParsingConfig.Default;
-					var parameters = new[] {
-						Expression.Parameter(typeof(IWebhook), "hook")
-					};
-
-					var compiled = (Func<IWebhook, bool>)DynamicExpressionParser.ParseLambda(config, parameters, typeof(bool), filter).Compile();
-					if (evalFilter == null) {
-						evalFilter = compiled;
-					} else {
-						var prev = (Func<IWebhook, bool>)evalFilter.Clone();
-						evalFilter = hook => prev(hook) && compiled(hook);
-					}
-				}
-
-				empty = false;
-			}
-
-			if (empty || evalFilter == null)
-				evalFilter = hook => true;
-
-			return evalFilter;
+		public LinqWebhookFilterEvaluator(IWebhookJsonSerializer<TWebhook> jsonSerializer) {
+			filterCache = new Dictionary<string, Func<object, bool>>();
+			this.jsonSerializer = jsonSerializer;
 		}
 
-		public Task<bool> MatchesAsync(WebhookFilterRequest request, IWebhook webhook, CancellationToken cancellationToken) {
-			if (request is null)
-				throw new ArgumentNullException(nameof(request));
+		string IWebhookFilterEvaluator<TWebhook>.Format => "linq";
+
+		private Func<object, bool> Compile(Type objType, string filter) {
+			if (filter == null)
+				throw new ArgumentNullException(nameof(filter));
+
+			if (!filterCache.TryGetValue(filter, out var compiled)) {
+				var config = ParsingConfig.Default;
+
+				var parameters = new[] {
+					Expression.Parameter(objType, "hook")
+				};
+				var parsed = DynamicExpressionParser.ParseLambda(config, parameters, typeof(bool), filter).Compile();
+				compiled = hook => (bool)parsed.DynamicInvoke(hook);
+				filterCache[filter] = compiled;
+			}
+
+			return compiled;
+		}
+
+		private Func<object, bool> Compile(Type objType, IEnumerable<string> filters) {
+			var hasWildcard = filters.Any(WebhookFilter.IsWildcard);
+			if (hasWildcard)
+				return hook => true;
+
+			var exp = String.Join(" && ", filters);
+			return Compile(objType, exp);
+		}
+
+		public async Task<bool> MatchesAsync(WebhookSubscriptionFilter filter, TWebhook webhook, CancellationToken cancellationToken) {
+			if (filter is null)
+				throw new ArgumentNullException(nameof(filter));
 			if (webhook is null)
 				throw new ArgumentNullException(nameof(webhook));
 
-			if (request.FilterFormat != "linq")
-				throw new ArgumentException($"Filter format '{request.FilterFormat}' not supported by the DLINQ evaluator");
+			if (filter.FilterFormat != "linq")
+				throw new ArgumentException($"Filter format '{filter.FilterFormat}' not supported by the DLINQ evaluator");
 
-			if (request.IsWildcard)
-				return Task.FromResult(true);
+			if (filter.IsWildcard)
+				return true;
 
-			var evalFilter = Compile(request.Filters);
+			var obj = await jsonSerializer.SerializeToObjectAsync(webhook, cancellationToken);
+
+			if (obj is null)
+				return false;
+
+			var evalFilter = Compile(obj.GetType(), filter.Filters);
 
 			if (evalFilter == null)
-				return Task.FromResult(false);
+				return false;
 
-			var result = evalFilter(webhook);
+			var result = evalFilter(obj);
 
-			return Task.FromResult(result);
+			return result;
 		}
 	}
 }

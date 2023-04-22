@@ -50,9 +50,7 @@ namespace Deveel.Webhooks {
 			Services.TryAddSingleton(this);
 
 			RegisterReceiverMiddleware();
-			RegisterDefaultReceiver();
-
-			UseJsonParser();
+			RegisterDefaultServices();
 		}
 
 		/// <summary>
@@ -76,9 +74,11 @@ namespace Deveel.Webhooks {
 			Services.TryAddScoped<WebhookRequestVerfierMiddleware<TWebhook>>();
 		}
 
-		private void RegisterDefaultReceiver() {
+		private void RegisterDefaultServices() {
 			Services.TryAddScoped<IWebhookReceiver<TWebhook>, WebhookReceiver<TWebhook>>();
 			Services.TryAddScoped<WebhookReceiver<TWebhook>>();
+
+			Services.TryAddSingleton<IWebhookJsonParser<TWebhook>, SystemTextWebhookJsonParser<TWebhook>>();
 		}
 
 		/// <summary>
@@ -233,6 +233,8 @@ namespace Deveel.Webhooks {
 		/// </returns>
 		public WebhookReceiverBuilder<TWebhook> UseJsonParser<TParser>(ServiceLifetime lifetime = ServiceLifetime.Singleton)
 			where TParser : class, IWebhookJsonParser<TWebhook> {
+
+			Services.RemoveAll<IWebhookJsonParser<TWebhook>>();
 
 			Services.Add(new ServiceDescriptor(typeof(IWebhookJsonParser<TWebhook>), typeof(TParser), lifetime));
 
@@ -425,7 +427,7 @@ namespace Deveel.Webhooks {
 
 			public string[] Algorithms => signer.Algorithms;
 
-			public string SignWebhook(string jsonBody, string secret) => signer.SignWebhook(jsonBody, secret);
+			public string SignWebhook(string webhookBody, string secret) => signer.SignWebhook(webhookBody, secret);
 		}
 
 		#endregion

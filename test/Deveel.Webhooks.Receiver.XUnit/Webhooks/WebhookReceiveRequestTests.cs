@@ -50,7 +50,7 @@ namespace Deveel.Webhooks {
 			var client = CreateClient();
 
 			var response = await client.SendAsync(new HttpRequestMessage(HttpMethod.Post, "/webhook") {
-				Content = new StringContent(JsonConvert.SerializeObject(new TestWebhook {
+				Content = new StringContent(System.Text.Json.JsonSerializer.Serialize(new TestWebhook {
 					Id = Guid.NewGuid().ToString("N"),
 					Event = "test",
 					TimeStamp = DateTimeOffset.Now,
@@ -69,7 +69,7 @@ namespace Deveel.Webhooks {
 			var client = CreateClient();
 
 			var response = await client.SendAsync(new HttpRequestMessage(HttpMethod.Post, "/webhook/handled") {
-				Content = new StringContent(JsonConvert.SerializeObject(new TestWebhook {
+				Content = new StringContent(System.Text.Json.JsonSerializer.Serialize(new TestWebhook {
 					Id = Guid.NewGuid().ToString("N"),
 					Event = "test",
 					TimeStamp = DateTimeOffset.Now,
@@ -87,7 +87,7 @@ namespace Deveel.Webhooks {
 			var client = CreateClient();
 
 			var response = await client.SendAsync(new HttpRequestMessage(HttpMethod.Post, "/webhook/handled/async") {
-				Content = new StringContent(JsonConvert.SerializeObject(new TestWebhook {
+				Content = new StringContent(System.Text.Json.JsonSerializer.Serialize(new TestWebhook {
 					Id = Guid.NewGuid().ToString("N"),
 					Event = "test",
 					TimeStamp = DateTimeOffset.Now,

@@ -1,4 +1,4 @@
-﻿// Copyright 2022 Deveel
+﻿// Copyright 2022-2023 Deveel
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,6 +18,6 @@ using System.Threading.Tasks;
 
 namespace Deveel.Webhooks {
 	public interface IWebhookSubscriptionValidator<TSubscription> where TSubscription : class, IWebhookSubscription {
-		Task<WebhookValidationResult> ValidateAsync(IWebhookSubscriptionManager<TSubscription> manager, TSubscription subscription, CancellationToken cancellationToken);
+		Task<WebhookValidationResult> ValidateAsync(WebhookSubscriptionManager<TSubscription> manager, TSubscription subscription, CancellationToken cancellationToken);
 	}
 }

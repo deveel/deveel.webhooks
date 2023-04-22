@@ -1,0 +1,61 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Deveel.Webhooks.Sender.NewtonsoftJson</name>
+    </assembly>
+    <members>
+        <member name="T:Deveel.Webhooks.NewtonsoftWebhookJsonSerializer`1">
+            <summary>
+            An implementation of <see cref="T:Deveel.Webhooks.IWebhookJsonSerializer`1"/>
+            that uses the <c>Newtonsoft.Json</c> library.
+            </summary>
+            <typeparam name="TWebhook">
+            The type of the webhook to serialize.
+            </typeparam>
+        </member>
+        <member name="M:Deveel.Webhooks.NewtonsoftWebhookJsonSerializer`1.#ctor(Newtonsoft.Json.JsonSerializerSettings)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Deveel.Webhooks.NewtonsoftWebhookJsonSerializer`1"/>
+            with the given <paramref name="settings"/>.
+            </summary>
+            <param name="settings">
+            An optional instance of <see cref="P:Deveel.Webhooks.NewtonsoftWebhookJsonSerializer`1.JsonSerializerSettings"/> to use for controlling
+            the serialization. When not provided, a new instance is created to use the defaults.
+            </param>
+        </member>
+        <member name="P:Deveel.Webhooks.NewtonsoftWebhookJsonSerializer`1.JsonSerializerSettings">
+            <summary>
+            Gets the settings used for the serialization.
+            </summary>
+        </member>
+        <member name="M:Deveel.Webhooks.NewtonsoftWebhookJsonSerializer`1.SerializeAsync(System.IO.Stream,`0,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="T:Deveel.Webhooks.WebhookSenderBuilderExtensions">
+            <summary>
+            Extends the <see cref="T:Deveel.Webhooks.WebhookSenderBuilder`1"/> with
+            methods to register the <see cref="T:Deveel.Webhooks.NewtonsoftWebhookJsonSerializer`1"/>
+            as the default serializer for the webhooks.
+            </summary>
+        </member>
+        <member name="M:Deveel.Webhooks.WebhookSenderBuilderExtensions.UseNewtonsoftJson``1(Deveel.Webhooks.WebhookSenderBuilder{``0},Newtonsoft.Json.JsonSerializerSettings)">
+            <summary>
+            Registers an instance of the <see cref="T:Deveel.Webhooks.NewtonsoftWebhookJsonSerializer`1"/> 
+            with the given settings.
+            </summary>
+            <typeparam name="TWebhook">
+            The type of the webhook that is sent by the sender.
+            </typeparam>
+            <param name="builder">
+            The instance of the <see cref="T:Deveel.Webhooks.WebhookSenderBuilder`1"/> to extend.
+            </param>
+            <param name="settings">
+            An optional set of settings to configure the serializer. When not
+            provided the default settings are used.
+            </param>
+            <returns>
+            Returns the instance of the builder, to allow chaining.
+            </returns>
+        </member>
+    </members>
+</doc>

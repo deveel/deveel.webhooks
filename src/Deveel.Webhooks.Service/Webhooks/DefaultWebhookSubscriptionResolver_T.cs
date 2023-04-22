@@ -1,4 +1,4 @@
-﻿// Copyright 2022 Deveel
+﻿// Copyright 2022-2023 Deveel
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -30,22 +30,13 @@ namespace Deveel.Webhooks {
 		private readonly IWebhookSubscriptionCache cache;
 		private ILogger logger;
 
-		public DefaultWebhookSubscriptionResolver(IWebhookSubscriptionStoreProvider<TSubscription> storeProvider,
-			IWebhookSubscriptionCache cache,
-			ILogger<DefaultWebhookSubscriptionResolver<TSubscription>> logger) {
+		public DefaultWebhookSubscriptionResolver(
+			IWebhookSubscriptionStoreProvider<TSubscription> storeProvider,
+			IWebhookSubscriptionCache cache = null,
+			ILogger<DefaultWebhookSubscriptionResolver<TSubscription>> logger = null) {
 			this.storeProvider = storeProvider;
 			this.cache = cache;
-			this.logger = logger;
-		}
-
-		public DefaultWebhookSubscriptionResolver(IWebhookSubscriptionStoreProvider<TSubscription> storeProvider,
-			IWebhookSubscriptionCache cache)
-			: this(storeProvider, cache, NullLogger<DefaultWebhookSubscriptionResolver<TSubscription>>.Instance) {
-		}
-
-		public DefaultWebhookSubscriptionResolver(IWebhookSubscriptionStoreProvider<TSubscription> storeProvider,
-			ILogger<DefaultWebhookSubscriptionResolver<TSubscription>> logger)
-			: this(storeProvider, null, logger) {
+			this.logger = logger ?? NullLogger<DefaultWebhookSubscriptionResolver<TSubscription>>.Instance;
 		}
 
 		private async Task<IList<IWebhookSubscription>> GetCachedAsync(string tenantId, string eventType, CancellationToken cancellationToken) {

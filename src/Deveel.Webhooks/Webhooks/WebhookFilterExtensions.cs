@@ -1,4 +1,4 @@
-﻿// Copyright 2022 Deveel
+﻿// Copyright 2022-2023 Deveel
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,7 +15,19 @@
 using System;
 
 namespace Deveel.Webhooks {
+	/// <summary>
+	/// Extens the <see cref="IWebhookFilter"/> to add some utility methods.
+	/// </summary>
 	public static class WebhookFilterExtensions {
+		/// <summary>
+		/// Checks if the given <paramref name="filter"/> is a wildcard filter.
+		/// </summary>
+		/// <param name="filter">
+		/// The filter to check.
+		/// </param>
+		/// <returns>
+		/// Returns <c>true</c> if the given <paramref name="filter"/> is a wildcard filter.
+		/// </returns>
 		public static bool IsWildcard(this IWebhookFilter filter) => WebhookFilter.IsWildcard(filter.Expression);
 	}
 }

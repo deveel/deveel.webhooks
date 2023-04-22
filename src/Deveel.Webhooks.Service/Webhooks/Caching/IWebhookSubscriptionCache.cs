@@ -1,4 +1,4 @@
-﻿// Copyright 2022 Deveel
+﻿// Copyright 2022-2023 Deveel
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -27,6 +27,8 @@ namespace Deveel.Webhooks.Caching {
 		Task<IWebhookSubscription> GetByIdAsync(string tenantId, string id, CancellationToken cancellationToken);
 
 		Task<IList<IWebhookSubscription>> GetByEventTypeAsync(string tenantId, string eventType, CancellationToken cancellationToken);
+
+		Task RemoveByEventTypeAsync(string tenantId, string eventType, CancellationToken cancellationToken);
 
 		Task SetAsync(IWebhookSubscription subscription, CancellationToken cancellationToken);
 

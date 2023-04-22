@@ -1,10 +1,10 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
 		<TargetFramework>net6.0</TargetFramework>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
-		<VersionPrefix>1.1.7</VersionPrefix>
+		<VersionPrefix>2.0.1</VersionPrefix>
 		<RootNamespace>Deveel</RootNamespace>
 		<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
 		<Authors>antonello</Authors>
@@ -41,5 +41,9 @@
 
 	<ItemGroup>
 		<None Include="..\..\apl-2.licenseheader" Link="apl-2.licenseheader" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\Deveel.Webhooks.Signers\Deveel.Webhooks.Signers.csproj" />
 	</ItemGroup>
 </Project>

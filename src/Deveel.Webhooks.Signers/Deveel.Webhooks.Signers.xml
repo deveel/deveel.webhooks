@@ -1,0 +1,229 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Deveel.Webhooks.Signers</name>
+    </assembly>
+    <members>
+        <member name="T:Deveel.Webhooks.IWebhookSigner">
+            <summary>
+            Provides functions for the signing of a webhook payload
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.IWebhookSigner.Algorithms">
+            <summary>
+            Gets the list of algorithms supported by this signer
+            </summary>
+        </member>
+        <member name="M:Deveel.Webhooks.IWebhookSigner.SignWebhook(System.String,System.String)">
+            <summary>
+            Signs the given JSON body using the provided secret
+            as a key for the signature
+            </summary>
+            <param name="webhookBody">The string represenation of the body of a webhook to sign</param>
+            <param name="secret">The secret used as a key for the signature</param>
+            <remarks>
+            A typical implementation of this method would return a string that
+            contains the signature, prefixed by the algorithm used to sign the
+            webhook in the format <c>[algorithm]=[signature]</c>.
+            </remarks>
+            <returns>
+            Returns a string representing the signature of the given body
+            </returns>
+        </member>
+        <member name="T:Deveel.Webhooks.IWebhookSignerProvider`1">
+            <summary>
+            Implements a provider of <see cref="T:Deveel.Webhooks.IWebhookSigner"/> instances
+            for given algorithms.
+            </summary>
+            <typeparam name="TWebhook">The type of webhook to provide signers for</typeparam>
+        </member>
+        <member name="M:Deveel.Webhooks.IWebhookSignerProvider`1.GetSigner(System.String)">
+            <summary>
+            Gets the signer for the given algorithm.
+            </summary>
+            <param name="algorithm">The name of the algorithm handled by
+            the signer to lookup for</param>
+            <returns>
+            Returns an instance of <see cref="T:Deveel.Webhooks.IWebhookSigner"/> that supports
+            the given algorithm, or <c>null</c> if no such signer is available.
+            </returns>
+        </member>
+        <member name="T:Deveel.Webhooks.IWebhookSigner`1">
+            <summary>
+            Defines a contract for a service that can verify the signature of a
+            specific type of webhook.
+            </summary>
+            <typeparam name="TWebhook">The type of webhook to sign</typeparam>
+            <remarks>
+            <para>
+            Webhook signers are typically implementing the same behavior,
+            and this contract is a way to define a constraint usage of the signer
+            within a receiver context.
+            </para>
+            <para>
+            In some advanced scenarios, it is possible to have multiple signers
+            for the same algorithm but specific for a given type of webhook, according
+            to the different needs of the provider.
+            </para>
+            </remarks>
+            <see cref="T:Deveel.Webhooks.IWebhookSigner"/>
+        </member>
+        <member name="T:Deveel.Webhooks.Sha1WebhookSigner">
+            <summary>
+            An implementation of <see cref="T:Deveel.Webhooks.IWebhookSigner"/> that uses the
+            SHA-1 algorithm to sign the payloads.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.Sha1WebhookSigner.Algorithms">
+            <summary>
+            Gets the name of the algorithm used by this signer.
+            </summary>
+        </member>
+        <member name="M:Deveel.Webhooks.Sha1WebhookSigner.CreateHasher(System.Byte[])">
+            <summary>
+            Creates a new instance of the <see cref="T:System.Security.Cryptography.HMACSHA1"/> algorithm
+            </summary>
+            <param name="key">
+            The key to use to create the hasher.
+            </param>
+            <returns>
+            Returns a new instance of <see cref="T:System.Security.Cryptography.HMACSHA1"/>.
+            </returns>
+        </member>
+        <member name="T:Deveel.Webhooks.Sha256WebhookSigner">
+            <summary>
+            A default implementation of the <see cref="T:Deveel.Webhooks.IWebhookSigner"/> that handles
+            a typical webhook signature using the SHA-256 algorithm.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.Sha256WebhookSigner.Algorithms">
+            <inheritdoc/>
+        </member>
+        <member name="M:Deveel.Webhooks.Sha256WebhookSigner.CreateHasher(System.Byte[])">
+            <summary>
+            Creates a new instance of the <see cref="T:System.Security.Cryptography.HMACSHA256"/> algorithm
+            </summary>
+            <param name="key">
+            The key to use to create the hasher.
+            </param>
+            <returns>
+            Returns a new instance of <see cref="T:System.Security.Cryptography.HMACSHA256"/>.
+            </returns>
+        </member>
+        <member name="T:Deveel.Webhooks.WebhookSignature">
+            <summary>
+            PRovides a static factory to create a signature for a webhook
+            </summary>
+        </member>
+        <member name="M:Deveel.Webhooks.WebhookSignature.Create(System.String,System.String,System.String)">
+            <summary>
+            Creates a signature for the given <paramref name="algorithm"/>,
+            the <paramref name="webhookBody"/> payload and the <paramref name="secret"/>
+            provided by a subcription to sign the payload.
+            </summary>
+            <param name="algorithm">
+            The name of the algorithm to use to sign the payload.
+            </param>
+            <param name="webhookBody">
+            The body of the webhook payload to be signed.
+            </param>
+            <param name="secret">
+            A secret provided by a subscription to sign the payload.
+            </param>
+            <returns>
+            Returns a string representing the signature of the payload.
+            </returns>
+            <exception cref="T:System.NotSupportedException">
+            Thrown when the <paramref name="algorithm"/> is not supported.
+            </exception>
+        </member>
+        <member name="T:Deveel.Webhooks.WebhookSignatureLocation">
+            <summary>
+            Enumerates the possible locations where the signature of a webhook
+            can be found within a HTTP request object.
+            </summary>
+        </member>
+        <member name="F:Deveel.Webhooks.WebhookSignatureLocation.Header">
+            <summary>
+            The signature is found in the HTTP header of the request.
+            </summary>
+        </member>
+        <member name="F:Deveel.Webhooks.WebhookSignatureLocation.QueryString">
+            <summary>
+            The signature is found in the query string of the request.
+            </summary>
+        </member>
+        <member name="T:Deveel.Webhooks.WebhookSignerBase">
+            <summary>
+            An abstract implementation of <see cref="T:Deveel.Webhooks.IWebhookSigner"/> that provides
+            a generic method to sign the payloads.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.WebhookSignerBase.Algorithms">
+            <summary>
+            When overridden, gets the names of the algorithms supported by this
+            signer instance.
+            </summary>
+        </member>
+        <member name="M:Deveel.Webhooks.WebhookSignerBase.CreateHasher(System.Byte[])">
+            <summary>
+            When overridden, creates a new instance of the <see cref="T:System.Security.Cryptography.KeyedHashAlgorithm"/>
+            used to compute the signature.
+            </summary>
+            <param name="key">
+            The key to use to create the hasher.
+            </param>
+            <returns>
+            Returns a new instance of <see cref="T:System.Security.Cryptography.KeyedHashAlgorithm"/>.
+            </returns>
+        </member>
+        <member name="M:Deveel.Webhooks.WebhookSignerBase.GetKeyBytes(System.String)">
+            <summary>
+            Creates the byte array representation of the secret key.
+            </summary>
+            <param name="secret">
+            The secret key to use to create the hasher.
+            </param>
+            <returns>
+            Returns a byte array representing the secret key.
+            </returns>
+        </member>
+        <member name="M:Deveel.Webhooks.WebhookSignerBase.GetPayloadBytes(System.String)">
+            <summary>
+            Gets the byte array representation of the given <paramref name="webhookBody"/>.
+            </summary>
+            <param name="webhookBody">
+            The string that represents the webhook to sign.
+            </param>
+            <returns>
+            Returns a byte array representing the payload of the webhook.
+            </returns>
+        </member>
+        <member name="M:Deveel.Webhooks.WebhookSignerBase.ComputeHash(System.String,System.String)">
+            <summary>
+            Computes the hash of the given <paramref name="webhookBody"/> using the
+            provided secret,
+            </summary>
+            <param name="webhookBody">The string that represents the webhook to sign</param>
+            <param name="secret">A secret used as key for the signature</param>
+            <returns>
+            Returns a byte array representing the hash of the given body
+            </returns>
+            <exception cref="T:System.ArgumentException">
+            Thrown when the <paramref name="secret"/> is <c>null</c> or empty
+            </exception>
+        </member>
+        <member name="M:Deveel.Webhooks.WebhookSignerBase.FormatSignature(System.Byte[])">
+            <summary>
+            Gets the string representation of the signature, given the hash
+            </summary>
+            <param name="hash">The byte hash of the signature</param>
+            <returns>
+            Returns a string representing the signature of the given body
+            </returns>
+        </member>
+        <member name="M:Deveel.Webhooks.WebhookSignerBase.SignWebhook(System.String,System.String)">
+            <inheritdoc />
+        </member>
+    </members>
+</doc>

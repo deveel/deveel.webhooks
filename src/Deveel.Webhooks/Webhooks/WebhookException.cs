@@ -1,4 +1,4 @@
-﻿// Copyright 2022 Deveel
+﻿// Copyright 2022-2023 Deveel
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-
 using System;
 
 namespace Deveel.Webhooks {
@@ -20,12 +19,15 @@ namespace Deveel.Webhooks {
 	/// An exception thrown by a webhook operation
 	/// </summary>
 	public class WebhookException : Exception {
+		/// <inheritdoc/>
 		public WebhookException() {
 		}
 
+		/// <inheritdoc/>
 		public WebhookException(string message) : base(message) {
 		}
 
+		/// <inheritdoc/>
 		public WebhookException(string message, Exception innerException) : base(message, innerException) {
 		}
 	}

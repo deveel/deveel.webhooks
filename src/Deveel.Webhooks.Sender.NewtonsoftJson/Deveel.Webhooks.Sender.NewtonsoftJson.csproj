@@ -1,0 +1,47 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+	  <RootNamespace>Deveel</RootNamespace>
+	  <VersionPrefix>2.0.1</VersionPrefix>
+	  <RootNamespace>Deveel</RootNamespace>
+	  <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+	  <Authors>antonello</Authors>
+	  <Company>Deveel AS</Company>
+	  <Copyright>Copyright (C) 2023 Deveel AS</Copyright>
+	  <PackageLicenseFile>LICENSE</PackageLicenseFile>
+	  <PackageIcon>deveel-logo.png</PackageIcon>
+	  <RepositoryUrl>https://github.com/deveel/deveel.webhooks</RepositoryUrl>
+	  <RepositoryType>git</RepositoryType>
+	  <PackageTags>webhook webhooks sender senders newtonsoft json serializer json-serializer</PackageTags>
+	  <Description>Extends the senders with webhook serializer implemented using the Newtonsoft.Json library</Description>
+	  <PackageProjectUrl>https://deveel.com</PackageProjectUrl>
+	  <DocumentationFile>.\Deveel.Webhooks.Sender.NewtonsoftJson</DocumentationFile>
+  </PropertyGroup>
+
+	<ItemGroup>
+		<None Include="..\..\deveel-logo.png">
+			<Pack>True</Pack>
+			<PackagePath></PackagePath>
+		</None>
+		<None Include="..\..\LICENSE">
+			<Pack>True</Pack>
+			<PackagePath></PackagePath>
+		</None>
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Include="..\..\apl-2.licenseheader" Link="apl-2.licenseheader" />
+	</ItemGroup>
+
+	<ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Deveel.Webhooks.Sender\Deveel.Webhooks.Sender.csproj" />
+  </ItemGroup>
+
+</Project>

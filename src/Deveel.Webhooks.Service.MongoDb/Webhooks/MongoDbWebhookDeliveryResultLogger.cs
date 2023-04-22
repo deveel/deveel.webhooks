@@ -1,4 +1,18 @@
-﻿using System;
+﻿// Copyright 2022-2023 Deveel
+// 
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+// 
+//     http://www.apache.org/licenses/LICENSE-2.0
+// 
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -11,35 +25,38 @@ using Microsoft.Extensions.Logging;
 using MongoDB.Bson;
 
 namespace Deveel.Webhooks {
-	public class MongoDbWebhookDeliveryResultLogger<TResult> : IWebhookDeliveryResultLogger
+	public class MongoDbWebhookDeliveryResultLogger<TWebhook, TResult> : IWebhookDeliveryResultLogger<TWebhook>
+		where TWebhook : class, IWebhook
 		where TResult : MongoDbWebhookDeliveryResult {
-		public MongoDbWebhookDeliveryResultLogger(MongoDbWebhookDeliveryResultStoreProvider<TResult> storeProvider, ILogger<MongoDbWebhookDeliveryResultLogger<TResult>> logger) {
+		public MongoDbWebhookDeliveryResultLogger(
+			MongoDbWebhookDeliveryResultStoreProvider<TResult> storeProvider, 
+			ILogger<MongoDbWebhookDeliveryResultLogger<TWebhook, TResult>> logger) {
 			StoreProvider = storeProvider;
 			Logger = logger;
 		}
 
 		protected MongoDbWebhookDeliveryResultStoreProvider<TResult> StoreProvider { get; }
 
-		protected ILogger<MongoDbWebhookDeliveryResultLogger<TResult>> Logger { get; }
+		protected ILogger<MongoDbWebhookDeliveryResultLogger<TWebhook, TResult>> Logger { get; }
 
 		protected virtual TResult CreateNewResult() {
 			return Activator.CreateInstance<TResult>();
 		}
 
-		protected virtual TResult ConvertResult(IWebhookDeliveryResult result) {
+		protected virtual TResult ConvertResult(WebhookDeliveryResult<TWebhook> result) {
 			var obj = CreateNewResult();
 
 			obj.Webhook = ConvertWebhook(result.Webhook);
-			obj.DeliveryAttempts = result.DeliveryAttempts?.Select(ConvertDeliveryAttempt).ToList();
+			obj.DeliveryAttempts = result.Attempts?.Select(ConvertDeliveryAttempt).ToList();
 
 			return obj;
 		}
 
-		private MongoDbWebhookDeliveryAttempt ConvertDeliveryAttempt(IWebhookDeliveryAttempt attempt) {
+		private MongoDbWebhookDeliveryAttempt ConvertDeliveryAttempt(WebhookDeliveryAttempt attempt) {
 			return new MongoDbWebhookDeliveryAttempt {
 				StartedAt = attempt.StartedAt,
-				EndedAt = attempt.EndedAt,
-				ResponseStatusCode = attempt.ResponseStatusCode,
+				EndedAt = attempt.CompletedAt,
+				ResponseStatusCode = attempt.ResponseCode,
 				ResponseMessage = attempt.ResponseMessage
 			};
 		}
@@ -49,12 +66,6 @@ namespace Deveel.Webhooks {
 				WebhookId = webhook.Id,
 				EventType = webhook.EventType,
 				SubscriptionId = webhook.SubscriptionId,
-				DestinationUrl = webhook.DestinationUrl,
-				Name = webhook.Name,
-				// TODO: should we remove this value?
-				Secret = webhook.Secret,
-				Format = webhook.Format,
-				Headers = webhook.Headers?.ToDictionary(x => x.Key, y => y.Value),
 				Data = ConvertWebhookData(webhook.Data),
 				TimeStamp = webhook.TimeStamp
 			};
@@ -93,20 +104,20 @@ namespace Deveel.Webhooks {
 			return BsonValue.Create(value);
 		}
 
-		public async Task LogResultAsync(string tenantId, IWebhookDeliveryResult result, CancellationToken cancellationToken) {
+		public async Task LogResultAsync(IWebhookSubscription subscription, WebhookDeliveryResult<TWebhook> result, CancellationToken cancellationToken) {
 			if (result is null) 
 				throw new ArgumentNullException(nameof(result));
 
 			Logger.LogTrace("Logging the result of the delivery of a webhook of event '{EventType}' for tenant '{TenantId}'",
-				result.Webhook.EventType, tenantId);
+				result.Webhook.EventType, subscription.TenantId);
 
 			try {
 				var resultObj = ConvertResult(result);
 
-				await StoreProvider.GetStore(tenantId).CreateAsync(resultObj, cancellationToken);
+				await StoreProvider.GetStore(subscription.TenantId).CreateAsync(resultObj, cancellationToken);
 			} catch (Exception ex) {
 				Logger.LogError(ex, "Could not log the result of the delivery of the Webhook of type '{EventType}' for tenant '{TenantId}' because of an error",
-					result.Webhook.EventType, tenantId);
+					result.Webhook.EventType, subscription.TenantId);
 			}
 		}
 	}

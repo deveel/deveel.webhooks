@@ -1,4 +1,4 @@
-﻿// Copyright 2022 Deveel
+﻿// Copyright 2022-2023 Deveel
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -21,9 +21,9 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Deveel.Webhooks {
 	public sealed class MongoDbWebhookStorageBuilder<TSubscription> where TSubscription : MongoDbWebhookSubscription {
-		private readonly WebhookServiceBuilder<TSubscription> builder;
+		private readonly WebhookSubscriptionBuilder<TSubscription> builder;
 
-		internal MongoDbWebhookStorageBuilder(WebhookServiceBuilder<TSubscription> builder) {
+		internal MongoDbWebhookStorageBuilder(WebhookSubscriptionBuilder<TSubscription> builder) {
 			this.builder = builder;
 
 			AddDefaultStorage();
@@ -118,15 +118,16 @@ namespace Deveel.Webhooks {
 			return this;
 		}
 
-		public MongoDbWebhookStorageBuilder<TSubscription> UseDeliveryResultLogger<TResult>()
+		public MongoDbWebhookStorageBuilder<TSubscription> UseDeliveryResultLogger<TWebhook, TResult>()
+			where TWebhook : class, IWebhook
 			where TResult : MongoDbWebhookDeliveryResult {
 
-			Services.AddSingleton<IWebhookDeliveryResultLogger, MongoDbWebhookDeliveryResultLogger<TResult>>();
+			Services.AddSingleton<IWebhookDeliveryResultLogger<TWebhook>, MongoDbWebhookDeliveryResultLogger<TWebhook, TResult>>();
 
 			return this;
 		}
 
 		public MongoDbWebhookStorageBuilder<TSubscription> UseDeliveryResultLogger()
-			=> UseDeliveryResultLogger<MongoDbWebhookDeliveryResult>();
+			=> UseDeliveryResultLogger<Webhook, MongoDbWebhookDeliveryResult>();
 	}
 }

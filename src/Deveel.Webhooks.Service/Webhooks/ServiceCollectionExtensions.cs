@@ -1,4 +1,4 @@
-﻿// Copyright 2022 Deveel
+﻿// Copyright 2022-2023 Deveel
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,16 +19,6 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Deveel.Webhooks {
 	public static class ServiceCollectionExtensions {
-		internal static IServiceCollection UseService<TService, TImplementation>(this IServiceCollection services, ServiceLifetime lifetime = ServiceLifetime.Scoped)
-			where TService : class
-			where TImplementation : class, TService {
-			services.RemoveAll<TService>();
-			services.Add(new ServiceDescriptor(typeof(TService), typeof(TImplementation), lifetime));
-			services.Add(new ServiceDescriptor(typeof(TImplementation), typeof(TImplementation), lifetime));
-
-			return services;
-		}
-
 		/// <summary>
 		/// Adds the default services to support the webhook
 		/// management provided by the framework.
@@ -36,27 +26,20 @@ namespace Deveel.Webhooks {
 		/// <param name="services">The collection of services</param>
 		/// <param name="configure">A builder used to configure the service</param>
 		/// <returns></returns>
-		public static IServiceCollection AddWebhooks<TSubscription>(this IServiceCollection services, Action<WebhookServiceBuilder<TSubscription>> configure = null) 
+		public static IServiceCollection AddWebhookSubscriptions<TSubscription>(this IServiceCollection services, Action<WebhookSubscriptionBuilder<TSubscription>> configure = null) 
 			where TSubscription : class, IWebhookSubscription {
 
-			var builder = services.AddWebhooks<TSubscription>();
-
-			if (configure != null) {
-				configure.Invoke(builder);
-			}
-
-			//} else {
-			//	// add the default configurations ...
-			//	services.AddOptions<WebhookDeliveryOptions>();
-			//}
+			var builder = services.AddWebhooksSubscriptions<TSubscription>();
+			configure?.Invoke(builder);
 
 			return services;
 		}
 
-		public static WebhookServiceBuilder<TSubscription> AddWebhooks<TSubscription>(this IServiceCollection services) 
+		public static WebhookSubscriptionBuilder<TSubscription> AddWebhooksSubscriptions<TSubscription>(this IServiceCollection services) 
 			where TSubscription : class, IWebhookSubscription {
-			var builder = new WebhookServiceBuilder<TSubscription>(services);
-			builder.AddDefaults();
+			var builder = new WebhookSubscriptionBuilder<TSubscription>(services);
+
+			services.TryAddSingleton(builder);
 
 			return builder;
 		}

@@ -25,7 +25,17 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Deveel.Webhooks.Receiver.XU
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Deveel.Webhooks.Receiver.TestApi", "test\Deveel.Webhooks.Receiver.TestApi\Deveel.Webhooks.Receiver.TestApi.csproj", "{CBAC02DA-EFF9-4458-99A2-DAF7ACFE607F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Deveel.Webhooks.Receiver.AspNetCore.NewtonsoftJson", "src\Deveel.Webhooks.Receiver.AspNetCore.NewtonsoftJson\Deveel.Webhooks.Receiver.AspNetCore.NewtonsoftJson.csproj", "{F23E99C7-8228-4AEE-894B-CAA303686239}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Deveel.Webhooks.Receiver.AspNetCore.NewtonsoftJson", "src\Deveel.Webhooks.Receiver.AspNetCore.NewtonsoftJson\Deveel.Webhooks.Receiver.AspNetCore.NewtonsoftJson.csproj", "{F23E99C7-8228-4AEE-894B-CAA303686239}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Deveel.Webhooks.Sender", "src\Deveel.Webhooks.Sender\Deveel.Webhooks.Sender.csproj", "{1DCF1C21-75A9-4119-92EE-7B639B6F75A8}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Deveel.Webhooks.Sender.XUnit", "test\Deveel.Webhooks.Sender.XUnit\Deveel.Webhooks.Sender.XUnit.csproj", "{BFEB625F-8667-44FC-AFD8-0777ED99E0D8}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Deveel.Webhooks.Sender.NewtonsoftJson", "src\Deveel.Webhooks.Sender.NewtonsoftJson\Deveel.Webhooks.Sender.NewtonsoftJson.csproj", "{6A04D831-545F-4EFA-B1F7-2BD0B0A58DF6}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Deveel.Webhooks.Signers", "src\Deveel.Webhooks.Signers\Deveel.Webhooks.Signers.csproj", "{6D6057E9-117F-4B13-80E7-4C18B3905AEB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Deveel.Webhooks.MongoDb.XUnit", "test\Deveel.Webhooks.MongoDb.XUnit\Deveel.Webhooks.MongoDb.XUnit.csproj", "{D61BAD7A-7B8A-4413-A0D0-8F52EE81A0B0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -73,6 +83,26 @@ Global
 		{F23E99C7-8228-4AEE-894B-CAA303686239}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F23E99C7-8228-4AEE-894B-CAA303686239}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F23E99C7-8228-4AEE-894B-CAA303686239}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1DCF1C21-75A9-4119-92EE-7B639B6F75A8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1DCF1C21-75A9-4119-92EE-7B639B6F75A8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1DCF1C21-75A9-4119-92EE-7B639B6F75A8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1DCF1C21-75A9-4119-92EE-7B639B6F75A8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BFEB625F-8667-44FC-AFD8-0777ED99E0D8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BFEB625F-8667-44FC-AFD8-0777ED99E0D8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BFEB625F-8667-44FC-AFD8-0777ED99E0D8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BFEB625F-8667-44FC-AFD8-0777ED99E0D8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6A04D831-545F-4EFA-B1F7-2BD0B0A58DF6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6A04D831-545F-4EFA-B1F7-2BD0B0A58DF6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6A04D831-545F-4EFA-B1F7-2BD0B0A58DF6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6A04D831-545F-4EFA-B1F7-2BD0B0A58DF6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6D6057E9-117F-4B13-80E7-4C18B3905AEB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6D6057E9-117F-4B13-80E7-4C18B3905AEB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6D6057E9-117F-4B13-80E7-4C18B3905AEB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6D6057E9-117F-4B13-80E7-4C18B3905AEB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D61BAD7A-7B8A-4413-A0D0-8F52EE81A0B0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D61BAD7A-7B8A-4413-A0D0-8F52EE81A0B0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D61BAD7A-7B8A-4413-A0D0-8F52EE81A0B0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D61BAD7A-7B8A-4413-A0D0-8F52EE81A0B0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -88,6 +118,11 @@ Global
 		{4BC8323C-74F7-407A-8A5A-EA595B5C5585} = {07F23FF6-2FE1-4072-BF37-9238E3750AA1}
 		{CBAC02DA-EFF9-4458-99A2-DAF7ACFE607F} = {07F23FF6-2FE1-4072-BF37-9238E3750AA1}
 		{F23E99C7-8228-4AEE-894B-CAA303686239} = {57F6404B-1FCC-473F-A189-ABC9D640CC0E}
+		{1DCF1C21-75A9-4119-92EE-7B639B6F75A8} = {57F6404B-1FCC-473F-A189-ABC9D640CC0E}
+		{BFEB625F-8667-44FC-AFD8-0777ED99E0D8} = {07F23FF6-2FE1-4072-BF37-9238E3750AA1}
+		{6A04D831-545F-4EFA-B1F7-2BD0B0A58DF6} = {57F6404B-1FCC-473F-A189-ABC9D640CC0E}
+		{6D6057E9-117F-4B13-80E7-4C18B3905AEB} = {57F6404B-1FCC-473F-A189-ABC9D640CC0E}
+		{D61BAD7A-7B8A-4413-A0D0-8F52EE81A0B0} = {07F23FF6-2FE1-4072-BF37-9238E3750AA1}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {E682A9F5-43D7-4D4C-82EA-953545B8F4DE}

@@ -1,4 +1,4 @@
-﻿// Copyright 2022 Deveel
+﻿// Copyright 2022-2023 Deveel
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -27,6 +27,12 @@ namespace Deveel.Webhooks {
 		string SubscriptionId { get; }
 
 		/// <summary>
+		/// Gets the unique identifier of the tenant of 
+		/// the subscription
+		/// </summary>
+		string TenantId { get; }
+
+		/// <summary>
 		/// Gets a name of the subscription
 		/// </summary>
 		string Name { get; }
@@ -35,7 +41,7 @@ namespace Deveel.Webhooks {
 		/// Gets a list of types of event to which occurrence
 		/// the subscription is activated.
 		/// </summary>
-		string[] EventTypes { get; }
+		IEnumerable<string> EventTypes { get; }
 
 		/// <summary>
 		/// Gets the URL of the receiver of webhooks matching
@@ -77,5 +83,15 @@ namespace Deveel.Webhooks {
 		/// Gets an optional set of metadata of the subscription
 		/// </summary>
 		IDictionary<string, object> Metadata { get; }
+
+		/// <summary>
+		/// Gets the exact time of the creation of the subscription
+		/// </summary>
+		DateTimeOffset? CreatedAt { get; }
+
+		/// <summary>
+		/// Gets the exact time of the last update of the subscription
+		/// </summary>
+		DateTimeOffset? UpdatedAt { get; }
 	}
 }

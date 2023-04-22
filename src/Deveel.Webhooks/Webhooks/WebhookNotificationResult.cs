@@ -38,7 +38,7 @@ namespace Deveel.Webhooks {
 		/// </exception>
 		public WebhookNotificationResult(EventInfo eventInfo) {
 			deliveryResults = new ConcurrentDictionary<string, IList<WebhookDeliveryResult<TWebhook>>>();
-			EventInfo = eventInfo ?? throw new System.ArgumentNullException(nameof(eventInfo));
+			EventInfo = eventInfo;
 		}
 
 		/// <summary>

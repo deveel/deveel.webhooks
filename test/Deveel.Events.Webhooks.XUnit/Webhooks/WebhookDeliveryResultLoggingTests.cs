@@ -42,7 +42,7 @@ namespace Deveel.Webhooks {
 					options.Retry.MaxRetries = 2;
 				})
 				.UseLinqFilter()
-				.UseFactory<DefaultWebhookFactory>()
+				.UseWebhookFactory<DefaultWebhookFactory>()
 				.UseMongoSubscriptionResolver())
 			.UseMongoDb(options => {
 				options.DatabaseName = "webhooks";
@@ -95,7 +95,7 @@ namespace Deveel.Webhooks {
 		[Fact]
 		public async Task DeliverWebhookFromEvent() {
 			var subscriptionId = await CreateSubscriptionAsync("Data Created", "data.created");
-			var notification = new EventInfo("data.created", new {
+			var notification = new EventInfo("test", "data.created", new {
 				creationTime = DateTimeOffset.UtcNow,
 				type = "test"
 			});

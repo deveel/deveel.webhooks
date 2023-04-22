@@ -12,7 +12,6 @@ namespace Deveel.Webhooks.Receiver.TestApi {
 			builder.Services.AddAuthorization();
 			builder.Services
 				.AddWebhooks<TestWebhook>()
-				.UseNewtonsoftJsonParser()
 				.AddHandler<TestWebhookHandler>();
 
 			var secret = builder.Configuration["Webhook:Receiver:Signature:Secret"];

@@ -25,7 +25,7 @@ namespace Deveel.Webhooks {
 		private readonly List<string> filters;
 		private readonly bool readOnly;
 
-		private WebhookSubscriptionFilter(bool readOnly, string format, IEnumerable<string> filters) {
+		private WebhookSubscriptionFilter(bool readOnly, string format, IEnumerable<string>? filters) {
 			if (string.IsNullOrWhiteSpace(format))
 				throw new ArgumentException($"'{nameof(format)}' cannot be null or whitespace.", nameof(format));
 
@@ -33,11 +33,7 @@ namespace Deveel.Webhooks {
 
 			FilterFormat = format;
 
-			if (filters != null) {
-				this.filters = new List<string>(filters);
-			} else {
-				this.filters = new List<string>();
-			}
+			this.filters = filters?.ToList() ?? new List<string>();
 		}
 
 		/// <summary>

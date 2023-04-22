@@ -139,10 +139,14 @@ namespace Deveel.Webhooks {
 		/// set to <see cref="ServiceLifetime.Singleton"/>).
 		/// </param>
 		/// <returns></returns>
-		public WebhookNotifierBuilder<TWebhook> UseFactory<TFactory>(ServiceLifetime lifetime = ServiceLifetime.Singleton)
+		public WebhookNotifierBuilder<TWebhook> UseWebhookFactory<TFactory>(ServiceLifetime lifetime = ServiceLifetime.Singleton)
 			where TFactory : class, IWebhookFactory<TWebhook> {
+
+			Services.RemoveAll<IWebhookFactory<TWebhook>>();
+
 			Services.Add(new ServiceDescriptor(typeof(IWebhookFactory<TWebhook>), typeof(TFactory), lifetime));
 			Services.TryAdd(new ServiceDescriptor(typeof(TFactory), typeof(TFactory), lifetime));
+
 			return this;
 		}
 

@@ -8,10 +8,51 @@
             <summary>
             A default implementation of the <see cref="T:Deveel.Webhooks.IWebhookFactory`1"/>
             that creates a <see cref="T:Deveel.Webhooks.Webhook"/> instance using the information
-            from the subscription and the event.
+            provided by the subscription and the event.
             </summary>
         </member>
-        <member name="M:Deveel.Webhooks.DefaultWebhookFactory.CreateAsync(Deveel.Webhooks.IWebhookSubscription,Deveel.Webhooks.EventInfo,System.Threading.CancellationToken)">
+        <member name="T:Deveel.Webhooks.DefaultWebhookFactory`1">
+            <summary>
+            A default implementation of the <see cref="T:Deveel.Webhooks.IWebhookFactory`1"/>
+            that creates a <see cref="T:Deveel.Webhooks.Webhook"/> instance using the information
+            from the subscription and the event.
+            </summary>
+            <remarks>
+            <para>
+            The sender and notifier services are not bound to a specific
+            type of webhook, and this factory is used to create the default type
+            of webhook provided for convenience.
+            </para>
+            <para>
+            It is possible to create a custom webhook type by implementing
+            this factory and overriding the <see cref="M:Deveel.Webhooks.DefaultWebhookFactory`1.CreateData(Deveel.Webhooks.IWebhookSubscription,Deveel.Webhooks.EventInfo)"/>
+            </para>
+            <para>
+            By default the <see cref="T:Deveel.Webhooks.Webhook"/> class is configured with attributes from
+            the <c>System.Text.Json</c> library and the <c>System.Xml</c> namespace, so that 
+            the serialization process recognizes them and uses them to serialize the data:
+            if you need to use other serializers you might experience inconsistent results.
+            </para>
+            </remarks>
+            <seealso cref="T:Deveel.Webhooks.Webhook"/>
+        </member>
+        <member name="M:Deveel.Webhooks.DefaultWebhookFactory`1.CreateData(Deveel.Webhooks.IWebhookSubscription,Deveel.Webhooks.EventInfo)">
+            <summary>
+            When overridden, creates the data object that is carried
+            by the webhook to the receiver.
+            </summary>
+            <param name="subscription">
+            The subscription that is listening to the event
+            </param>
+            <param name="eventInfo">
+            The event that is being delivered to the subscription
+            </param>
+            <returns>
+            Returns a data object that is carried by the webhook
+            through the <see cref="P:Deveel.Webhooks.Webhook.Data"/> property.
+            </returns>
+        </member>
+        <member name="M:Deveel.Webhooks.DefaultWebhookFactory`1.CreateAsync(Deveel.Webhooks.IWebhookSubscription,Deveel.Webhooks.EventInfo,System.Threading.CancellationToken)">
             <summary>
             Creates a new webhook instance using the information
             from the subscription and the event.
@@ -35,19 +76,37 @@
             trigger some notifications
             </summary>
         </member>
-        <member name="M:Deveel.Webhooks.EventInfo.#ctor(System.String,System.Object)">
+        <member name="M:Deveel.Webhooks.EventInfo.#ctor(System.String,System.String,System.Object,System.String,System.Nullable{System.DateTimeOffset})">
             <summary>
             Constructs an EventInfo instance of the given type
             and providing the given data
             </summary>
-            <param name="eventType">The type of event</param>
-            <param name="data">The data provided by the event</param>
+            <param name="subject">
+            The subject of the event (e.g. the name of the aggregate)
+            </param>
+            <param name="eventType">
+            The type of event that was triggered
+            </param>
+            <param name="data">
+            The data provided by the event
+            </param>
+            <param name="id">
+            An optional unique identifier of the event
+            </param>
+            <param name="timeStamp">
+            An optional time-stamp of the time the event occurred
+            </param>
             <exception cref="T:System.ArgumentException">
             If the <paramref name="eventType"/> is null or an empty string
             </exception>
             <exception cref="T:System.ArgumentNullException">
             If the data provided are null
             </exception>
+        </member>
+        <member name="P:Deveel.Webhooks.EventInfo.Subject">
+            <summary>
+            Gets the subject of the event (e.g. the name of the aggregate)
+            </summary>
         </member>
         <member name="P:Deveel.Webhooks.EventInfo.EventType">
             <summary>
@@ -70,6 +129,17 @@
             <summary>
             Gets the data transported by the event.
             </summary>
+        </member>
+        <member name="M:Deveel.Webhooks.EventInfo.WithData(System.Object)">
+            <summary>
+            Creates a new instance of this event with the given data
+            </summary>
+            <param name="data">
+            The new data to be transported by the event
+            </param>
+            <returns>
+            Returns a new instance of this event with the given data
+            </returns>
         </member>
         <member name="T:Deveel.Webhooks.IWebhookDataFactory">
             <summary>
@@ -309,8 +379,21 @@
         <member name="T:Deveel.Webhooks.Webhook">
             <summary>
             A default implementation of <see cref="T:Deveel.Webhooks.IWebhook"/> that can be used
-            to transport the data of a notification.
+            to transport the data of a notification, provided for convenience.
             </summary>
+            <remarks>
+            <para>
+            The sender and notifier services are not constrained to a specific
+            type of webhook, and this class is used to create the default webhook,
+            implementing the <see cref="T:Deveel.Webhooks.IWebhook"/> constract.
+            </para>
+            <para>
+            By default this class is configured with attributes from
+            the <c>System.Text.Json</c> library and the <c>System.Xml</c> namespace, so that 
+            the serialization process recognizes them and uses them to serialize the data:
+            if you need to use other serializers you might experience inconsistent results.
+            </para>
+            </remarks>
         </member>
         <member name="P:Deveel.Webhooks.Webhook.EventType">
             <inheritdoc/>
@@ -326,6 +409,11 @@
         </member>
         <member name="P:Deveel.Webhooks.Webhook.SubscriptionId">
             <inheritdoc/>
+        </member>
+        <member name="P:Deveel.Webhooks.Webhook.Name">
+            <summary>
+            Gets the name of webhook (the name of the subscription).
+            </summary>
         </member>
         <member name="T:Deveel.Webhooks.WebhookException">
             <summary>
@@ -823,7 +911,7 @@
             Returns an instance of the builder to allow chaining.
             </returns>
         </member>
-        <member name="M:Deveel.Webhooks.WebhookNotifierBuilder`1.UseFactory``1(Microsoft.Extensions.DependencyInjection.ServiceLifetime)">
+        <member name="M:Deveel.Webhooks.WebhookNotifierBuilder`1.UseWebhookFactory``1(Microsoft.Extensions.DependencyInjection.ServiceLifetime)">
             <summary>
             Registers a factory service to use to create the webhook.
             </summary>

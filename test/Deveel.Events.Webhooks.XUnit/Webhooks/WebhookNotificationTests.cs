@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -12,10 +13,7 @@ using Deveel.Webhooks;
 
 using Microsoft.Extensions.DependencyInjection;
 
-using MongoDB.Driver;
-
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+using Mongo2Go;
 
 using Xunit;
 using Xunit.Abstractions;
@@ -29,36 +27,31 @@ namespace Deveel.Webhooks {
 
 		private readonly string tenantId = Guid.NewGuid().ToString();
 
-		private IMultiTenantWebhookSubscriptionManager<MongoDbWebhookSubscription> webhookManager;
+		private TestSubscriptionResolver subscriptionResolver;
 		private IWebhookNotifier<Webhook> notifier;
 
 		private Webhook lastWebhook;
 		private HttpResponseMessage testResponse;
 
+		protected override MongoDbRunner CreateMongo() => null;
+
 		public WebhookNotificationTests(ITestOutputHelper outputHelper) : base(outputHelper) {
-			webhookManager = Services.GetService<IMultiTenantWebhookSubscriptionManager<MongoDbWebhookSubscription>>();
-			notifier = Services.GetService<IWebhookNotifier<Webhook>>();
+			notifier = Services.GetRequiredService<IWebhookNotifier<Webhook>>();
+			subscriptionResolver = Services.GetRequiredService<TestSubscriptionResolver>();
 		}
 
 		protected override void ConfigureWebhookService(WebhookSubscriptionBuilder<MongoDbWebhookSubscription> builder) {
 			builder
 				.UseManager()
 				.UseNotifier<Webhook>(config => config
-					.UseFactory<DefaultWebhookFactory>()
+					.UseWebhookFactory<DefaultWebhookFactory>()
 					.AddDataTranformer<TestDataFactory>()
 					.UseLinqFilter()
-					.UseMongoSubscriptionResolver()
+					.UseSubscriptionResolver<TestSubscriptionResolver>(ServiceLifetime.Singleton)
 					.UseSender(options => {
 						options.Retry.MaxRetries = 2;
 						options.Retry.Timeout = TimeSpan.FromSeconds(TimeOutSeconds);
-					}))
-				.UseMongoDb(options => {
-					options.DatabaseName = "webhooks";
-					options.ConnectionString = ConnectionString;
-					options.SubscriptionsCollectionName("webhooks_subscription");
-					options.MultiTenancy.Handling = MongoDbMultiTenancyHandling.TenantField;
-					options.MultiTenancy.TenantField = "TenantId";
-				});
+					}));
 		}
 
 		protected override async Task<HttpResponseMessage> OnRequestAsync(HttpRequestMessage httpRequest) {
@@ -79,27 +72,40 @@ namespace Deveel.Webhooks {
 			}
 		}
 
-		private Task<string> CreateSubscriptionAsync(string name, string eventType, params IWebhookFilter[] filters) {
-			return CreateSubscriptionAsync(new WebhookSubscriptionInfo(eventType, "https://callback.example.com/webhook") {
+		private string CreateSubscription(string name, string eventType, params IWebhookFilter[] filters) {
+			return CreateSubscription(new WebhookSubscriptionInfo(eventType, "https://callback.example.com/webhook") {
 				Name = name,
 				RetryCount = 3,
 				Filters = filters
 			}, true);
 		}
 
-		private async Task<string> CreateSubscriptionAsync(WebhookSubscriptionInfo subscriptionInfo, bool enabled = true) {
-			var id = await webhookManager.AddSubscriptionAsync(tenantId, subscriptionInfo, CancellationToken.None);
+		private string CreateSubscription(WebhookSubscriptionInfo subscriptionInfo, bool enabled = true) {
+			var id = Guid.NewGuid().ToString();
+			var subscription = new TestWebhookSubscription {
+				SubscriptionId = id,
+				Name = subscriptionInfo.Name,
+				TenantId = tenantId,
+				DestinationUrl = subscriptionInfo.DestinationUrl.ToString(),
+				EventTypes = subscriptionInfo.EventTypes,
+				Filters = subscriptionInfo.Filters,
+				Status = enabled ? WebhookSubscriptionStatus.Active : WebhookSubscriptionStatus.Suspended,
+				RetryCount = subscriptionInfo.RetryCount,
+				Headers = subscriptionInfo.Headers,
+				CreatedAt = DateTimeOffset.UtcNow,
+				Secret = subscriptionInfo.Secret,
+				Metadata = subscriptionInfo.Metadata
+			};
 
-			if (enabled)
-				await webhookManager.EnableSubscriptionAsync(tenantId, id, CancellationToken.None);
+			subscriptionResolver.AddSubscription(subscription);
 
 			return id;
 		}
 
 		[Fact]
 		public async Task DeliverWebhookFromEvent() {
-			var subscriptionId = await CreateSubscriptionAsync("Data Created", "data.created", new WebhookFilter("hook.data.data_type == \"test-data\"", "linq"));
-			var notification = new EventInfo("data.created", new {
+			var subscriptionId = CreateSubscription("Data Created", "data.created", new WebhookFilter("hook.data.data_type == \"test-data\"", "linq"));
+			var notification = new EventInfo("test", "data.created", new {
 				creationTime = DateTimeOffset.UtcNow,
 				type = "test"
 			});
@@ -137,8 +143,8 @@ namespace Deveel.Webhooks {
 
 		[Fact]
 		public async Task DeliverWebhookFromEvent_NoTransformations() {
-			var subscriptionId = await CreateSubscriptionAsync("Data Modified", "data.modified");
-			var notification = new EventInfo("data.modified", new {
+			var subscriptionId = CreateSubscription("Data Modified", "data.modified");
+			var notification = new EventInfo("test", "data.modified", new {
 				creationTime = DateTimeOffset.UtcNow,
 				type = "test"
 			});
@@ -176,10 +182,10 @@ namespace Deveel.Webhooks {
 
 		[Fact]
 		public async Task DeliverWebhookWithMultipleFiltersFromEvent() {
-			var subscriptionId = await CreateSubscriptionAsync("Data Created", "data.created", 
+			var subscriptionId = CreateSubscription("Data Created", "data.created", 
 				new WebhookFilter( "hook.data.data_type == \"test-data\"", "linq"), 
 				new WebhookFilter("hook.data.creator.user_name == \"antonello\"", "linq"));
-			var notification = new EventInfo("data.created", new {
+			var notification = new EventInfo("test", "data.created", new {
 				creationTime = DateTimeOffset.UtcNow,
 				type = "test"
 			});
@@ -207,8 +213,8 @@ namespace Deveel.Webhooks {
 
 		[Fact]
 		public async Task DeliverWebhookWithoutFilter() {
-			var subscriptionId = await CreateSubscriptionAsync("Data Created", "data.created", null);
-			var notification = new EventInfo("data.created", new {
+			var subscriptionId = CreateSubscription("Data Created", "data.created", null);
+			var notification = new EventInfo("test", "data.created", new {
 				creationTime = DateTimeOffset.UtcNow,
 				type = "test"
 			});
@@ -235,14 +241,14 @@ namespace Deveel.Webhooks {
 
 		[Fact]
 		public async Task DeliverSignedWebhookFromEvent() {
-			var subscriptionId = await CreateSubscriptionAsync(new WebhookSubscriptionInfo("data.created", "https://callback.example.com") {
+			var subscriptionId = CreateSubscription(new WebhookSubscriptionInfo("data.created", "https://callback.example.com") {
 				Filter = new WebhookFilter("hook.data.data_type == \"test-data\"", "linq"),
 				Name = "Data Created",
 				Secret = "abc12345",
 				RetryCount = 3
 			});
 
-			var notification = new EventInfo("data.created", new {
+			var notification = new EventInfo("test", "data.created", new {
 				creationTime = DateTimeOffset.UtcNow,
 				type = "test"
 			});
@@ -269,8 +275,11 @@ namespace Deveel.Webhooks {
 
 		[Fact]
 		public async Task FailToDeliver() {
-			var subscriptionId = await CreateSubscriptionAsync("Data Created", "data.created", new WebhookFilter ("hook.data.data_type == \"test-data\"", "linq"));
-			var notification = new EventInfo("data.created", new { creationTime = DateTimeOffset.UtcNow, type = "test" });
+			var subscriptionId = CreateSubscription("Data Created", "data.created", new WebhookFilter ("hook.data.data_type == \"test-data\"", "linq"));
+			var notification = new EventInfo("test", "data.created", new { 
+				creationTime = DateTimeOffset.UtcNow, 
+				type = "test"
+			});
 
 			testResponse = new HttpResponseMessage(HttpStatusCode.InternalServerError);
 
@@ -294,8 +303,11 @@ namespace Deveel.Webhooks {
 
 		[Fact]
 		public async Task TimeOutWhileDelivering() {
-			var subscriptionId = await CreateSubscriptionAsync("Data Created", "data.created", new WebhookFilter("hook.data.data_type == \"test-data\"", "linq"));
-			var notification = new EventInfo("data.created", new { creationTime = DateTimeOffset.UtcNow, type = "test" });
+			var subscriptionId = CreateSubscription("Data Created", "data.created", new WebhookFilter("hook.data.data_type == \"test-data\"", "linq"));
+			var notification = new EventInfo("test", "data.created", new { 
+				creationTime = DateTimeOffset.UtcNow, 
+				type = "test" 
+			});
 
 			testTimeout = true;
 
@@ -319,8 +331,11 @@ namespace Deveel.Webhooks {
 
 		[Fact]
 		public async Task NoSubscriptionMatches() {
-			await CreateSubscriptionAsync("Data Created", "data.created",  new WebhookFilter("hook.data.data_type == \"test-data2\"", "linq"));
-			var notification = new EventInfo("data.created", new { creationTime = DateTimeOffset.UtcNow, type = "test" });
+			CreateSubscription("Data Created", "data.created",  new WebhookFilter("hook.data.data_type == \"test-data2\"", "linq"));
+			var notification = new EventInfo("test", "data.created", new { 
+				creationTime = DateTimeOffset.UtcNow, 
+				type = "test" 
+			});
 
 			var result = await notifier.NotifyAsync(tenantId, notification, CancellationToken.None);
 
@@ -330,8 +345,11 @@ namespace Deveel.Webhooks {
 
 		[Fact]
 		public async Task NoTenantMatches() {
-			var subscriptionId = await CreateSubscriptionAsync("Data Created", "data.created", new WebhookFilter("hook.data.data_type == \"test-data\"", "linq"));
-			var notification = new EventInfo("data.created", new { creationTime = DateTimeOffset.UtcNow, type = "test" });
+			var subscriptionId = CreateSubscription("Data Created", "data.created", new WebhookFilter("hook.data.data_type == \"test-data\"", "linq"));
+			var notification = new EventInfo("test", "data.created", new { 
+				creationTime = DateTimeOffset.UtcNow, 
+				type = "test" 
+			});
 
 			var result = await notifier.NotifyAsync(Guid.NewGuid().ToString("N"), notification, CancellationToken.None);
 
@@ -341,10 +359,13 @@ namespace Deveel.Webhooks {
 
 		[Fact]
 		public async Task NoTenantSet() {
-			var subscriptionId = await CreateSubscriptionAsync("Data Created", "data.created", new WebhookFilter("hook.data.data_type == \"test-data\"", "linq"));
-			var notification = new EventInfo("data.created", new { creationTime = DateTimeOffset.UtcNow, type = "test" });
+			var subscriptionId = CreateSubscription("Data Created", "data.created", new WebhookFilter("hook.data.data_type == \"test-data\"", "linq"));
+			var notification = new EventInfo("test", "data.created", new { 
+				creationTime = DateTimeOffset.UtcNow, 
+				type = "test" 
+			});
 
-			await Assert.ThrowsAsync<ArgumentException>(() => notifier.NotifyAsync(null, notification, CancellationToken.None));
+			await Assert.ThrowsAsync<WebhookException>(() => notifier.NotifyAsync(null, notification, CancellationToken.None));
 		}
 
 
@@ -357,6 +378,34 @@ namespace Deveel.Webhooks {
 					data_type = "test-data",
 					created_at = DateTimeOffset.UtcNow
 				});
+		}
+
+		private class TestWebhookSubscription : IWebhookSubscription {
+			public string SubscriptionId { get; set; }
+
+			public string TenantId { get; set; }
+
+			public string Name { get; set; }
+
+			public IEnumerable<string> EventTypes { get; set; }
+
+			public string DestinationUrl { get; set; }
+
+			public string Secret { get; set; }
+
+			public WebhookSubscriptionStatus Status { get; set; }
+
+			public int RetryCount { get; set; }
+
+			public IEnumerable<IWebhookFilter> Filters { get; set; }
+
+			public IDictionary<string, string> Headers { get; set; }
+
+			public IDictionary<string, object> Metadata { get; set; }
+
+			public DateTimeOffset? CreatedAt { get; set; }
+
+			public DateTimeOffset? UpdatedAt { get; set; }
 		}
 	}
 }

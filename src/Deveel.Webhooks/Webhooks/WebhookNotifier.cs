@@ -317,7 +317,13 @@ namespace Deveel.Webhooks {
 			if (subscriptionResolver == null)
 				return new List<IWebhookSubscription>();
 
-			return await subscriptionResolver.ResolveSubscriptionsAsync(tenantId, eventInfo.EventType, true, cancellationToken);
+			try {
+				return await subscriptionResolver.ResolveSubscriptionsAsync(tenantId, eventInfo.EventType, true, cancellationToken);
+			} catch(WebhookException) {
+				throw;
+			} catch (Exception ex) {
+				throw new WebhookException("An error occurred while trying to resolve the subscriptions", ex);
+			}
 		}
 
 		/// <inheritdoc/>
@@ -486,10 +492,7 @@ namespace Deveel.Webhooks {
 				return null;
 			}
 
-			var newEvent = new EventInfo(eventInfo.EventType, data) { 
-				Id = eventInfo.Id,
-				TimeStamp = eventInfo.TimeStamp
-			};
+			var newEvent = eventInfo.WithData(data);
 
 			try {
 				return await webhookFactory.CreateAsync(subscription, newEvent, cancellationToken);

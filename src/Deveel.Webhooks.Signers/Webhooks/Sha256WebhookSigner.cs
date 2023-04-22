@@ -23,6 +23,15 @@ namespace Deveel.Webhooks {
 		/// <inheritdoc/>
 		public override string[] Algorithms => new[] { "sha256", "sha-256" };
 
+		/// <summary>
+		/// Creates a new instance of the <see cref="HMACSHA256"/> algorithm
+		/// </summary>
+		/// <param name="key">
+		/// The key to use to create the hasher.
+		/// </param>
+		/// <returns>
+		/// Returns a new instance of <see cref="HMACSHA256"/>.
+		/// </returns>
         protected override KeyedHashAlgorithm CreateHasher(byte[] key) => new HMACSHA256(key);
     }
 }

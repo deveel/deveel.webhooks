@@ -50,9 +50,7 @@ namespace Deveel.Webhooks {
 			Services.TryAddSingleton(this);
 
 			RegisterReceiverMiddleware();
-			RegisterDefaultReceiver();
-
-			UseJsonParser();
+			RegisterDefaultServices();
 		}
 
 		/// <summary>
@@ -76,9 +74,11 @@ namespace Deveel.Webhooks {
 			Services.TryAddScoped<WebhookRequestVerfierMiddleware<TWebhook>>();
 		}
 
-		private void RegisterDefaultReceiver() {
+		private void RegisterDefaultServices() {
 			Services.TryAddScoped<IWebhookReceiver<TWebhook>, WebhookReceiver<TWebhook>>();
 			Services.TryAddScoped<WebhookReceiver<TWebhook>>();
+
+			Services.TryAddSingleton<IWebhookJsonParser<TWebhook>, SystemTextWebhookJsonParser<TWebhook>>();
 		}
 
 		/// <summary>

@@ -19,31 +19,51 @@ namespace Deveel.Webhooks {
 	/// Provides information on an event that might
 	/// trigger some notifications
 	/// </summary>
-	public sealed class EventInfo {
+	public readonly struct EventInfo {
 		/// <summary>
 		/// Constructs an EventInfo instance of the given type
 		/// and providing the given data
 		/// </summary>
-		/// <param name="eventType">The type of event</param>
-		/// <param name="data">The data provided by the event</param>
+		/// <param name="subject">
+		/// The subject of the event (e.g. the name of the aggregate)
+		/// </param>
+		/// <param name="eventType">
+		/// The type of event that was triggered
+		/// </param>
+		/// <param name="data">
+		/// The data provided by the event
+		/// </param>
+		/// <param name="id">
+		/// An optional unique identifier of the event
+		/// </param>
+		/// <param name="timeStamp">
+		/// An optional time-stamp of the time the event occurred
+		/// </param>
 		/// <exception cref="ArgumentException">
 		/// If the <paramref name="eventType"/> is null or an empty string
 		/// </exception>
 		/// <exception cref="ArgumentNullException">
 		/// If the data provided are null
 		/// </exception>
-		public EventInfo(string eventType, object data) {
+		public EventInfo(string subject, string eventType, object? data = null, string? id = null, DateTimeOffset? timeStamp = null) {
+			if (string.IsNullOrEmpty(subject)) 
+				throw new ArgumentException($"'{nameof(subject)}' cannot be null or empty.", nameof(subject));
+
 			if (string.IsNullOrWhiteSpace(eventType))
 				throw new ArgumentException($"'{nameof(eventType)}' cannot be null or whitespace.", nameof(eventType));
-			if (data is null)
-				throw new ArgumentNullException(nameof(data));
 
+			Subject = subject;
 			EventType = eventType;
-			Data = data;
+			Data = data ?? new object();
 
-			Id = Guid.NewGuid().ToString("N");
-			TimeStamp = DateTimeOffset.UtcNow;
+			Id = String.IsNullOrWhiteSpace(id) ? Guid.NewGuid().ToString("N") : id;
+			TimeStamp = timeStamp ?? DateTimeOffset.UtcNow;
 		}
+
+		/// <summary>
+		/// Gets the subject of the event (e.g. the name of the aggregate)
+		/// </summary>
+		public string Subject { get; }
 
 		/// <summary>
 		/// Gets the type of event
@@ -54,17 +74,29 @@ namespace Deveel.Webhooks {
 		/// Gets or sets an unique identifier of the event 
 		/// (by default, a new GUID)
 		/// </summary>
-		public string Id { get; set; }
+		public string Id { get; }
 
 		/// <summary>
 		/// Gets or sets the exact time-stamp of the event
 		/// (by default, the time of the creation of this instance)
 		/// </summary>
-		public DateTimeOffset TimeStamp { get; set; }
+		public DateTimeOffset TimeStamp { get; }
 
 		/// <summary>
 		/// Gets the data transported by the event.
 		/// </summary>
 		public object Data { get; }
+
+		/// <summary>
+		/// Creates a new instance of this event with the given data
+		/// </summary>
+		/// <param name="data">
+		/// The new data to be transported by the event
+		/// </param>
+		/// <returns>
+		/// Returns a new instance of this event with the given data
+		/// </returns>
+		public EventInfo WithData(object data)
+			=> new EventInfo(Subject, EventType, data, Id, TimeStamp);
 	}
 }

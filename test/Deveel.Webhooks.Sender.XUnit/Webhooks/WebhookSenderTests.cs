@@ -1,6 +1,7 @@
 ﻿using System.Net;
 using System.Net.Http.Json;
 using System.Web;
+using System.Xml.Serialization;
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -27,18 +28,35 @@ namespace Deveel.Webhooks {
 		private IServiceProvider ConfigureServices(ITestOutputHelper outputHelper) {
 			var retryTimeoutMs = 500;
 
+			Func<HttpRequestMessage, Task<TestWebhook>> readContent = async request => {
+				TestWebhook webhook;
+
+				if (request.Content!.Headers!.ContentType!.MediaType == "application/json") {
+					webhook = await request.Content!.ReadFromJsonAsync<TestWebhook>();
+				} else if (request.Content.Headers.ContentType.MediaType == "application/xml" ||
+				           request.Content.Headers.ContentType.MediaType == "text/xml") {
+					var xml = await request.Content!.ReadAsStringAsync();
+					var serializer = new XmlSerializer(typeof(TestWebhook));
+					webhook = (TestWebhook) serializer.Deserialize(new StringReader(xml))!;
+				} else {
+					throw new NotSupportedException($"The content type '{request.Content.Headers.ContentType.MediaType}' is not supported.");
+				}
+
+				return webhook!;
+			};
+
 			var mockHandler = new MockHttpMessageHandler();
 			mockHandler.When(HttpMethod.Post, "http://localhost:8080/webhooks")
 				.Respond(async request => {
 					lastRequest = request;
-					lastWebhook = await request.Content!.ReadFromJsonAsync<TestWebhook>();
+					lastWebhook = await readContent(request);
 					return new HttpResponseMessage(System.Net.HttpStatusCode.OK);
 				});
 
 			mockHandler.When(HttpMethod.Post, "http://localhost:8080/webhooks/timeout")
 				.Respond(async request => {
                     lastRequest = request;
-                    lastWebhook = await request.Content!.ReadFromJsonAsync<TestWebhook>();
+                    lastWebhook = await readContent(request);
 
 					return new HttpResponseMessage(HttpStatusCode.RequestTimeout);
                 });
@@ -46,7 +64,7 @@ namespace Deveel.Webhooks {
 			mockHandler.When(HttpMethod.Post, "http://localhost:8081/webhooks")
 				.Respond(async request => {
 					lastRequest = request;
-					lastWebhook = await request.Content!.ReadFromJsonAsync<TestWebhook>();
+					lastWebhook = await readContent(request);
 					await Task.Delay(TimeSpan.FromMilliseconds(retryTimeoutMs + 100));
 
 					return new HttpResponseMessage(HttpStatusCode.OK);
@@ -116,7 +134,36 @@ namespace Deveel.Webhooks {
 			Assert.Equal(webhook.TimeStamp, lastWebhook!.TimeStamp);
 		}
 
-        [Fact]
+		[Fact]
+		public async Task SendWebhookAsXml() {
+			var sender = GetSender<TestWebhook>();
+
+			var webhook = new TestWebhook {
+				Id = "123",
+				Event = "test",
+				TimeStamp = DateTimeOffset.Now
+			};
+
+			var destination = new WebhookDestination("http://localhost:8080/webhooks") {
+				Format = WebhookFormat.Xml
+			};
+
+			var result = await sender.SendAsync(destination, webhook);
+
+			Assert.NotNull(result);
+			Assert.True(result.Successful);
+			Assert.Equal(1, result.AttemptCount);
+
+			Assert.NotNull(lastRequest);
+			Assert.NotNull(lastWebhook);
+
+			Assert.Equal(webhook.Id, lastWebhook!.Id);
+			Assert.Equal(webhook.Event, lastWebhook!.Event);
+			Assert.Equal(webhook.TimeStamp, lastWebhook!.TimeStamp);
+		}
+
+
+		[Fact]
         public async Task SendWebhook_TimeoutError_NoRetries() {
             var sender = GetSender<TestWebhook>();
 
@@ -311,16 +358,6 @@ namespace Deveel.Webhooks {
 			Assert.False(result.Successful);
 			Assert.NotNull(result.StatusCode);
 			Assert.Equal(404, result.StatusCode);
-		}
-
-
-
-		class TestWebhook {
-			public string Id { get; set; }
-
-			public string Event { get; set; }
-
-			public DateTimeOffset TimeStamp { get; set; }
 		}
 	}
 }

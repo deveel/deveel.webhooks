@@ -15,8 +15,31 @@
 using System;
 
 namespace Deveel.Webhooks {
+	/// <summary>
+	/// PRovides a static factory to create a signature for a webhook
+	/// </summary>
     public static class WebhookSignature {
-        public static string Create(string algorithm, string json, string secret) {
+		/// <summary>
+		/// Creates a signature for the given <paramref name="algorithm"/>,
+		/// the <paramref name="webhookBody"/> payload and the <paramref name="secret"/>
+		/// provided by a subcription to sign the payload.
+		/// </summary>
+		/// <param name="algorithm">
+		/// The name of the algorithm to use to sign the payload.
+		/// </param>
+		/// <param name="webhookBody">
+		/// The body of the webhook payload to be signed.
+		/// </param>
+		/// <param name="secret">
+		/// A secret provided by a subscription to sign the payload.
+		/// </param>
+		/// <returns>
+		/// Returns a string representing the signature of the payload.
+		/// </returns>
+		/// <exception cref="NotSupportedException">
+		/// Thrown when the <paramref name="algorithm"/> is not supported.
+		/// </exception>
+        public static string Create(string algorithm, string webhookBody, string secret) {
             IWebhookSigner signer;
 
             switch (algorithm.ToUpperInvariant()) {
@@ -32,7 +55,7 @@ namespace Deveel.Webhooks {
                     throw new NotSupportedException($"The algorithm '{algorithm}' is not supported.");
             }
 
-            return signer.SignWebhook(json, secret);
+            return signer.SignWebhook(webhookBody, secret);
         }
     }
 }

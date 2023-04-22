@@ -16,9 +16,25 @@ using System;
 using System.Security.Cryptography;
 
 namespace Deveel.Webhooks {
+	/// <summary>
+	/// An implementation of <see cref="IWebhookSigner"/> that uses the
+	/// SHA-1 algorithm to sign the payloads.
+	/// </summary>
     public class Sha1WebhookSigner : WebhookSignerBase {
+		/// <summary>
+		/// Gets the name of the algorithm used by this signer.
+		/// </summary>
         public override string[] Algorithms => new[] { "SHA-1", "SHA1" };
 
+		/// <summary>
+		/// Creates a new instance of the <see cref="HMACSHA1"/> algorithm
+		/// </summary>
+		/// <param name="key">
+		/// The key to use to create the hasher.
+		/// </param>
+		/// <returns>
+		/// Returns a new instance of <see cref="HMACSHA1"/>.
+		/// </returns>
         protected override KeyedHashAlgorithm CreateHasher(byte[] key) {
             return new HMACSHA1(key);
         }

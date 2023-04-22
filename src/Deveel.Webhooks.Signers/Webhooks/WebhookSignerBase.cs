@@ -17,16 +17,53 @@ using System.Security.Cryptography;
 using System.Text;
 
 namespace Deveel.Webhooks {
+	/// <summary>
+	/// An abstract implementation of <see cref="IWebhookSigner"/> that provides
+	/// a generic method to sign the payloads.
+	/// </summary>
     public abstract class WebhookSignerBase : IWebhookSigner {
+		/// <summary>
+		/// When overridden, gets the names of the algorithms supported by this
+		/// signer instance.
+		/// </summary>
         public abstract string[] Algorithms { get; }
 
+		/// <summary>
+		/// When overridden, creates a new instance of the <see cref="KeyedHashAlgorithm"/>
+		/// used to compute the signature.
+		/// </summary>
+		/// <param name="key">
+		/// The key to use to create the hasher.
+		/// </param>
+		/// <returns>
+		/// Returns a new instance of <see cref="KeyedHashAlgorithm"/>.
+		/// </returns>
         protected abstract KeyedHashAlgorithm CreateHasher(byte[] key);
 
+		/// <summary>
+		/// Creates the byte array representation of the secret key.
+		/// </summary>
+		/// <param name="secret">
+		/// The secret key to use to create the hasher.
+		/// </param>
+		/// <returns>
+		/// Returns a byte array representing the secret key.
+		/// </returns>
         protected virtual byte[] GetKeyBytes(string secret) {
             return Encoding.UTF8.GetBytes(secret);
         }
 
-        protected virtual byte[] GetJsonBytes(string json) => Encoding.UTF8.GetBytes(json);
+		/// <summary>
+		/// Gets the byte array representation of the given <paramref name="webhookBody"/>.
+		/// </summary>
+		/// <param name="webhookBody">
+		/// The string that represents the webhook to sign.
+		/// </param>
+		/// <returns>
+		/// Returns a byte array representing the payload of the webhook.
+		/// </returns>
+        protected virtual byte[] GetPayloadBytes(string webhookBody) 
+			=> Encoding.UTF8.GetBytes(webhookBody);
 
         /// <summary>
         /// Computes the hash of the given <paramref name="webhookBody"/> using the
@@ -47,7 +84,7 @@ namespace Deveel.Webhooks {
             var key = GetKeyBytes(secret);
             using var alg = CreateHasher(key);
 
-            return alg.ComputeHash(GetJsonBytes(webhookBody));
+            return alg.ComputeHash(GetPayloadBytes(webhookBody));
         }
 
         /// <summary>
@@ -58,6 +95,7 @@ namespace Deveel.Webhooks {
         /// Returns a string representing the signature of the given body
         /// </returns>
         protected virtual string FormatSignature(byte[] hash) {
+			// TODO: should we prepend the algorithm name here?
             return $"{Algorithms[0]}={Convert.ToHexString(hash)}";
         }
 

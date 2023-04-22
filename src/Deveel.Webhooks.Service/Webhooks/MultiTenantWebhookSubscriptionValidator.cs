@@ -19,13 +19,13 @@ using System.Threading.Tasks;
 namespace Deveel.Webhooks {
 	public class MultiTenantWebhookSubscriptionValidator<TSubscription> : IMultiTenantWebhookSubscriptionValidator<TSubscription>
 		where TSubscription : class, IWebhookSubscription {
-		public virtual Task<WebhookValidationResult> ValidateAsync(IMultiTenantWebhookSubscriptionManager<TSubscription> manager, string tenantId, TSubscription subscription, CancellationToken cancellationToken) {
+		public virtual Task<WebhookValidationResult> ValidateAsync(MultiTenantWebhookSubscriptionManager<TSubscription> manager, string tenantId, TSubscription subscription, CancellationToken cancellationToken) {
 			var result = Validate(manager, tenantId, subscription);
 
 			return Task.FromResult(result);
 		}
 
-		public virtual WebhookValidationResult Validate(IMultiTenantWebhookSubscriptionManager<TSubscription> manager, string tenantId, TSubscription subscription) {
+		public virtual WebhookValidationResult Validate(MultiTenantWebhookSubscriptionManager<TSubscription> manager, string tenantId, TSubscription subscription) {
 			if (String.IsNullOrWhiteSpace(tenantId))
 				return WebhookValidationResult.Failed("The tenant ID is required in a multi-tenant context");
 

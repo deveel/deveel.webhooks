@@ -25,7 +25,9 @@ Here you can find a documentation of the `Deveel Webhooks` framework, to help yo
 | ---------------------------------------------------- | ------------------------------------------ |
 | **[Webhook](concept_webhook.md)**                     | What is it a 'Webhook' and why I need it?  |
 | **[Subscriptions](concept_webhook_subscription.md)** | How does a subscription to an event works? |
+| **[Senders](concept_webhook_sender.md)**             | What is a sender of webooks?               |
 | **[Receivers](concept_webhook_receiver.md)**         | What is a receiver of webooks?             |
+| **[Notifications](concept_webhook_notification.md)** | What is a notification of events?         |
 
 ## Tutorials
 

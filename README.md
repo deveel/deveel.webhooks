@@ -15,6 +15,24 @@ Anyway, a typical implementation consists of the following elements:
 
 I tried to express the concepts in more details in [this page](docs/concept_webhook.md) within this repository (without any ambition to be pedagogic).
 
+## The Framework Libraries
+
+The libraries currently provided by the framework are the following:
+
+| Library                                 | Description                                                                                                          | NuGet                                                                  | GitHub (prerelease) |
+| ----------------------------------------| ---------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------- |---------------------|
+| **Deveel.Webhooks**                     | Provides the capabilities to handle webhook subscriptions and notifications                                          | ![Nuget](https://img.shields.io/nuget/dt/Deveel.Webhooks?label=Deveel.Webhooks&logo=nuget) | [![GitHub](https://img.shields.io/static/v1?label=Deveel.Webhooks&message=Pre-Release&color=yellow&logo=github)](https://github.com/deveel/deveel.webhooks/pkgs/nuget/Deveel.Webhooks) |
+| **Deveel.Webhooks.Sender**              | Provides services and functions to send webhooks to remote endpoints                                                 | ![Nuget](https://img.shields.io/nuget/dt/Deveel.Webhooks.Sender?label=Deveel.Webhooks.Sender&logo=nuget) | [![GitHub](https://img.shields.io/static/v1?label=Deveel.Webhooks.Sender&message=Pre-Release&color=yellow&logo=github)](https://github.com/deveel/deveel.webhooks/pkgs/nuget/Deveel.Webhooks.Service) |
+| **Deveel.Webhooks.Service**             | Implements the functions to manage and resolve webhook subscriptions                                                 | ![Nuget](https://img.shields.io/nuget/dt/Deveel.Webhooks.Service?label=Deveel.Webhooks.Service&logo=nuget)| [![GitHub](https://img.shields.io/static/v1?label=Deveel.Webhooks.Service&message=Pre-Release&color=yellow&logo=github)](https://github.com/deveel/deveel.webhooks/pkgs/nuget/Deveel.Webhooks.Service) |
+| **Deveel.Webhooks.MongoDb**             | An implementation of the webhoom management data layer that is backed by [MongoDB](https://mongodb.com) databases    | ![Nuget](https://img.shields.io/nuget/dt/Deveel.Webhooks.MongoDb?label=Deveel.Webhooks.MongoDb&logo=nuget) | [![GitHub](https://img.shields.io/static/v1?label=Deveel.Webhooks.MongoDb&message=Pre-Release&color=yellow&logo=github)](https://github.com/deveel/deveel.webhooks/pkgs/nuget/Deveel.Webhooks.MongoDb) |
+| **Deveel.Webhooks.DynamicLinq**         | The webhook subscription filtering engine that uses the [Dynamic LINQ](https://dynamic-linq.net/) expressions        | ![Nuget](https://img.shields.io/nuget/dt/Deveel.Webhooks.DynamicLinq?label=Deveel.Webhooks.DynamicLinq&logo=nuget) | [![GitHub](https://img.shields.io/static/v1?label=Deveel.Webhooks.DynamicLinq&message=Pre-Release&color=yellow&logo=github)](https://github.com/deveel/deveel.webhooks/pkgs/nuget/Deveel.Webhooks.DynamicLinq) |
+| **Deveel.Webhooks.Receiver.AspNetCore** | An implementation of the webhook receiver that is backed by [ASP.NET Core](https://dotnet.microsoft.com/apps/aspnet) | ![Nuget](https://img.shields.io/nuget/dt/Deveel.Webhooks?label=Deveel.Webhooks.Receiver.AspNetCore&logo=nuget) | [![GitHub](https://img.shields.io/static/v1?label=Deveel.Webhooks.Receiver.AspNetCore&message=Pre-Release&color=yellow&logo=github)](https://github.com/deveel/deveel.webhooks/pkgs/nuget/Deveel.Webhooks.Receiver.AspNetCore) |
+
+You can obtain the stable versions of these libraries from the [NuGet Official](https://nuget.org) channel.
+
+To get the latest pre-release versions of the packages you can restore from the [Deveel Package Manager](https://github.com/orgs/deveel/packages).
+
+
 ## Motivation
 
 While working on a .NET Core 3.1/.NET 5 *aaS (_as-a-Service_) project that functionally required the capability of users of the service being able to create system-to-system subscriptions and notifications of events through HTTP channel (that is typically named _webhooks_, or _HTTP callbacks_), I started my design with the ambition to use existing solutions, to avoid the bad practice of _reinventing the wheel_, but I ended up frustrated in such ambition:

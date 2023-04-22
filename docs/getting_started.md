@@ -24,7 +24,7 @@ It is possible to use its components as they are provided, or use the base contr
 
 The overall set of libraries are available through [NuGet](https://nuget.org), and can be installed and restored easily once configured in your projects.
 
-At the moment (_January 2022_) they are developed as `.NET Standard 2.1` and thus compatible with all the profiles of the .NET framework greater or equal than the `.NET Core 3.1`.
+At the moment (_May 2023_) they are developed as `.NET 6.0` and thus compatible with all the profiles of the .NET framework greater or equal than this.
 
 The core library of the framework is `Deveel.Webhooks` and can be installed through the `dotnet` tool command line
 
@@ -38,7 +38,7 @@ Or by editing your `.csproj` file and adding a `<PackageReference>` entry.
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>ne5.0</TargetFramework>
+    <TargetFramework>ne6.0</TargetFramework>
     ...
 
   </PropertyGroup>
@@ -50,31 +50,15 @@ Or by editing your `.csproj` file and adding a `<PackageReference>` entry.
 </Project>
 ```
 
-This provides all the functions that are needed to send webhooks to a given destination and activate the notification process (although this one would require external instrumentations, for resolving subscriptions and other advanced functions).
-
-## The Framework Libraries
-
-The libraries currently provided by the framework are the following:
-
-| Library                             | Description                                                                                                       | NuGet                                                                  | GitHub (prerelease) |
-| ----------------------------------- | ----------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------- |---------------------|
-| **Deveel.Webhooks**                 | Provides the foundation contracts of the webhook service and basic implementations for the sending functions      | ![Nuget](https://img.shields.io/nuget/dt/Deveel.Webhooks?label=Deveel.Webhooks&logo=nuget) | [![GitHub](https://img.shields.io/static/v1?label=Deveel.Webhooks&message=Pre-Release&color=yellow&logo=github)](https://github.com/deveel/deveel.webhooks/pkgs/nuget/Deveel.Webhooks) |
-| **Deveel.Webhooks.Service**         | Implements the functions to manage and resolve webhook subscriptions                                              | ![Nuget](https://img.shields.io/nuget/dt/Deveel.Webhooks.Service?label=Deveel.Webhooks.Service&logo=nuget)| [![GitHub](https://img.shields.io/static/v1?label=Deveel.Webhooks.Service&message=Pre-Release&color=yellow&logo=github)](https://github.com/deveel/deveel.webhooks/pkgs/nuget/Deveel.Webhooks.Service) |
-| **Deveel.Webhooks.MongoDb**         | An implementation of the webhoom management data layer that is backed by [MongoDB](https://mongodb.com) databases | ![Nuget](https://img.shields.io/nuget/dt/Deveel.Webhooks.MongoDb?label=Deveel.Webhooks.MongoDb&logo=nuget) | [![GitHub](https://img.shields.io/static/v1?label=Deveel.Webhooks.MongoDb&message=Pre-Release&color=yellow&logo=github)](https://github.com/deveel/deveel.webhooks/pkgs/nuget/Deveel.Webhooks.MongoDb) |
-| **Deveel.Webhooks.DynamicLinq**     | The webhook subscription filtering engine that uses the [Dynamic LINQ](https://dynamic-linq.net/) expressions     | ![Nuget](https://img.shields.io/nuget/dt/Deveel.Webhooks.DynamicLinq?label=Deveel.Webhooks.DynamicLinq&logo=nuget) | [![GitHub](https://img.shields.io/static/v1?label=Deveel.Webhooks.DynamicLinq&message=Pre-Release&color=yellow&logo=github)](https://github.com/deveel/deveel.webhooks/pkgs/nuget/Deveel.Webhooks.DynamicLinq) |
-| **Deveel.Webhooks.Receiver.AspNetCore** | An implementation of the webhook receiver that is backed by [ASP.NET Core](https://dotnet.microsoft.com/apps/aspnet) | ![Nuget](https://img.shields.io/nuget/dt/Deveel.Webhooks?label=Deveel.Webhooks.Receiver.AspNetCore&logo=nuget) | [![GitHub](https://img.shields.io/static/v1?label=Deveel.Webhooks.Receiver.AspNetCore&message=Pre-Release&color=yellow&logo=github)](https://github.com/deveel/deveel.webhooks/pkgs/nuget/Deveel.Webhooks.Receiver.AspNetCore) |
-
-You can obtain the stable versions of these libraries from the [NuGet Official](https://nuget.org) channel.
-
-To get the latest pre-release versions of the packages you can restore from the [Deveel Package Manager](https://github.com/orgs/deveel/packages).
+This provides all the functions that are needed to manage subscriptions and send webhooks to a given destination, activating the notification process (although this one would require external instrumentations, for resolving subscriptions and other advanced functions).
 
 ## Adding the Webhook Service
 
-To begin using the basic functions of the webhook service all that you need is to invoke the `.AddWebhooks()` function of the service collection in the instrumentation of your application.
+To begin using the functions of the webhook service, all that you need is to invoke the `.AddWebhooks()` function of the service collection in the instrumentation of your application: this will add the required default services to the container, enabling the application to start notifying events to the registered recipients.
 
-For example, assuming you are working on a traditional _[ASP.NET application model](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/?view=aspnetcore-5.0&tabs=windows)_, you can enable these functions like this:
+For example, assuming you are working on a traditional _[ASP.NET application model](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/?view=aspnetcore-6.0&tabs=windows)_, you can enable these functions like this:
 
-``` csharp
+```csharp
 
 using System;
 
@@ -96,61 +80,101 @@ namespace Example {
 
             // this call adds the basic services for sending of webhooks
             // using the default configurations
-            services.AddWebhooks();
+            services.AddWebhooks<MyWebhook>();
         }
     }
 }
 
 ```
 
-## Configuring the Delivery Behavior
+**Note**: To be able to notify events, you need to provide a type that implements the `IWebhookSubscriptionResolver` interface, that can be used to resolve the subscriptions for a given event. This is not provided by the core library by default, and you can add implementations that are specific for a given storage system (like the one provided by the `Deveel.Webhooks.MongoDb` library).
 
-Included in the core library of the framework (`Deveel.Webhooks`) you will find the abstractions and helpers to configure the behavior of the webhook delivery to recipient systems: this controls aspects of the process like _payload formatting_, _retries on failures_, _signatures_.
+### Configuring the Delivery Behavior
+
+The framework provides a default behavior for the delivery of webhooks to the registered recipients, but you can configure the behavior of the service to suit your needs.
+
+The library `Deveel.Webhooks` depends from the `Deveel.Webhooks.Sender` library, which provides the needed functions to send webhooks to receivers: you will find the abstractions and helpers to configure the behavior of the webhook delivery to recipient systems, controlling aspects of the process like _payload formatting_, _retries on failures_, _signatures_.
 
 You have several options to configure the service, and therefore you are free to chose the methodology that suits you best.
 
-### The WebhookDeliveryOptions
+### The WebhookSenderOptions
+
+The `WebhookSenderOptions` class provides a set of properties that can be used to configure the behavior of the webhook sender.
+
+The configurations are evolving with the versions of the framework, and the following ones apply to the current version (`1.1.6`) of the library.
 
 ``` csharp
 
-var options = new WebhookDeliveryOptions {
-    // The maximum number of delivery attempts
-    MaxAttemptCount = 2,
+var options = new WebhookSenderOptions {
+  // When using the IHttpClientFactory, this is the name of the client
+  // that will be used to send the webhooks
+  HttpClientName = "my-http-client",
 
-    // The maximum time before failing a single delivery
-    TimeOut = TimeSpan.FromSeconds(2),
+  // A set of default headers that will be added to the requests
+  // sent to the webhook recipients
+  DefaultHeaders = new Dictionary<string, string> {
+	// The default headers that will be added to the requests
+	// sent to the webhook recipients
+	["X-Sender"] = "My-Webhook-Sender/1.0"
+  },
 
-    // Instructs the service to sign the webhooks
-    // using the secrets of the subscriptions
-    SignWebhooks = true,
+  // The default format of the payload that will be sent to the
+  // webhook recipients (possible values are Json and Xml)
+  DefaultFormat = WebhookPayloadFormat.Json,
 
-    // If the webhooks are signed, where to place
-    // the signature ('Header' or 'QueryString') in the
-    // delivery HTTP Request
-    SignatureLocation = WebhookSignatureLocation.Header,
+  // The default timeout for the requests sent to the webhook
+  // recipients to be completed, before being considered failed
+  Timeout = TimeSpan.FromSeconds(30),
 
-    // The algorithm to be used to sign the webhooks
-    // (among the registered ones)
-    SignatureAlgorithm = "HMAC-SHA-256",
+  // The default retry options for the requests sent to the webhook
+  // recipients, that can be overridden by the specific subscription
+  // configurations
+  Retry = new WebhookRetryOptions {
+    // The default number of retries that will be performed
+    // after a failed request, before giving up
+    MaxRetries = 3,
+    
+    // The default delay between retries
+    Delay = TimeSpan.FromSeconds(5),
 
-    // If the signature is to be placed in the headers
-    // of a request, this sets the name of the header
-    // carrying that signature
-    SignatureHeaderName = "X-WEBHOOK-SIGNATURE",
+    // The default timeout for each retry request
+    // before being considered failed
+    Timeout = TimeSpan.FromSeconds(3)
+  },
+  
+  // The default signature options for the requests sent to the webhook
+  // recipients, that can be overridden by the specific subscription
+  // configurations
+  Singature = new WebhookSenderSignatureOptions {
+    // The default location within the request where the signature
+    // will be added (possible values are Header and QueryString)
+    Location = WebhookSignatureLocation.Header,
 
-    // If the signature is to be placed in the query-string
-    // of a request, this sets the key of the entry
-    // carrying that signature
-    SignatureQueryStringKey = "webhook-signature"
+    // The default name of the header that carries the signature,
+    // when the location of the signature is the Header
+    HeaderName = "X-Signature",
+    
+    // The default name of the query string parameter that carries
+    // the signature, when the location of the signature is the QueryString
+    QueryParameter = "signature",
+    
+    // The default algorithm that will be used to sign the requests
+    // sent to the webhook recipients
+    Algorithm = WebhookSignatureAlgorithm.HmacSha256,
+
+    // The name of the query string parameter that will be used to
+    // specify the algorithm used for the signature
+    AlgorithmQueryParameter = "alg_sig"
+  }
 };
 
 ```
 
+Mind that every subscription can override some of the default options, and you can also provide a custom implementation of the `IWebhookSender` interface to customize the behavior of the delivery process.
+
 ### IConfiguration Pattern
 
 If you keep your configurations in an `appsetting.json` file, environment variables, secrets, implementing a typical pattern of the _ASP.NET_ applications, you can invoke the overloads provided by `Deveel.Webhook` that access the available instances of `IConfiguration`.
-
-Using the `IConfiguration` object injected at Startup
 
 ``` csharp
 using System;
@@ -169,10 +193,11 @@ namespace Example {
         public IConfiguration Configuation { get; }
 
         public void Configure(IServiceCollection services) {
-            // The configurations are specified in the 'Webhooks:Delivery'
-            // section of the configuration instance
-            services.AddWebhooks(webhooks => 
-                webhooks.ConfigureDelivery(Configuration, "Webhooks:Delivery"));
+            // The configurations are specified in the 'Webhooks:Sender'
+            // section of the configuration instance, and the service
+            // will find the IConfiguration instance within the
+            // container and use it to configure the service
+            services.AddWebhooks<MyWebhook>("Webhooks:Sender");
         }
     }
 }
@@ -180,9 +205,11 @@ namespace Example {
 
 After this, an instance of `IOptions<WebhookDeliveryOptions>` is available for injection in the webhook services or in your code.
 
-## Dependency Pattern
+Given the design of the service, it will also be possible to access a webhook-specific instance of `IOptions<WebhookDeliveryOptions>` for a given webhook type, using the `IOptionsSnapshot<TOptions>` service, using the type name of the webhook as the key (eg. `IOptionsSnapshot<WebhookSenderOptions>.Get("MyWebhook")`).
 
-If you want to let the services to access the available instance of the `IConfiguration` after the build of the service provider, you can use another overload.
+### Manual Configuration
+
+If you prefer to configure the service manually, you can use the `AddWebhooks` overload that accepts an instance of `WebhookSenderOptions` as parameter.
 
 ``` csharp
 using System;
@@ -201,13 +228,99 @@ namespace Example {
         public IConfiguration Configuation { get; }
 
         public void Configure(IServiceCollection services) {
-            // The configurations are specified in the 'Webhooks:Delivery'
-            // section of the configuration instance
-            services.AddWebhooks(webhooks => 
-                webhooks.ConfigureDelivery("Webhooks:Delivery"));
+            services.AddHttpClient("my-http-client");
+
+            services.AddWebhooks<MyWebhook>(options => {
+              options.HttpClientName = "my-http-client";
+            });
         }
     }
 }
 ```
 
-Like in the previous case, an instance of `IOptions<WebhookDeliveryOptions>` is available for injection in the webhook services or in your code.
+Like in the previous case, an instance of `IOptionsSnapshot<WebhookSenderOptions>` is available for injection in the webhook services or in your code.
+
+## Receiving Webhooks
+
+The framework also provides a set of services that can be used to receive webhooks from external systems, and to process them.
+
+To do so, you need to add the `Deveel.Webhooks.Receiver.AspNetCore` library to your project, that must be an _ASP.NET Core_ application.
+
+You can add the library to your project using the `dotnet` command line tool:
+
+``` bash
+dotnet add package Deveel.Webhooks.Receiver.AspNetCore
+```
+
+or add the following line to your `csproj` file:
+
+``` xml
+<PackageReference Include="Deveel.Webhooks.Receiver.AspNetCore" Version="1.1.6" />
+```
+
+### Configuring the Receiver
+
+The receiver is configured using the `AddWebhooksReceiver` extension method on the `IServiceCollection` interface.
+
+To run the receiver, you need to add the `UseWebhooksReceiver` middleware to the pipeline of your application, specifying the path where the receiver will be listening for the incoming webhooks.
+
+When the service is configured with a webhook receiver, this will be invoked when a webhook is received, allowing the processing of the incoming webhook.
+
+``` csharp
+using System;
+
+using Microsoft.Extensions.Configuration;
+
+using Deveel.Webhooks;
+
+namespace Example {
+	public class Startup {
+		public Startup(IConfiguration configuration) {
+			Configuration = configuration;
+		}
+
+		public IConfiguration Configuation { get; }
+
+		public void Configure(IServiceCollection services) {
+			services.AddWebhooksReceiver<MyWebhook>()
+              .AddHandler<MyWebhookHandler>();
+		}
+        
+        public void Configure(IApplicationBuilder app) {
+            app.UseRouting();
+            
+            app.UseWebhooksReceiver("/my-webhook");
+		}
+	}
+}
+```
+
+The `AddWebhooksReceiver` method accepts a generic type parameter that specifies the type of the webhook that will be received by the receiver: this allows to accept and process multiple webhooks in the same application.
+
+### Handling Webhooks
+
+The receiver will invoke the registered handlers in the order they are registered, that allows to process the incoming webhook in a pipeline.
+
+Handlers can use dependency injection to access the services registered in the application.
+
+``` csharp
+using System;
+
+using Deveel.Webhooks;
+
+namespace Example {
+	public class MyWebhookHandler : IWebhookHandler<MyWebhook> {
+        private readonly ILogger<MyWebhookHandler> logger;
+
+        public MyWebhookHandler(ILogger<MyWebhookHandler> logger) {
+			this.logger = logger;
+		}
+
+		public Task HandleAsync(MyWebhook webhook, CancellationToken cancellationToken) {
+            logger.LogInformation("Received webhook {0}", webhook.Id);
+
+			// Do something with the webhook
+		}
+	}
+}
+```

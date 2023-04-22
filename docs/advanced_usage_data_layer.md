@@ -14,7 +14,11 @@
  limitations under the License.
 -->
 
-# Consfiguring Data Layers
+# Webhook Management Data Layers
+
+_**Note**: This part of the framework will sonn go through a major refactoring and the documentation as to be consider provisional_
+
+---
 
 The persistence of information object for long term operations is based on the implementation of a set of contracts of the management domain of the service.
 
@@ -58,5 +62,18 @@ _**Note**: Since the package references the core `Deveel.Webhooks` library, this
 At this point you can configure your application to include the MongoDB layer as this:
 
 ``` csharp
+namespace Example {
+  public class Startup {
+	public void ConfigureServices(IServiceCollection services) {
+	  services.AddWebhooks()
+		.UseMongo(options => {
+            options.ConnectionString = "mongodb://localhost:27017";
+            options.DatabaseName = "webhooks";
+            options.CollectionName = "subscriptions";
+            // ...
+        });
+	}
+  }
+}
 
 ```

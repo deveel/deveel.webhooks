@@ -22,41 +22,79 @@ In fact, sometimes events don't carry all information that have to be transmitte
 
 _Note_: This is not a mandatory passage in the notification process, and can be skipped if the data carried by the event represents the information to be transferred to the receivers.
 
+## Event Information
+
+The overall contract of an event as recognized by the system is defined by the `EventInfo` structure, that is composed of the following fields:
+
+  * `Id` - The event identifier
+  * `Source` - The source of the event (e.g. `github`)
+  * `Subject` - The subject of the event (e.g. `issue`)
+  * `Type` - The type of the event (e.g. `created`)
+  * `TimeStamp` - The exact time the event has occurred in the source system
+  * `Data` - The payload that contains the actual data of the event
+
+This design respect a general contract of the domain-driven design, informing of the event's nature and the payload that contains the actual data.
+
+## Event Data
+
+As mentioned before, the event data is not always in the format that is expected by the target system that will be notified, and the resons to implement a further passage of transformation are various:
+
+* The event data might contain sensitive information, that should not be exposed to the target system
+* The event data might contain information that is not relevant to the target system
+* The event data might contain information that is not available in the event, but must be retrieved from external sources
+
 ## Transformation of Data
+
+The notifier service uses the `IWebhookDataFactory` interface to transform the event data, that is received from the event bus, into the format that is expected by the target system, running all the registered transformations in a pipeline, until obtaining a version of the event that is suitable for the target system.
 
 Data transformations are specific to your use cases and they can be specific to a given event condition (eg. _only a specific type of event with a given value in its 'data' component triggers the transformation_).
 
 To implement this logic in the application, you must first create a new class that inherits from the `IWebhookDataFactory` contract.
 
 ```csharp
-using System;
+public class UserDataFactory : IWebhookDataFactory
+{
+    private readonly IUserResolver resolver;
 
-using Deveel.Webhooks.
+	public MyWebhookDataFactory(IUserResolver resolver)
+	{
+		this.resolver = resolver;
+	}
 
-namespace Example {
-    public class MyWebhookDataFactory : IWebhookDataFactory {
-        // assess if the event given can be handled
-        public bool Handles(EventInfo eventInfo) {
-            // implement your verification logic here ...
-            return true;
-        }
+	public bool Handles(EventInfo eventInfo)
+	{
+		// Check if the event is handled by this factory
+		return eventInfo.Source == "my-source" && 
+			eventInfo.Subject == "person" && 
+			eventInfo.Type == "created";
+	}
 
-        // this constructs a new object that will be used as
-        // part of the payload of the webhook
-        public async Task<object> CreateDataAsync(EventInfo eventInfo, CancellationToken cancellationToken) {
-            // here you can use external services to combine and form the result
-            // object, according to your logic...
-            return null;
-        }
-    }
+	public Task<object> CreateData(EventInfo eventInfo, CancellationToken cancellationToken)
+	{
+		// Resolve the event data
+		var userId = eventInfo.Data.GetString("userId");
+		var user = await resolver.GetUserAsync(userId, cancellationToken);
+		
+		// Transform the event data
+		return new UserCreatedData
+		{
+			Id = user.Id,
+			Email = user.Email,
+			FirstName = user.FirstName,
+			LastName = user.LastName
+		};
+	}
 }
 
 ```
+
+**Note**: In the transformation pipeline of the notifier, the `IWebhookDataFactory` implementations are executed in the order they are registered in the container, and the event passed as argument of the data creation method is the result of the previous execution: only the data part of the event is applied to the event, while the other fields (e.g. `Id`, `Source`, `Subject`, `Type`, `TimeStamp`) are preserved.
+
+## Registering the Data Factory
 
 To enable the implemented by your data factory, you can register it during the configuration of the application.
 
 ```csharp
-
 using System;
 
 using Microsoft.Extensions.Configuration;
@@ -76,60 +114,11 @@ namespace Example {
             // ... add any other service you need ...
 
             // this call adds the basic services for sending of webhooks
-            services.AddWebhooks(webhooks => {
+            services.AddWebhookNotifier(webhooks => {
                 // This call registers the data factory as a
                 // scoped service by default, but other overloads
                 // allow controlling the lifetime
-                webhooks.AddDataFactory<MyWebhookDataFactory>();
-            });
-        }
-    }
-}
-
-```
-
-The [webhook notifier component](basic_usage_notification.md) will resolve the first data factory supporting the event triggering the notification, and trasform the data.
-
-**Note**: Currently only the service implements one single transformation per event (_or none_). If multiple data factories matching the event are registered, only the last one will be used. (_Probably there is a room for improvement in this area, implementing a pipelined transformation..._)
-
-## Default Webhook Fields
-
-Additionally to the data of the event, eventually transformed (as explained above), by design convention a webhook consists also of few additional elements, to reflect its nature of _event_ (see the [webhook concept](concept_webhook.md))
-
-| Field      | Description                                      |
-| ---------- | ------------------------------------------------ |
-| Event ID   | The unique identifier of the original event      |
-| Event Type | The type of the original event that was fired    |
-| Time-Stamp | The exact time when the original event was fired |
-
-It is possible to control the inclusion of these fields during the process of formation of the webhook, through configuration of the application.
-
-``` csharp
-using System;
-
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-
-using Deveel.Webhooks;
-
-namespace Example {
-    public class Startup {
-        public Startup(IConfiguration config) {
-            Configuration = config;
-        }
-
-        public IConfiguration Configuration { get; }
-
-        public void Configure(IServiceCollection services) {
-            // ... add any other service you need ...
-
-            // this call adds the basic services for sending of webhooks
-            services.AddWebhooks(webhooks => {
-                // This configuration instructs the sender to
-                // include the Event ID, Event Type and Time-Stamp
-                // in the payload of the webhook
-                webhooks.ConfigureDelivery(delivery =>
-                    delivery.IncludeAllFields());
+                webhooks.AddDataFactory<UserDataFctory>();
             });
         }
     }

@@ -17,13 +17,13 @@ namespace Deveel.Webhooks {
 		private readonly string tenantId = Guid.NewGuid().ToString("N");
 		private readonly string userId = Guid.NewGuid().ToString("N");
 
-		private readonly IMultiTenantWebhookSubscriptionManager<MongoDbWebhookSubscription> webhookManager;
+		private readonly MultiTenantWebhookSubscriptionManager<MongoDbWebhookSubscription> webhookManager;
 		private readonly IWebhookSubscriptionStoreProvider<MongoDbWebhookSubscription> storeProvider;
 
 		private readonly IWebhookSubscriptionFactory<MongoDbWebhookSubscription> subscriptionFactory;
 
 		public MultiTenantWebhookManagementTests(ITestOutputHelper outputHelper) : base(outputHelper) {
-			webhookManager = Services.GetService<IMultiTenantWebhookSubscriptionManager<MongoDbWebhookSubscription>>();
+			webhookManager = Services.GetRequiredService<MultiTenantWebhookSubscriptionManager<MongoDbWebhookSubscription>>();
 			storeProvider = Services.GetRequiredService<IWebhookSubscriptionStoreProvider<MongoDbWebhookSubscription>>();
 			subscriptionFactory = Services.GetRequiredService<IWebhookSubscriptionFactory<MongoDbWebhookSubscription>>();
 		}

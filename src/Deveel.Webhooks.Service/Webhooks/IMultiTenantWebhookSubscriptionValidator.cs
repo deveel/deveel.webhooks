@@ -19,6 +19,6 @@ using System.Threading;
 namespace Deveel.Webhooks {
 	public interface IMultiTenantWebhookSubscriptionValidator<TSubscription>
 		where TSubscription : class, IWebhookSubscription {
-		Task<WebhookValidationResult> ValidateAsync(IMultiTenantWebhookSubscriptionManager<TSubscription> manager, string tenantId, TSubscription subscription, CancellationToken cancellationToken);
+		Task<WebhookValidationResult> ValidateAsync(MultiTenantWebhookSubscriptionManager<TSubscription> manager, string tenantId, TSubscription subscription, CancellationToken cancellationToken);
 	}
 }

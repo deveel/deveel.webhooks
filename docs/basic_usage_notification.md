@@ -14,26 +14,26 @@
  limitations under the License.
 -->
 
-# Webhook Notification
+# Webhook Notifications
 
-The notification process of a webhook introduces elements of automation, putting together the _subscription management_ and the _sending_ processes (described above), and an optional _transformation_ process, to resolve event information in a full formed object to be transferred (eg. _the reference to a contact is used to resolve the contact object, that is then included in the payload of the webhook_).
+The notification process of a webhook introduces elements of automation, putting together the _[subscription management](basic_usage_management.md)_ and the _[sending of webhooks](basic_usage_send.md)_ processes, and an optional _[data transformation](advanced_usage_custom_datafactory.md)_ process (to resolve event information in a full formed object to be transferred).
 
-The _Deveel Webhook_ framework implements these functions through an instance of the `IWebhookNotifier` contract, that uses a `IWebhookSubscriptionResolver` (by default backed by the subscription manager) and the `IWebhookSender` instance configured.
+The _Deveel Webhook_ framework implements these functions through an instance of the `IWebhookNotifier` service, that uses a `IWebhookSubscriptionResolver` (by default backed by the subscription manager) and the `IWebhookSender` instance configured.
 
-The notification process is triggered by an event (represented by the `EventInfo` object):
+Although the design of the framework allows the implementation of a custom `IWebhookNotifier`, a default implementation of the notifier service is provided through the `WebhookNotifier` class, that executes the following steps:
 
-1. The event is matched against any object transformers (`IWebhookDataFactory`) handling it
-2. An instance of a webhook is constructed containing the event data, or the result of a transformation (if any occurred)
-3. The webhook object is matched against the available subscriptions in the scope of the tenant
-   a. Only active subscriptions are considered
-   b. The event type is firstly matched
-   c. If the subscription includes any other additional filter, these ones are matched against the webhook object formed in the previous steps (and using the filter engine)
-4. Webhooks are send to all recerivers matching the subscription conditions
-5. Optionally the result of the notification is stored for later reporting an review
+1. The service firsts tries to resolve any webhook subscription matching the event type and the tenant identifier.
+2. Subsequently the service  tries to resolve any transformers (as `IWebhookDataFactory`) and trasnforms the event data into a new form.
+3. All the matching subscriptions are iterated and a webhook is constructed for each of them, using the event information, the subscription and the event data (or the result of a transformation, if any happened)
+4. The webhook object is matched against the subscription as follows:
+   a. Not active subscriptions are skipped and will not be notified
+   b. If the subscription includes any filter, these ones are matched against the webhook object formed in the previous steps, to determine if the conditions defined by the subscription are met
+5. Webhooks are sent to the receiving end-point of the subscription
 
----
 
-Still assuming you are working on a traditional _[ASP.NET application model](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/?view=aspnetcore-5.0&tabs=windows)_, you can start using the notification functions of this framework through the _Dependency Injection_ (DI) pattern, including a default implementation of the sender during the Startup of your application, by calling the `.AddWebhooks()` extension method provided by _Deveel Webhooks_, mixing the configurations of managament and delivery.
+## Using the Webhook Notifier (ASP.NET Core)
+
+Still assuming you are working on a traditional _[ASP.NET Core application model](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/?view=aspnetcore-6.0&tabs=windows)_, you can start using the notification functions of this framework through the _Dependency Injection_ (DI) pattern, including a default implementation of the sender during the Startup of your application, by calling the `.AddWebhookNotifier<MyWebhook>()` extension method provided by _Deveel Webhooks_, mixing the configurations of managament and delivery.
 
 ``` csharp
 using System;
@@ -54,10 +54,10 @@ namespace Example {
             // ... add any other service you need ...
 
             // this call adds the basic services for sending of webhooks
-            services.AddWebhooks(webhooks => {
+            services.AddWebhookNotifier(webhooks => {
                 // This registers a subscription resolver that is backed
-                // by the subscription manager
-                webhooks.UseSubscriptionManager();
+                // by the a Mongo database (from the Deveel.Webhooks.Mongo package)
+                webhooks.UseMongoSubscriptionResolver();
 
                 // for this implementation we use a Mongo database as
                 // persistent layer of the subscriptions
@@ -73,28 +73,9 @@ namespace Example {
                 // Optional: add a filter engine that handles string-based "linq" filters
                 webhooks.AddDynamicLinqFilters();
 
-                // Optional: configure the delivery behavior
+                // Optional: configure the delivery behavior of the sender service
                 webhooks.ConfigureDelivery(delivery => {
-                    // Instructs the sender to sign the webhooks
-                    delivery.SignWebhooks = true;
-                    // Specifies which algorithm to use for the signature
-                    delivery.SignatureAlgorithm = WebhookSignatureAlgortihms.HmacSha256;
-                    // ... and to place the signature in the header of the request
-                    delivery.SignatureLocation = WebhookSignatureLocation.Header;
-                    // ... naming the signature header
-                    delivery.SignatureHeaderName = "X-WEBHOOK-SIG"
-
-                    // We want to limit to just 1 attempt
-                    delivery.MaxAttemptCount = 1;
-                    // ... and timeout after 2 seconds if not delivered
-                    delivery.TimeOut = TimeSpan.FromSeconds(2);
-
-                    // We also want to include all the default fields (event ID, event name, time-stamp, etc.)
-                    delivery.IncludeFields = WebhookFields.All;
-
-                    // ... and some more cosmetics for the payload
-                    delivery.JsonSerializerSettings.NullValueHandling = NullValueHandling.Ignore;
-                    delivery.JsonSerializerSettings.Formatting = Formatting.Indent;
+                    ...
                 });
             });
         }
@@ -103,7 +84,17 @@ namespace Example {
 
 ```
 
-After this you will have an instance of `IWebhookNotiier` instance that can be used witin your code for triggering the process described above.
+The builder of the notifier service registers by default the `WebhookSender` service, that is responsible for the delivery of the webhooks to the receiving end-point of the subscription.
+
+It is possible to configure the delivery behavior of the sender service by calling the `.ConfigureDelivery()` method of the builder, and this will control the behavior of the sender service, including the retry policy, the timeout and the number of retries.
+
+By default the notifier service is not provided with any filter evaluation engine, and this means that the subscriptions will be matched against the webhook object without any filter evaluation, even if they include a filter.
+
+To be able to evaluate the filters of subscriptions, you need to register an instance of `IWebhookFilterEvaluator` service.
+
+### Consuming the Notifier Service
+
+After this you will have an instance of `IWebhookNotiier<MyWebhook>` instance that can be used witin your code for triggering the process described above.
 
 _**Note**: Since in this example no `IWebhookDataFactory` instance has been registered, the webhook payload will contain the same data transported by the event._
 
@@ -143,3 +134,13 @@ namespace Example {
 }
 
 ```
+
+## Webhook Subscription Resolvers
+
+In order to resolve the subscriptions to a given event, the `IWebhookSubscriptionResolver` service is used: this service is responsible for the retrieval of the subscriptions that match the event type, in scope of a tenant.
+
+The framework provides a default implementation of this service, that is backed by the MongoDb database, included in the `Deveel.Webhooks.Mongo` package, but other implementations will be provided in the future.
+
+## Logging Results
+
+The default behavior of the notifier service is to notify to a multitude of subscribers for each single event, and this can be a complex process, that can fail for a number of reasons: to be able to track the delivery of the webhooks, the framework provides the `IWebhookDeliveryResultLogger` contract, that can be used to store the results of the delivery of the webhooks, while the notifier service is executing.

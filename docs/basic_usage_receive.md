@@ -1,4 +1,5 @@
-# Receive Webhooks from External Sources
+# Receiving Webhooks
+
 
 ## Installations
 
@@ -18,7 +19,7 @@ Then, in the `Startup` class of your application, you can register the webhook r
 ```csharp
 public class Startup {
   public void ConfigureServices(IServiceCollection services) {
-	services.AddWebhooks<MyWebhook>();
+	services.AddWebhookReceiver<MyWebhook>();
   }
 }
 ```
@@ -28,7 +29,7 @@ Or alternatively, if you are using the mininal API pattern, you can use the foll
 ```csharp
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddWebhooks<MyWebhook>();
+builder.Services.AddWebhookReceiver<MyWebhook>();
 ```
 
 This simple call registers the webhook receiver in the application, and allows to receive webhooks of type `MyWebhook`: receivers are segregated by the type of webhook they can handle, and you can register multiple receivers for different types of webhooks.

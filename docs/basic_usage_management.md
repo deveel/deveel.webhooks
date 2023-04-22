@@ -14,15 +14,21 @@
  limitations under the License.
 -->
 
+_**Note** - [05-2023] The packages provided by framework for the management of webhook subscriptions are going through a major redesign. the below specifications must be considered provisional_
+
+---
+
 # Webhook Subscription Management
 
-The process of sending _webhooks_ to recipient \[systems\] is provided through implementations of the `IWebhookSender` contract, and in the model provided by _Deveel Webhooks_ is not dependent from the existence of a Subscription Management component: that means you might implement your own components for the Webhook Subscription Management (see the section on _[Advanced Usage - Custom Webhook Management](advaned_usage_custom_management.md)), using the remaining parts of the framework.
+While it's true that the simple process of sending _webhooks_ to recipient \[systems\], provided through implementations of the `IWebhookSender` service, is not dependent from the existence of any _Subscription Management_ capability, this is recomended to enable notification scenarios.
 
-Anyway the framework provides a default implementation for the management and resolution of subscriptions to certain type of events, and optionally other additional conditions (_subscription filters_), to ease the process of notification.
+In fact, the notification of events to a recipient systems in a reactive mode requires the existence of a _Subscription_ to a certain type of event, and optionally other additional conditions (_subscription filters_), to ease the process of notification: users can subscribe to a certain type of event, and the system will send a notification to the recipient systems of the users only when the event occurs.
+
+The Deveel.Webhooks framework provides a default implementation of the services and classes that can be used for the management and resolution of subscriptions, but you might want implement your own components to further ehnance the _Webhook Subscription Management_ capabilities of your application (see the section on _[Advanced Usage - Custom Webhook Management](advaned_usage_custom_management.md))_, using the remaining parts of the framework.
 
 ## Service Instrumentation
 
-Assuming you are working on a traditional _[ASP.NET application model](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/?view=aspnetcore-5.0&tabs=windows)_, you can start using the management functions of this framework through the _Dependency Injection_ (DI) pattern, including the base implementations during the Startup of your application, calling the `.AddWebhooks()` extension method provided by _Deveel Webhooks_:
+Assuming you are working on a traditional _[ASP.NET application model](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/?view=aspnetcore-6.0&tabs=windows)_, you can start using the management functions of this framework through the _Dependency Injection_ (DI) pattern, including the base implementations during the Startup of your application, calling the `.AddWebhooks<MySubscription>()` extension method provided by _Deveel Webhooks_:
 
 ``` csharp
 using System;
@@ -44,10 +50,7 @@ namespace Example {
             // ... add any other service you need ...
 
             // this call adds the basic services for sending of webhooks
-            services.AddWebhooks(webhooks => {
-                // with this we include the subscription management services
-                webhooks.UseSubscriptionManager();
-
+            services.AddWebhooks<MongoWebhookSubscription>(webhooks => {
                 // for this implementation we use a Mongo database as
                 // persistent layer of the subscriptions
                 wekhooks.UseMongoDb(mongo => {
@@ -65,7 +68,7 @@ namespace Example {
 
 ## Using the Mnagement Service
 
-You can proceed by creating a new API controller and name it `WebhookSubscriptionController`, specifying one of the arguments of type `IWebhookSubscriptionManager` in the constructor>
+You can proceed by creating a new API controller and name it `WebhookSubscriptionController`, specifying one of the arguments of type `WebhookSubscriptionManager<MongoWebhookSubscription>` in the constructor, that you can use to manage the subscriptions:
 
 ``` csharp
 using System;
@@ -89,6 +92,7 @@ namespace Example {
             // we need a WebhookSubscriptionInfo object to create a webhook subscription,
             // and this implementation assumes that your web model WebhookSubscriptionModel
             // provides a method to create one instance of it
+
             var subscriptionInfo = subscription.AsSubscriptionInfo();
 
             // The system is natively multi-tenant, that means an identifier of the owning
@@ -121,5 +125,3 @@ namespace Example {
 }
 
 ```
-
-**Note**: The `IWebhookSubscriptionManager` contract provides more functions (for paginated lists, updates, deletions, state changing, etc.), not displayed in this simple example.

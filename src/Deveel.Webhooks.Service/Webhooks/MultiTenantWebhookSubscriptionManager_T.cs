@@ -24,7 +24,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 using static System.Formats.Asn1.AsnWriter;
 
 namespace Deveel.Webhooks {
-	public class MultiTenantWebhookSubscriptionManager<TSubscription> : IMultiTenantWebhookSubscriptionManager<TSubscription>
+	public class MultiTenantWebhookSubscriptionManager<TSubscription>
 		where TSubscription : class, IWebhookSubscription {
 		private readonly IWebhookSubscriptionFactory<TSubscription> subscriptionFactory;
 

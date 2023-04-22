@@ -29,10 +29,10 @@ namespace Deveel.Webhooks {
         protected virtual byte[] GetJsonBytes(string json) => Encoding.UTF8.GetBytes(json);
 
         /// <summary>
-        /// Computes the hash of the given <paramref name="jsonBody"/> using the
+        /// Computes the hash of the given <paramref name="webhookBody"/> using the
         /// provided secret,
         /// </summary>
-        /// <param name="jsonBody">The JSON-formatted string that represents the webhook to sign</param>
+        /// <param name="webhookBody">The string that represents the webhook to sign</param>
         /// <param name="secret">A secret used as key for the signature</param>
         /// <returns>
         /// Returns a byte array representing the hash of the given body
@@ -40,14 +40,14 @@ namespace Deveel.Webhooks {
         /// <exception cref="ArgumentException">
         /// Thrown when the <paramref name="secret"/> is <c>null</c> or empty
         /// </exception>
-        protected virtual byte[] ComputeHash(string jsonBody, string secret) {
+        protected virtual byte[] ComputeHash(string webhookBody, string secret) {
             if (String.IsNullOrWhiteSpace(secret))
                 throw new ArgumentException($"'{nameof(secret)}' cannot be null or whitespace.", nameof(secret));
 
             var key = GetKeyBytes(secret);
             using var alg = CreateHasher(key);
 
-            return alg.ComputeHash(GetJsonBytes(jsonBody));
+            return alg.ComputeHash(GetJsonBytes(webhookBody));
         }
 
         /// <summary>
@@ -61,13 +61,14 @@ namespace Deveel.Webhooks {
             return $"{Algorithms[0]}={Convert.ToHexString(hash)}";
         }
 
-        public virtual string SignWebhook(string jsonBody, string secret) {
-            if (String.IsNullOrWhiteSpace(jsonBody))
-                throw new ArgumentException($"'{nameof(jsonBody)}' cannot be null or whitespace.", nameof(jsonBody));
+		/// <inheritdoc />
+        public virtual string SignWebhook(string webhookBody, string secret) {
+            if (String.IsNullOrWhiteSpace(webhookBody))
+                throw new ArgumentException($"'{nameof(webhookBody)}' cannot be null or whitespace.", nameof(webhookBody));
             if (String.IsNullOrWhiteSpace(secret))
                 throw new ArgumentException($"'{nameof(secret)}' cannot be null or whitespace.", nameof(secret));
 
-            var hash = ComputeHash(jsonBody, secret);
+            var hash = ComputeHash(webhookBody, secret);
             return FormatSignature(hash);
         }
     }

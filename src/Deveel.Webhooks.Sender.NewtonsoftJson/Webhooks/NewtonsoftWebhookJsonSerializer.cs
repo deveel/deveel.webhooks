@@ -43,7 +43,7 @@ namespace Deveel.Webhooks {
         public JsonSerializerSettings JsonSerializerSettings { get; }
 
         /// <inheritdoc/>
-        public async Task SerializeWebhookAsync(Stream utf8Stream, TWebhook webhook, CancellationToken cancellationToken) {
+        public async Task SerializeAsync(Stream utf8Stream, TWebhook webhook, CancellationToken cancellationToken) {
             try {
                 var json = JsonConvert.SerializeObject(webhook, JsonSerializerSettings);
 

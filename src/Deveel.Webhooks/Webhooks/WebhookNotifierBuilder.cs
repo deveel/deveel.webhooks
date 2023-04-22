@@ -191,7 +191,7 @@ namespace Deveel.Webhooks {
 					var resolver = (IWebhookSubscriptionResolver) provider.GetRequiredService(resolverType);
 					return new WebhookSubscriptionResolverAdapter(resolver);
 				};
-				Services.Add(new ServiceDescriptor(typeof(IWebhookSubscriptionResolver), factory, lifetime));
+				Services.Add(new ServiceDescriptor(typeof(IWebhookSubscriptionResolver<TWebhook>), factory, lifetime));
 			}
 
 			Services.TryAdd(new ServiceDescriptor(resolverType, resolverType, lifetime));

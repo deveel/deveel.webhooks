@@ -13,23 +13,22 @@
 // limitations under the License.
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Deveel.Webhooks {
-	/// <summary>
-	/// An exception that is thrown during the validation
-	/// of a webhook subscription to be created or updated
-	/// </summary>
-	public class WebhookSubscriptionValidationException : WebhookServiceException {
-		public WebhookSubscriptionValidationException(string[] errors = null) : this("The webhook subscription is invalid", errors) {
-		}
+	public static class WebhookNotifierBuilderExtensions {
+		public static WebhookNotifierBuilder<TWebhook> UseLinqFilter<TWebhook>(this WebhookNotifierBuilder<TWebhook> builder)
+			where TWebhook : class {
 
-		public WebhookSubscriptionValidationException(string message, string[] errors = null) : base(message) {
-			Errors = errors;
-		}
+			builder.Services.AddSingleton<IWebhookFilterEvaluator<TWebhook>, LinqWebhookFilterEvaluator<TWebhook>>();
+			builder.Services.AddSingleton<LinqWebhookFilterEvaluator<TWebhook>>();
 
-		/// <summary>
-		/// Gets a set of errors during the validation of the subscription
-		/// </summary>
-		public string[] Errors { get; }
+			return builder;
+		}
 	}
 }

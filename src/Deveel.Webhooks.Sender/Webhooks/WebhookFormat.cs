@@ -12,24 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-
 namespace Deveel.Webhooks {
 	/// <summary>
-	/// An exception that is thrown during the validation
-	/// of a webhook subscription to be created or updated
+	/// Enumerates the possible formats of
+	/// the payloads of a webhook
 	/// </summary>
-	public class WebhookSubscriptionValidationException : WebhookServiceException {
-		public WebhookSubscriptionValidationException(string[] errors = null) : this("The webhook subscription is invalid", errors) {
-		}
-
-		public WebhookSubscriptionValidationException(string message, string[] errors = null) : base(message) {
-			Errors = errors;
-		}
+	public enum WebhookFormat {
+		/// <summary>
+		/// The payload of a webhook is formatted as a JSON object.
+		/// </summary>
+		Json = 1,
 
 		/// <summary>
-		/// Gets a set of errors during the validation of the subscription
+		/// The payload of the webhook is formatted as a XML object
 		/// </summary>
-		public string[] Errors { get; }
+		Xml = 2,
 	}
 }

@@ -89,6 +89,11 @@ namespace Deveel.Webhooks {
 		public IDictionary<string, string>? Headers { get; set; } = new Dictionary<string, string>();
 
 		/// <summary>
+		/// Gets or sets the format of the webhook payload.
+		/// </summary>
+		public WebhookFormat? Format { get; set; }
+
+		/// <summary>
 		/// Gets or sets a value indicating whether the webhook should be signed.
 		/// </summary>
 		public bool? Sign { get; set; }
@@ -207,6 +212,58 @@ namespace Deveel.Webhooks {
 			var options = new WebhookDestinationVerificationOptions();
 			configure(options);
 			return WithVerification(options);
+		}
+
+		/// <summary>
+		/// Merges the current settings with the default settings
+		/// from the configuration of a sender service.
+		/// </summary>
+		/// <param name="options">
+		/// The default settings from the configuration of a sender service.
+		/// </param>
+		/// <remarks>
+		/// The current settings have precedence over the default settings.
+		/// </remarks>
+		/// <returns>
+		/// Returns a new instance of the <see cref="WebhookDestination"/> with
+		/// the default settings from the configuration of a sender service
+		/// merged with the current settings.
+		/// </returns>
+		public WebhookDestination Merge(WebhookSenderOptions options) {
+			var result = new WebhookDestination(Url) {
+				Sign = Sign,
+				Headers = new Dictionary<string, string>(),
+				Format = Format ?? options.DefaultFormat,
+			};
+
+			if (options.DefaultHeaders != null) {
+				foreach (var header in options.DefaultHeaders) {
+					result.Headers.Add(header.Key, header.Value);
+				}
+			}
+
+			if (Headers != null) {
+				foreach (var header in Headers) {
+					result.Headers[header.Key] = header.Value;
+				}
+			}
+
+			if (Signature == null) {
+				result.Signature = new WebhookDestinationSignatureOptions(options.Signature);
+			} else {
+				result.Signature = Signature.Merge(options.Signature);
+			}
+
+			if (Retry == null) {
+				result.Retry = new WebhookRetryOptions(options.Retry);
+			} else {
+				result.Retry = Retry.Merge(options.Retry);
+			}
+
+			if (Verification != null)
+				result.Verification = new WebhookDestinationVerificationOptions(Verification);
+
+			return result;
 		}
 	}
 }

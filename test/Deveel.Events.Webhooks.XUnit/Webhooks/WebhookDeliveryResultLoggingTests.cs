@@ -41,7 +41,9 @@ namespace Deveel.Webhooks {
 					options.Timeout = TimeSpan.FromSeconds(TimeOutSeconds);
 					options.Retry.MaxRetries = 2;
 				})
-				.UseFactory<DefaultWebhookFactory>())
+				.UseLinqFilter()
+				.UseFactory<DefaultWebhookFactory>()
+				.UseMongoSubscriptionResolver())
 			.UseMongoDb(options => {
 				options.DatabaseName = "webhooks";
 				options.ConnectionString = ConnectionString;
@@ -122,7 +124,7 @@ namespace Deveel.Webhooks {
 			Assert.NotNull(lastWebhook);
 			Assert.Equal("data.created", lastWebhook.EventType);
 			Assert.Equal(notification.Id, lastWebhook.Id);
-			Assert.Equal(notification.TimeStamp, lastWebhook.TimeStamp);
+			Assert.Equal(notification.TimeStamp.ToUnixTimeMilliseconds(), lastWebhook.TimeStamp.ToUnixTimeMilliseconds());
 
 			var storedResult = await deliveryResultStore.FindByWebhookIdAsync(tenantId, webhookResult.Webhook.Id);
 

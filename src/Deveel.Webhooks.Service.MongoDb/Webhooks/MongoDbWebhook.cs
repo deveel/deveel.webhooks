@@ -33,6 +33,8 @@ namespace Deveel.Webhooks {
 
 		public string SubscriptionId { get; set; }
 
+		public string SubscriptionName { get; set; }
+
 		public string DestinationUrl { get; set; }
 
 		public string Secret { get; set; }

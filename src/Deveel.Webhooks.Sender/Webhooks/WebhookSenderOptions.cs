@@ -34,6 +34,13 @@ namespace Deveel.Webhooks {
 			= new Dictionary<string, string>();
 
 		/// <summary>
+		/// Gets or sets the default format to be used when sending a webhook,
+		/// used when the destination does not specify a format to be used
+		/// (by default set to <see cref="WebhookFormat.Json"/>).
+		/// </summary>
+		public WebhookFormat DefaultFormat { get; set; } = WebhookFormat.Json;
+
+		/// <summary>
 		/// Gets or sets the options for the retry policy to be used
 		/// when sending a webhook fails. Any specification in the
 		/// <see cref="WebhookDestination.Retry"/> will override the

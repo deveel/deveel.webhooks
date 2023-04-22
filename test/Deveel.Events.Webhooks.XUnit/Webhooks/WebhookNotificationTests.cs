@@ -46,6 +46,8 @@ namespace Deveel.Webhooks {
 				.UseNotifier<Webhook>(config => config
 					.UseFactory<DefaultWebhookFactory>()
 					.AddDataTranformer<TestDataFactory>()
+					.UseLinqFilter()
+					.UseMongoSubscriptionResolver()
 					.UseSender(options => {
 						options.Retry.MaxRetries = 2;
 						options.Retry.Timeout = TimeSpan.FromSeconds(TimeOutSeconds);
@@ -126,7 +128,7 @@ namespace Deveel.Webhooks {
 			Assert.NotNull(lastWebhook);
 			Assert.Equal("data.created", lastWebhook.EventType);
 			Assert.Equal(notification.Id, lastWebhook.Id);
-			Assert.Equal(notification.TimeStamp, lastWebhook.TimeStamp);
+			Assert.Equal(notification.TimeStamp.ToUnixTimeSeconds(), lastWebhook.TimeStamp.ToUnixTimeSeconds());
 
 			var testData = Assert.IsType<JsonElement>(lastWebhook.Data);
 
@@ -163,7 +165,7 @@ namespace Deveel.Webhooks {
 			Assert.NotNull(lastWebhook);
 			Assert.Equal("data.modified", lastWebhook.EventType);
 			Assert.Equal(notification.Id, lastWebhook.Id);
-			Assert.Equal(notification.TimeStamp, lastWebhook.TimeStamp);
+			Assert.Equal(notification.TimeStamp.ToUnixTimeMilliseconds(), lastWebhook.TimeStamp.ToUnixTimeMilliseconds());
 
 			var eventData = Assert.IsType<JsonElement>(lastWebhook.Data);
 
@@ -199,7 +201,7 @@ namespace Deveel.Webhooks {
 			Assert.NotNull(lastWebhook);
 			Assert.Equal("data.created", lastWebhook.EventType);
 			Assert.Equal(notification.Id, lastWebhook.Id);
-			Assert.Equal(notification.TimeStamp, lastWebhook.TimeStamp);
+			Assert.Equal(notification.TimeStamp.ToUnixTimeMilliseconds(), lastWebhook.TimeStamp.ToUnixTimeMilliseconds());
 		}
 
 
@@ -228,7 +230,7 @@ namespace Deveel.Webhooks {
 			Assert.NotNull(lastWebhook);
 			Assert.Equal("data.created", lastWebhook.EventType);
 			Assert.Equal(notification.Id, lastWebhook.Id);
-			Assert.Equal(notification.TimeStamp, lastWebhook.TimeStamp);
+			Assert.Equal(notification.TimeStamp.ToUnixTimeMilliseconds(), lastWebhook.TimeStamp.ToUnixTimeMilliseconds());
 		}
 
 		[Fact]
@@ -262,7 +264,7 @@ namespace Deveel.Webhooks {
 			Assert.NotNull(lastWebhook);
 			Assert.Equal("data.created", lastWebhook.EventType);
 			Assert.Equal(notification.Id, lastWebhook.Id);
-			Assert.Equal(notification.TimeStamp, lastWebhook.TimeStamp);
+			Assert.Equal(notification.TimeStamp.ToUnixTimeMilliseconds(), lastWebhook.TimeStamp.ToUnixTimeMilliseconds());
 		}
 
 		[Fact]

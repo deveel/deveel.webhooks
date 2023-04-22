@@ -73,8 +73,7 @@ namespace Deveel.Webhooks {
 			this.subscriptionResolver = subscriptionResolver;
 			this.webhookFactory = webhookFactory;
 			this.dataFactories = dataFactories;
-			this.filterEvaluators = filterEvaluators?.ToDictionary(x => x.Format, y => y) 
-				?? new Dictionary<string, IWebhookFilterEvaluator<TWebhook>>();
+			this.filterEvaluators = GetFilterEvaluators(filterEvaluators);
 			this.deliveryResultLogger = deliveryResultLogger ?? NullWebhookDeliveryResultLogger<TWebhook>.Instance;
 			Logger = logger ?? NullLogger<WebhookNotifier<TWebhook>>.Instance;
 		}
@@ -85,6 +84,18 @@ namespace Deveel.Webhooks {
 		/// Gets the logger used to log the activity of the notifier.
 		/// </summary>
 		protected ILogger Logger { get; }
+
+		private static IDictionary<string, IWebhookFilterEvaluator<TWebhook>> GetFilterEvaluators(IEnumerable<IWebhookFilterEvaluator<TWebhook>>? filterEvaluators) {
+			var evaluators = new Dictionary<string, IWebhookFilterEvaluator<TWebhook>>();
+
+			if (filterEvaluators != null) {
+				foreach (var filterEvaluator in filterEvaluators) {
+					evaluators[filterEvaluator.Format] = filterEvaluator;
+				}
+			}
+
+			return evaluators;
+		}
 
 		/// <summary>
 		/// Creates a new webhook filter for the given subscription.
@@ -178,7 +189,7 @@ namespace Deveel.Webhooks {
 		/// <exception cref="NotSupportedException">
 		/// Thrown when the filter format is not supported.
 		/// </exception>
-		protected virtual async Task<bool> MatchesAsync(WebhookSubscriptionFilter filter, TWebhook webhook, CancellationToken cancellationToken) {
+		protected virtual async Task<bool> MatchesAsync(WebhookSubscriptionFilter? filter, TWebhook webhook, CancellationToken cancellationToken) {
 			if (filter == null || filter.IsEmpty) {
 				Logger.LogTrace("The filter request was null or empty: accepting by default");
 				return true;
@@ -334,14 +345,9 @@ namespace Deveel.Webhooks {
 					}
 
 					try {
-						var filterRequest = BuildSubscriptionFilter(subscription);
+						var filter = BuildSubscriptionFilter(subscription);
 
-						if (filterRequest == null) {
-							// TODO: trace this scenario
-							continue;
-						}
-
-						if (await MatchesAsync(filterRequest, webhook, cancellationToken)) {
+						if (await MatchesAsync(filter, webhook, cancellationToken)) {
 							Logger.LogTrace("Delivering webhook for event {EventType} to subscription {SubscriptionId} of Tenant {TenantId}",
 								eventInfo.EventType, subscription.SubscriptionId, tenantId);
 

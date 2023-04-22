@@ -35,6 +35,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="..\..\apl-2.licenseheader" Link="apl-2.licenseheader" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Deveel.Webhooks\Deveel.Webhooks.csproj" />
   </ItemGroup>
 

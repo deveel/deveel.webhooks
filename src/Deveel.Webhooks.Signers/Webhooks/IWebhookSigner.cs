@@ -28,7 +28,7 @@ namespace Deveel.Webhooks {
 		/// Signs the given JSON body using the provided secret
 		/// as a key for the signature
 		/// </summary>
-		/// <param name="jsonBody">The JSON-formatted body of a webhook to sign</param>
+		/// <param name="webhookBody">The string represenation of the body of a webhook to sign</param>
 		/// <param name="secret">The secret used as a key for the signature</param>
 		/// <remarks>
 		/// A typical implementation of this method would return a string that
@@ -38,6 +38,6 @@ namespace Deveel.Webhooks {
 		/// <returns>
 		/// Returns a string representing the signature of the given body
 		/// </returns>
-		string SignWebhook(string jsonBody, string secret);
+		string SignWebhook(string webhookBody, string secret);
 	}
 }

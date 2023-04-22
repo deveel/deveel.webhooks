@@ -425,7 +425,7 @@ namespace Deveel.Webhooks {
 
 			public string[] Algorithms => signer.Algorithms;
 
-			public string SignWebhook(string jsonBody, string secret) => signer.SignWebhook(jsonBody, secret);
+			public string SignWebhook(string webhookBody, string secret) => signer.SignWebhook(webhookBody, secret);
 		}
 
 		#endregion

@@ -29,7 +29,7 @@ namespace Deveel.Webhooks {
 	/// </typeparam>
 	public sealed class SystemWebhookXmlSerializer<TWebhook> : IWebhookXmlSerializer<TWebhook> where TWebhook : class {
 		/// <inheritdoc/>
-		public async Task SerializeWebhookAsync(Stream utf8Stream, TWebhook webhook, CancellationToken cancellationToken = default) {
+		public async Task SerializeAsync(Stream utf8Stream, TWebhook webhook, CancellationToken cancellationToken = default) {
 			try {
 				var serializer = new XmlSerializer(typeof(TWebhook));
 				serializer.Serialize(utf8Stream, webhook);

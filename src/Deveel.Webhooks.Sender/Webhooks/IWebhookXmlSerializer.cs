@@ -34,6 +34,6 @@ namespace Deveel.Webhooks {
 		/// <returns>
 		/// Returns an asynchronous operation that when completed
 		/// </returns>
-		Task SerializeWebhookAsync(Stream utf8Stream, TWebhook webhook, CancellationToken cancellationToken = default);
+		Task SerializeAsync(Stream utf8Stream, TWebhook webhook, CancellationToken cancellationToken = default);
 	}
 }

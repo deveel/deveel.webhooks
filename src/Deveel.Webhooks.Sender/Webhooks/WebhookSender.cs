@@ -37,6 +37,7 @@ namespace Deveel.Webhooks {
     public class WebhookSender<TWebhook> : WebhookSenderClient, IWebhookSender<TWebhook>, IDisposable where TWebhook : class {
 		private readonly IWebhookSignerProvider<TWebhook>? signerProvider;
 		private readonly IWebhookJsonSerializer<TWebhook>? jsonSerializer;
+		private readonly IWebhookXmlSerializer<TWebhook>? xmlSerializer;
 		private readonly IWebhookDestinationVerifier<TWebhook>? verifier;
 
 		/// <summary>
@@ -60,6 +61,10 @@ namespace Deveel.Webhooks {
 		/// An optional service that is used to serialize the webhook to a JSON string.
 		/// When not provided, the sender will use the default JSON serializer.
 		/// </param>
+		/// <param name="xmlSerializer">
+		/// An optional service that is used to serialize the webhook to a XML string.
+		/// When not provided, the sender will use the default XML serializer.
+		/// </param>
 		/// <param name="signerProvider">
 		/// An optional service that is used to compute a signature for the webhook. When
 		/// the sender options specify that the webhook should be signed, and this service
@@ -70,10 +75,12 @@ namespace Deveel.Webhooks {
 			IHttpClientFactory httpClientFactory,
 			IWebhookDestinationVerifier<TWebhook>? verifier = null,
 			IWebhookJsonSerializer<TWebhook>? jsonSerializer = null,
+			IWebhookXmlSerializer<TWebhook>? xmlSerializer = null,
 			IWebhookSignerProvider<TWebhook>? signerProvider = null)
 			: this(options.Get(typeof(TWebhook).Name), httpClientFactory) {
             this.verifier = verifier;
-            this.jsonSerializer = jsonSerializer;
+            this.jsonSerializer = jsonSerializer ?? new SystemTextWebhookJsonSerializer<TWebhook>();
+			this.xmlSerializer = xmlSerializer ?? new SystemWebhookXmlSerializer<TWebhook>();
 			this.signerProvider = signerProvider;
 		}
 
@@ -167,8 +174,8 @@ namespace Deveel.Webhooks {
 		/// <param name="algorithm">
 		/// The signing algorithm to use.
 		/// </param>
-		/// <param name="jsonBody">
-		/// The JSON-formmatted string that represents the body of the webhook.
+		/// <param name="webhookBody">
+		/// The string that represents the body of the webhook.
 		/// </param>
 		/// <param name="secret">
 		/// A secret used to sign the webhook.
@@ -177,22 +184,22 @@ namespace Deveel.Webhooks {
 		/// Returns a string that represents the signature of the webhook.
 		/// </returns>
 		/// <exception cref="ArgumentNullException">
-		/// Thrown when the <paramref name="algorithm"/>, <paramref name="jsonBody"/> or
+		/// Thrown when the <paramref name="algorithm"/>, <paramref name="webhookBody"/> or
 		/// <paramref name="secret"/> are <c>null</c> or empty.
 		/// </exception>
-		protected virtual string? ComputeSignature(string algorithm, string jsonBody, string secret) {
+		protected virtual string? ComputeSignature(string algorithm, string webhookBody, string secret) {
             if (string.IsNullOrWhiteSpace(algorithm))
                 throw new ArgumentNullException(nameof(algorithm));
             if (string.IsNullOrWhiteSpace(secret))
                 throw new ArgumentNullException(nameof(secret));
-            if (string.IsNullOrWhiteSpace(jsonBody))
-                throw new ArgumentNullException(nameof(jsonBody));
+            if (string.IsNullOrWhiteSpace(webhookBody))
+                throw new ArgumentNullException(nameof(webhookBody));
             
 			var signer = GetSigner(algorithm);
 			if (signer == null)
-				return WebhookSignature.Create(algorithm, jsonBody, secret);
+				return WebhookSignature.Create(algorithm, webhookBody, secret);
 
-            return signer.SignWebhook(jsonBody, secret);
+            return signer.SignWebhook(webhookBody, secret);
         }
 
 		/// <summary>
@@ -213,11 +220,36 @@ namespace Deveel.Webhooks {
 		/// <exception cref="WebhookSerializationException">
 		/// Thrown if the serialization failed through an unhandled error.
 		/// </exception>
-		protected virtual async Task<string> SerializeAsync(TWebhook webhook, CancellationToken cancellationToken) {
+		protected virtual async Task<string> SerializeToJsonAsync(TWebhook webhook, CancellationToken cancellationToken) {
 			if (jsonSerializer == null)
 				throw new NotSupportedException("No JSON serializer was set");
 
-			return await jsonSerializer.SerializeWebhookToStringAsync(webhook, cancellationToken);
+			return await jsonSerializer.SerializeToStringAsync(webhook, cancellationToken);
+		}
+
+		/// <summary>
+		/// Serializes the given webhook to a XML string.
+		/// </summary>
+		/// <param name="webhook">
+		/// The instance of <typeparamref name="TWebhook"/> to serialize.
+		/// </param>
+		/// <param name="cancellationToken">
+		/// A cancellation token that can be used to cancel the operation.
+		/// </param>
+		/// <returns>
+		/// Returns a string that represents the XML-formatted webhook.
+		/// </returns>
+		/// <exception cref="NotSupportedException">
+		/// If the XML serialization is not supported by the sender.
+		/// </exception>
+		/// <exception cref="WebhookSerializationException">
+		/// Thrown if the serialization failed through an unhandled error.
+		/// </exception>
+		protected virtual async Task<string> SerializeToXmlAsync(TWebhook webhook, CancellationToken cancellationToken) {
+			if (xmlSerializer == null)
+				throw new NotSupportedException("No XML serializer was set");
+
+			return await xmlSerializer.SerializeToStringAsync(webhook, cancellationToken);
 		}
 
 		/// <summary>
@@ -227,8 +259,8 @@ namespace Deveel.Webhooks {
 		/// <param name="request">
 		/// The HTTP request to sign.
 		/// </param>
-		/// <param name="jsonBody">
-		/// The JSON-formmatted string that represents the body of the webhook.
+		/// <param name="webhookBody">
+		/// The string that represents the body of the webhook.
 		/// </param>
 		/// <param name="algorithm">
 		/// The signing algorithm to use.
@@ -240,7 +272,7 @@ namespace Deveel.Webhooks {
 		/// Thrown when the <paramref name="request"/> is <c>null</c>.
 		/// </exception>
 		/// <exception cref="ArgumentException">
-		/// Thrown when the <paramref name="jsonBody"/>, <paramref name="algorithm"/> or <paramref name="secret"/> 
+		/// Thrown when the <paramref name="webhookBody"/>, <paramref name="algorithm"/> or <paramref name="secret"/> 
 		/// are <c>null</c> or empty.
 		/// </exception>
 		/// <exception cref="WebhookSenderException">
@@ -248,17 +280,17 @@ namespace Deveel.Webhooks {
 		/// no header name is configured, or when the signature location is set to <see cref="WebhookSignatureLocation.QueryString"/>
 		///  and no query parameter name is configured.
 		/// </exception>
-		protected virtual void SignWebhookRequest(HttpRequestMessage request, string algorithm, string jsonBody, string secret) {
+		protected virtual void SignWebhookRequest(HttpRequestMessage request, string algorithm, string webhookBody, string secret) {
 			if (request == null)
 				throw new ArgumentNullException(nameof(request));
 
             if (String.IsNullOrWhiteSpace(algorithm))
                 throw new ArgumentException($"'{nameof(algorithm)}' cannot be null or whitespace.", nameof(algorithm));
 
-            if (String.IsNullOrWhiteSpace(jsonBody))
-                throw new ArgumentException($"'{nameof(jsonBody)}' cannot be null or whitespace.", nameof(jsonBody));
+            if (String.IsNullOrWhiteSpace(webhookBody))
+                throw new ArgumentException($"'{nameof(webhookBody)}' cannot be null or whitespace.", nameof(webhookBody));
 
-            var signature = ComputeSignature(algorithm, jsonBody, secret);
+            var signature = ComputeSignature(algorithm, webhookBody, secret);
 
 			if (SenderOptions.Signature.Location == WebhookSignatureLocation.Header) {
 				if (String.IsNullOrWhiteSpace(SenderOptions.Signature.HeaderName))
@@ -324,56 +356,34 @@ namespace Deveel.Webhooks {
 			return request;
 		}
 
-		private WebhookDestination CreateDestination(WebhookDestination source) {
-			var result = new WebhookDestination(source.Url) {
-				Sign = source.Sign,
-				Headers = new Dictionary<string, string>()
-			};
-
-			if (SenderOptions.DefaultHeaders != null) {
-				foreach (var header in SenderOptions.DefaultHeaders) {
-					result.Headers.Add(header.Key, header.Value);
-				}
-			}
-
-			if (source.Headers != null) {
-				foreach (var header in source.Headers) {
-					result.Headers[header.Key] = header.Value;
-				}
-			}
-
-			if (source.Signature == null) {
-				result.Signature = new WebhookDestinationSignatureOptions(SenderOptions.Signature);
-			} else {
-				result.Signature = source.Signature.Merge(SenderOptions.Signature);
-			}
-
-			if (source.Retry == null) {
-				result.Retry = new WebhookRetryOptions(SenderOptions.Retry);
-			} else {
-				result.Retry = source.Retry.Merge(SenderOptions.Retry);
-			}
-
-			if (source.Verification != null)
-				result.Verification = new WebhookDestinationVerificationOptions(source.Verification);
-
-			return result;
-		}
-
 		private async Task<HttpRequestMessage> CreateRequestAsync(WebhookDestination destination, TWebhook webhook, CancellationToken cancellationToken) {
 			try {
 				var request = CreateRequest(destination);
 
-				var jsonBody = await SerializeAsync(webhook, cancellationToken);
+				string? body = null;
+				string? mediaType = null;
+
+				switch (destination.Format ?? SenderOptions.DefaultFormat) {
+					case WebhookFormat.Json:
+						mediaType = "application/json";
+						body = await SerializeToJsonAsync(webhook, cancellationToken);
+						break;
+					case WebhookFormat.Xml:
+						mediaType = "application/xml";
+						body = await SerializeToXmlAsync(webhook, cancellationToken);
+						break;
+					default:
+						throw new WebhookSerializationException("Unsupported webhook format");
+				}
 
 				if (destination.Sign ?? false && !String.IsNullOrWhiteSpace(destination.Signature.Secret)) {
 					if (String.IsNullOrWhiteSpace(SenderOptions.Signature.Algorithm))
 						throw new WebhookSenderException("The signature algorithm is not set");
 
-					SignWebhookRequest(request, SenderOptions.Signature.Algorithm, jsonBody, destination.Signature!.Secret!);
+					SignWebhookRequest(request, SenderOptions.Signature.Algorithm, body, destination.Signature!.Secret!);
 				}
 
-				request.Content = new StringContent(jsonBody, Encoding.UTF8, "application/json");
+				request.Content = new StringContent(body, Encoding.UTF8, mediaType);
 
 				return request;
 			} catch (WebhookSenderException) {
@@ -519,7 +529,7 @@ namespace Deveel.Webhooks {
 		/// </remarks>
 		public virtual async Task<WebhookDeliveryResult<TWebhook>> SendAsync(WebhookDestination receiver, TWebhook webhook, CancellationToken cancellationToken) {
 			try {
-				var destination = CreateDestination(receiver);
+				var destination = receiver.Merge(SenderOptions);
 
 				var result = new WebhookDeliveryResult<TWebhook>(destination, webhook);
 

@@ -30,7 +30,6 @@ namespace Deveel.Webhooks {
 
 			return new ServiceCollection()
 				.AddWebhookSubscriptions<MongoDbWebhookSubscription>(buidler => ConfigureWebhookService(buidler))
-				.AddDynamicLinqFilterEvaluator<Webhook>()
 				.AddTestHttpClient(OnRequestAsync)
 				.AddLogging(logging => logging.AddXUnit(outputHelper))
 				.BuildServiceProvider();

@@ -18,6 +18,8 @@
     <RepositoryUrl>https://github.com/deveel/deveel.webhooks</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageTags>webhook event events signer sha256 sha1 sha-256 sha-1</PackageTags>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <DocumentationFile>./Deveel.Webhooks.Signers.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>

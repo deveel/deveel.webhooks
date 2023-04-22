@@ -28,7 +28,7 @@
             Gets the settings used for the serialization.
             </summary>
         </member>
-        <member name="M:Deveel.Webhooks.NewtonsoftWebhookJsonSerializer`1.SerializeWebhookAsync(System.IO.Stream,`0,System.Threading.CancellationToken)">
+        <member name="M:Deveel.Webhooks.NewtonsoftWebhookJsonSerializer`1.SerializeAsync(System.IO.Stream,`0,System.Threading.CancellationToken)">
             <inheritdoc/>
         </member>
         <member name="T:Deveel.Webhooks.WebhookSenderBuilderExtensions">

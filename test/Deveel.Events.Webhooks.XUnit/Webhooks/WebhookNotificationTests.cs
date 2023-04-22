@@ -8,12 +8,9 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
-using Deveel.Data;
 using Deveel.Webhooks;
 
 using Microsoft.Extensions.DependencyInjection;
-
-using Mongo2Go;
 
 using Xunit;
 using Xunit.Abstractions;
@@ -33,14 +30,12 @@ namespace Deveel.Webhooks {
 		private Webhook lastWebhook;
 		private HttpResponseMessage testResponse;
 
-		protected override MongoDbRunner CreateMongo() => null;
-
 		public WebhookNotificationTests(ITestOutputHelper outputHelper) : base(outputHelper) {
 			notifier = Services.GetRequiredService<IWebhookNotifier<Webhook>>();
 			subscriptionResolver = Services.GetRequiredService<TestSubscriptionResolver>();
 		}
 
-		protected override void ConfigureWebhookService(WebhookSubscriptionBuilder<MongoDbWebhookSubscription> builder) {
+		protected override void ConfigureWebhookService(WebhookSubscriptionBuilder<TestWebhookSubscription> builder) {
 			builder
 				.UseManager()
 				.UseNotifier<Webhook>(config => config
@@ -378,34 +373,6 @@ namespace Deveel.Webhooks {
 					data_type = "test-data",
 					created_at = DateTimeOffset.UtcNow
 				});
-		}
-
-		private class TestWebhookSubscription : IWebhookSubscription {
-			public string SubscriptionId { get; set; }
-
-			public string TenantId { get; set; }
-
-			public string Name { get; set; }
-
-			public IEnumerable<string> EventTypes { get; set; }
-
-			public string DestinationUrl { get; set; }
-
-			public string Secret { get; set; }
-
-			public WebhookSubscriptionStatus Status { get; set; }
-
-			public int RetryCount { get; set; }
-
-			public IEnumerable<IWebhookFilter> Filters { get; set; }
-
-			public IDictionary<string, string> Headers { get; set; }
-
-			public IDictionary<string, object> Metadata { get; set; }
-
-			public DateTimeOffset? CreatedAt { get; set; }
-
-			public DateTimeOffset? UpdatedAt { get; set; }
 		}
 	}
 }

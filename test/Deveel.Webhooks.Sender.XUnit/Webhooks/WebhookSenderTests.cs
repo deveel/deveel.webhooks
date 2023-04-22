@@ -1,5 +1,6 @@
 ﻿using System.Net;
 using System.Net.Http.Json;
+using System.Text;
 using System.Web;
 using System.Xml.Serialization;
 
@@ -74,17 +75,49 @@ namespace Deveel.Webhooks {
 				.Respond(request => {
 					var query = HttpUtility.ParseQueryString(request.RequestUri!.Query);
 					var token = query["token"];
+					var challenge = query["challenge"];
+
+					var valid = token == receiverToken;
+
+					var response = new HttpResponseMessage(valid ? HttpStatusCode.OK : HttpStatusCode.Unauthorized);
+
+					if (valid && !String.IsNullOrWhiteSpace(challenge))
+						response.Content = new StringContent(challenge, Encoding.UTF8, "text/plain");
+
+					return response;
+				});
+
+			mockHandler.When(HttpMethod.Get, "http://localhost:8080/webhooks/verify/invalid_challenge")
+				.Respond(request => {
+					var query = HttpUtility.ParseQueryString(request.RequestUri!.Query);
+					var token = query["token"];
+					
+					var valid = token == receiverToken;
+
+					return new HttpResponseMessage(valid ? HttpStatusCode.OK : HttpStatusCode.Unauthorized) {
+						Content = new StringContent(Guid.NewGuid().ToString("N"), Encoding.UTF8, "text/plain")
+					};
+				});
+
+			mockHandler.When(HttpMethod.Get, "http://localhost:8080/webhooks/verify/no_challenge")
+				.Respond(request => {
+					var query = HttpUtility.ParseQueryString(request.RequestUri!.Query);
+					var token = query["token"];
 
 					var valid = token == receiverToken;
 
 					return new HttpResponseMessage(valid ? HttpStatusCode.OK : HttpStatusCode.Unauthorized);
 				});
 
+
 			var services = new ServiceCollection()
 				.AddSingleton<IHttpClientFactory>(new MockHttpClientFactory("", mockHandler.ToHttpClient()))
 				.AddLogging(logging => logging.AddXUnit(outputHelper).SetMinimumLevel(LogLevel.Trace));
 
 			services.AddWebhookSender<TestWebhook>()
+				.UseDestinationVerifier(options => {
+					options.Challenge = true;
+				})
 				.Configure(options => {
 					options.DefaultHeaders = new Dictionary<string, string> {
 						{"X-Test", "true"}
@@ -358,6 +391,56 @@ namespace Deveel.Webhooks {
 			Assert.False(result.Successful);
 			Assert.NotNull(result.StatusCode);
 			Assert.Equal(404, result.StatusCode);
+		}
+
+		[Fact]
+		public async Task Verify_InvalidChallengeReturned() {
+			var sender = GetVerifier<TestWebhook>();
+
+			var webhook = new TestWebhook {
+				Id = "123",
+				Event = "test",
+				TimeStamp = DateTimeOffset.Now
+			};
+
+			var destination = new WebhookDestination("http://localhost:8080/webhooks")
+				.WithVerification(options => {
+					options.VerificationUrl = new Uri("http://localhost:8080/webhooks/verify/invalid_challenge");
+					options.Parameters = new Dictionary<string, object> {
+						{ "token", receiverToken }
+					};
+				});
+
+			var result = await sender.VerifyDestinationAsync(destination);
+
+			Assert.False(result.Successful);
+			Assert.NotNull(result.StatusCode);
+			Assert.Equal(401, result.StatusCode);
+		}
+
+		[Fact]
+		public async Task Verify_NoChallengeReturned() {
+			var sender = GetVerifier<TestWebhook>();
+
+			var webhook = new TestWebhook {
+				Id = "123",
+				Event = "test",
+				TimeStamp = DateTimeOffset.Now
+			};
+
+			var destination = new WebhookDestination("http://localhost:8080/webhooks")
+				.WithVerification(options => {
+					options.VerificationUrl = new Uri("http://localhost:8080/webhooks/verify/no_challenge");
+					options.Parameters = new Dictionary<string, object> {
+						{ "token", receiverToken }
+					};
+				});
+
+			var result = await sender.VerifyDestinationAsync(destination);
+
+			Assert.False(result.Successful);
+			Assert.NotNull(result.StatusCode);
+			Assert.Equal(400, result.StatusCode);
 		}
 	}
 }

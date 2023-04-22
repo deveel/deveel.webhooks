@@ -12,10 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Net;
+using System.Text;
 
 using Microsoft.Extensions.Options;
 
@@ -23,11 +23,11 @@ using Polly;
 using Polly.Timeout;
 
 namespace Deveel.Webhooks {
-    /// <summary>
-    /// A default implementation of the <see cref="IWebhookDestinationVerifier"/>,
-    /// that pings a destination URL with some configured parameters to verify if it is reachable.
-    /// </summary>
-    public class WebhookDestinationVerifier : WebhookSenderClient, IWebhookDestinationVerifier, IDisposable {
+	/// <summary>
+	/// A default implementation of the <see cref="IWebhookDestinationVerifier"/>,
+	/// that pings a destination URL with some configured parameters to verify if it is reachable.
+	/// </summary>
+	public class WebhookDestinationVerifier : WebhookSenderClient, IWebhookDestinationVerifier, IDisposable {
 		/// <summary>
 		/// Creates a new instance of the <see cref="WebhookDestinationVerifier"/> class
 		/// with the given options.
@@ -91,10 +91,47 @@ namespace Deveel.Webhooks {
 		protected override TimeSpan? Timeout => VerifierOptions.Timeout;
 
 		/// <summary>
+		/// Appends a challenge to query string of the 
+		/// given <paramref name="request"/>
+		/// </summary>
+		/// <param name="request">
+		/// The HTTP request to which the challenge is added.
+		/// </param>
+		/// <param name="challenge">
+		/// The value of the challenge to add to the query string.
+		/// </param>
+		/// <exception cref="NotSupportedException"></exception>
+		protected virtual void AddChallenge(HttpRequestMessage request, string challenge) {
+			if (String.IsNullOrWhiteSpace(VerifierOptions.ChallengeQueryParameter))
+				throw new NotSupportedException("The challenge query parameter was not set");
+
+			request.RequestUri = request.RequestUri!.AddQueryParameter(VerifierOptions.ChallengeQueryParameter, challenge);
+		}
+
+		/// <summary>
+		/// Creates a new challenge to be sent to the destination URL.
+		/// </summary>
+		/// <returns>
+		/// Returns a string that represents the challenge to be sent to the 
+		/// destination URL.
+		/// </returns>
+		protected virtual string CreateChallenge() {
+			var sb = new StringBuilder();
+			for (int i = 0; i < VerifierOptions.ChallengeLength; i++) {
+				sb.Append(Random.Shared.Next(0, 9));
+			}
+
+			return sb.ToString();
+		}
+
+		/// <summary>
 		/// Creates a new HTTP request to the given <paramref name="verificationUrl"/>
 		/// </summary>
 		/// <param name="verificationUrl">
 		/// The destination URL to send the verification request.
+		/// </param>
+		/// <param name="challenge">
+		/// A challenge to be sent to the destination URL.
 		/// </param>
 		/// <param name="token">
 		/// The verification token to send in the request.
@@ -102,7 +139,7 @@ namespace Deveel.Webhooks {
 		/// <returns>
 		/// Returns an instance of <see cref="HttpRequestMessage"/> that can be sent
 		/// </returns>
-        protected virtual HttpRequestMessage CreateRequest(Uri verificationUrl, string token) {
+        protected virtual HttpRequestMessage CreateRequest(Uri verificationUrl, string token, string? challenge) {
             var request = new HttpRequestMessage(new HttpMethod(VerifierOptions.HttpMethod), verificationUrl);
 
             if (VerifierOptions.TokenLocation == VerificationTokenLocation.QueryString) {
@@ -111,20 +148,47 @@ namespace Deveel.Webhooks {
                 request.Headers.TryAddWithoutValidation(VerifierOptions.TokenHeaderName, token);
             }
 
+			if ((VerifierOptions.Challenge ?? false) && 
+				!String.IsNullOrWhiteSpace(challenge)) {
+				AddChallenge(request, challenge);
+			}
+
             return request;
         }
 
-		private async Task<HttpStatusCode> TryVerifyAsync(Uri destinationUrl, string verifyToken, CancellationToken cancellationToken) {
+		private async Task<HttpResponseMessage> VerifyChallengeAsync(HttpResponseMessage response, string challenge, CancellationToken cancellationToken) {
+			if (response.Content == null || 
+				response.Content.Headers == null ||
+				response.Content.Headers.ContentType == null)
+				return new HttpResponseMessage(HttpStatusCode.BadRequest);
+
+			if (response.Content.Headers.ContentType.MediaType != "text/plain")
+				return new HttpResponseMessage(HttpStatusCode.BadRequest);
+
+			var content = await response.Content.ReadAsStringAsync(cancellationToken);
+
+			if (!String.Equals(content, challenge, StringComparison.Ordinal))
+				return new HttpResponseMessage(HttpStatusCode.Unauthorized);
+
+			return new HttpResponseMessage(HttpStatusCode.OK);
+		}
+
+		private async Task<HttpStatusCode> TryVerifyAsync(Uri destinationUrl, string verifyToken, string? challenge, CancellationToken cancellationToken) {
 			var timeoutPolicy = CreateTryTimeoutPolicy<HttpResponseMessage>(VerifierOptions.Retry?.Timeout);
 
 			HttpResponseMessage? response = null;
 
 			try {
-				var request = CreateRequest(destinationUrl, verifyToken);
+				var request = CreateRequest(destinationUrl, verifyToken, challenge);
 
 				response = await timeoutPolicy.ExecuteAsync(token => SendRequestAsync(request, token), cancellationToken);
 
 				// TODO: Check the response body for a specific value?
+
+				if (response.StatusCode < HttpStatusCode.BadRequest &&
+					(VerifierOptions.Challenge ?? false) &&
+					!String.IsNullOrWhiteSpace(challenge))
+					response = await VerifyChallengeAsync(response, challenge, cancellationToken);
 
 				return response.StatusCode;
 			} catch (TimeoutRejectedException ex) {
@@ -201,7 +265,11 @@ namespace Deveel.Webhooks {
 				if (!TryGetVerifyToken(destination.Verification.Parameters, out var verifyToken))
 					throw new WebhookVerificationException("It was not possible to find the verification token");
 
-				var capture = await policy.ExecuteAndCaptureAsync(token => TryVerifyAsync(url, verifyToken!, token), cancellationToken);
+				string? challenge = null;
+				if (VerifierOptions.Challenge ?? false)
+					challenge = CreateChallenge();
+
+				var capture = await policy.ExecuteAndCaptureAsync(token => TryVerifyAsync(url, verifyToken!, challenge, token), cancellationToken);
 
 				// TODO: configure the expected status code
 				if (capture.Outcome == OutcomeType.Successful) {

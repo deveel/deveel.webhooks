@@ -504,9 +504,6 @@ namespace Deveel.Webhooks {
 		/// <returns>
 		/// Returns an instance of <see cref="WebhookDeliveryResult{TWebhook}"/> that describes the result of the delivery.
 		/// </returns>
-		/// <exception cref="WebhookVerificationException">
-		/// Thrown when the verification of the destination is enabled and it fails
-		/// </exception>
 		/// <exception cref="WebhookSerializationException">
 		/// Thrown when the webhook cannot be serialized
 		/// </exception>

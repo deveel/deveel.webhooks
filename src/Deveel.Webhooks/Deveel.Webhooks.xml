@@ -365,17 +365,6 @@
             Returns the instance of <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/> to allow chaining of calls.
             </returns>
         </member>
-        <member name="T:Deveel.Webhooks.UnixTimeMillisJsonConverter">
-            <summary>
-            A JSON converter that converts a <see cref="T:System.DateTimeOffset"/> to a Unix timestamp
-            </summary>
-        </member>
-        <member name="M:Deveel.Webhooks.UnixTimeMillisJsonConverter.Read(System.Text.Json.Utf8JsonReader@,System.Type,System.Text.Json.JsonSerializerOptions)">
-            <inheritdoc/>
-        </member>
-        <member name="M:Deveel.Webhooks.UnixTimeMillisJsonConverter.Write(System.Text.Json.Utf8JsonWriter,System.DateTimeOffset,System.Text.Json.JsonSerializerOptions)">
-            <inheritdoc/>
-        </member>
         <member name="T:Deveel.Webhooks.Webhook">
             <summary>
             A default implementation of <see cref="T:Deveel.Webhooks.IWebhook"/> that can be used

@@ -47,6 +47,24 @@ namespace Deveel.Webhooks {
         public string TokenHeaderName { get; set; } = "X-Verify-Token";
 
 		/// <summary>
+		/// Gets or sets a value indicating whether the verification request
+		/// should be sent with a challenge response.
+		/// </summary>
+		public bool? Challenge { get; set; }
+
+		/// <summary>
+		/// Gets or sets the query parameter name to use for passing the
+		/// challenge to the receiver in a verification request.
+		/// </summary>
+		public string? ChallengeQueryParameter { get; set; } = "challenge";
+
+		/// <summary>
+		/// Gets or sets the size of the challenge to be sent 
+		/// in the verification request.
+		/// </summary>
+		public int? ChallengeLength { get; set; } = 32;
+
+		/// <summary>
 		/// Gets or sets the location of the token in the verification request.
 		/// </summary>
         public VerificationTokenLocation TokenLocation { get; set; }

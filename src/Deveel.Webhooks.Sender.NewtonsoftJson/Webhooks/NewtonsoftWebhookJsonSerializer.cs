@@ -24,7 +24,8 @@ namespace Deveel.Webhooks {
     /// <typeparam name="TWebhook">
     /// The type of the webhook to serialize.
     /// </typeparam>
-    public sealed class NewtonsoftWebhookJsonSerializer<TWebhook> : IWebhookJsonSerializer<TWebhook> where TWebhook : class {
+    public sealed class NewtonsoftWebhookJsonSerializer<TWebhook> : IWebhookJsonSerializer<TWebhook>
+		where TWebhook : class {
         /// <summary>
         /// Initializes a new instance of the <see cref="NewtonsoftWebhookJsonSerializer{TWebhook}"/>
         /// with the given <paramref name="settings"/>.

@@ -42,7 +42,7 @@ namespace Deveel.Webhooks {
         /// <exception cref="WebhookSerializationException">
         /// Thrown if the webhook cannot be serialized.
         /// </exception>
-        public static async Task<string> SerializeToStringAsync<TWebhook>(this IWebhookJsonSerializer<TWebhook> serializer, TWebhook webhook, CancellationToken cancellationToken)
+        public static async Task<string> SerializeToStringAsync<TWebhook>(this IWebhookJsonSerializer<TWebhook> serializer, TWebhook webhook, CancellationToken cancellationToken = default)
             where TWebhook : class {
 
             try {

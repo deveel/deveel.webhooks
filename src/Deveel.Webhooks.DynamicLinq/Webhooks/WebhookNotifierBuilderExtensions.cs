@@ -23,12 +23,7 @@ using Microsoft.Extensions.DependencyInjection;
 namespace Deveel.Webhooks {
 	public static class WebhookNotifierBuilderExtensions {
 		public static WebhookNotifierBuilder<TWebhook> UseLinqFilter<TWebhook>(this WebhookNotifierBuilder<TWebhook> builder)
-			where TWebhook : class {
-
-			builder.Services.AddSingleton<IWebhookFilterEvaluator<TWebhook>, LinqWebhookFilterEvaluator<TWebhook>>();
-			builder.Services.AddSingleton<LinqWebhookFilterEvaluator<TWebhook>>();
-
-			return builder;
-		}
+			where TWebhook : class 
+			=> builder.AddFilterEvaluator<LinqWebhookFilterEvaluator<TWebhook>>();
 	}
 }

@@ -48,11 +48,14 @@ namespace Deveel.Webhooks {
         public IServiceCollection Services { get; }
 
         private void RegisterDefaultServices() {
-			UseSender<WebhookSender<TWebhook>>();
-			UseJsonSerializer<SystemTextWebhookJsonSerializer<TWebhook>>();
-			UseSigner<Sha256WebhookSigner>();
+			Services.TryAddScoped<IWebhookSender<TWebhook>, WebhookSender<TWebhook>>();
+			Services.TryAddScoped<WebhookSender<TWebhook>>();
 
-			UseDestinationVerifier(_ => { });
+			Services.TryAddSingleton<IWebhookJsonSerializer<TWebhook>, SystemTextWebhookJsonSerializer<TWebhook>>();
+			Services.TryAddSingleton<IWebhookXmlSerializer<TWebhook>, SystemWebhookXmlSerializer<TWebhook>>();
+
+			Services.TryAddSingleton<IWebhookSigner<TWebhook>>(new WebhookSignerAdapter(new Sha256WebhookSigner()));
+			Services.TryAddSingleton<IWebhookSigner<TWebhook>>(new WebhookSignerAdapter(new Sha1WebhookSigner()));
 		}
 
 		/// <summary>
@@ -103,8 +106,10 @@ namespace Deveel.Webhooks {
 		public WebhookSenderBuilder<TWebhook> UseSender<TSender>(ServiceLifetime lifetime = ServiceLifetime.Scoped)
 			where TSender : class, IWebhookSender<TWebhook> {
 
-			Services.TryAdd(new ServiceDescriptor(typeof(IWebhookSender<TWebhook>), typeof(TSender), lifetime));
-			Services.TryAdd(new ServiceDescriptor(typeof(TSender), typeof(TSender), lifetime));
+			Services.RemoveAll<IWebhookSender<TWebhook>>();
+
+			Services.Add(new ServiceDescriptor(typeof(IWebhookSender<TWebhook>), typeof(TSender), lifetime));
+			Services.Add(new ServiceDescriptor(typeof(TSender), typeof(TSender), lifetime));
 
 			return this;
 		}
@@ -136,21 +141,21 @@ namespace Deveel.Webhooks {
 		/// <returns>
 		/// Returns the instance of the builder, to allow chaining
 		/// </returns>
-		public WebhookSenderBuilder<TWebhook> UseSigner<TSigner>()
+		public WebhookSenderBuilder<TWebhook> AddSigner<TSigner>()
 			where TSigner : class, IWebhookSigner {
 
 			if (typeof(IWebhookSigner<TWebhook>).IsAssignableFrom(typeof(TSigner))) {
-				Services.TryAddSingleton<IWebhookSigner<TWebhook>>(provider => 
+				Services.AddSingleton<IWebhookSigner<TWebhook>>(provider => 
 					(IWebhookSigner<TWebhook>) provider.GetRequiredService<TSigner>());
 			} else {
-				Services.TryAddScoped<IWebhookSigner<TWebhook>>(provider => {
+				Services.AddSingleton<IWebhookSigner<TWebhook>>(provider => {
 					var signer = provider.GetRequiredService<TSigner>();
 					return new WebhookSignerAdapter(signer);
 				});
 			}
 
-			Services.TryAddSingleton<TSigner>();
-            Services.TryAddSingleton<IWebhookSignerProvider<TWebhook>, DefaultWebhookSignerProvider>();
+			Services.AddSingleton<TSigner>();
+            Services.AddSingleton<IWebhookSignerProvider<TWebhook>, DefaultWebhookSignerProvider>();
 
             return this;
 		}
@@ -170,11 +175,23 @@ namespace Deveel.Webhooks {
 			Services.AddOptions<WebhookDestinationVerifierOptions>(typeof(TWebhook).Name)
 				.BindConfiguration(sectionPath);
 
-			Services.TryAddScoped<IWebhookDestinationVerifier<TWebhook>, WebhookDestinationVerifier<TWebhook>>();
-			Services.TryAddScoped<WebhookDestinationVerifier<TWebhook>>();
+			Services.RemoveAll<IWebhookDestinationVerifier<TWebhook>>();
+
+			Services.AddScoped<IWebhookDestinationVerifier<TWebhook>, WebhookDestinationVerifier<TWebhook>>();
+			Services.AddScoped<WebhookDestinationVerifier<TWebhook>>();
 
 			return this;
 		}
+
+		/// <summary>
+		/// Registers a service used to verify receivers of webhooks before
+		/// attempting to deliver them.
+		/// </summary>
+		/// <returns>
+		/// Returns the instance of the builder, to allow chaining
+		/// </returns>
+		public WebhookSenderBuilder<TWebhook> UseDestinationVerifier()
+			=> UseDestinationVerifier(_ => { });
 
 		/// <summary>
 		/// Registers a service used to verify receivers of webhooks before
@@ -186,8 +203,10 @@ namespace Deveel.Webhooks {
 			Services.AddOptions<WebhookDestinationVerifierOptions>(typeof(TWebhook).Name)
 				.Configure(configure);
 
-			Services.TryAddScoped<IWebhookDestinationVerifier<TWebhook>, WebhookDestinationVerifier<TWebhook>>();
-			Services.TryAddScoped<WebhookDestinationVerifier<TWebhook>>();
+			Services.RemoveAll<IWebhookDestinationVerifier<TWebhook>>();
+
+			Services.AddScoped<IWebhookDestinationVerifier<TWebhook>, WebhookDestinationVerifier<TWebhook>>();
+			Services.AddScoped<WebhookDestinationVerifier<TWebhook>>();
 
 			return this;
 		}

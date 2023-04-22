@@ -48,17 +48,19 @@ namespace Deveel.Webhooks {
 			propertyBuilder.SetSetMethod(setMethodBuilder);
 		}
 
+		private const string Namespace = "Deveel.Webhooks.Types";
+
 		private static Type? CreateType(Dictionary<string, Type> propertyTypes) {
 			var assemblyName = new AssemblyName("Deveel.Webhooks.AnonymousTypes");
 			var assemblyBuilder = AssemblyBuilder.DefineDynamicAssembly(assemblyName, AssemblyBuilderAccess.Run);
-			var moduleBuilder = assemblyBuilder.DefineDynamicModule("Deveel.Webhooks.Types");
+			var moduleBuilder = assemblyBuilder.DefineDynamicModule("AnonymousTypes");
 			var typeAtts = TypeAttributes.Public |
 				TypeAttributes.AnsiClass |
 				TypeAttributes.AutoClass |
 				TypeAttributes.AutoLayout |
 				TypeAttributes.BeforeFieldInit;
 
-			var typeBuilder = moduleBuilder.DefineType($"_Anonynous_{anonymousCounter++}", typeAtts);
+			var typeBuilder = moduleBuilder.DefineType($"{Namespace}.__Anonynous_{anonymousCounter++}", typeAtts);
 
 			foreach (var propertyType in propertyTypes) {
 				string propertyName = propertyType.Key;

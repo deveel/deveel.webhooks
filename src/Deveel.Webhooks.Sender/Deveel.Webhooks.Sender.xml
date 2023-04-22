@@ -279,6 +279,17 @@
         <member name="M:Deveel.Webhooks.SystemWebhookXmlSerializer`1.SerializeAsync(System.IO.Stream,`0,System.Threading.CancellationToken)">
             <inheritdoc/>
         </member>
+        <member name="T:Deveel.Webhooks.UnixTimeMillisJsonConverter">
+            <summary>
+            A JSON converter that converts a <see cref="T:System.DateTimeOffset"/> to a Unix timestamp
+            </summary>
+        </member>
+        <member name="M:Deveel.Webhooks.UnixTimeMillisJsonConverter.Read(System.Text.Json.Utf8JsonReader@,System.Type,System.Text.Json.JsonSerializerOptions)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Deveel.Webhooks.UnixTimeMillisJsonConverter.Write(System.Text.Json.Utf8JsonWriter,System.DateTimeOffset,System.Text.Json.JsonSerializerOptions)">
+            <inheritdoc/>
+        </member>
         <member name="T:Deveel.Webhooks.UriExtensions">
             <summary>
             Extends the <see cref="T:System.Uri"/> class with additional
@@ -808,12 +819,37 @@
         <member name="P:Deveel.Webhooks.WebhookDestinationVerifier.Timeout">
             <inheritdoc/>
         </member>
-        <member name="M:Deveel.Webhooks.WebhookDestinationVerifier.CreateRequest(System.Uri,System.String)">
+        <member name="M:Deveel.Webhooks.WebhookDestinationVerifier.AddChallenge(System.Net.Http.HttpRequestMessage,System.String)">
+            <summary>
+            Appends a challenge to query string of the 
+            given <paramref name="request"/>
+            </summary>
+            <param name="request">
+            The HTTP request to which the challenge is added.
+            </param>
+            <param name="challenge">
+            The value of the challenge to add to the query string.
+            </param>
+            <exception cref="T:System.NotSupportedException"></exception>
+        </member>
+        <member name="M:Deveel.Webhooks.WebhookDestinationVerifier.CreateChallenge">
+            <summary>
+            Creates a new challenge to be sent to the destination URL.
+            </summary>
+            <returns>
+            Returns a string that represents the challenge to be sent to the 
+            destination URL.
+            </returns>
+        </member>
+        <member name="M:Deveel.Webhooks.WebhookDestinationVerifier.CreateRequest(System.Uri,System.String,System.String)">
             <summary>
             Creates a new HTTP request to the given <paramref name="verificationUrl"/>
             </summary>
             <param name="verificationUrl">
             The destination URL to send the verification request.
+            </param>
+            <param name="challenge">
+            A challenge to be sent to the destination URL.
             </param>
             <param name="token">
             The verification token to send in the request.
@@ -886,6 +922,24 @@
             <summary>
             Gets or sets the header name to use for passing the
             token specific for the receiver in a verification request.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.WebhookDestinationVerifierOptions.Challenge">
+            <summary>
+            Gets or sets a value indicating whether the verification request
+            should be sent with a challenge response.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.WebhookDestinationVerifierOptions.ChallengeQueryParameter">
+            <summary>
+            Gets or sets the query parameter name to use for passing the
+            challenge to the receiver in a verification request.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.WebhookDestinationVerifierOptions.ChallengeLength">
+            <summary>
+            Gets or sets the size of the challenge to be sent 
+            in the verification request.
             </summary>
         </member>
         <member name="P:Deveel.Webhooks.WebhookDestinationVerifierOptions.TokenLocation">
@@ -1315,9 +1369,6 @@
             <returns>
             Returns an instance of <see cref="T:Deveel.Webhooks.WebhookDeliveryResult`1"/> that describes the result of the delivery.
             </returns>
-            <exception cref="T:Deveel.Webhooks.WebhookVerificationException">
-            Thrown when the verification of the destination is enabled and it fails
-            </exception>
             <exception cref="T:Deveel.Webhooks.WebhookSerializationException">
             Thrown when the webhook cannot be serialized
             </exception>
@@ -1415,7 +1466,7 @@
             Returns the instance of the builder, to allow chaining
             </returns>
         </member>
-        <member name="M:Deveel.Webhooks.WebhookSenderBuilder`1.UseSigner``1">
+        <member name="M:Deveel.Webhooks.WebhookSenderBuilder`1.AddSigner``1">
             <summary>
             Registers a service used to sign webhook payloads.
             </summary>
@@ -1435,6 +1486,15 @@
             The path of the section within the configuration that
             is used to configure the verifier.
             </param>
+            <returns>
+            Returns the instance of the builder, to allow chaining
+            </returns>
+        </member>
+        <member name="M:Deveel.Webhooks.WebhookSenderBuilder`1.UseDestinationVerifier">
+            <summary>
+            Registers a service used to verify receivers of webhooks before
+            attempting to deliver them.
+            </summary>
             <returns>
             Returns the instance of the builder, to allow chaining
             </returns>

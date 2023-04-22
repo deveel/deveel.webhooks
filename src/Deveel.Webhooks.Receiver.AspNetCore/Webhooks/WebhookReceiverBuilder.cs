@@ -234,6 +234,8 @@ namespace Deveel.Webhooks {
 		public WebhookReceiverBuilder<TWebhook> UseJsonParser<TParser>(ServiceLifetime lifetime = ServiceLifetime.Singleton)
 			where TParser : class, IWebhookJsonParser<TWebhook> {
 
+			Services.RemoveAll<IWebhookJsonParser<TWebhook>>();
+
 			Services.Add(new ServiceDescriptor(typeof(IWebhookJsonParser<TWebhook>), typeof(TParser), lifetime));
 
 			if (typeof(TParser).IsClass && !typeof(TParser).IsAbstract)

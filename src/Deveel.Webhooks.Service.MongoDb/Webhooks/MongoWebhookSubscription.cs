@@ -14,18 +14,22 @@
 
 using System;
 using System.Collections.Generic;
-
-using Deveel.Data;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Bson.Serialization.Options;
 
-namespace Deveel.Webhooks {
-	public class MongoDbWebhookSubscription : IWebhookSubscription, IMongoDocument {
-		string IWebhookSubscription.SubscriptionId => Id.ToEntityId();
+using MongoFramework;
+using MongoFramework.Attributes;
 
-		[BsonId]
+namespace Deveel.Webhooks {
+	[Table(MongoDbWebhookStorageConstants.SubscriptionCollectionName)]
+	public class MongoWebhookSubscription : IWebhookSubscription {
+		string IWebhookSubscription.SubscriptionId => Id == ObjectId.Empty ? null : Id.ToString();
+
+		[BsonId, Key]
 		public ObjectId Id { get; set; }
 
 		public string Name { get; set; }
@@ -44,11 +48,12 @@ namespace Deveel.Webhooks {
 
 		public IDictionary<string, string> Headers { get; set; }
 
+		[Index("by_event_type", IndexSortOrder.Descending)]
 		public List<string> EventTypes { get; set; }
 
 		IEnumerable<string> IWebhookSubscription.EventTypes => EventTypes?.ToArray();
 
-		public IList<MongoDbWebhookFilter> Filters { get; set; }
+		public IList<MongoWebhookFilter> Filters { get; set; }
 
 		IEnumerable<IWebhookFilter> IWebhookSubscription.Filters => Filters;
 

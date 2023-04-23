@@ -22,7 +22,7 @@ namespace Deveel.Webhooks {
 	public static class WebhookNotifierBuilderExtensions {
 		public static WebhookNotifierBuilder<TWebhook> UseMongoSubscriptionResolver<TWebhook>(this WebhookNotifierBuilder<TWebhook> builder)
 			where TWebhook : class {
-			return builder.UseDefaultSubscriptionResolver<TWebhook>(typeof(MongoDbWebhookSubscription));
+			return builder.UseDefaultSubscriptionResolver<TWebhook>(typeof(MongoWebhookSubscription));
 		}
 	}
 }

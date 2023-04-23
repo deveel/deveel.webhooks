@@ -14,31 +14,52 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-using Deveel.Data;
-
-using Microsoft.Extensions.Options;
-
+using MongoDB.Bson;
 using MongoDB.Driver;
 
+using MongoFramework;
+using MongoFramework.Linq;
+
 namespace Deveel.Webhooks {
-	public class MongoDbWebhookSubscriptionStrore<TSubscription> : MongoDbStoreBase<TSubscription>, 
+	public class MongoDbWebhookSubscriptionStrore<TSubscription> :
 			IWebhookSubscriptionStore<TSubscription>,
 			IWebhookSubscriptionQueryableStore<TSubscription>,
 			IWebhookSubscriptionPagedStore<TSubscription>
-			where TSubscription : MongoDbWebhookSubscription {
-		public MongoDbWebhookSubscriptionStrore(IOptions<MongoDbOptions> options) : base(options) {
+			where TSubscription : MongoWebhookSubscription {
+
+		public MongoDbWebhookSubscriptionStrore(IMongoDbWebhookContext context) {
+			Subscriptions = context.Set<TSubscription>();
 		}
 
-		public MongoDbWebhookSubscriptionStrore(MongoDbOptions options) : base(options) {
+		protected IMongoDbSet<TSubscription> Subscriptions { get; }
+
+		public IQueryable<TSubscription> AsQueryable() => Subscriptions.AsQueryable();
+
+		public Task<int> CountAllAsync(CancellationToken cancellationToken = default)
+			=> Subscriptions.CountAsync(cancellationToken);
+
+		public async Task<string> CreateAsync(TSubscription subscription, CancellationToken cancellationToken = default) {
+			Subscriptions.Add(subscription);
+			await Subscriptions.Context.SaveChangesAsync(cancellationToken);
+
+			return subscription.Id.ToString();
 		}
 
-		protected override IMongoCollection<TSubscription> Collection => GetCollection(Options.SubscriptionsCollectionName());
+		public async Task<bool> DeleteAsync(TSubscription subscription, CancellationToken cancellationToken = default) {
+			Subscriptions.Remove(subscription);
+			await Subscriptions.Context.SaveChangesAsync(cancellationToken);
+
+			return true;
+		}
+
+		public async Task<TSubscription> FindByIdAsync(string id, CancellationToken cancellationToken = default)
+			=> await Subscriptions.FindAsync(ObjectId.Parse(id));
 
 		public async Task<IList<TSubscription>> GetByEventTypeAsync(string eventType, bool activeOnly, CancellationToken cancellationToken) {
-			ThrowIfDisposed();
 			cancellationToken.ThrowIfCancellationRequested();
 
 			var filter = Builders<TSubscription>.Filter
@@ -49,20 +70,42 @@ namespace Deveel.Webhooks {
 				filter = Builders<TSubscription>.Filter.And(filter, activeFilter);
 			}
 
-			filter = NormalizeFilter(filter);
+			var query = Subscriptions.Where(s => s.EventTypes.Any(y => y == eventType));
+			if (activeOnly)
+				query = query.Where(s => s.Status == WebhookSubscriptionStatus.Active);
 
-			var result = await Collection.FindAsync(filter, cancellationToken: cancellationToken);
-			return await result.ToListAsync(cancellationToken);
+			return await query.ToListAsync(cancellationToken);
+		}
+
+		public async Task<PagedResult<TSubscription>> GetPageAsync(PagedQuery<TSubscription> query, CancellationToken cancellationToken) {
+			var querySet = Subscriptions.AsQueryable();
+
+			if (query.Predicate != null)
+				querySet = querySet.Where(query.Predicate);
+
+			var total = await querySet.CountAsync(cancellationToken);
+
+			querySet = querySet.Skip(query.Offset).Take(query.PageSize);
+
+			var items = await querySet.ToListAsync(cancellationToken);
+			return new PagedResult<TSubscription>(query, total, items);
 		}
 
 		public Task SetStateAsync(TSubscription subscription, WebhookSubscriptionStatus status, CancellationToken cancellationToken) {
-			ThrowIfDisposed();
 			cancellationToken.ThrowIfCancellationRequested();
 
 			subscription.Status = status;
 			subscription.LastStatusTime = DateTimeOffset.UtcNow;
 
 			return Task.CompletedTask;
+		}
+
+		public async Task<bool> UpdateAsync(TSubscription subscription, CancellationToken cancellationToken = default) {
+			Subscriptions.Update(subscription);
+
+			await Subscriptions.Context.SaveChangesAsync(cancellationToken);
+
+			return true;
 		}
 	}
 }

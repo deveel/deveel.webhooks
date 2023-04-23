@@ -14,22 +14,14 @@
 
 using System;
 
-using Deveel.Data;
+using Finbuckle.MultiTenant;
 
 using Microsoft.Extensions.Options;
 
 namespace Deveel.Webhooks {
-	public class MongoDbWebhookSubscriptionStoreProvider : MongoDbWebhookSubscriptionStoreProvider<MongoDbWebhookSubscription>,
-							IWebhookSubscriptionStoreProvider<MongoDbWebhookSubscription> {
-		public MongoDbWebhookSubscriptionStoreProvider(IOptions<MongoDbOptions> baseOptions) : base(baseOptions) {
+	public class MongoDbWebhookSubscriptionStoreProvider : MongoDbWebhookSubscriptionStoreProvider<MongoWebhookSubscription>,
+							IWebhookSubscriptionStoreProvider<MongoWebhookSubscription> {
+		public MongoDbWebhookSubscriptionStoreProvider(IMultiTenantStore<TenantInfo> tenantStore) : base(tenantStore) {
 		}
-
-		public MongoDbWebhookSubscriptionStoreProvider(MongoDbOptions baseOptions) : base(baseOptions) {
-		}
-
-		protected override MongoDbStoreBase<MongoDbWebhookSubscription> CreateStore(MongoDbOptions options) => new MongoDbWebhookSubscriptionStrore(options);
-
-		IWebhookSubscriptionStore<MongoDbWebhookSubscription> IWebhookSubscriptionStoreProvider<MongoDbWebhookSubscription>.GetTenantStore(string tenantId)
-			=> (IWebhookSubscriptionStore<MongoDbWebhookSubscription>)GetStore(tenantId);
 	}
 }

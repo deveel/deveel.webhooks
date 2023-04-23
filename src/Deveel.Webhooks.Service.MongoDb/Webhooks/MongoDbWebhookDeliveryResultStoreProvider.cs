@@ -14,16 +14,13 @@
 
 using System;
 
-using Deveel.Data;
+using Finbuckle.MultiTenant;
 
 using Microsoft.Extensions.Options;
 
 namespace Deveel.Webhooks {
-	public class MongoDbWebhookDeliveryResultStoreProvider : MongoDbWebhookDeliveryResultStoreProvider<MongoDbWebhookDeliveryResult> {
-		public MongoDbWebhookDeliveryResultStoreProvider(IOptions<MongoDbOptions> options) : base(options) {
-		}
-
-		public MongoDbWebhookDeliveryResultStoreProvider(MongoDbOptions options) : base(options) {
+	public class MongoDbWebhookDeliveryResultStoreProvider : MongoDbWebhookDeliveryResultStoreProvider<MongoWebhookDeliveryResult> {
+		public MongoDbWebhookDeliveryResultStoreProvider(IMultiTenantStore<TenantInfo> tenantStore) : base(tenantStore) {
 		}
 	}
 }

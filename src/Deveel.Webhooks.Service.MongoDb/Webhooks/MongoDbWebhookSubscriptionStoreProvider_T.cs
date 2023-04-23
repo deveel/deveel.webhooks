@@ -14,29 +14,31 @@
 
 using System;
 
-using Deveel.Data;
+using Finbuckle.MultiTenant;
 
 using Microsoft.Extensions.Options;
 
+using MongoFramework;
+
 namespace Deveel.Webhooks {
-	public class MongoDbWebhookSubscriptionStoreProvider<TSubscription> : MongoDbStoreProviderBase<TSubscription>, 
-		IWebhookSubscriptionStoreProvider<TSubscription>
-			where TSubscription : MongoDbWebhookSubscription {
-		public MongoDbWebhookSubscriptionStoreProvider(IOptions<MongoDbOptions> baseOptions)
-			: base(baseOptions) {
+	public class MongoDbWebhookSubscriptionStoreProvider<TSubscription> : IWebhookSubscriptionStoreProvider<TSubscription>
+			where TSubscription : MongoWebhookSubscription {
+		private readonly IMultiTenantStore<TenantInfo> tenantStore;
+
+		public MongoDbWebhookSubscriptionStoreProvider(IMultiTenantStore<TenantInfo> tenantStore) {
+			this.tenantStore = tenantStore;
 		}
 
-		public MongoDbWebhookSubscriptionStoreProvider(MongoDbOptions baseOptions)
-			: base(baseOptions) {
+		public IWebhookSubscriptionStore<TSubscription> GetTenantStore(string tenantId) {
+			var tenantInfo = tenantStore.TryGetByIdentifierAsync(tenantId).GetAwaiter().GetResult();
+			if (tenantInfo == null)
+				throw new ArgumentException($"Tenant '{tenantId}' not found");
+
+			var context = new MultiTenantContext<TenantInfo> {
+				TenantInfo = tenantInfo
+			};
+
+			return new MongoDbWebhookSubscriptionStrore<TSubscription>(new MongoDbWebhookTenantContext(context));
 		}
-
-		protected override MongoDbStoreBase<TSubscription> CreateStore(MongoDbOptions options)
-			=> new MongoDbWebhookSubscriptionStrore<TSubscription>(options);
-
-		public MongoDbWebhookSubscriptionStrore<TSubscription> GetStore(string tenantId)
-			=> (MongoDbWebhookSubscriptionStrore<TSubscription>)CreateStore(tenantId);
-
-		IWebhookSubscriptionStore<TSubscription> IWebhookSubscriptionStoreProvider<TSubscription>.GetTenantStore(string tenantId)
-			=> GetStore(tenantId);
 	}
 }

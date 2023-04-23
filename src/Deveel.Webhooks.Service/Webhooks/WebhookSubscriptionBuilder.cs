@@ -29,10 +29,8 @@ namespace Deveel.Webhooks {
 
 		private void RegisterDefaults() {
 			Services.TryAddScoped<WebhookSubscriptionManager<TSubscription>>();
-			Services.TryAddScoped<MultiTenantWebhookSubscriptionManager<TSubscription>>();
 
 			Services.TryAddSingleton<IWebhookSubscriptionValidator<TSubscription>, WebhookSubscriptionValidator<TSubscription>>();
-			Services.TryAddSingleton<IMultiTenantWebhookSubscriptionValidator<TSubscription>, MultiTenantWebhookSubscriptionValidator<TSubscription>>();
 
 			Services.TryAddScoped<IWebhookSubscriptionResolver, DefaultWebhookSubscriptionResolver<TSubscription>>();
 		}

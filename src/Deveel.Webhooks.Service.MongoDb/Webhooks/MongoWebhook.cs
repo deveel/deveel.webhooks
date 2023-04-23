@@ -15,14 +15,12 @@
 using System;
 using System.Collections.Generic;
 
-using Deveel.Data;
-
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Bson.Serialization.Options;
 
 namespace Deveel.Webhooks {
-	public class MongoDbWebhook : IWebhook {
+	public class MongoWebhook : IWebhook {
 		string IWebhook.Id => WebhookId;
 
 		public string WebhookId { get; set; }

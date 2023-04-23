@@ -26,11 +26,6 @@
             of the webhook service
             </summary>
         </member>
-        <member name="P:Deveel.Webhooks.WebhookSubscriptionInfo.Active">
-            <summary>
-            The initial state of the subscription
-            </summary>
-        </member>
         <member name="T:Deveel.Webhooks.WebhookSubscriptionValidationException">
             <summary>
             An exception that is thrown during the validation

@@ -14,26 +14,31 @@
 
 using System;
 
-using Deveel.Data;
+using Finbuckle.MultiTenant;
 
 using Microsoft.Extensions.Options;
 
+using MongoFramework;
+
 namespace Deveel.Webhooks {
-	public class MongoDbWebhookDeliveryResultStoreProvider<TResult> : MongoDbStoreProviderBase<TResult>, IWebhookDeliveryResultStoreProvider<TResult>
-		where TResult : MongoDbWebhookDeliveryResult {
-		public MongoDbWebhookDeliveryResultStoreProvider(IOptions<MongoDbOptions> options) : base(options) {
+	public class MongoDbWebhookDeliveryResultStoreProvider<TResult> : IWebhookDeliveryResultStoreProvider<TResult>
+		where TResult : MongoWebhookDeliveryResult {
+		private readonly IMultiTenantStore<TenantInfo> tenantStore;
+
+		public MongoDbWebhookDeliveryResultStoreProvider(IMultiTenantStore<TenantInfo> tenantStore) {
+			this.tenantStore = tenantStore;
 		}
 
-		public MongoDbWebhookDeliveryResultStoreProvider(MongoDbOptions options) : base(options) {
+		public IWebhookDeliveryResultStore<TResult> GetTenantStore(string tenantId) {
+			var tenantInfo = tenantStore.TryGetByIdentifierAsync(tenantId).GetAwaiter().GetResult();
+			if (tenantInfo == null)
+				throw new WebhookException($"Tenant '{tenantId}' not found");
+
+			var context = new MultiTenantContext<TenantInfo> {
+				TenantInfo = tenantInfo
+			};
+
+			return new MongoDbWebhookDeliveryResultStore<TResult>(new MongoDbWebhookTenantContext(context));
 		}
-
-		protected override MongoDbStoreBase<TResult> CreateStore(MongoDbOptions options) 
-			=> new MongoDbWebhookDeliveryResultStore<TResult>(options);
-
-		public MongoDbWebhookDeliveryResultStore<TResult> GetStore(string tenantId)
-			=> (MongoDbWebhookDeliveryResultStore<TResult>) CreateStore(tenantId);
-
-		IWebhookDeliveryResultStore<TResult> IWebhookDeliveryResultStoreProvider<TResult>.GetTenantStore(string tenantId)
-			=> GetStore(tenantId);
 	}
 }

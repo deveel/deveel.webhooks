@@ -18,23 +18,23 @@ using System.Threading;
 using System.Threading.Tasks;
 
 namespace Deveel.Webhooks {
-	public interface IWebhookSubscriptionStore<TSubscription> : IDisposable
+	public interface IWebhookSubscriptionStore<TSubscription>
 		where TSubscription : class, IWebhookSubscription {
 
 
-		Task<string> CreateAsync(TSubscription subscription, CancellationToken cancellationToken);
+		Task<string> CreateAsync(TSubscription subscription, CancellationToken cancellationToken = default);
 
-		Task<TSubscription> FindByIdAsync(string id, CancellationToken cancellationToken);
+		Task<TSubscription> FindByIdAsync(string id, CancellationToken cancellationToken = default);
 
-		Task<bool> DeleteAsync(TSubscription subscription, CancellationToken cancellationToken);
+		Task<bool> DeleteAsync(TSubscription subscription, CancellationToken cancellationToken = default);
 
-		Task<bool> UpdateAsync(TSubscription subscription, CancellationToken cancellationToken);
+		Task<bool> UpdateAsync(TSubscription subscription, CancellationToken cancellationToken = default);
 
-		Task<int> CountAllAsync(CancellationToken cancellationToken);
+		Task<int> CountAllAsync(CancellationToken cancellationToken = default);
 
 
-		Task<IList<TSubscription>> GetByEventTypeAsync(string eventType, bool activeOnly, CancellationToken cancellationToken);
+		Task<IList<TSubscription>> GetByEventTypeAsync(string eventType, bool activeOnly, CancellationToken cancellationToken = default);
 
-		Task SetStateAsync(TSubscription subscription, WebhookSubscriptionStatus status, CancellationToken cancellationToken);
+		Task SetStateAsync(TSubscription subscription, WebhookSubscriptionStatus status, CancellationToken cancellationToken = default);
 	}
 }

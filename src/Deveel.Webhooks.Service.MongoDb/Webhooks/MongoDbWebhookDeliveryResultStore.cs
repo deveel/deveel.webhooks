@@ -14,16 +14,13 @@
 
 using System;
 
-using Deveel.Data;
-
 using Microsoft.Extensions.Options;
 
-namespace Deveel.Webhooks {
-	public class MongoDbWebhookDeliveryResultStore : MongoDbWebhookDeliveryResultStore<MongoDbWebhookDeliveryResult> {
-		public MongoDbWebhookDeliveryResultStore(IOptions<MongoDbOptions> options) : base(options) {
-		}
+using MongoFramework;
 
-		public MongoDbWebhookDeliveryResultStore(MongoDbOptions options) : base(options) {
+namespace Deveel.Webhooks {
+	public class MongoDbWebhookDeliveryResultStore : MongoDbWebhookDeliveryResultStore<MongoWebhookDeliveryResult> {
+		public MongoDbWebhookDeliveryResultStore(IMongoDbWebhookContext context) : base(context) {
 		}
 	}
 }

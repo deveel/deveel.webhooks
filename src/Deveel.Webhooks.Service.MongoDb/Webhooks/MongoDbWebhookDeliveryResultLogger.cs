@@ -15,8 +15,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -27,7 +25,7 @@ using MongoDB.Bson;
 namespace Deveel.Webhooks {
 	public class MongoDbWebhookDeliveryResultLogger<TWebhook, TResult> : IWebhookDeliveryResultLogger<TWebhook>
 		where TWebhook : class, IWebhook
-		where TResult : MongoDbWebhookDeliveryResult {
+		where TResult : MongoWebhookDeliveryResult, new() {
 		public MongoDbWebhookDeliveryResultLogger(
 			MongoDbWebhookDeliveryResultStoreProvider<TResult> storeProvider, 
 			ILogger<MongoDbWebhookDeliveryResultLogger<TWebhook, TResult>> logger) {
@@ -39,21 +37,28 @@ namespace Deveel.Webhooks {
 
 		protected ILogger<MongoDbWebhookDeliveryResultLogger<TWebhook, TResult>> Logger { get; }
 
-		protected virtual TResult CreateNewResult() {
-			return Activator.CreateInstance<TResult>();
-		}
+		protected virtual TResult ConvertResult(IWebhookSubscription subscription, WebhookDeliveryResult<TWebhook> result) {
+			var obj = new TResult();
 
-		protected virtual TResult ConvertResult(WebhookDeliveryResult<TWebhook> result) {
-			var obj = CreateNewResult();
-
+			obj.TenantId = subscription.TenantId;
+			obj.Receiver = CreateReceiver(subscription);
 			obj.Webhook = ConvertWebhook(result.Webhook);
 			obj.DeliveryAttempts = result.Attempts?.Select(ConvertDeliveryAttempt).ToList();
 
 			return obj;
 		}
 
-		private MongoDbWebhookDeliveryAttempt ConvertDeliveryAttempt(WebhookDeliveryAttempt attempt) {
-			return new MongoDbWebhookDeliveryAttempt {
+		private MongoWebhookReceiver CreateReceiver(IWebhookSubscription subscription) {
+			return new MongoWebhookReceiver {
+				SubscriptionId = subscription.SubscriptionId,
+				SubscriptionName = subscription.Name,
+				DestinationUrl = subscription.DestinationUrl,
+				// TODO: body format and headers
+			};
+		}
+
+		private MongoWebhookDeliveryAttempt ConvertDeliveryAttempt(WebhookDeliveryAttempt attempt) {
+			return new MongoWebhookDeliveryAttempt {
 				StartedAt = attempt.StartedAt,
 				EndedAt = attempt.CompletedAt,
 				ResponseStatusCode = attempt.ResponseCode,
@@ -61,11 +66,12 @@ namespace Deveel.Webhooks {
 			};
 		}
 
-		protected virtual MongoDbWebhook ConvertWebhook(IWebhook webhook) {
-			return new MongoDbWebhook {
+		protected virtual MongoWebhook ConvertWebhook(IWebhook webhook) {
+			return new MongoWebhook {
 				WebhookId = webhook.Id,
 				EventType = webhook.EventType,
 				SubscriptionId = webhook.SubscriptionId,
+				SubscriptionName = webhook.SubscriptionName,
 				Data = ConvertWebhookData(webhook.Data),
 				TimeStamp = webhook.TimeStamp
 			};
@@ -112,9 +118,9 @@ namespace Deveel.Webhooks {
 				result.Webhook.EventType, subscription.TenantId);
 
 			try {
-				var resultObj = ConvertResult(result);
+				var resultObj = ConvertResult(subscription, result);
 
-				await StoreProvider.GetStore(subscription.TenantId).CreateAsync(resultObj, cancellationToken);
+				await StoreProvider.GetTenantStore(subscription.TenantId).CreateAsync(resultObj, cancellationToken);
 			} catch (Exception ex) {
 				Logger.LogError(ex, "Could not log the result of the delivery of the Webhook of type '{EventType}' for tenant '{TenantId}' because of an error",
 					result.Webhook.EventType, subscription.TenantId);

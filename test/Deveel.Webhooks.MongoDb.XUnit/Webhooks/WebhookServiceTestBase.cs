@@ -1,7 +1,4 @@
-﻿using System;
-using System.Net;
-using System.Net.Http;
-using System.Threading.Tasks;
+﻿using System.Net;
 
 using Deveel.Util;
 
@@ -11,29 +8,44 @@ using Microsoft.Extensions.Logging.Abstractions;
 
 using Mongo2Go;
 
+using MongoDB.Driver;
+
 using Xunit.Abstractions;
 
 namespace Deveel.Webhooks {
-	public abstract class WebhookServiceTestBase : IDisposable {
-		private MongoDbRunner mongoDbCluster;
+	[Collection(nameof(MongoTestCollection))]
+	public abstract class WebhookServiceTestBase : IAsyncLifetime {
+		private readonly MongoTestCluster mongo;
 
-		protected WebhookServiceTestBase(ITestOutputHelper outputHelper) {
+		protected WebhookServiceTestBase(MongoTestCluster mongo, ITestOutputHelper outputHelper) {
+			this.mongo = mongo;
 			Services = BuildServiceProvider(outputHelper);
 		}
 
 		protected IServiceProvider Services { get; }
 
-		protected string ConnectionString => mongoDbCluster?.ConnectionString;
+		protected string ConnectionString => mongo.ConnectionString;
 
 		protected virtual MongoDbRunner? CreateMongo() {
 			return MongoDbRunner.Start(logger: NullLogger.Instance);
 		}
 
-		private IServiceProvider BuildServiceProvider(ITestOutputHelper outputHelper) {
-			mongoDbCluster = CreateMongo();
+		public virtual async Task InitializeAsync() {
+			var client = new MongoClient(ConnectionString);
+			await client.GetDatabase("webhooks").CreateCollectionAsync(MongoDbWebhookStorageConstants.SubscriptionCollectionName);
+			await client.GetDatabase("webhooks").CreateCollectionAsync(MongoDbWebhookStorageConstants.DeliveryResultsCollectionName);
+		}
 
+		public virtual async Task DisposeAsync() {
+			var client = new MongoClient(ConnectionString);
+
+			await client.GetDatabase("webhooks").DropCollectionAsync(MongoDbWebhookStorageConstants.SubscriptionCollectionName);
+			await client.GetDatabase("webhooks").DropCollectionAsync(MongoDbWebhookStorageConstants.DeliveryResultsCollectionName);
+		}
+
+		private IServiceProvider BuildServiceProvider(ITestOutputHelper outputHelper) {
 			return new ServiceCollection()
-				.AddWebhookSubscriptions<MongoDbWebhookSubscription>(buidler => ConfigureWebhookService(buidler))
+				.AddWebhookSubscriptions<MongoWebhookSubscription>(buidler => ConfigureWebhookService(buidler))
 				.AddTestHttpClient(OnRequestAsync)
 				.AddLogging(logging => logging.AddXUnit(outputHelper))
 				.BuildServiceProvider();
@@ -43,21 +55,14 @@ namespace Deveel.Webhooks {
 			return Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK));
 		}
 
-		protected virtual void ConfigureWebhookService(WebhookSubscriptionBuilder<MongoDbWebhookSubscription> builder) {
-			if (mongoDbCluster != null)
-				builder.UseMongoDb(options => {
-					options.DatabaseName = "webhooks";
-					options.ConnectionString = mongoDbCluster.ConnectionString;
-					options.SubscriptionsCollectionName("webhooks_subscription");
-				});
+		protected virtual void ConfigureWebhookService(WebhookSubscriptionBuilder<MongoWebhookSubscription> builder) {
+			builder.UseMongoDb(options => {
+				options.WithConnectionString($"{ConnectionString}webhooks");
+			});
 		}
 
 		protected virtual void ConfigureServices(IServiceCollection services) {
 
-		}
-
-		public virtual void Dispose() {
-			mongoDbCluster?.Dispose();
 		}
 	}
 }

@@ -2,6 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
     <VersionPrefix>2.0.1</VersionPrefix>
     <RootNamespace>Deveel</RootNamespace>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
@@ -38,7 +40,8 @@
 	</ItemGroup>
 
 	<ItemGroup>
-    <PackageReference Include="MongoDB.Driver" Version="2.19.1" />
+    <PackageReference Include="Finbuckle.MultiTenant" Version="6.10.0" />
+    <PackageReference Include="MongoFramework" Version="0.28.1" />
   </ItemGroup>
 
   <ItemGroup>

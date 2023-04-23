@@ -15,16 +15,17 @@ namespace Deveel.Webhooks {
 	public class WebhookManagementTests : WebhookServiceTestBase {
 		private readonly string userId = Guid.NewGuid().ToString("N");
 
-		private readonly WebhookSubscriptionManager<MongoDbWebhookSubscription> webhookManager;
-		private readonly IWebhookSubscriptionStore<MongoDbWebhookSubscription> store;
+		private readonly WebhookSubscriptionManager<MongoWebhookSubscription> webhookManager;
+		private readonly IWebhookSubscriptionStore<MongoWebhookSubscription> store;
 
 
-		public WebhookManagementTests(ITestOutputHelper outputHelper) : base(outputHelper) {
-			webhookManager = Services.GetService<WebhookSubscriptionManager<MongoDbWebhookSubscription>>();
-			store = Services.GetRequiredService<IWebhookSubscriptionStore<MongoDbWebhookSubscription>>();
+		public WebhookManagementTests(MongoTestCluster mongo, ITestOutputHelper outputHelper) 
+			: base(mongo, outputHelper) {
+			webhookManager = Services.GetRequiredService<WebhookSubscriptionManager<MongoWebhookSubscription>>();
+			store = Services.GetRequiredService<IWebhookSubscriptionStore<MongoWebhookSubscription>>();
 		}
 
-		private async Task<string> CreateSubscription(MongoDbWebhookSubscription subscription) {
+		private async Task<string> CreateSubscription(MongoWebhookSubscription subscription) {
 			return await store.CreateAsync(subscription);
 		}
 
@@ -33,7 +34,7 @@ namespace Deveel.Webhooks {
 
 		[Fact]
 		public async Task AddSubscription() {
-			var subscriptionId = await webhookManager.AddSubscriptionAsync(new MongoDbWebhookSubscription {
+			var subscriptionId = await webhookManager.AddSubscriptionAsync(new MongoWebhookSubscription {
 				EventTypes = new List<string> { "test.event" },
 				DestinationUrl = "https://callback.test.io/webhook"
 			}, default);
@@ -51,7 +52,7 @@ namespace Deveel.Webhooks {
 		[InlineData("ftp://dest.example.com")]
 		[InlineData("test data")]
 		public async Task AddSubscriptionWithInvalidDestination(string url) {
-			var subscription = new MongoDbWebhookSubscription { EventTypes = new List<string> { "test.event" }, DestinationUrl = url };
+			var subscription = new MongoWebhookSubscription { EventTypes = new List<string> { "test.event" }, DestinationUrl = url };
 			var error = await Assert.ThrowsAsync<WebhookSubscriptionValidationException>(() => webhookManager.AddSubscriptionAsync(subscription, default));
 
 			Assert.NotNull(error);
@@ -61,7 +62,7 @@ namespace Deveel.Webhooks {
 
 		[Fact]
 		public async Task RemoveExistingSubscription() {
-			var subscriptionId = await CreateSubscription(new MongoDbWebhookSubscription { 
+			var subscriptionId = await CreateSubscription(new MongoWebhookSubscription { 
 				EventTypes = new List<string> { "test.event" }, 
 				DestinationUrl = "https://callback.test.io/webhook",
 				Name = "Test Callback"
@@ -85,11 +86,11 @@ namespace Deveel.Webhooks {
 
 		[Fact]
 		public async Task GetExistingSubscription() {
-			var subscriptionId = await CreateSubscription(new MongoDbWebhookSubscription {
+			var subscriptionId = await CreateSubscription(new MongoWebhookSubscription {
 				EventTypes = new List<string> { "test.event" }, 
 				DestinationUrl = "https://callback.test.io/webhook",
-				Filters = new List<MongoDbWebhookFilter> { 
-					new MongoDbWebhookFilter {
+				Filters = new List<MongoWebhookFilter> { 
+					new MongoWebhookFilter {
 						Format = "linq",
 						Expression = WebhookFilter.Wildcard
 					}
@@ -119,11 +120,11 @@ namespace Deveel.Webhooks {
 
 		[Fact]
 		public async Task GetPageOfSubscriptions() {
-			var subscriptionId1 = await CreateSubscription(new MongoDbWebhookSubscription { 
+			var subscriptionId1 = await CreateSubscription(new MongoWebhookSubscription { 
 				EventTypes = new List<string> { "test.event" }, 
 				DestinationUrl = "https://callback.test.io/webhook",
-				Filters = new List<MongoDbWebhookFilter> {
-					new MongoDbWebhookFilter {
+				Filters = new List<MongoWebhookFilter> {
+					new MongoWebhookFilter {
 						Format = "linq",
 						Expression = WebhookFilter.Wildcard
 					}
@@ -131,11 +132,11 @@ namespace Deveel.Webhooks {
 				Name = "Test Callback"
 			});
 
-			var subscriptionId2 = await CreateSubscription(new MongoDbWebhookSubscription { 
+			var subscriptionId2 = await CreateSubscription(new MongoWebhookSubscription { 
 				EventTypes = new List<string> { "test.otherEvent" }, 
 				DestinationUrl = "https://callback.test.io/webhook",
-				Filters = new List<MongoDbWebhookFilter> {
-					new MongoDbWebhookFilter {
+				Filters = new List<MongoWebhookFilter> {
+					new MongoWebhookFilter {
 						Format = "linq",
 						Expression = WebhookFilter.Wildcard
 					}
@@ -143,7 +144,7 @@ namespace Deveel.Webhooks {
 				Name = "Second Test Callback"
 			});
 
-			var query = new PagedQuery<MongoDbWebhookSubscription>(1, 10);
+			var query = new PagedQuery<MongoWebhookSubscription>(1, 10);
 			var result = await webhookManager.GetSubscriptionsAsync(query, default);
 
 			Assert.NotNull(result);
@@ -156,7 +157,7 @@ namespace Deveel.Webhooks {
 
 		[Fact]
 		public async Task ActivateExistingSubscription() {
-			var subscriptionId = await CreateSubscription(new MongoDbWebhookSubscription {
+			var subscriptionId = await CreateSubscription(new MongoWebhookSubscription {
 				EventTypes = new List<string> { "test.event" }, 
 				DestinationUrl = "https://callback.test.io/webhook",
 				Name = "Test Callback",
@@ -182,7 +183,7 @@ namespace Deveel.Webhooks {
 
 		[Fact]
 		public async Task ActivateAlreadyActiveSubscription() {
-			var subscriptionId = await CreateSubscription(new MongoDbWebhookSubscription { 
+			var subscriptionId = await CreateSubscription(new MongoWebhookSubscription { 
 				EventTypes = new List<string> { "test.event" }, 
 				DestinationUrl = "https://callback.test.io/webhook",
 				Name = "Test Callback",
@@ -201,7 +202,7 @@ namespace Deveel.Webhooks {
 
 		[Fact]
 		public async Task DisableExistingSubscription() {
-			var subscriptionId = await CreateSubscription(new MongoDbWebhookSubscription { 
+			var subscriptionId = await CreateSubscription(new MongoWebhookSubscription { 
 				EventTypes = new List<string> { "test.event" }, 
 				DestinationUrl = "https://callback.test.io/webhook", 
 				Name = "Test Callback", 
@@ -227,7 +228,7 @@ namespace Deveel.Webhooks {
 
 		[Fact]
 		public async Task DisableAlreadyDisabledSubscription() {
-			var subscriptionId = await CreateSubscription(new MongoDbWebhookSubscription { 
+			var subscriptionId = await CreateSubscription(new MongoWebhookSubscription { 
 				EventTypes = new List<string> { "test.event" }, 
 				DestinationUrl = "https://callback.test.io/webhook", 
 				Name = "Test Callback", 
@@ -246,7 +247,7 @@ namespace Deveel.Webhooks {
 
 		[Fact]
 		public async Task CountAllSubscriptionExistingTenant() {
-			var subscriptionId = await CreateSubscription(new MongoDbWebhookSubscription { 
+			var subscriptionId = await CreateSubscription(new MongoWebhookSubscription { 
 				EventTypes = new List<string> { "test.event" }, 
 				DestinationUrl = "https://callback.test.io/webhook", 
 				Name = "Test Callback", 

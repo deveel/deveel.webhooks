@@ -13,36 +13,42 @@
 // limitations under the License.
 
 using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-
-using Deveel.Data;
 
 using Microsoft.Extensions.Options;
 
 using MongoDB.Driver;
 
+using MongoFramework;
+using MongoFramework.Linq;
+
 namespace Deveel.Webhooks {
-	public class MongoDbWebhookDeliveryResultStore<TResult> : MongoDbStoreBase<TResult>, IWebhookDeliveryResultStore<TResult>
-		where TResult : MongoDbWebhookDeliveryResult {
-		public MongoDbWebhookDeliveryResultStore(IOptions<MongoDbOptions> options) : base(options) {
+	public class MongoDbWebhookDeliveryResultStore<TResult> : IWebhookDeliveryResultStore<TResult>
+		where TResult : MongoWebhookDeliveryResult {
+		public MongoDbWebhookDeliveryResultStore(IMongoDbWebhookContext context) {
+			Results = context.Set<TResult>();
 		}
 
-		public MongoDbWebhookDeliveryResultStore(MongoDbOptions options) : base(options) {
+		protected IMongoDbSet<TResult> Results { get; }
+
+		public Task<int> CountAllAsync(CancellationToken cancellationToken) => throw new NotImplementedException();
+
+		public async Task<string> CreateAsync(TResult result, CancellationToken cancellationToken) {
+			Results.Add(result);
+			await Results.Context.SaveChangesAsync(cancellationToken);
+
+			return result.Id.ToString();
 		}
 
-		protected override IMongoCollection<TResult> Collection => GetCollection(Options.DeliveryResultsCollectionName());
+		public Task<bool> DeleteAsync(TResult result, CancellationToken cancellationToken) => throw new NotImplementedException();
+		public Task<TResult> FindByIdAsync(string id, CancellationToken cancellationToken) => throw new NotImplementedException();
 
 		public async Task<TResult> FindByWebhookIdAsync(string webhookId, CancellationToken cancellationToken) {
-			ThrowIfDisposed();
 			cancellationToken.ThrowIfCancellationRequested();
 
-			var filter = Builders<TResult>.Filter.Eq(x => x.Webhook.WebhookId, webhookId);
-			filter = NormalizeFilter(filter);
-
-			var result = await Collection.FindAsync(filter, cancellationToken: cancellationToken);
-
-			return await result.FirstOrDefaultAsync(cancellationToken);
+			return await Results.AsQueryable().FirstOrDefaultAsync(x => x.Webhook.WebhookId == webhookId, cancellationToken);
 		}
 	}
 }

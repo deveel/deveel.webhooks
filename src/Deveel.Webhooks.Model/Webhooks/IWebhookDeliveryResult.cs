@@ -19,6 +19,8 @@ namespace Deveel.Webhooks {
 	public interface IWebhookDeliveryResult {
 		IWebhook Webhook { get; }
 
+		IWebhookReceiver Receiver { get;}
+
 		IEnumerable<IWebhookDeliveryAttempt> DeliveryAttempts { get; }
 	}
 }

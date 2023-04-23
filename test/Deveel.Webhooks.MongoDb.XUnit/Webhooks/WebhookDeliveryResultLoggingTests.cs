@@ -6,7 +6,7 @@ using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
 
-using Deveel.Data;
+using Finbuckle.MultiTenant;
 
 using Microsoft.Extensions.DependencyInjection;
 
@@ -20,20 +20,31 @@ namespace Deveel.Webhooks {
 
 		private readonly string tenantId = Guid.NewGuid().ToString();
 
-		private IWebhookSubscriptionStoreProvider<MongoDbWebhookSubscription> webhookStore;
-		private IWebhookDeliveryResultStoreProvider<MongoDbWebhookDeliveryResult> deliveryResultStore;
+		private IWebhookSubscriptionStoreProvider<MongoWebhookSubscription> webhookStoreProvider;
+		private IWebhookDeliveryResultStoreProvider<MongoWebhookDeliveryResult> deliveryResultStoreProvider;
 		private IWebhookNotifier<Webhook> notifier;
 
-		private Webhook lastWebhook;
-		private HttpResponseMessage testResponse;
+		private Webhook? lastWebhook;
+		private HttpResponseMessage? testResponse;
 
-		public WebhookDeliveryResultLoggingTests(ITestOutputHelper outputHelper) : base(outputHelper) {
-			webhookStore = Services.GetService<IWebhookSubscriptionStoreProvider<MongoDbWebhookSubscription>>();
-			deliveryResultStore = Services.GetRequiredService<IWebhookDeliveryResultStoreProvider<MongoDbWebhookDeliveryResult>>();
-			notifier = Services.GetService<IWebhookNotifier<Webhook>>();
+		public WebhookDeliveryResultLoggingTests(MongoTestCluster mongo, ITestOutputHelper outputHelper) 
+			: base(mongo, outputHelper) {
+			webhookStoreProvider = Services.GetRequiredService<IWebhookSubscriptionStoreProvider<MongoWebhookSubscription>>();
+			deliveryResultStoreProvider = Services.GetRequiredService<IWebhookDeliveryResultStoreProvider<MongoWebhookDeliveryResult>>();
+			notifier = Services.GetRequiredService<IWebhookNotifier<Webhook>>();
 		}
 
-		protected override void ConfigureWebhookService(WebhookSubscriptionBuilder<MongoDbWebhookSubscription> builder) {
+		protected override void ConfigureWebhookService(WebhookSubscriptionBuilder<MongoWebhookSubscription> builder) {
+			builder.Services.AddMultiTenant<TenantInfo>()
+				.WithInMemoryStore(store => {
+					store.Tenants.Add(new TenantInfo {
+						Id = tenantId,
+						Identifier = tenantId,
+						Name = "Test Tenant",
+						ConnectionString = $"{ConnectionString}webhooks"
+					});
+				});
+
 			builder
 			.UseManager()
 			.UseNotifier<Webhook>(notifier => notifier
@@ -44,15 +55,9 @@ namespace Deveel.Webhooks {
 				.UseLinqFilter()
 				.UseWebhookFactory<DefaultWebhookFactory>()
 				.UseMongoSubscriptionResolver())
-			.UseMongoDb(options => {
-				options.DatabaseName = "webhooks";
-				options.ConnectionString = ConnectionString;
-				options.SubscriptionsCollectionName("webhooks_subscription");
-				options.DeliveryResultsCollectionName("delivery_results");
-				options.MultiTenancy.Handling = MongoDbMultiTenancyHandling.TenantField;
-				options.MultiTenancy.TenantField = "TenantId";
-			})
-				.UseDeliveryResultLogger();
+			.UseMongoDb(options => options
+				.WithConnectionString($"{ConnectionString}webhooks")
+				.UseDeliveryResultLogger());
 		}
 
 		protected override async Task<HttpResponseMessage> OnRequestAsync(HttpRequestMessage httpRequest) {
@@ -62,7 +67,7 @@ namespace Deveel.Webhooks {
 					return new HttpResponseMessage(HttpStatusCode.RequestTimeout);
 				}
 
-				lastWebhook = await httpRequest.Content.ReadFromJsonAsync<Webhook>();
+				lastWebhook = await httpRequest.Content!.ReadFromJsonAsync<Webhook>();
 
 				if (testResponse != null)
 					return testResponse;
@@ -74,22 +79,26 @@ namespace Deveel.Webhooks {
 		}
 
 		private Task<string> CreateSubscriptionAsync(string name, string eventType, params IWebhookFilter[] filters) {
-			return CreateSubscriptionAsync(new MongoDbWebhookSubscription {
+			return CreateSubscriptionAsync(new MongoWebhookSubscription {
+				TenantId = tenantId,
 				EventTypes = new List<string> { eventType },
 				DestinationUrl = "https://callback.example.com/webhook",
 				Name = name,
 				RetryCount = 3,
-				Filters = filters?.Select(x => new MongoDbWebhookFilter { Expression = x.Expression, Format = x.Format}).ToList()
+				Filters = filters?.Select(x => new MongoWebhookFilter { Expression = x.Expression, Format = x.Format }).ToList()
 			}, true);
 		}
 
-		private async Task<string> CreateSubscriptionAsync(MongoDbWebhookSubscription subscription, bool enabled = true) {
+		private async Task<string> CreateSubscriptionAsync(MongoWebhookSubscription subscription, bool enabled = true) {
 			if (enabled) {
 				subscription.Status = WebhookSubscriptionStatus.Active;
 				subscription.LastStatusTime = DateTime.Now;
 			}
 
-			return await webhookStore.CreateAsync(tenantId, subscription, default);
+			subscription.TenantId = tenantId;
+
+			var store = webhookStoreProvider.GetTenantStore(tenantId);
+			return await store.CreateAsync(subscription, default);
 		}
 
 		[Fact]
@@ -126,7 +135,8 @@ namespace Deveel.Webhooks {
 			Assert.Equal(notification.Id, lastWebhook.Id);
 			Assert.Equal(notification.TimeStamp.ToUnixTimeMilliseconds(), lastWebhook.TimeStamp.ToUnixTimeMilliseconds());
 
-			var storedResult = await deliveryResultStore.FindByWebhookIdAsync(tenantId, webhookResult.Webhook.Id);
+			var store = deliveryResultStoreProvider.GetTenantStore(tenantId);
+			var storedResult = await store.FindByWebhookIdAsync(webhookResult.Webhook.Id, default);
 
 			Assert.NotNull(storedResult);
 			Assert.NotNull(storedResult.Webhook);

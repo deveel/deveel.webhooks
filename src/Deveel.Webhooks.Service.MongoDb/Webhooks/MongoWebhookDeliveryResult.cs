@@ -14,24 +14,31 @@
 
 using System;
 using System.Collections.Generic;
-
-using Deveel.Data;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
+using MongoFramework;
+
 namespace Deveel.Webhooks {
-	public class MongoDbWebhookDeliveryResult : IWebhookDeliveryResult, IMongoDocument, IMultiTenantDocument {
-		[BsonId]
+	[Table(MongoDbWebhookStorageConstants.DeliveryResultsCollectionName)]
+	public class MongoWebhookDeliveryResult : IWebhookDeliveryResult {
+		[BsonId, Key]
 		public ObjectId Id { get; set; }
 
 		IWebhook IWebhookDeliveryResult.Webhook => Webhook;
 
-		public virtual MongoDbWebhook Webhook { get; set; }
+		public virtual MongoWebhookReceiver Receiver { get; set; }
+
+		IWebhookReceiver IWebhookDeliveryResult.Receiver => Receiver;
+
+		public virtual MongoWebhook Webhook { get; set; }
 
 		IEnumerable<IWebhookDeliveryAttempt> IWebhookDeliveryResult.DeliveryAttempts => DeliveryAttempts;
 
-		public virtual List<MongoDbWebhookDeliveryAttempt> DeliveryAttempts { get; set; }
+		public virtual List<MongoWebhookDeliveryAttempt> DeliveryAttempts { get; set; }
 
 		public string TenantId { get; set; }
 	}

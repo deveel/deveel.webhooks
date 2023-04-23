@@ -14,14 +14,14 @@
 
 using System;
 
-using Deveel.Data;
-
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
+using MongoFramework;
+
 namespace Deveel.Webhooks {
-	public sealed class MongoDbWebhookStorageBuilder<TSubscription> where TSubscription : MongoDbWebhookSubscription {
+	public sealed class MongoDbWebhookStorageBuilder<TSubscription> where TSubscription : MongoWebhookSubscription {
 		private readonly WebhookSubscriptionBuilder<TSubscription> builder;
 
 		internal MongoDbWebhookStorageBuilder(WebhookSubscriptionBuilder<TSubscription> builder) {
@@ -33,82 +33,79 @@ namespace Deveel.Webhooks {
 		private IServiceCollection Services => builder.Services;
 
 		private void AddDefaultStorage() {
-			Services.TryAddSingleton<IWebhookSubscriptionStore<MongoDbWebhookSubscription>, MongoDbWebhookSubscriptionStrore>();
+			Services.TryAddSingleton<IWebhookSubscriptionStore<MongoWebhookSubscription>, MongoDbWebhookSubscriptionStrore>();
 			Services.AddSingleton<MongoDbWebhookSubscriptionStrore>();
-			Services.TryAddSingleton<MongoDbWebhookSubscriptionStrore<MongoDbWebhookSubscription>>();
-			Services.TryAddSingleton<IWebhookSubscriptionStoreProvider<MongoDbWebhookSubscription>, MongoDbWebhookSubscriptionStoreProvider>();
+			Services.TryAddSingleton<MongoDbWebhookSubscriptionStrore<MongoWebhookSubscription>>();
+			Services.TryAddSingleton<IWebhookSubscriptionStoreProvider<MongoWebhookSubscription>, MongoDbWebhookSubscriptionStoreProvider>();
 			Services.AddSingleton<MongoDbWebhookSubscriptionStoreProvider>();
-			Services.TryAddSingleton<MongoDbWebhookSubscriptionStoreProvider<MongoDbWebhookSubscription>>();
+			Services.TryAddSingleton<MongoDbWebhookSubscriptionStoreProvider<MongoWebhookSubscription>>();
 
 
-			Services.TryAddSingleton<IWebhookDeliveryResultStore<MongoDbWebhookDeliveryResult>, MongoDbWebhookDeliveryResultStore>();
+			Services.TryAddSingleton<IWebhookDeliveryResultStore<MongoWebhookDeliveryResult>, MongoDbWebhookDeliveryResultStore>();
 			Services.AddSingleton<MongoDbWebhookDeliveryResultStore>();
-			Services.TryAddSingleton<MongoDbWebhookDeliveryResultStore<MongoDbWebhookDeliveryResult>>();
-			Services.TryAddSingleton<IWebhookDeliveryResultStoreProvider<MongoDbWebhookDeliveryResult>, MongoDbWebhookDeliveryResultStoreProvider>();
+			Services.TryAddSingleton<MongoDbWebhookDeliveryResultStore<MongoWebhookDeliveryResult>>();
+			Services.TryAddSingleton<IWebhookDeliveryResultStoreProvider<MongoWebhookDeliveryResult>, MongoDbWebhookDeliveryResultStoreProvider>();
 			Services.AddSingleton<MongoDbWebhookDeliveryResultStoreProvider>();
-			Services.TryAddSingleton<MongoDbWebhookDeliveryResultStoreProvider<MongoDbWebhookDeliveryResult>>();
+			Services.TryAddSingleton<MongoDbWebhookDeliveryResultStoreProvider<MongoWebhookDeliveryResult>>();
 		}
 
-		public MongoDbWebhookStorageBuilder<TSubscription> Configure(Action<IMongoDbOptionBuilder> configure) {
-			Services.AddOptions<MongoDbOptions>()
-				.Configure(options => {
-					var optionsBuilder = new MongoDbOptionBuilder(options);
-					configure(optionsBuilder);
-				});
+		public MongoDbWebhookStorageBuilder<TSubscription> Configure(string sectionPath) {
+			Services.AddSingleton<IMongoDbWebhookContext>(provider => {
+				var configuration = provider.GetRequiredService<IConfiguration>();
+				var section = configuration.GetSection(sectionPath);
+				var connectionString = section.GetValue<string>("ConnectionString");
+				var connection = MongoDbConnection.FromConnectionString(connectionString);
+
+				return new MongoDbWebhookContext(connection);
+			});
 
 			return this;
 		}
 
-		public MongoDbWebhookStorageBuilder<TSubscription> Configure(Action<MongoDbOptions> configure) {
-			Services.AddOptions<MongoDbOptions>().Configure(configure);
+		public MongoDbWebhookStorageBuilder<TSubscription> WithConnectionString(string connectionString) {
+			Services.AddSingleton<IMongoDbWebhookContext>(provider => {
+				var connection = MongoDbConnection.FromConnectionString(connectionString);
+				return new MongoDbWebhookContext(connection);
+			});
 
 			return this;
 		}
 
-		public MongoDbWebhookStorageBuilder<TSubscription> Configure(string sectionName, string connectionStringName = null) {
-			Services.AddOptions<MongoDbOptions>()
-				.Configure<IConfiguration>((options, config) => {
-					var section = config.GetSection(sectionName);
-					if (section != null)
-						section.Bind(options);
-					if (!string.IsNullOrWhiteSpace(connectionStringName))
-						options.ConnectionString = config.GetConnectionString(connectionStringName);
-				});
+		public MongoDbWebhookStorageBuilder<TSubscription> WithConnectionStringName(string connectionStringName) {
+			Services.AddSingleton<IMongoDbWebhookContext>(provider => {
+				var configuration = provider.GetRequiredService<IConfiguration>();
+				var connectionString = configuration.GetConnectionString(connectionStringName);
+				var connection = MongoDbConnection.FromConnectionString(connectionString);
+				return new MongoDbWebhookContext(connection);
+			});
+
+			return this;
+		}
+
+
+		public MongoDbWebhookStorageBuilder<TSubscription> UseMultiTenant() {
+			Services.AddSingleton<IMongoDbWebhookContext, MongoDbWebhookTenantContext>();
 
 			return this;
 		}
 
 		public MongoDbWebhookStorageBuilder<TSubscription> UseSubscriptionStore<TStore>()
 			where TStore : MongoDbWebhookSubscriptionStrore {
-			Services.AddSingleton<IWebhookSubscriptionStore<MongoDbWebhookSubscription>, TStore>();
-
-			return this;
-		}
-
-		public MongoDbWebhookStorageBuilder<TSubscription> UseSubscriptionStoreProvider<TProvider>()
-			where TProvider : MongoDbWebhookSubscriptionStoreProvider {
-			Services.AddSingleton<IWebhookSubscriptionStoreProvider<MongoDbWebhookSubscription>, TProvider>();
+			Services.AddSingleton<IWebhookSubscriptionStore<MongoWebhookSubscription>, TStore>();
 
 			return this;
 		}
 
 		public MongoDbWebhookStorageBuilder<TSubscription> UseDeliveryResultStore<TStore>()
 			where TStore : MongoDbWebhookDeliveryResultStore {
-			Services.AddSingleton<IWebhookDeliveryResultStore<MongoDbWebhookDeliveryResult>, TStore>();
-
-			return this;
-		}
-
-		public MongoDbWebhookStorageBuilder<TSubscription> UseDeliveryResultStoreProvider<TProvider>()
-			where TProvider : MongoDbWebhookDeliveryResultStoreProvider {
-			Services.AddSingleton<IWebhookDeliveryResultStoreProvider<MongoDbWebhookDeliveryResult>, TProvider>();
+			Services.AddSingleton<IWebhookDeliveryResultStore<MongoWebhookDeliveryResult>, TStore>();
 
 			return this;
 		}
 
 		public MongoDbWebhookStorageBuilder<TSubscription> UseDeliveryResultLogger<TWebhook, TResult>()
 			where TWebhook : class, IWebhook
-			where TResult : MongoDbWebhookDeliveryResult {
+			where TResult : MongoWebhookDeliveryResult, new() {
 
 			Services.AddSingleton<IWebhookDeliveryResultLogger<TWebhook>, MongoDbWebhookDeliveryResultLogger<TWebhook, TResult>>();
 
@@ -116,6 +113,6 @@ namespace Deveel.Webhooks {
 		}
 
 		public MongoDbWebhookStorageBuilder<TSubscription> UseDeliveryResultLogger()
-			=> UseDeliveryResultLogger<Webhook, MongoDbWebhookDeliveryResult>();
+			=> UseDeliveryResultLogger<Webhook, MongoWebhookDeliveryResult>();
 	}
 }

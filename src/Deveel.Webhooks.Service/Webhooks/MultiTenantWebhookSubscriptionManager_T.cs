@@ -26,47 +26,27 @@ using static System.Formats.Asn1.AsnWriter;
 namespace Deveel.Webhooks {
 	public class MultiTenantWebhookSubscriptionManager<TSubscription>
 		where TSubscription : class, IWebhookSubscription {
-		private readonly IWebhookSubscriptionFactory<TSubscription> subscriptionFactory;
 
 		protected MultiTenantWebhookSubscriptionManager(IWebhookSubscriptionStoreProvider<TSubscription> subscriptionStoreProvider,
-			IWebhookSubscriptionFactory<TSubscription> subscriptionFactory,
-			IEnumerable<IMultiTenantWebhookSubscriptionValidator<TSubscription>> validators, ILogger logger) {
+			IEnumerable<IMultiTenantWebhookSubscriptionValidator<TSubscription>>? validators, ILogger logger) {
 			StoreProvider = subscriptionStoreProvider;
 			Logger = logger;
 			Validators = validators;
-
-			this.subscriptionFactory = subscriptionFactory;
 		}
 
 		public MultiTenantWebhookSubscriptionManager(IWebhookSubscriptionStoreProvider<TSubscription> subscriptionStoreProvider,
-			IWebhookSubscriptionFactory<TSubscription> subscriptionFactory,
-			IEnumerable<IMultiTenantWebhookSubscriptionValidator<TSubscription>> validators,
-			ILogger<MultiTenantWebhookSubscriptionManager<TSubscription>> logger)
-			: this(subscriptionStoreProvider, subscriptionFactory, validators, (ILogger)logger) {
-		}
-
-		public MultiTenantWebhookSubscriptionManager(IWebhookSubscriptionStoreProvider<TSubscription> subscriptionStoreProvider,
-			IWebhookSubscriptionFactory<TSubscription> subscriptionFactory,
-			ILogger<MultiTenantWebhookSubscriptionManager<TSubscription>> logger)
-			: this(subscriptionStoreProvider, subscriptionFactory, new IMultiTenantWebhookSubscriptionValidator<TSubscription>[0], (ILogger)logger) {
-		}
-
-		public MultiTenantWebhookSubscriptionManager(IWebhookSubscriptionStoreProvider<TSubscription> subscriptionStoreProvider,
-			IWebhookSubscriptionFactory<TSubscription> subscriptionFactory,
-			IEnumerable<IMultiTenantWebhookSubscriptionValidator<TSubscription>> validators)
-			: this(subscriptionStoreProvider, subscriptionFactory, validators, NullLogger<WebhookSubscriptionManager<TSubscription>>.Instance) {
-		}
-
-		public MultiTenantWebhookSubscriptionManager(IWebhookSubscriptionStoreProvider<TSubscription> subscriptionStoreProvider,
-			IWebhookSubscriptionFactory<TSubscription> subscriptionFactory)
-			: this(subscriptionStoreProvider, subscriptionFactory, new IMultiTenantWebhookSubscriptionValidator<TSubscription>[0]) {
+			IEnumerable<IMultiTenantWebhookSubscriptionValidator<TSubscription>>? validators = null,
+			ILogger<MultiTenantWebhookSubscriptionManager<TSubscription>>? logger = null) {
+			StoreProvider = subscriptionStoreProvider;
+			Validators = validators;
+			Logger = logger ?? NullLogger<MultiTenantWebhookSubscriptionManager<TSubscription>>.Instance;
 		}
 
 		protected ILogger Logger { get; }
 
 		protected IWebhookSubscriptionStoreProvider<TSubscription> StoreProvider { get; }
 
-		protected IEnumerable<IMultiTenantWebhookSubscriptionValidator<TSubscription>> Validators { get; }
+		protected IEnumerable<IMultiTenantWebhookSubscriptionValidator<TSubscription>>? Validators { get; }
 
 		private async Task<bool> SetStateAsync(string tenantId, string subscriptionId, WebhookSubscriptionStatus status, CancellationToken cancellationToken) {
 			try {
@@ -131,20 +111,6 @@ namespace Deveel.Webhooks {
 
 			if (errors.Count > 0)
 				throw new WebhookSubscriptionValidationException(errors.ToArray());
-		}
-
-
-		public virtual Task<string> AddSubscriptionAsync(string tenantId, WebhookSubscriptionInfo subscriptionInfo, CancellationToken cancellationToken) {
-			try {
-				var subscription = subscriptionFactory.Create(subscriptionInfo);
-
-				return AddSubscriptionAsync(tenantId, subscription, cancellationToken);
-			} catch (WebhookException) {
-				throw;
-			} catch (Exception ex) {
-				Logger.LogError(ex, "Error while creating a subscription");
-				throw new WebhookException("Could not create the subscription", ex);
-			}
 		}
 
 		public virtual async Task<string> AddSubscriptionAsync(string tenantId, TSubscription subscription, CancellationToken cancellationToken) {

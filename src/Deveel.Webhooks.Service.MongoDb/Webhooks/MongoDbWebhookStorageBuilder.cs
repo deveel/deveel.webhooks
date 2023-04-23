@@ -15,6 +15,7 @@
 using System;
 
 using Deveel.Data;
+
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -31,17 +32,7 @@ namespace Deveel.Webhooks {
 
 		private IServiceCollection Services => builder.Services;
 
-		private IServiceCollection AddSubscriptionFactory(IServiceCollection services) {
-			services.TryAddSingleton<IWebhookSubscriptionFactory<TSubscription>, MongoDbWebhookSubscriptionFactory<TSubscription>>();
-			services.TryAddSingleton<IWebhookSubscriptionFactory<MongoDbWebhookSubscription>, MongoDbWebhookSubscriptionFactory>();
-			services.AddSingleton<MongoDbWebhookSubscriptionFactory>();
-
-			return services;
-		}
-
 		private void AddDefaultStorage() {
-			AddSubscriptionFactory(Services);
-
 			Services.TryAddSingleton<IWebhookSubscriptionStore<MongoDbWebhookSubscription>, MongoDbWebhookSubscriptionStrore>();
 			Services.AddSingleton<MongoDbWebhookSubscriptionStrore>();
 			Services.TryAddSingleton<MongoDbWebhookSubscriptionStrore<MongoDbWebhookSubscription>>();
@@ -89,7 +80,6 @@ namespace Deveel.Webhooks {
 
 		public MongoDbWebhookStorageBuilder<TSubscription> UseSubscriptionStore<TStore>()
 			where TStore : MongoDbWebhookSubscriptionStrore {
-			AddSubscriptionFactory(Services);
 			Services.AddSingleton<IWebhookSubscriptionStore<MongoDbWebhookSubscription>, TStore>();
 
 			return this;
@@ -97,7 +87,6 @@ namespace Deveel.Webhooks {
 
 		public MongoDbWebhookStorageBuilder<TSubscription> UseSubscriptionStoreProvider<TProvider>()
 			where TProvider : MongoDbWebhookSubscriptionStoreProvider {
-			AddSubscriptionFactory(Services);
 			Services.AddSingleton<IWebhookSubscriptionStoreProvider<MongoDbWebhookSubscription>, TProvider>();
 
 			return this;
@@ -112,7 +101,6 @@ namespace Deveel.Webhooks {
 
 		public MongoDbWebhookStorageBuilder<TSubscription> UseDeliveryResultStoreProvider<TProvider>()
 			where TProvider : MongoDbWebhookDeliveryResultStoreProvider {
-			AddSubscriptionFactory(Services);
 			Services.AddSingleton<IWebhookDeliveryResultStoreProvider<MongoDbWebhookDeliveryResult>, TProvider>();
 
 			return this;

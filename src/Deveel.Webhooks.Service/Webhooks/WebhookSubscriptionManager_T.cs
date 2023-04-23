@@ -28,40 +28,20 @@ namespace Deveel.Webhooks {
 	public class WebhookSubscriptionManager<TSubscription>
 		where TSubscription : class, IWebhookSubscription {
 
-		private readonly IWebhookSubscriptionFactory<TSubscription> subscriptionFactory;
 
-		protected WebhookSubscriptionManager(IWebhookSubscriptionStore<TSubscription> subscriptionStore, 
-			IWebhookSubscriptionFactory<TSubscription> subscriptionFactory, 
-			IEnumerable<IWebhookSubscriptionValidator<TSubscription>> validators, ILogger logger) {
+		protected WebhookSubscriptionManager(IWebhookSubscriptionStore<TSubscription> subscriptionStore,
+			IEnumerable<IWebhookSubscriptionValidator<TSubscription>>? validators, ILogger logger) {
 			Store = subscriptionStore;
 			Logger = logger;
 			Validators = validators;
-
-			this.subscriptionFactory = subscriptionFactory;
 		}
 
 		public WebhookSubscriptionManager(IWebhookSubscriptionStore<TSubscription> subscriptionStore,
-			IWebhookSubscriptionFactory<TSubscription> subscriptionFactory,
-			 IEnumerable<IWebhookSubscriptionValidator<TSubscription>> validators,
-			ILogger<WebhookSubscriptionManager<TSubscription>> logger)
-			: this(subscriptionStore, subscriptionFactory, validators, (ILogger)logger) {
-		}
-
-		public WebhookSubscriptionManager(IWebhookSubscriptionStore<TSubscription> subscriptionStore,
-			IWebhookSubscriptionFactory<TSubscription> subscriptionFactory,
-			ILogger<WebhookSubscriptionManager<TSubscription>> logger)
-			: this(subscriptionStore, subscriptionFactory, new IWebhookSubscriptionValidator<TSubscription>[0], (ILogger)logger) {
-		}
-
-		public WebhookSubscriptionManager(IWebhookSubscriptionStore<TSubscription> subscriptionStore,
-			IWebhookSubscriptionFactory<TSubscription> subscriptionFactory, 
-			IEnumerable<IWebhookSubscriptionValidator<TSubscription>> validators)
-			: this(subscriptionStore, subscriptionFactory, validators, NullLogger<WebhookSubscriptionManager<TSubscription>>.Instance) {
-		}
-
-		public WebhookSubscriptionManager(IWebhookSubscriptionStore<TSubscription> subscriptionStore,
-			IWebhookSubscriptionFactory<TSubscription> subscriptionFactory)
-			: this(subscriptionStore, subscriptionFactory, new IWebhookSubscriptionValidator<TSubscription>[0]) {
+			 IEnumerable<IWebhookSubscriptionValidator<TSubscription>>? validators = null,
+			ILogger<WebhookSubscriptionManager<TSubscription>>? logger = null) {
+			Store = subscriptionStore;
+			Validators = validators;
+			Logger = logger ?? NullLogger<WebhookSubscriptionManager<TSubscription>>.Instance;
 		}
 
 		protected ILogger Logger { get; }
@@ -127,19 +107,6 @@ namespace Deveel.Webhooks {
 
 			if (errors.Count > 0)
 				throw new WebhookSubscriptionValidationException(errors.ToArray());
-		}
-
-		public virtual Task<string> AddSubscriptionAsync(WebhookSubscriptionInfo subscriptionInfo, CancellationToken cancellationToken) {
-			try {
-				var subscription = subscriptionFactory.Create(subscriptionInfo);
-
-				return AddSubscriptionAsync(subscription, cancellationToken);
-			} catch (WebhookException) {
-				throw;
-			} catch (Exception ex) {
-				Logger.LogError(ex, "Error while creating a subscription");
-				throw new WebhookException("Could not create the subscription", ex);
-			}
 		}
 
 		public virtual async Task<string> AddSubscriptionAsync(TSubscription subscription, CancellationToken cancellationToken) {

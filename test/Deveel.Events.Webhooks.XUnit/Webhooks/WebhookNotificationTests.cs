@@ -68,29 +68,22 @@ namespace Deveel.Webhooks {
 		}
 
 		private string CreateSubscription(string name, string eventType, params IWebhookFilter[] filters) {
-			return CreateSubscription(new WebhookSubscriptionInfo(eventType, "https://callback.example.com/webhook") {
+			return CreateSubscription(new TestWebhookSubscription { 
+				EventTypes = new[] { eventType }, 
+				DestinationUrl = "https://callback.example.com/webhook",
 				Name = name,
 				RetryCount = 3,
-				Filters = filters
+				Filters = filters,
+				Status = WebhookSubscriptionStatus.Active,
+				CreatedAt = DateTimeOffset.UtcNow
 			}, true);
 		}
 
-		private string CreateSubscription(WebhookSubscriptionInfo subscriptionInfo, bool enabled = true) {
+		private string CreateSubscription(TestWebhookSubscription subscription, bool enabled = true) {
 			var id = Guid.NewGuid().ToString();
-			var subscription = new TestWebhookSubscription {
-				SubscriptionId = id,
-				Name = subscriptionInfo.Name,
-				TenantId = tenantId,
-				DestinationUrl = subscriptionInfo.DestinationUrl.ToString(),
-				EventTypes = subscriptionInfo.EventTypes,
-				Filters = subscriptionInfo.Filters,
-				Status = enabled ? WebhookSubscriptionStatus.Active : WebhookSubscriptionStatus.Suspended,
-				RetryCount = subscriptionInfo.RetryCount,
-				Headers = subscriptionInfo.Headers,
-				CreatedAt = DateTimeOffset.UtcNow,
-				Secret = subscriptionInfo.Secret,
-				Metadata = subscriptionInfo.Metadata
-			};
+
+			subscription.SubscriptionId = id;
+			subscription.TenantId = tenantId;
 
 			subscriptionResolver.AddSubscription(subscription);
 
@@ -236,11 +229,14 @@ namespace Deveel.Webhooks {
 
 		[Fact]
 		public async Task DeliverSignedWebhookFromEvent() {
-			var subscriptionId = CreateSubscription(new WebhookSubscriptionInfo("data.created", "https://callback.example.com") {
-				Filter = new WebhookFilter("hook.data.data_type == \"test-data\"", "linq"),
+			var subscriptionId = CreateSubscription(new TestWebhookSubscription { 
+				EventTypes = new[] { "data.created" },
+				DestinationUrl = "https://callback.example.com",
+				Filters = new[] { new WebhookFilter("hook.data.data_type == \"test-data\"", "linq") },
 				Name = "Data Created",
 				Secret = "abc12345",
-				RetryCount = 3
+				RetryCount = 3,
+				Status = WebhookSubscriptionStatus.Active
 			});
 
 			var notification = new EventInfo("test", "data.created", new {

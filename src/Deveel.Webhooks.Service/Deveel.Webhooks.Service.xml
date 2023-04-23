@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Deveel.Webhooks.Service</name>
+    </assembly>
+    <members>
+        <member name="T:Deveel.Webhooks.Caching.IWebhookSubscriptionCache">
+            <summary>
+            A cache of webhook subscriptions that optimizes the
+            read access to the entities
+            </summary>
+            <typeparam name="TSubscription"></typeparam>
+        </member>
+        <member name="M:Deveel.Webhooks.ServiceCollectionExtensions.AddWebhookSubscriptions``1(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Action{Deveel.Webhooks.WebhookSubscriptionBuilder{``0}})">
+            <summary>
+            Adds the default services to support the webhook
+            management provided by the framework.
+            </summary>
+            <param name="services">The collection of services</param>
+            <param name="configure">A builder used to configure the service</param>
+            <returns></returns>
+        </member>
+        <member name="T:Deveel.Webhooks.WebhookServiceException">
+            <summary>
+            An exception that denotes an error during the execution
+            of the webhook service
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.WebhookSubscriptionInfo.Active">
+            <summary>
+            The initial state of the subscription
+            </summary>
+        </member>
+        <member name="T:Deveel.Webhooks.WebhookSubscriptionValidationException">
+            <summary>
+            An exception that is thrown during the validation
+            of a webhook subscription to be created or updated
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.WebhookSubscriptionValidationException.Errors">
+            <summary>
+            Gets a set of errors during the validation of the subscription
+            </summary>
+        </member>
+    </members>
+</doc>

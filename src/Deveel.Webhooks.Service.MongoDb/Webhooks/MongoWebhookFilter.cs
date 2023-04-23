@@ -12,10 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
+// Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+#pragma warning disable CS8618
+
 
 namespace Deveel.Webhooks {
 	public class MongoWebhookFilter : IWebhookFilter {
+
 		public string Expression { get; set; }
 
 		public string Format { get; set; }

@@ -12,33 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using System.Collections.Generic;
+// Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+#pragma warning disable CS8618
 
 using MongoDB.Bson;
-using MongoDB.Bson.Serialization.Attributes;
-using MongoDB.Bson.Serialization.Options;
 
 namespace Deveel.Webhooks {
 	public class MongoWebhook : IWebhook {
 		string IWebhook.Id => WebhookId;
 
+
 		public string WebhookId { get; set; }
-
-		public string Name { get; set; }
-
-		public string Format { get; set; }
-
-		public string SubscriptionId { get; set; }
-
-		public string SubscriptionName { get; set; }
-
-		public string DestinationUrl { get; set; }
-
-		public string Secret { get; set; }
-
-		[BsonDictionaryOptions(DictionaryRepresentation.ArrayOfDocuments)]
-		public IDictionary<string, string> Headers { get; set; }
 
 		public DateTimeOffset TimeStamp { get; set; }
 

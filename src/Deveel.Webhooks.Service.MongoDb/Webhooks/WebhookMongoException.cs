@@ -13,10 +13,20 @@
 // limitations under the License.
 
 using System;
-using System.Threading;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace Deveel.Webhooks {
-	public static class WebhookStoreProviderExtensions {
+	public sealed class WebhookMongoException : WebhookServiceException {
+		public WebhookMongoException() {
+		}
+
+		public WebhookMongoException(string message) : base(message) {
+		}
+
+		public WebhookMongoException(string message, Exception innerException) : base(message, innerException) {
+		}
 	}
 }

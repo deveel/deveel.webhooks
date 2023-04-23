@@ -12,12 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using System.Collections.Generic;
-using System.Text;
+using MongoDB.Bson;
 
 namespace Deveel.Webhooks {
-	public interface IWebhookDeliveryResultFactory<TResult> where TResult : class, IWebhookDeliveryResult {
-		TResult CreateResult(IWebhookDeliveryResult deliveryResult);
+	public static class ObjectIdExtensions {
+		public static string? ToEntityId(this ObjectId objectId) {
+			if (objectId == ObjectId.Empty)
+				return null;
+
+			return objectId.ToString();
+		}
 	}
 }

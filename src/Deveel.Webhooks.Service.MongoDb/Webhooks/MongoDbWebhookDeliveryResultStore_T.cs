@@ -43,9 +43,10 @@ namespace Deveel.Webhooks {
 		}
 
 		public Task<bool> DeleteAsync(TResult result, CancellationToken cancellationToken) => throw new NotImplementedException();
-		public Task<TResult> FindByIdAsync(string id, CancellationToken cancellationToken) => throw new NotImplementedException();
+		
+		public Task<TResult?> FindByIdAsync(string id, CancellationToken cancellationToken) => throw new NotImplementedException();
 
-		public async Task<TResult> FindByWebhookIdAsync(string webhookId, CancellationToken cancellationToken) {
+		public async Task<TResult?> FindByWebhookIdAsync(string webhookId, CancellationToken cancellationToken) {
 			cancellationToken.ThrowIfCancellationRequested();
 
 			return await Results.AsQueryable().FirstOrDefaultAsync(x => x.Webhook.WebhookId == webhookId, cancellationToken);

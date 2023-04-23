@@ -12,13 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 
 using MongoDB.Bson;
 
@@ -28,9 +23,9 @@ namespace Deveel.Webhooks {
 		where TResult : MongoWebhookDeliveryResult, new() {
 		public MongoDbWebhookDeliveryResultLogger(
 			MongoDbWebhookDeliveryResultStoreProvider<TResult> storeProvider, 
-			ILogger<MongoDbWebhookDeliveryResultLogger<TWebhook, TResult>> logger) {
+			ILogger<MongoDbWebhookDeliveryResultLogger<TWebhook, TResult>>? logger = null) {
 			StoreProvider = storeProvider;
-			Logger = logger;
+			Logger = logger ?? NullLogger<MongoDbWebhookDeliveryResultLogger<TWebhook, TResult>>.Instance;
 		}
 
 		protected MongoDbWebhookDeliveryResultStoreProvider<TResult> StoreProvider { get; }
@@ -43,7 +38,8 @@ namespace Deveel.Webhooks {
 			obj.TenantId = subscription.TenantId;
 			obj.Receiver = CreateReceiver(subscription);
 			obj.Webhook = ConvertWebhook(result.Webhook);
-			obj.DeliveryAttempts = result.Attempts?.Select(ConvertDeliveryAttempt).ToList();
+			obj.DeliveryAttempts = result.Attempts?.Select(ConvertDeliveryAttempt).ToList() 
+				?? new List<MongoWebhookDeliveryAttempt>();
 
 			return obj;
 		}
@@ -70,8 +66,6 @@ namespace Deveel.Webhooks {
 			return new MongoWebhook {
 				WebhookId = webhook.Id,
 				EventType = webhook.EventType,
-				SubscriptionId = webhook.SubscriptionId,
-				SubscriptionName = webhook.SubscriptionName,
 				Data = ConvertWebhookData(webhook.Data),
 				TimeStamp = webhook.TimeStamp
 			};
@@ -83,11 +77,12 @@ namespace Deveel.Webhooks {
 			if (data is null)
 				return new BsonDocument();
 
-			IDictionary<string, object> dictionary;
+			IDictionary<string, object?> dictionary;
 
-			if (data is IDictionary<string, object>) {
-				dictionary = (IDictionary<string, object>)data;
+			if (data is IDictionary<string, object?>) {
+				dictionary = (IDictionary<string, object?>)data;
 			} else {
+				// TODO: make this recursive ...
 				dictionary = data.GetType()
 					.GetProperties()
 					.ToDictionary(x => x.Name, y => y.GetValue(data));
@@ -103,7 +98,10 @@ namespace Deveel.Webhooks {
 			return document;
 		}
 
-		protected virtual BsonValue ConvertValue(object value) {
+		protected virtual BsonValue ConvertValue(object? value) {
+			if (value is null)
+				return BsonNull.Value;
+
 			if (value is DateTimeOffset)
 				value = ((DateTimeOffset)value).DateTime;
 
@@ -113,6 +111,12 @@ namespace Deveel.Webhooks {
 		public async Task LogResultAsync(IWebhookSubscription subscription, WebhookDeliveryResult<TWebhook> result, CancellationToken cancellationToken) {
 			if (result is null) 
 				throw new ArgumentNullException(nameof(result));
+			if (subscription is null) 
+				throw new ArgumentNullException(nameof(subscription));
+
+			// TODO: we should support also non-multi-tenant scenarios...
+			if (String.IsNullOrWhiteSpace(subscription.TenantId))
+				throw new ArgumentException("The tenant identifier of the subscription is not set", nameof(subscription));
 
 			Logger.LogTrace("Logging the result of the delivery of a webhook of event '{EventType}' for tenant '{TenantId}'",
 				result.Webhook.EventType, subscription.TenantId);

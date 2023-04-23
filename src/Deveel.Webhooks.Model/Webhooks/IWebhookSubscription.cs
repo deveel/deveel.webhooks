@@ -24,13 +24,13 @@ namespace Deveel.Webhooks {
 		/// <summary>
 		/// Gets the unique identifier of the subscription
 		/// </summary>
-		string SubscriptionId { get; }
+		string? SubscriptionId { get; }
 
 		/// <summary>
 		/// Gets the unique identifier of the tenant of 
 		/// the subscription
 		/// </summary>
-		string TenantId { get; }
+		string? TenantId { get; }
 
 		/// <summary>
 		/// Gets a name of the subscription
@@ -53,7 +53,12 @@ namespace Deveel.Webhooks {
 		/// Gets an optional secret used to compute a signature
 		/// to secure the webhooks delivered to receivers.
 		/// </summary>
-		string Secret { get; }
+		string? Secret { get; }
+
+		/// <summary>
+		/// Gets the format of the webhooks payload delivered to receivers.
+		/// </summary>
+		string? Format { get; }
 
 		/// <summary>
 		/// Gets the current status of the subscription.
@@ -65,24 +70,24 @@ namespace Deveel.Webhooks {
 		/// a webhook to the receivers (overrides the service 
 		/// configurations).
 		/// </summary>
-		int RetryCount { get; }
+		int? RetryCount { get; }
 
 		/// <summary>
 		/// Gets a set of optional filters to mach the subscription
 		/// </summary>
-		IEnumerable<IWebhookFilter> Filters { get; }
+		IEnumerable<IWebhookFilter>? Filters { get; }
 
 		/// <summary>
 		/// Gets an optional set of headers to be attached to
 		/// a HTTP request when attempting the delivery of a
 		/// webhook to receivers.
 		/// </summary>
-		IDictionary<string, string> Headers { get; }
+		IDictionary<string, string>? Headers { get; }
 
 		/// <summary>
 		/// Gets an optional set of metadata of the subscription
 		/// </summary>
-		IDictionary<string, object> Metadata { get; }
+		IDictionary<string, object>? Metadata { get; }
 
 		/// <summary>
 		/// Gets the exact time of the creation of the subscription

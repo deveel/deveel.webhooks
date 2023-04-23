@@ -84,7 +84,9 @@ namespace Deveel.Webhooks {
 
 
 		public MongoDbWebhookStorageBuilder<TSubscription> UseMultiTenant() {
+			Services.RemoveAll<IMongoDbWebhookContext>();
 			Services.AddSingleton<IMongoDbWebhookContext, MongoDbWebhookTenantContext>();
+			Services.AddSingleton<MongoDbWebhookTenantContext>();
 
 			return this;
 		}

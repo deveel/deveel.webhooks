@@ -1,16 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
+﻿using System.Net;
 using System.Net.Http.Json;
-using System.Threading.Tasks;
 
 using Finbuckle.MultiTenant;
 
 using Microsoft.Extensions.DependencyInjection;
 
-using Xunit;
 using Xunit.Abstractions;
 
 namespace Deveel.Webhooks {
@@ -46,7 +40,7 @@ namespace Deveel.Webhooks {
 				});
 
 			builder
-			.UseManager()
+			.UseSubscriptionManager()
 			.UseNotifier<Webhook>(notifier => notifier
 				.UseSender(options => {
 					options.Timeout = TimeSpan.FromSeconds(TimeOutSeconds);
@@ -86,6 +80,7 @@ namespace Deveel.Webhooks {
 				Name = name,
 				RetryCount = 3,
 				Filters = filters?.Select(x => new MongoWebhookFilter { Expression = x.Expression, Format = x.Format }).ToList()
+				?? new List<MongoWebhookFilter>()
 			}, true);
 		}
 
@@ -119,9 +114,10 @@ namespace Deveel.Webhooks {
 			Assert.NotEmpty(result.Successful);
 			Assert.Empty(result.Failed);
 
-			Assert.Single(result[subscriptionId]);
+			Assert.NotNull(result[subscriptionId]);
+			Assert.Single(result[subscriptionId]!);
 
-			var webhookResult = result[subscriptionId][0];
+			var webhookResult = result[subscriptionId]![0];
 
 			Assert.Equal(subscriptionId, webhookResult.Webhook.SubscriptionId);
 			Assert.True(webhookResult.Successful);

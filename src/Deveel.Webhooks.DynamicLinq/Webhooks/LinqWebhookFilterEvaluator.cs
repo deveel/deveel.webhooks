@@ -38,7 +38,7 @@ namespace Deveel.Webhooks {
 					Expression.Parameter(objType, "hook")
 				};
 				var parsed = DynamicExpressionParser.ParseLambda(config, parameters, typeof(bool), filter).Compile();
-				compiled = hook => (bool)parsed.DynamicInvoke(hook);
+				compiled = hook => (bool)(parsed.DynamicInvoke(hook)!);
 				filterCache[filter] = compiled;
 			}
 

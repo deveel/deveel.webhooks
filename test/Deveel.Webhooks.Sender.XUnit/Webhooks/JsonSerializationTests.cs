@@ -39,12 +39,12 @@ namespace Deveel.Webhooks {
 
 			Assert.Equal(7, obj.AsObject().Count);
 
-			Assert.Equal("Test Event", obj["name"].ToString());
-			Assert.Equal("test", obj["event_type"].ToString());
-			Assert.Equal(id, obj["event_id"].ToString());
+			Assert.Equal("Test Event", obj["name"]!.ToString());
+			Assert.Equal("test", obj["event_type"]!.ToString());
+			Assert.Equal(id, obj["event_id"]!.ToString());
 			Assert.NotNull(obj["states"]);
-			Assert.Equal(2, obj["states"].AsArray().Count);
-			Assert.Equal("pending", obj["states"][0].ToString());
+			Assert.Equal(2, obj["states"]!.AsArray().Count);
+			Assert.Equal("pending", obj["states"]![0]!.ToString());
 		}
 
 		[Fact]

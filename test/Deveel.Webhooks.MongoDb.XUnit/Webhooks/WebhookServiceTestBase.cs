@@ -26,10 +26,6 @@ namespace Deveel.Webhooks {
 
 		protected string ConnectionString => mongo.ConnectionString;
 
-		protected virtual MongoDbRunner? CreateMongo() {
-			return MongoDbRunner.Start(logger: NullLogger.Instance);
-		}
-
 		public virtual async Task InitializeAsync() {
 			var client = new MongoClient(ConnectionString);
 			await client.GetDatabase("webhooks").CreateCollectionAsync(MongoDbWebhookStorageConstants.SubscriptionCollectionName);
@@ -44,11 +40,14 @@ namespace Deveel.Webhooks {
 		}
 
 		private IServiceProvider BuildServiceProvider(ITestOutputHelper outputHelper) {
-			return new ServiceCollection()
+			var services = new ServiceCollection()
 				.AddWebhookSubscriptions<MongoWebhookSubscription>(buidler => ConfigureWebhookService(buidler))
 				.AddTestHttpClient(OnRequestAsync)
-				.AddLogging(logging => logging.AddXUnit(outputHelper))
-				.BuildServiceProvider();
+				.AddLogging(logging => logging.AddXUnit(outputHelper));
+
+			ConfigureServices(services);
+
+			return services.BuildServiceProvider();
 		}
 
 		protected virtual Task<HttpResponseMessage> OnRequestAsync(HttpRequestMessage httpRequest) {

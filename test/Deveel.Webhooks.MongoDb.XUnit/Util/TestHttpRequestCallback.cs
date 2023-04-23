@@ -21,8 +21,8 @@ namespace Deveel.Util {
 	}
 
 	class TestHttpRequestAsyncCallback : IHttpRequestCallback {
-		private readonly Func<HttpRequestMessage, Task<HttpResponseMessage>> func;
-		private readonly Func<HttpRequestMessage, CancellationToken, Task<HttpResponseMessage>> cancellableFunc;
+		private readonly Func<HttpRequestMessage, Task<HttpResponseMessage>>? func;
+		private readonly Func<HttpRequestMessage, CancellationToken, Task<HttpResponseMessage>>? cancellableFunc;
 
 		public TestHttpRequestAsyncCallback(Func<HttpRequestMessage, CancellationToken, Task<HttpResponseMessage>> func) {
 			cancellableFunc = func;
@@ -36,7 +36,10 @@ namespace Deveel.Util {
 			if (func != null)
 				return func(request);
 
-			return cancellableFunc(request, cancellationToken);
+			if (cancellableFunc != null)
+				return cancellableFunc(request, cancellationToken);
+
+			throw new InvalidOperationException();
 		}
 	}
 }

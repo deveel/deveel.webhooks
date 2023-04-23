@@ -21,13 +21,27 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Deveel.Webhooks {
+	/// <summary>
+	/// Extends the <see cref="WebhookNotifierBuilder{TWebhook}"/> class
+	/// to register the default subscription resolver
+	/// </summary>
 	public static class WebhookNotifierBuilderExtensions {
+		/// <summary>
+		/// Registers the default subscription resolver for the given webhook type
+		/// and that is based on the given subscription type.
+		/// </summary>
+		/// <typeparam name="TWebhook"></typeparam>
+		/// <param name="builder"></param>
+		/// <param name="subscriptionType"></param>
+		/// <param name="lifetime"></param>
+		/// <returns></returns>
+		/// <exception cref="ArgumentException"></exception>
 		public static WebhookNotifierBuilder<TWebhook> UseDefaultSubscriptionResolver<TWebhook>(this WebhookNotifierBuilder<TWebhook> builder, Type subscriptionType, ServiceLifetime lifetime = ServiceLifetime.Scoped)
 			where TWebhook : class {
 			if (!typeof(IWebhookSubscription).IsAssignableFrom(subscriptionType))
 				throw new ArgumentException("The type specified is not a subscription type", nameof(subscriptionType));
 
-			var resolverType = typeof(DefaultWebhookSubscriptionResolver<>).MakeGenericType(subscriptionType);
+			var resolverType = typeof(WebhookSubscriptionResolver<>).MakeGenericType(subscriptionType);
 			return builder.UseSubscriptionResolver(resolverType, lifetime);
 		}
 	}

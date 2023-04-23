@@ -37,7 +37,7 @@ namespace Deveel.Webhooks {
 
 		protected override void ConfigureWebhookService(WebhookSubscriptionBuilder<TestWebhookSubscription> builder) {
 			builder
-				.UseManager()
+				.UseSubscriptionManager()
 				.UseNotifier<Webhook>(config => config
 					.UseWebhookFactory<DefaultWebhookFactory>()
 					.AddDataTranformer<TestDataFactory>()

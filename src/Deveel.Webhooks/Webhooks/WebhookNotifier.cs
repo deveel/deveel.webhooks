@@ -339,6 +339,9 @@ namespace Deveel.Webhooks {
 				}
 
 				foreach (var subscription in subscriptions) {
+					if (String.IsNullOrWhiteSpace(subscription.SubscriptionId))
+						throw new WebhookException("The subscription identifier is missing");
+
 					Logger.LogDebug("Evaluating subscription {SubscriptionId} to the event of type {EventType} of tenant {TenantId}",
 						subscription.SubscriptionId, eventInfo.EventType, tenantId);
 

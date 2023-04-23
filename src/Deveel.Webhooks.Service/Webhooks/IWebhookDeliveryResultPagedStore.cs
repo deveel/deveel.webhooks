@@ -17,7 +17,29 @@ using System.Threading.Tasks;
 using System.Threading;
 
 namespace Deveel.Webhooks {
+	/// <summary>
+	/// Provides a contract for a store that can retrieve pages 
+	/// of webhook delivery
+	/// </summary>
+	/// <typeparam name="TResult">
+	/// The type of the result of the delivery
+	/// </typeparam>
+	/// <seealso cref="IWebhookDeliveryResultStore{TResult}"/>
 	public interface IWebhookDeliveryResultPagedStore<TResult> : IWebhookDeliveryResultStore<TResult> where TResult : class, IWebhookDeliveryResult {
+		/// <summary>
+		/// Gets a page of webhook delivery results from the store
+		/// </summary>
+		/// <param name="query">
+		/// The query that defines the page to retrieve
+		/// </param>
+		/// <param name="cancellationToken">
+		/// A cancellation token to cancel the operation
+		/// </param>
+		/// <returns>
+		/// Returns a <see cref="PagedResult{TItem}"/> that contains the
+		/// items in the page and the total number of results in the store
+		/// for the given query.
+		/// </returns>
 		Task<PagedResult<TResult>> GetPageAsync(PagedQuery<TResult> query, CancellationToken cancellationToken);
 	}
 }

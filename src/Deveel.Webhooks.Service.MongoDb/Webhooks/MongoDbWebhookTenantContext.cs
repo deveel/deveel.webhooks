@@ -1,63 +1,120 @@
-﻿using System.Collections.Generic;
+﻿// Copyright 2022-2023 Deveel
+// 
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+// 
+//     http://www.apache.org/licenses/LICENSE-2.0
+// 
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+using System.Collections.Generic;
 
 using Finbuckle.MultiTenant;
 
 using MongoFramework;
+using MongoFramework.Infrastructure;
 using MongoFramework.Infrastructure.Commands;
 
 namespace Deveel.Webhooks {
-	public class MongoDbWebhookTenantContext : MongoDbWebhookContext, IMongoDbTenantContext {
+	public class MongoDbWebhookTenantContext : MongoDbTenantContext, IMongoDbWebhookContext {
 		public MongoDbWebhookTenantContext(IMultiTenantContext multiTenantContext) 
-			: base(BuildConnection(multiTenantContext?.TenantInfo)) {
-			TenantInfo = multiTenantContext?.TenantInfo;
+			: base(BuildConnection(multiTenantContext?.TenantInfo), multiTenantContext?.TenantInfo?.Id) {
 		}
 
-		private static IMongoDbConnection BuildConnection(ITenantInfo tenantInfo)
-			=> MongoDbConnection.FromConnectionString(tenantInfo.ConnectionString);
+		private static IMongoDbConnection BuildConnection(ITenantInfo? tenantInfo) {
+			if (tenantInfo == null)
+				throw new ArgumentNullException(nameof(tenantInfo));
 
-		public ITenantInfo TenantInfo { get; }
+			return MongoDbConnection.FromConnectionString(tenantInfo.ConnectionString);
+		}
 
-		public string TenantId => TenantInfo?.Id;
-
-		private void SetTenantId<TEntity>(TEntity entity) {
-			if (entity is MongoWebhookSubscription subscription)
-				subscription.TenantId = TenantId;
-			if (entity is MongoWebhookDeliveryResult deliveryResult)
+		private void CheckAdd(object entity) {
+			if (entity is MongoWebhookSubscription subscription) {
+				if (String.IsNullOrWhiteSpace(subscription.TenantId)) {
+					subscription.TenantId = TenantId;
+				} else if (!String.Equals(TenantId, subscription.TenantId)) {
+					throw new WebhookMongoException($"Subscription {subscription.Id} is not owned by tenant {TenantId}.");
+				}
+			}
+			if (entity is MongoWebhookDeliveryResult deliveryResult) {
 				deliveryResult.TenantId = TenantId;
+			}
+		}
+
+		private void CheckDelete(object entity) {
+			if (entity is MongoWebhookSubscription subscription) {
+				if (!String.Equals(TenantId, subscription.TenantId))
+					throw new WebhookMongoException($"Subscription {subscription.Id} is not owned by tenant {TenantId}.");
+			} else if (entity is MongoWebhookDeliveryResult result) {
+				if (!String.Equals(TenantId, result.TenantId))
+					throw new WebhookMongoException($"Delivery result {result.Id} is not owned by tenant {TenantId}.");
+			}
+		}
+
+		private void AttachEntity<TEntity>(TEntity entity) {
+			if (entity is MongoWebhookSubscription subscription) {
+				subscription.TenantId = TenantId;
+			} else if (entity is MongoWebhookDeliveryResult result) {
+				result.TenantId = TenantId;
+			}
+		}
+
+		protected override void AfterDetectChanges() {
+			foreach (var entity in ChangeTracker.Entries()) {
+				if (entity.State == EntityEntryState.Added) {
+					CheckAdd(entity.Entity);
+				} else if (entity.State == EntityEntryState.Deleted) {
+					CheckDelete(entity.Entity);
+				}
+			}
+
+			base.AfterDetectChanges();
 		}
 
 		public override void Attach<TEntity>(TEntity entity) {
-			SetTenantId<TEntity>(entity);
+			AttachEntity(entity);
 
 			base.Attach(entity);
 		}
 
 		public override void AttachRange<TEntity>(IEnumerable<TEntity> entities) {
 			foreach (var entity in entities) {
-				SetTenantId<TEntity>(entity);
+				AttachEntity(entity);
 			}
 
 			base.AttachRange(entities);
 		}
 
-		public void CheckEntities(IEnumerable<IHaveTenantId> entities) {
-			foreach (var entity in entities) {
-				if (entity.TenantId != TenantId)
-					throw new MongoFramework.MultiTenantException($"Entity type {entity.GetType().Name}, tenant ID does not match. Expected: {TenantId}, Entity has: {entity.TenantId}");
-			}
+		protected override void OnConfigureMapping(MappingBuilder mappingBuilder) {
+			mappingBuilder.Entity<MongoWebhookSubscription>();
+			mappingBuilder.Entity<MongoWebhookDeliveryResult>();
+
+			base.OnConfigureMapping(mappingBuilder);
 		}
 
-		public void CheckEntity(IHaveTenantId entity) {
-			if (entity.TenantId != TenantId)
-				throw new MongoFramework.MultiTenantException($"Entity type {entity.GetType().Name}, tenant ID does not match. Expected: {TenantId}, Entity has: {entity.TenantId}");
-		}
+		//public void CheckEntities(IEnumerable<IHaveTenantId> entities) {
+		//	foreach (var entity in entities) {
+		//		if (entity.TenantId != TenantId)
+		//			throw new MongoFramework.MultiTenantException($"Entity type {entity.GetType().Name}, tenant ID does not match. Expected: {TenantId}, Entity has: {entity.TenantId}");
+		//	}
+		//}
 
-		protected override void AfterDetectChanges() {
-			ChangeTracker.EnforceMultiTenant(TenantId);
-		}
+		//public void CheckEntity(IHaveTenantId entity) {
+		//	if (entity.TenantId != TenantId)
+		//		throw new MongoFramework.MultiTenantException($"Entity type {entity.GetType().Name}, tenant ID does not match. Expected: {TenantId}, Entity has: {entity.TenantId}");
+		//}
 
-		protected override WriteModelOptions GetWriteModelOptions() {
-			return new WriteModelOptions { TenantId = TenantId };
-		}
+		//protected override void AfterDetectChanges() {
+		//	ChangeTracker.EnforceMultiTenant(TenantId);
+		//}
+
+		//protected override WriteModelOptions GetWriteModelOptions() {
+		//	return new WriteModelOptions { TenantId = TenantId };
+		//}
 	}
 }

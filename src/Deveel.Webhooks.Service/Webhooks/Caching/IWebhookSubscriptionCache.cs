@@ -12,26 +12,91 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-
 namespace Deveel.Webhooks.Caching {
 	/// <summary>
 	/// A cache of webhook subscriptions that optimizes the
 	/// read access to the entities
 	/// </summary>
-	/// <typeparam name="TSubscription"></typeparam>
 	public interface IWebhookSubscriptionCache {
-		Task<IWebhookSubscription> GetByIdAsync(string tenantId, string id, CancellationToken cancellationToken);
+		/// <summary>
+		/// Gets a single subscription by its identifier
+		/// </summary>
+		/// <param name="tenantId">
+		/// The identifier of the tenant that owns the subscription
+		/// </param>
+		/// <param name="id">
+		/// The unique identifier of the subscription
+		/// </param>
+		/// <param name="cancellationToken">
+		/// A cancellation token used to cancel the operation
+		/// </param>
+		/// <returns>
+		/// Returns the subscription if found, or <c>null</c> otherwise
+		/// </returns>
+		Task<IWebhookSubscription?> GetByIdAsync(string tenantId, string id, CancellationToken cancellationToken);
 
+		/// <summary>
+		/// Attempts to get a list of subscriptions that are
+		/// listening for the given event type
+		/// </summary>
+		/// <param name="tenantId">
+		/// The identifier of the tenant that owns the subscriptions
+		/// </param>
+		/// <param name="eventType">
+		/// The event type that the subscriptions are listening for
+		/// </param>
+		/// <param name="cancellationToken">
+		/// A cancellation token used to cancel the operation
+		/// </param>
+		/// <returns>
+		/// Returns a list of subscriptions that are listening for the given event type
+		/// </returns>
 		Task<IList<IWebhookSubscription>> GetByEventTypeAsync(string tenantId, string eventType, CancellationToken cancellationToken);
 
-		Task RemoveByEventTypeAsync(string tenantId, string eventType, CancellationToken cancellationToken);
+		/// <summary>
+		/// Evicts from the cache all the subscriptions that are 
+		/// listening for the given event type
+		/// </summary>
+		/// <param name="tenantId">
+		/// The identifier of the tenant that owns the subscriptions
+		/// </param>
+		/// <param name="eventType">
+		/// The event type that the subscriptions are listening for
+		/// </param>
+		/// <param name="cancellationToken">
+		/// A cancellation token used to cancel the operation
+		/// </param>
+		/// <returns>
+		/// Returns a task that completes when the operation is done
+		/// </returns>
+		Task EvictByEventTypeAsync(string tenantId, string eventType, CancellationToken cancellationToken);
 
+		/// <summary>
+		/// Sets the given subscription in the cache
+		/// </summary>
+		/// <param name="subscription">
+		/// The instance of the subscription to cache
+		/// </param>
+		/// <param name="cancellationToken">
+		/// A cancellation token used to cancel the operation
+		/// </param>
+		/// <returns>
+		/// Returns a task that completes when the operation is done
+		/// </returns>
 		Task SetAsync(IWebhookSubscription subscription, CancellationToken cancellationToken);
 
+		/// <summary>
+		/// Removes the given subscription from the cache
+		/// </summary>
+		/// <param name="subscription">
+		/// The instance of the subscription to remove
+		/// </param>
+		/// <param name="cancellationToken">
+		/// A cancellation token used to cancel the operation
+		/// </param>
+		/// <returns>
+		/// Returns a task that completes when the operation is done
+		/// </returns>
 		Task RemoveAsync(IWebhookSubscription subscription, CancellationToken cancellationToken);
 	}
 }

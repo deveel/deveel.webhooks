@@ -18,7 +18,7 @@ namespace Deveel.Webhooks {
 	public class MongoWebhookDeliveryAttempt : IWebhookDeliveryAttempt {
 		public int? ResponseStatusCode { get; set; }
 
-		public string ResponseMessage { get; set; }
+		public string? ResponseMessage { get; set; }
 
 		public DateTimeOffset StartedAt { get; set; }
 

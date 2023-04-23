@@ -20,12 +20,15 @@ namespace Deveel.Webhooks {
 	/// of the webhook service
 	/// </summary>
 	public class WebhookServiceException : WebhookException {
+		/// <inheritdoc/>
 		public WebhookServiceException() {
 		}
 
+		/// <inheritdoc/>
 		public WebhookServiceException(string message) : base(message) {
 		}
 
+		/// <inheritdoc/>
 		public WebhookServiceException(string message, Exception innerException) : base(message, innerException) {
 		}
 	}

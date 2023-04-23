@@ -12,8 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using System.Collections.Generic;
+// Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+#pragma warning disable CS8618
+
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -27,7 +28,7 @@ using MongoFramework.Attributes;
 namespace Deveel.Webhooks {
 	[Table(MongoDbWebhookStorageConstants.SubscriptionCollectionName)]
 	public class MongoWebhookSubscription : IWebhookSubscription {
-		string IWebhookSubscription.SubscriptionId => Id == ObjectId.Empty ? null : Id.ToString();
+		string? IWebhookSubscription.SubscriptionId => Id.Equals(ObjectId.Empty) ? null : Id.ToString();
 
 		[BsonId, Key]
 		public ObjectId Id { get; set; }
@@ -44,14 +45,16 @@ namespace Deveel.Webhooks {
 
 		public string TenantId { get; set; }
 
-		public int RetryCount { get; set; }
+		public int? RetryCount { get; set; }
 
 		public IDictionary<string, string> Headers { get; set; }
+
+		public string Format { get; set; }
 
 		[Index("by_event_type", IndexSortOrder.Descending)]
 		public List<string> EventTypes { get; set; }
 
-		IEnumerable<string> IWebhookSubscription.EventTypes => EventTypes?.ToArray();
+		IEnumerable<string> IWebhookSubscription.EventTypes => EventTypes?.ToArray() ?? Array.Empty<string>();
 
 		public IList<MongoWebhookFilter> Filters { get; set; }
 

@@ -17,7 +17,7 @@ namespace Deveel.Webhooks {
 
 		public WebhookSubscriptionStatus Status { get; set; }
 
-		public int RetryCount { get; set; }
+		public int? RetryCount { get; set; }
 
 		public IEnumerable<IWebhookFilter> Filters { get; set; }
 
@@ -28,5 +28,7 @@ namespace Deveel.Webhooks {
 		public DateTimeOffset? CreatedAt { get; set; }
 
 		public DateTimeOffset? UpdatedAt { get; set; }
+
+		public string? Format { get; set; }
 	}
 }

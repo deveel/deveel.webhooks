@@ -12,73 +12,133 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http.Headers;
-using System.Threading;
-using System.Threading.Tasks;
-
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 
-using static System.Formats.Asn1.AsnWriter;
-
 namespace Deveel.Webhooks {
+	/// <summary>
+	/// A manager of webhook subscriptions that provides a set of operations
+	/// for the handling of entities in a store.
+	/// </summary>
+	/// <typeparam name="TSubscription">
+	/// The type of the subscription handled by the manager.
+	/// </typeparam>
 	public class WebhookSubscriptionManager<TSubscription>
 		where TSubscription : class, IWebhookSubscription {
+		private readonly IHttpContextAccessor? httpContextAccessor;
 
-
-		protected WebhookSubscriptionManager(IWebhookSubscriptionStore<TSubscription> subscriptionStore,
-			IEnumerable<IWebhookSubscriptionValidator<TSubscription>>? validators, ILogger logger) {
-			Store = subscriptionStore;
-			Logger = logger;
-			Validators = validators;
-		}
-
-		public WebhookSubscriptionManager(IWebhookSubscriptionStore<TSubscription> subscriptionStore,
-			 IEnumerable<IWebhookSubscriptionValidator<TSubscription>>? validators = null,
+		/// <summary>
+		/// Creates a new instance of the manager wrapping a given store
+		/// of webhook subscriptions entities
+		/// </summary>
+		/// <param name="subscriptionStore">
+		/// The store of webhook subscriptions entities.
+		/// </param>
+		/// <param name="validators">
+		/// An optional collection of validators to be used to validate
+		/// webhook subscriptions before creating or updating them.
+		/// </param>
+		/// <param name="httpContextAccessor">
+		/// An accessor to the current HTTP context.
+		/// </param>
+		/// <param name="logger">
+		/// A logger to be used to log messages informing on the operations
+		/// of the manager.
+		/// </param>
+		/// <exception cref="ArgumentNullException"></exception>
+		public WebhookSubscriptionManager(
+			IWebhookSubscriptionStore<TSubscription> subscriptionStore,
+			IEnumerable<IWebhookSubscriptionValidator<TSubscription>>? validators = null,
+			IHttpContextAccessor? httpContextAccessor = null,
 			ILogger<WebhookSubscriptionManager<TSubscription>>? logger = null) {
-			Store = subscriptionStore;
+			Store = subscriptionStore ?? throw new ArgumentNullException(nameof(subscriptionStore));
 			Validators = validators;
+			this.httpContextAccessor = httpContextAccessor;
 			Logger = logger ?? NullLogger<WebhookSubscriptionManager<TSubscription>>.Instance;
 		}
 
+		/// <summary>
+		/// Gets the logger used by the manager to log messages.
+		/// </summary>
 		protected ILogger Logger { get; }
 
+		/// <summary>
+		/// Gets the store of webhook subscriptions entities.
+		/// </summary>
 		protected IWebhookSubscriptionStore<TSubscription> Store { get; }
 
-		protected IEnumerable<IWebhookSubscriptionValidator<TSubscription>> Validators { get; }
+		/// <summary>
+		/// Gets the collection of validators used to validate webhook
+		/// </summary>
+		protected IEnumerable<IWebhookSubscriptionValidator<TSubscription>>? Validators { get; }
 
-		private async Task<bool> SetStateAsync(string subscriptionId, WebhookSubscriptionStatus status, CancellationToken cancellationToken) {
-			try {
-				var subscription = await Store.FindByIdAsync(subscriptionId, cancellationToken);
-				if (subscription == null) {
-					Logger.LogWarning("Could not find the subscription with ID {SubscriptionId}: could not change state", subscriptionId);
+		/// <summary>
+		/// Gets the cancellation token to be used to cancel the current
+		/// operation context.
+		/// </summary>
+		protected CancellationToken CancellationToken => httpContextAccessor?.HttpContext?.RequestAborted ?? default;
 
-					throw new SubscriptionNotFoundException(subscriptionId);
-				}
+		/// <summary>
+		/// Gets a value indicating whether the store supports paging.
+		/// </summary>
+		public bool SupportsPaging => Store is IWebhookSubscriptionPagedStore<TSubscription>;
 
-				return await SetStateAsync(subscription, status, cancellationToken);
-			} catch(WebhookException) {
-				throw;
-			} catch (Exception ex) {
-				Logger.LogError(ex, "Error while trying to change the state of subscription {SubscriptionId}", subscriptionId);
-				throw new WebhookException("Could not change the state of the subscription", ex);
+		/// <summary>
+		/// Gets a value indicating whether the store supports queries.
+		/// </summary>
+		public bool SupportsQueries => Store is IWebhookSubscriptionQueryableStore<TSubscription>;
+
+		/// <summary>
+		/// When the store supports paging, this gets the instance of the
+		/// store to access pages of subscriptions.
+		/// </summary>
+		protected IWebhookSubscriptionPagedStore<TSubscription> PagedStore {
+			get {
+				if (!(Store is IWebhookSubscriptionPagedStore<TSubscription> pagedStore))
+					throw new NotSupportedException("The store does not support paging");
+
+				return pagedStore;
 			}
 		}
 
-		public async Task<bool> SetStateAsync(TSubscription subscription, WebhookSubscriptionStatus status, CancellationToken cancellationToken) {
+		/// <summary>
+		/// When the store supports queries, this gets a queryable
+		/// object used to query the subscriptions.
+		/// </summary>
+		public IQueryable<TSubscription> Subscriptions {
+			get {
+				if (!(Store is IWebhookSubscriptionQueryableStore<TSubscription> queryableStore))
+					throw new NotSupportedException("The store does not support queries");
+
+				return queryableStore.AsQueryable();
+			}
+		}
+
+		/// <summary>
+		/// Sets the new status of a subscription.
+		/// </summary>
+		/// <param name="subscription">
+		/// The subscription to change the status.
+		/// </param>
+		/// <param name="status">
+		/// The new status to set.
+		/// </param>
+		/// <returns>
+		/// Returns <c>true</c> if the status was changed, or <c>false</c>
+		/// </returns>
+		/// <exception cref="WebhookException">
+		/// Thrown if the status of the subscription could not be changed because of
+		/// an unhanded exception.
+		/// </exception>
+		public async Task<bool> SetStatusAsync(TSubscription subscription, WebhookSubscriptionStatus status) {
 			try {
 				if (subscription.Status == status) {
 					Logger.LogTrace("The subscription {SubscriptionId} is already {Status}", subscription.SubscriptionId, status);
 					return false;
 				}
 
-				await Store.SetStateAsync(subscription, status, cancellationToken);
-				await Store.UpdateAsync(subscription, cancellationToken);
-
-				await OnSubscriptionStatusChangedAsync(subscription, status, cancellationToken);
+				await Store.SetStatusAsync(subscription, status, CancellationToken);
 
 				Logger.LogInformation("The status of subscription {SubscriptionId} was changed to {Status}", subscription.SubscriptionId, status);
 
@@ -90,18 +150,32 @@ namespace Deveel.Webhooks {
 				throw new WebhookException("Could not change the state of the subscription", ex);
 			}
 		}
-		protected virtual Task OnSubscriptionStatusChangedAsync(TSubscription subscription, WebhookSubscriptionStatus newStatus, CancellationToken cancellationToken) {
+
+		protected virtual Task OnSubscriptionStatusChangedAsync(TSubscription subscription, WebhookSubscriptionStatus newStatus) {
 			return Task.CompletedTask;
 		}
 
-		protected virtual async Task ValidateSubscriptionAsync(TSubscription subscription, CancellationToken cancellationToken) {
+		/// <summary>
+		/// Validates the webhook subscription.
+		/// </summary>
+		/// <param name="subscription">
+		/// The subscription to validate.
+		/// </param>
+		/// <returns></returns>
+		/// <exception cref="WebhookSubscriptionValidationException"></exception>
+		protected virtual async Task ValidateSubscriptionAsync(TSubscription subscription) {
 			var errors = new List<string>();
 
 			if (Validators != null) {
 				foreach (var validator in Validators) {
-					var result = await validator.ValidateAsync(this, subscription, cancellationToken);
-					if (!result.Successful)
-						errors.AddRange(result.Errors);
+					var result = await validator.ValidateAsync(this, subscription, CancellationToken);
+					if (!result.Successful) {
+						if (result.Errors != null) {
+							errors.AddRange(result.Errors);
+						} else {
+							errors.Add("The webhook subscription is invalid");
+						}
+					}
 				}
 			}
 
@@ -109,15 +183,15 @@ namespace Deveel.Webhooks {
 				throw new WebhookSubscriptionValidationException(errors.ToArray());
 		}
 
-		public virtual async Task<string> AddSubscriptionAsync(TSubscription subscription, CancellationToken cancellationToken) {
+		public virtual async Task<string> CreateAsync(TSubscription subscription) {
 			try {
-				await ValidateSubscriptionAsync(subscription, cancellationToken);
+				await ValidateSubscriptionAsync(subscription);
 
-				var result = await Store.CreateAsync(subscription, cancellationToken);
+				var result = await Store.CreateAsync(subscription, CancellationToken);
 
 				Logger.LogInformation("New subscription with ID {SubscriptionId}", result);
 
-				await OnSubscriptionCreatedAsync(subscription, cancellationToken);
+				await OnSubscriptionCreatedAsync(subscription);
 
 				return result;
 			} catch (WebhookException) {
@@ -128,20 +202,33 @@ namespace Deveel.Webhooks {
 			}
 		}
 
-		protected virtual Task OnSubscriptionCreatedAsync(TSubscription subscription, CancellationToken cancellationToken) {
+		protected virtual Task OnSubscriptionCreatedAsync(TSubscription subscription) {
 			return Task.CompletedTask;
 		}
 
-		public virtual async Task<bool> RemoveSubscriptionAsync(TSubscription subscription, CancellationToken cancellationToken) {
+		public virtual async Task<bool> DeleteAsync(TSubscription subscription) {
 			try {
-				var result = await Store.DeleteAsync(subscription, cancellationToken);
+				var id = await Store.GetIdAsync(subscription, CancellationToken);
+				if (id == null) {
+					Logger.LogWarning("Attempt to delete a subscription without identifier");
+					return false;
+				}
+
+				var existing = await FindByIdAsync(id);
+
+				if (existing == null) {
+					Logger.LogWarning("The subscription {SubscriptionId} was not found in the store", id);
+					return false;
+				}
+
+				var result = await Store.DeleteAsync(subscription, CancellationToken);
 
 				if (!result) {
-					Logger.LogWarning("The subscription {SubscriptionId} was not deleted from the store", subscription.SubscriptionId);
+					Logger.LogWarning("The subscription {SubscriptionId} was not deleted from the store", id);
 				} else {
-					Logger.LogInformation("The subscription {SubscriptionId} was deleted from the store", subscription.SubscriptionId);
+					Logger.LogInformation("The subscription {SubscriptionId} was deleted from the store", id);
 
-					await OnSubscriptionRemovedAsync(subscription, cancellationToken);
+					await OnSubscriptionRemovedAsync(subscription);
 				}
 
 				return result;
@@ -153,62 +240,65 @@ namespace Deveel.Webhooks {
 			}
 		}
 
-		protected virtual Task OnSubscriptionRemovedAsync(TSubscription subscription, CancellationToken cancellationToken) {
+		protected virtual Task OnSubscriptionRemovedAsync(TSubscription subscription) {
 			return Task.CompletedTask;
 		}
 
-		public virtual async Task<bool> RemoveSubscriptionAsync(string subscriptionId, CancellationToken cancellationToken) {
+		public virtual async Task<bool> UpdateAsync(TSubscription subscription) {
 			try {
-				var subscription = await Store.FindByIdAsync(subscriptionId, cancellationToken);
+				await ValidateSubscriptionAsync(subscription);
 
-				if (subscription == null) {
-					Logger.LogWarning("Trying to delete the subscription {SubscriptionId}, but it was not found", subscriptionId);
+				var result = await Store.UpdateAsync(subscription, CancellationToken);
 
-					throw new SubscriptionNotFoundException(subscriptionId);
+				if (!result) {
+					Logger.LogWarning("The subscription {SubscriptionId} was not updated in the store", subscription.SubscriptionId);
+				} else {
+					Logger.LogInformation("The subscription {SubscriptionId} was updated in the store", subscription.SubscriptionId);
+					await OnSubscriptionUpdatedAsync(subscription);
 				}
-
-				return await RemoveSubscriptionAsync(subscription, cancellationToken);
-			} catch(WebhookException) {
+				return result;
+			} catch (WebhookException) {
 				throw;
 			} catch (Exception ex) {
-				Logger.LogError(ex, "Error while delete subscription {SubscriptionId}", subscriptionId);
-				throw new WebhookException("Could not delete the subscription", ex);
+				Logger.LogError(ex, "Error while updating subscription {SubscriptionId}", subscription.SubscriptionId);
+				throw new WebhookException("Could not update the subscription", ex);
 			}
 		}
 
-		public virtual Task<bool> DisableSubscriptionAsync(string subscriptionId, CancellationToken cancellationToken)
-			=> SetStateAsync(subscriptionId, WebhookSubscriptionStatus.Suspended, cancellationToken);
+		private Task OnSubscriptionUpdatedAsync(TSubscription subscription) {
+			return Task.CompletedTask;
+		}
 
-		public virtual Task<bool> DisableSubscriptionAsync(TSubscription subscription, CancellationToken cancellationToken)
-			=> SetStateAsync(subscription, WebhookSubscriptionStatus.Suspended, cancellationToken);
+		public virtual Task<bool> DisableAsync(TSubscription subscription)
+			=> SetStatusAsync(subscription, WebhookSubscriptionStatus.Suspended);
 
-		public virtual Task<bool> EnableSubscriptionAsync(string subscriptionId, CancellationToken cancellationToken)
-			=> SetStateAsync(subscriptionId, WebhookSubscriptionStatus.Active, cancellationToken);
-
-		public virtual Task<bool> EnableSubscriptionAsync(TSubscription subscription, CancellationToken cancellationToken)
-			=> SetStateAsync(subscription, WebhookSubscriptionStatus.Active, cancellationToken);
+		public virtual Task<bool> EnableAsync(TSubscription subscription) 
+			=> SetStatusAsync(subscription, WebhookSubscriptionStatus.Active);
 
 
-		public virtual async Task<TSubscription> GetSubscriptionAsync(string subscriptionId, CancellationToken cancellationToken) {
+		public virtual async Task<TSubscription?> FindByIdAsync(string subscriptionId) {
 			try {
-				return await Store.FindByIdAsync(subscriptionId, cancellationToken);
+				return await Store.FindByIdAsync(subscriptionId, CancellationToken);
 			} catch (Exception ex) {
 				Logger.LogError(ex, "Error while retrieving the webhook subscription {SubscriptionId}", subscriptionId);
 				throw new WebhookException("Could not retrieve the subscription", ex);
 			}
 		}
 
-		public virtual async Task<PagedResult<TSubscription>> GetSubscriptionsAsync(PagedQuery<TSubscription> query, CancellationToken cancellationToken) {
+		public virtual async Task<PagedResult<TSubscription>> GetPageAsync(PagedQuery<TSubscription> query) {
 			try {
-				if (Store is IWebhookSubscriptionPagedStore<TSubscription> paged)
-					return await paged.GetPageAsync(query, cancellationToken);
+				if (SupportsPaging)
+					return await PagedStore.GetPageAsync(query, CancellationToken);
 
-				if (Store is IWebhookSubscriptionQueryableStore<TSubscription> queryable) {
-					var totalCount = queryable.AsQueryable().Count(query.Predicate);
-					var items = queryable.AsQueryable()
+				if (SupportsQueries) {
+					var querySet = Subscriptions.AsQueryable();
+					if (query.Predicate != null)
+						querySet = querySet.Where(query.Predicate);
+
+					var totalCount = querySet.Count();
+					var items = querySet
 						.Skip(query.Offset)
-						.Take(query.PageSize)
-						.Cast<TSubscription>();
+						.Take(query.PageSize);
 
 					return new PagedResult<TSubscription>(query, totalCount, items);
 				}
@@ -220,9 +310,9 @@ namespace Deveel.Webhooks {
 			}
 		}
 
-		public virtual async Task<int> CountAllAsync(CancellationToken cancellationToken) {
+		public virtual async Task<int> CountAllAsync() {
 			try {
-				return await Store.CountAllAsync(cancellationToken);
+				return await Store.CountAllAsync(CancellationToken);
 			} catch (Exception ex) {
 				Logger.LogError(ex, "Error while trying to count all webhook subscriptions");
 				throw new WebhookException("Could not count the subscriptions", ex);

@@ -21,24 +21,67 @@ using Microsoft.Extensions.Options;
 using MongoFramework;
 
 namespace Deveel.Webhooks {
-	public class MongoDbWebhookSubscriptionStoreProvider<TSubscription> : IWebhookSubscriptionStoreProvider<TSubscription>
+	public class MongoDbWebhookSubscriptionStoreProvider<TSubscription> : 
+		IWebhookSubscriptionStoreProvider<TSubscription>,
+		IDisposable
 			where TSubscription : MongoWebhookSubscription {
 		private readonly IMultiTenantStore<TenantInfo> tenantStore;
+		private Dictionary<string, IWebhookSubscriptionStore<TSubscription>>? stores;
+		private bool disposedValue;
 
 		public MongoDbWebhookSubscriptionStoreProvider(IMultiTenantStore<TenantInfo> tenantStore) {
 			this.tenantStore = tenantStore;
 		}
 
+		~MongoDbWebhookSubscriptionStoreProvider() {
+			Dispose(disposing: false);
+		}
+
 		public IWebhookSubscriptionStore<TSubscription> GetTenantStore(string tenantId) {
-			var tenantInfo = tenantStore.TryGetByIdentifierAsync(tenantId).GetAwaiter().GetResult();
-			if (tenantInfo == null)
-				throw new ArgumentException($"Tenant '{tenantId}' not found");
+			if (!(stores?.TryGetValue(tenantId, out var store) ?? false)) {
+				var tenantInfo = tenantStore.TryGetByIdentifierAsync(tenantId).GetAwaiter().GetResult();
+				if (tenantInfo == null)
+					throw new ArgumentException($"Tenant '{tenantId}' not found");
 
-			var context = new MultiTenantContext<TenantInfo> {
-				TenantInfo = tenantInfo
-			};
+				var context = new MultiTenantContext<TenantInfo> {
+					TenantInfo = tenantInfo
+				};
 
-			return new MongoDbWebhookSubscriptionStrore<TSubscription>(new MongoDbWebhookTenantContext(context));
+				store = new MongoDbWebhookSubscriptionStrore<TSubscription>(new MongoDbWebhookTenantContext(context));
+
+				if (stores == null)
+					stores = new Dictionary<string, IWebhookSubscriptionStore<TSubscription>>();
+
+				stores[tenantId] = store;
+			}
+
+			return store;
+		}
+
+		protected virtual void Dispose(bool disposing) {
+			if (!disposedValue) {
+				if (disposing) {
+					DisposeStores();
+				}
+
+				stores = null;
+				disposedValue = true;
+			}
+		}
+
+		private void DisposeStores() {
+			if (stores != null) {
+				foreach (var store in stores.Values) {
+					(store as IDisposable)?.Dispose();
+				}
+
+				stores.Clear();
+			}
+		}
+
+		public void Dispose() {
+			Dispose(disposing: true);
+			GC.SuppressFinalize(this);
 		}
 	}
 }

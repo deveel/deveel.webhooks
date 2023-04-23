@@ -49,6 +49,8 @@ namespace Deveel.Webhooks.Receiver.TestApi {
 			});
 
 			app.UseWebhookReceiver<TestWebhook>("/webhook/handled/async", async (context, webhook, token) => {
+				await Task.CompletedTask;
+
 				var callback = context.RequestServices.GetRequiredService<IWebhookCallback<TestWebhook>>();
 				callback.OnWebhookHandled(webhook);
 			});

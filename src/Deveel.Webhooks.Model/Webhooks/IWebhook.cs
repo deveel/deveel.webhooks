@@ -27,18 +27,6 @@ namespace Deveel.Webhooks {
 		string Id { get; }
 
 		/// <summary>
-		/// If the webhook was originated by a subscription,
-		/// this gets its unique identifier.
-		/// </summary>
-		string? SubscriptionId { get; }
-
-		/// <summary>
-		/// If the webhook was originated by a subscription,
-		/// this is its name.
-		/// </summary>
-		string? SubscriptionName { get; }
-
-		/// <summary>
 		/// Gets the exact time of the event occurrence.
 		/// </summary>
 		DateTimeOffset TimeStamp { get; }

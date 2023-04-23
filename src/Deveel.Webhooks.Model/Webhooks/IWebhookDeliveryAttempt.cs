@@ -18,7 +18,7 @@ namespace Deveel.Webhooks {
 	public interface IWebhookDeliveryAttempt {
 		int? ResponseStatusCode { get; }
 
-		string ResponseMessage { get; }
+		string? ResponseMessage { get; }
 
 		DateTimeOffset StartedAt { get; }
 

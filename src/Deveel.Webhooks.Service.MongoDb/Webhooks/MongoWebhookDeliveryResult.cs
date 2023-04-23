@@ -12,15 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using System.Collections.Generic;
+// Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+#pragma warning disable CS8618
+
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
-
-using MongoFramework;
 
 namespace Deveel.Webhooks {
 	[Table(MongoDbWebhookStorageConstants.DeliveryResultsCollectionName)]
@@ -29,6 +28,7 @@ namespace Deveel.Webhooks {
 		public ObjectId Id { get; set; }
 
 		IWebhook IWebhookDeliveryResult.Webhook => Webhook;
+
 
 		public virtual MongoWebhookReceiver Receiver { get; set; }
 
@@ -40,6 +40,6 @@ namespace Deveel.Webhooks {
 
 		public virtual List<MongoWebhookDeliveryAttempt> DeliveryAttempts { get; set; }
 
-		public string TenantId { get; set; }
+		public string? TenantId { get; set; }
 	}
 }

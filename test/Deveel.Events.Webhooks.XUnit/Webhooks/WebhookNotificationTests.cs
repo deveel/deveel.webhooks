@@ -67,7 +67,7 @@ namespace Deveel.Webhooks {
 			}
 		}
 
-		private string CreateSubscription(string name, string eventType, params IWebhookFilter[] filters) {
+		private string CreateSubscription(string name, string eventType, params WebhookFilter[] filters) {
 			return CreateSubscription(new TestWebhookSubscription { 
 				EventTypes = new[] { eventType }, 
 				DestinationUrl = "https://callback.example.com/webhook",

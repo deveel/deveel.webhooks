@@ -30,6 +30,8 @@ namespace Deveel.Webhooks {
 		IWebhookDeliveryResultStore<TResult>,
 		IWebhookDeliveryResultQueryableStore<TResult>
 		where TResult : MongoWebhookDeliveryResult {
+		private readonly IMongoDbWebhookContext context;
+
 		/// <summary>
 		/// Constructs the store with the given context.
 		/// </summary>
@@ -37,16 +39,13 @@ namespace Deveel.Webhooks {
 		/// The context to the MongoDB database.
 		/// </param>
 		public MongoDbWebhookDeliveryResultStore(IMongoDbWebhookContext context) {
-			if (context == null)
-				throw new ArgumentNullException(nameof(context));
-
-			Results = context.Set<TResult>();
+			this.context = context ?? throw new ArgumentNullException(nameof(context));
 		}
 
 		/// <summary>
 		/// Gets the set of results stored in the database.
 		/// </summary>
-		protected IMongoDbSet<TResult> Results { get; }
+		protected IMongoDbSet<TResult> Results => context.Set<TResult>();
 
 		/// <inheritdoc/>
 		public IQueryable<TResult> AsQueryable() => Results.AsQueryable();

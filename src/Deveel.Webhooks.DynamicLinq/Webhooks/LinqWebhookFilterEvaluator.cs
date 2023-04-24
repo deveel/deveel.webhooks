@@ -66,19 +66,26 @@ namespace Deveel.Webhooks {
 			if (filter.IsWildcard)
 				return true;
 
-			var obj = await jsonSerializer.SerializeToObjectAsync(webhook, cancellationToken);
+			try {
+				var obj = await jsonSerializer.SerializeToObjectAsync(webhook, cancellationToken);
 
-			if (obj is null)
-				return false;
+				if (obj is null)
+					return false;
 
-			var evalFilter = Compile(obj.GetType(), filter.Filters);
+				var evalFilter = Compile(obj.GetType(), filter.Filters);
 
-			if (evalFilter == null)
-				return false;
+				if (evalFilter == null)
+					return false;
 
-			var result = evalFilter(obj);
+				var result = evalFilter(obj);
 
-			return result;
+				return result;
+			} catch (WebhookSerializationException ex) {
+				throw new WebhookException("The webhook object is invalid", ex);
+			} catch(Exception ex) {
+				throw new WebhookException("Unable to evaluate the filter", ex);
+			}
+
 		}
 	}
 }

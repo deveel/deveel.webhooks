@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Deveel.Webhooks {
 	public class TestWebhookSubscription : IWebhookSubscription {
@@ -22,7 +23,9 @@ namespace Deveel.Webhooks {
 
 		public int? RetryCount { get; set; }
 
-		public IEnumerable<IWebhookFilter> Filters { get; set; }
+		IEnumerable<IWebhookFilter> IWebhookSubscription.Filters => Filters.Cast<IWebhookFilter>();
+
+		public IList<WebhookFilter> Filters { get; set; }
 
 		public IDictionary<string, string> Headers { get; set; }
 

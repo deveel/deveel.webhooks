@@ -477,6 +477,15 @@
             otherwise <c>false</c>.
             </returns>
         </member>
+        <member name="M:Deveel.Webhooks.WebhookFilter.Equals(System.Object)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Deveel.Webhooks.WebhookFilter.Equals(Deveel.Webhooks.IWebhookFilter)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Deveel.Webhooks.WebhookFilter.GetHashCode">
+            <inheritdoc/>
+        </member>
         <member name="T:Deveel.Webhooks.WebhookFilterExtensions">
             <summary>
             Extens the <see cref="T:Deveel.Webhooks.IWebhookFilter"/> to add some utility methods.

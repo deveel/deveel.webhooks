@@ -122,6 +122,8 @@ namespace Deveel.Webhooks {
 		public async Task GetPageOfSubscriptions() {
 			var totalPages = (int) Math.Ceiling(subscriptions.Count / (double) 10);
 
+			Assert.True(Manager.SupportsPaging);
+
 			var query = new PagedQuery<MongoWebhookSubscription>(1, 10);
 			var result = await Manager.GetPageAsync(query);
 
@@ -193,5 +195,15 @@ namespace Deveel.Webhooks {
 			Assert.Equal(count, result);
 		}
 
+		[Fact]
+		public async Task QueryAllNonActive() {
+			var count = subscriptions.Count(x => x.Status != WebhookSubscriptionStatus.Active);
+
+			Assert.True(Manager.SupportsQueries);
+			var result = await Manager.Subscriptions.Where(x => x.Status != WebhookSubscriptionStatus.Active).ToListAsync();
+
+			Assert.Equal(count, result.Count);
+			Assert.True(result.All(x => x.Status != WebhookSubscriptionStatus.Active));
+		}
 	}
 }

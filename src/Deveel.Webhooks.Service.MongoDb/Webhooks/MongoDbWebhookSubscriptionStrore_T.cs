@@ -33,6 +33,7 @@ namespace Deveel.Webhooks {
 			IWebhookSubscriptionQueryableStore<TSubscription>,
 			IWebhookSubscriptionPagedStore<TSubscription>
 			where TSubscription : MongoWebhookSubscription {
+		private readonly IMongoDbWebhookContext context;
 
 		/// <summary>
 		/// Constructs the store with the given context.
@@ -44,17 +45,14 @@ namespace Deveel.Webhooks {
 		/// Thrown when the given <paramref name="context"/> is <c>null</c>.
 		/// </exception>
 		public MongoDbWebhookSubscriptionStrore(IMongoDbWebhookContext context) {
-			if (context is null) 
-				throw new ArgumentNullException(nameof(context));
-
-			Subscriptions = context.Set<TSubscription>();
+			this.context = context ?? throw new ArgumentNullException(nameof(context));
 		}
 
 		/// <summary>
 		/// Gets a set that is used to access the webhook subscriptions
 		/// stored in the database.
 		/// </summary>
-		protected IMongoDbSet<TSubscription> Subscriptions { get; }
+		protected IMongoDbSet<TSubscription> Subscriptions => context.Set<TSubscription>();
 
 		/// <inheritdoc/>
 		public IQueryable<TSubscription> AsQueryable() => Subscriptions.AsQueryable();

@@ -11,7 +11,7 @@ using MongoDB.Driver;
 using Xunit.Abstractions;
 
 namespace Deveel.Webhooks {
-	public class MultiTenantWebhookSubscriptionManagementTests : WebhookServiceTestBase {
+	public class MultiTenantWebhookSubscriptionManagementTests : MongoDbWebhookTestBase {
 		private IList<MongoWebhookSubscription> subscriptions;
 		private IList<MongoWebhookSubscription> otherSubscriptions;
 		private Faker<MongoWebhookSubscription> faker;

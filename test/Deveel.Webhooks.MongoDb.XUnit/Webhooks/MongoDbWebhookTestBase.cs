@@ -14,10 +14,10 @@ using Xunit.Abstractions;
 
 namespace Deveel.Webhooks {
 	[Collection(nameof(MongoTestCollection))]
-	public abstract class WebhookServiceTestBase : IAsyncLifetime {
+	public abstract class MongoDbWebhookTestBase : IAsyncLifetime {
 		private readonly MongoTestCluster mongo;
 
-		protected WebhookServiceTestBase(MongoTestCluster mongo, ITestOutputHelper outputHelper) {
+		protected MongoDbWebhookTestBase(MongoTestCluster mongo, ITestOutputHelper outputHelper) {
 			this.mongo = mongo;
 			Services = BuildServiceProvider(outputHelper);
 		}

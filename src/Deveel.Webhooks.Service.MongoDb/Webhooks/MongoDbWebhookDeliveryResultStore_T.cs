@@ -19,16 +19,16 @@ using MongoFramework;
 using MongoFramework.Linq;
 
 namespace Deveel.Webhooks {
-    /// <summary>
-    /// Provides an implementation of the <see cref="IWebhookDeliveryResultStore{TResult}"/>
-    /// that is backed by a MongoDB database.
-    /// </summary>
-    /// <typeparam name="TResult">
-    /// The type of the result that is stored in the database.
-    /// </typeparam>
-    public class MongoDbWebhookDeliveryResultStore<TResult> : 
-	    IWebhookDeliveryResultStore<TResult>, 
-	    IWebhookDeliveryResultQueryableStore<TResult>
+	/// <summary>
+	/// Provides an implementation of the <see cref="IWebhookDeliveryResultStore{TResult}"/>
+	/// that is backed by a MongoDB database.
+	/// </summary>
+	/// <typeparam name="TResult">
+	/// The type of the result that is stored in the database.
+	/// </typeparam>
+	public class MongoDbWebhookDeliveryResultStore<TResult> :
+		IWebhookDeliveryResultStore<TResult>,
+		IWebhookDeliveryResultQueryableStore<TResult>
 		where TResult : MongoWebhookDeliveryResult {
 		/// <summary>
 		/// Constructs the store with the given context.
@@ -36,11 +36,10 @@ namespace Deveel.Webhooks {
 		/// <param name="context">
 		/// The context to the MongoDB database.
 		/// </param>
-		public MongoDbWebhookDeliveryResultStore(IMongoDbWebhookContext context)
-		{
-			if (context == null) 
+		public MongoDbWebhookDeliveryResultStore(IMongoDbWebhookContext context) {
+			if (context == null)
 				throw new ArgumentNullException(nameof(context));
-			
+
 			Results = context.Set<TResult>();
 		}
 
@@ -64,11 +63,11 @@ namespace Deveel.Webhooks {
 		/// <inheritdoc/>
 		public async Task<string> CreateAsync(TResult result, CancellationToken cancellationToken) {
 			try {
-                Results.Add(result);
-                await Results.Context.SaveChangesAsync(cancellationToken);
+				Results.Add(result);
+				await Results.Context.SaveChangesAsync(cancellationToken);
 
-                return result.Id.ToString();
-            } catch (Exception ex) {
+				return result.Id.ToString();
+			} catch (Exception ex) {
 				throw new WebhookMongoException("Unable to add the given result to the database", ex);
 			}
 		}
@@ -85,11 +84,11 @@ namespace Deveel.Webhooks {
 				throw new WebhookMongoException("Unable to delete the result from the database", ex);
 			}
 		}
-		
+
 		/// <inheritdoc/>
 		public async Task<TResult?> FindByIdAsync(string id, CancellationToken cancellationToken) {
 			if (string.IsNullOrWhiteSpace(id))
-                throw new ArgumentNullException(nameof(id));
+				throw new ArgumentNullException(nameof(id));
 
 			if (!ObjectId.TryParse(id, out var objId))
 				throw new ArgumentException("The given id is not a valid ObjectId", nameof(id));
@@ -106,11 +105,11 @@ namespace Deveel.Webhooks {
 			cancellationToken.ThrowIfCancellationRequested();
 
 			try {
-                return await Results.AsQueryable().FirstOrDefaultAsync(x => x.Webhook.WebhookId == webhookId, cancellationToken);
-            } catch (Exception ex) {
+				return await Results.AsQueryable().FirstOrDefaultAsync(x => x.Webhook.WebhookId == webhookId, cancellationToken);
+			} catch (Exception ex) {
 				throw new WebhookMongoException("Unable to query the database for results", ex);
 			}
-			
+
 		}
 	}
 }

@@ -9,7 +9,7 @@ using MongoFramework.Linq;
 using Xunit.Abstractions;
 
 namespace Deveel.Webhooks {
-	public class WebhookSubscriptionManagementTests : WebhookServiceTestBase {
+	public class WebhookSubscriptionManagementTests : MongoDbWebhookTestBase {
 		private IList<MongoWebhookSubscription> subscriptions;
 		private Faker<MongoWebhookSubscription> faker;
 

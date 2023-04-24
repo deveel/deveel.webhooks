@@ -8,7 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Xunit.Abstractions;
 
 namespace Deveel.Webhooks {
-	public class WebhookDeliveryResultLoggingTests : WebhookServiceTestBase {
+	public class WebhookDeliveryResultLoggingTests : MongoDbWebhookTestBase {
 		private const int TimeOutSeconds = 2;
 		private bool testTimeout = false;
 

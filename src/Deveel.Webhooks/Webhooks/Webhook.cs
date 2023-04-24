@@ -70,7 +70,5 @@ namespace Deveel.Webhooks {
 		[JsonPropertyName("name")]
 		[XmlAttribute("name")]
 		public string? Name { get; set; }
-
-		string? IWebhook.SubscriptionName => Name;
 	}
 }

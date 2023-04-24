@@ -18,8 +18,11 @@ using System.Linq;
 using System.Threading.Tasks;
 
 namespace Deveel.Webhooks {
+	/// <summary>
+	/// Represents the result of a validation of a webhook subscription.
+	/// </summary>
 	public sealed class WebhookValidationResult {
-		private WebhookValidationResult(string[] errors, bool success) {
+		private WebhookValidationResult(string[]? errors, bool success) {
 			Errors = errors;
 			Successful = success;
 		}
@@ -28,12 +31,32 @@ namespace Deveel.Webhooks {
 			Success = new WebhookValidationResult(null, true);
 		}
 
-		public string[] Errors { get; }
+		/// <summary>
+		/// Gets a list of errors that occurred during the validation.
+		/// </summary>
+		public string[]? Errors { get; }
 
+		/// <summary>
+		/// Gets a value indicating whether the validation was successful.
+		/// </summary>
 		public bool Successful { get; }
 
+		/// <summary>
+		/// Gets an instance of the <see cref="WebhookValidationResult"/> that
+		/// indicates a successful validation.
+		/// </summary>
 		public static readonly WebhookValidationResult Success;
 
+		/// <summary>
+		/// Creates a new instance of a failed validation.
+		/// </summary>
+		/// <param name="errors">
+		/// A list of errors that occurred during the validation.
+		/// </param>
+		/// <returns>
+		/// Returns a new instance of <see cref="WebhookValidationResult"/>
+		/// that represents a failed validation.
+		/// </returns>
 		public static WebhookValidationResult Failed(params string[] errors)
 			=> new WebhookValidationResult(errors, false);
 	}

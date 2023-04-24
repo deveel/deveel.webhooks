@@ -19,7 +19,7 @@ namespace Deveel.Webhooks.Receiver.TestApi {
 			builder.Services.AddWebhooks<TestSignedWebhook>()
 				.Configure(options => {
 					options.VerifySignature = true;
-					options.Signature.Secret = secret;
+					options.Signature!.Secret = secret;
 					options.Signature.ParameterName = "X-Webhook-Signature-256";
 					options.Signature.Location = WebhookSignatureLocation.Header;
 				})
@@ -49,6 +49,8 @@ namespace Deveel.Webhooks.Receiver.TestApi {
 			});
 
 			app.UseWebhookReceiver<TestWebhook>("/webhook/handled/async", async (context, webhook, token) => {
+				await Task.CompletedTask;
+
 				var callback = context.RequestServices.GetRequiredService<IWebhookCallback<TestWebhook>>();
 				callback.OnWebhookHandled(webhook);
 			});

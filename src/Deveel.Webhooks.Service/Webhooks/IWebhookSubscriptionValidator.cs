@@ -17,7 +17,30 @@ using System.Threading;
 using System.Threading.Tasks;
 
 namespace Deveel.Webhooks {
+	/// <summary>
+	/// Represents a validator for a webhook subscription
+	/// before creating or updating it.
+	/// </summary>
+	/// <typeparam name="TSubscription">
+	/// The type of the subscription to validate.
+	/// </typeparam>
 	public interface IWebhookSubscriptionValidator<TSubscription> where TSubscription : class, IWebhookSubscription {
+		/// <summary>
+		/// Validates the given subscription.
+		/// </summary>
+		/// <param name="manager">
+		/// The instance of the manager that is validating the subscription.
+		/// </param>
+		/// <param name="subscription">
+		/// The subscription instance to validate.
+		/// </param>
+		/// <param name="cancellationToken">
+		/// A cancellation token used to cancel the operation.
+		/// </param>
+		/// <returns>
+		/// Returns a <see cref="WebhookValidationResult"/> that
+		/// indicates if the subscription is valid or not.
+		/// </returns>
 		Task<WebhookValidationResult> ValidateAsync(WebhookSubscriptionManager<TSubscription> manager, TSubscription subscription, CancellationToken cancellationToken);
 	}
 }

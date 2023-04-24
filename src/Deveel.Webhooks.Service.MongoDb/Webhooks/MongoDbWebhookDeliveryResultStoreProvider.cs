@@ -12,18 +12,31 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-
-using Deveel.Data;
+using Finbuckle.MultiTenant;
 
 using Microsoft.Extensions.Options;
 
 namespace Deveel.Webhooks {
-	public class MongoDbWebhookDeliveryResultStoreProvider : MongoDbWebhookDeliveryResultStoreProvider<MongoDbWebhookDeliveryResult> {
-		public MongoDbWebhookDeliveryResultStoreProvider(IOptions<MongoDbOptions> options) : base(options) {
-		}
-
-		public MongoDbWebhookDeliveryResultStoreProvider(MongoDbOptions options) : base(options) {
+	/// <summary>
+	/// Provides an implementation of the <see cref="IWebhookDeliveryResultStore{TResult}"/>
+	/// that is backed by a MongoDB database.
+	/// </summary>
+	/// <typeparam name="TTenantInfo">
+	/// The type of the tenant information.
+	/// </typeparam>
+    public class MongoDbWebhookDeliveryResultStoreProvider<TTenantInfo> : MongoDbWebhookDeliveryResultStoreProvider<TTenantInfo, MongoWebhookDeliveryResult>
+		where TTenantInfo : class, ITenantInfo, new() {
+		/// <summary>
+		/// Constructs the store with the given store.
+		/// </summary>
+		/// <param name="options">
+		/// The set of options that are used to configure the connection to the store.
+		/// </param>
+		/// <param name="tenantStore">
+		/// The store that provides access to the tenants.
+		/// </param>
+		public MongoDbWebhookDeliveryResultStoreProvider(IOptions<MongoDbWebhookOptions> options, IMultiTenantStore<TTenantInfo> tenantStore) 
+			: base(options, tenantStore) {
 		}
 	}
 }

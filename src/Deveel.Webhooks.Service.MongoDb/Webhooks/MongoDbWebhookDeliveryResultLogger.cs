@@ -12,48 +12,116 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
-using System.Threading;
-using System.Threading.Tasks;
-
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 
 using MongoDB.Bson;
 
 namespace Deveel.Webhooks {
+	/// <summary>
+	/// An implementation of <see cref="IWebhookDeliveryResultLogger{TWebhook}"/> that
+	/// is backed by a MongoDB database.
+	/// </summary>
+	/// <typeparam name="TWebhook">
+	/// The type of webhook for which the delivery results are logged.
+	/// </typeparam>
+	/// <typeparam name="TResult">
+	/// The type of delivery result to log.
+	/// </typeparam>
 	public class MongoDbWebhookDeliveryResultLogger<TWebhook, TResult> : IWebhookDeliveryResultLogger<TWebhook>
-		where TWebhook : class, IWebhook
-		where TResult : MongoDbWebhookDeliveryResult {
+		where TWebhook : class
+		where TResult : MongoWebhookDeliveryResult, new() {
+		private readonly IMongoWebhookConverter<TWebhook>? webhookConverter;
+
+		/// <summary>
+		/// Constructs the logger with the given store provider
+		/// used to resolve the MongoDB storage for the log.
+		/// </summary>
+		/// <param name="storeProvider">
+		/// The provider of the store used to resolve the MongoDB storage
+		/// where to log the delivery results.
+		/// </param>
+		/// <param name="webhookConverter">
+		/// A service that is used to convert the webhook object to a MongoDB
+		/// compatible object for storage.
+		/// </param>
+		/// <param name="logger">
+		/// An optional logger to use to log messages emitted by this service.
+		/// </param>
 		public MongoDbWebhookDeliveryResultLogger(
-			MongoDbWebhookDeliveryResultStoreProvider<TResult> storeProvider, 
-			ILogger<MongoDbWebhookDeliveryResultLogger<TWebhook, TResult>> logger) {
+			IWebhookDeliveryResultStoreProvider<TResult> storeProvider, 
+			IMongoWebhookConverter<TWebhook>? webhookConverter = null,
+			ILogger<MongoDbWebhookDeliveryResultLogger<TWebhook, TResult>>? logger = null) {
 			StoreProvider = storeProvider;
-			Logger = logger;
+            this.webhookConverter = webhookConverter;
+            Logger = logger ?? NullLogger<MongoDbWebhookDeliveryResultLogger<TWebhook, TResult>>.Instance;
 		}
 
-		protected MongoDbWebhookDeliveryResultStoreProvider<TResult> StoreProvider { get; }
+		/// <summary>
+		/// Gets the provider used to resolve the MongoDB storage where to log
+		/// the delivery results.
+		/// </summary>
+		protected IWebhookDeliveryResultStoreProvider<TResult> StoreProvider { get; }
 
+		/// <summary>
+		/// Gets the logger used to log messages emitted by this service.
+		/// </summary>
 		protected ILogger<MongoDbWebhookDeliveryResultLogger<TWebhook, TResult>> Logger { get; }
 
-		protected virtual TResult CreateNewResult() {
-			return Activator.CreateInstance<TResult>();
-		}
+		/// <summary>
+		/// Converts the given result to an object that can be stored in the
+		/// MongoDB database collection.
+		/// </summary>
+		/// <param name="subscription">
+		/// The subscription for which the delivery result is logged.
+		/// </param>
+		/// <param name="result">
+		/// The result of the delivery of a webhook.
+		/// </param>
+		/// <returns>
+		/// Returns an object that can be stored in the MongoDB database collection.
+		/// </returns>
+		protected virtual TResult ConvertResult(IWebhookSubscription subscription, WebhookDeliveryResult<TWebhook> result) {
+			var obj = new TResult();
 
-		protected virtual TResult ConvertResult(WebhookDeliveryResult<TWebhook> result) {
-			var obj = CreateNewResult();
-
+			obj.TenantId = subscription.TenantId;
+			obj.Receiver = CreateReceiver(subscription);
 			obj.Webhook = ConvertWebhook(result.Webhook);
-			obj.DeliveryAttempts = result.Attempts?.Select(ConvertDeliveryAttempt).ToList();
+			obj.DeliveryAttempts = result.Attempts?.Select(ConvertDeliveryAttempt).ToList() 
+				?? new List<MongoWebhookDeliveryAttempt>();
 
 			return obj;
 		}
 
-		private MongoDbWebhookDeliveryAttempt ConvertDeliveryAttempt(WebhookDeliveryAttempt attempt) {
-			return new MongoDbWebhookDeliveryAttempt {
+		/// <summary>
+		/// Converts a subscription object to a receiver object that can be
+		/// stored in the MongoDB database collection.
+		/// </summary>
+		/// <param name="subscription"></param>
+		/// <returns>
+		/// Returns an instance of <see cref="MongoWebhookReceiver"/> that can be
+		/// stored in the MongoDB database collection.
+		/// </returns>
+		protected virtual MongoWebhookReceiver CreateReceiver(IWebhookSubscription subscription) {
+			return new MongoWebhookReceiver {
+				SubscriptionId = subscription.SubscriptionId,
+				SubscriptionName = subscription.Name,
+				DestinationUrl = subscription.DestinationUrl,
+				// TODO: body format and headers
+			};
+		}
+
+		/// <summary>
+		/// Converts the given delivery attempt to an object that can be stored
+		/// </summary>
+		/// <param name="attempt">
+		/// The delivery attempt to convert.
+		/// </param>
+		/// <returns>
+		/// Returns an object that can be stored in the MongoDB database collection.
+		/// </returns>
+		protected virtual MongoWebhookDeliveryAttempt ConvertDeliveryAttempt(WebhookDeliveryAttempt attempt) {
+			return new MongoWebhookDeliveryAttempt {
 				StartedAt = attempt.StartedAt,
 				EndedAt = attempt.CompletedAt,
 				ResponseStatusCode = attempt.ResponseCode,
@@ -61,27 +129,58 @@ namespace Deveel.Webhooks {
 			};
 		}
 
-		protected virtual MongoDbWebhook ConvertWebhook(IWebhook webhook) {
-			return new MongoDbWebhook {
-				WebhookId = webhook.Id,
-				EventType = webhook.EventType,
-				SubscriptionId = webhook.SubscriptionId,
-				Data = ConvertWebhookData(webhook.Data),
-				TimeStamp = webhook.TimeStamp
+		/// <summary>
+		/// Converts the given webhook to an object that can be stored in the
+		/// MongoDB database collection.
+		/// </summary>
+		/// <param name="webhook">
+		/// The instance of the webhook to convert.
+		/// </param>
+		/// <returns>
+		/// Returns an object that can be stored in the MongoDB database collection.
+		/// </returns>
+		/// <exception cref="NotSupportedException">
+		/// Thrown when the given type of webhook is not supported by this instance and
+		/// no converter was provided.
+		/// </exception>
+		protected virtual MongoWebhook ConvertWebhook(TWebhook webhook) {
+			if (!(webhook is IWebhook obj)) {
+				if (webhookConverter == null)
+					throw new NotSupportedException("The given type of webhook is not supported by this instance of the logger");
+
+				return webhookConverter.ConvertWebhook(webhook);
+			}
+
+			return new MongoWebhook {
+				WebhookId = obj.Id,
+				EventType = obj.EventType,
+				Data = ConvertWebhookData(obj.Data),
+				TimeStamp = obj.TimeStamp
 			};
 		}
 
-		protected virtual BsonDocument ConvertWebhookData(object data) {
+		/// <summary>
+		/// Converts the webhook data to a <see cref="BsonDocument"/> that can
+		/// be stored in the MongoDB database.
+		/// </summary>
+		/// <param name="data">
+		/// The data component of the webhook to convert.
+		/// </param>
+		/// <returns>
+		/// 
+		/// </returns>
+		protected virtual BsonDocument ConvertWebhookData(object? data) {
 			// this is tricky: we try some possible options...
 
 			if (data is null)
 				return new BsonDocument();
 
-			IDictionary<string, object> dictionary;
+			IDictionary<string, object?> dictionary;
 
-			if (data is IDictionary<string, object>) {
-				dictionary = (IDictionary<string, object>)data;
+			if (data is IDictionary<string, object?>) {
+				dictionary = (IDictionary<string, object?>)data;
 			} else {
+				// TODO: make this recursive ...
 				dictionary = data.GetType()
 					.GetProperties()
 					.ToDictionary(x => x.Name, y => y.GetValue(data));
@@ -97,27 +196,47 @@ namespace Deveel.Webhooks {
 			return document;
 		}
 
-		protected virtual BsonValue ConvertValue(object value) {
+		/// <summary>
+		/// Converts a single value to a <see cref="BsonValue"/> that can be
+		/// stored in the MongoDB database.
+		/// </summary>
+		/// <param name="value">
+		/// The value to convert.
+		/// </param>
+		/// <returns></returns>
+		protected virtual BsonValue ConvertValue(object? value) {
+			if (value is null)
+				return BsonNull.Value;
+			if (value is BsonValue bson)
+				return bson;
+
 			if (value is DateTimeOffset)
 				value = ((DateTimeOffset)value).DateTime;
 
 			return BsonValue.Create(value);
 		}
 
+		/// <inheritdoc/>
 		public async Task LogResultAsync(IWebhookSubscription subscription, WebhookDeliveryResult<TWebhook> result, CancellationToken cancellationToken) {
 			if (result is null) 
 				throw new ArgumentNullException(nameof(result));
+			if (subscription is null) 
+				throw new ArgumentNullException(nameof(subscription));
 
-			Logger.LogTrace("Logging the result of the delivery of a webhook of event '{EventType}' for tenant '{TenantId}'",
-				result.Webhook.EventType, subscription.TenantId);
+			// TODO: we should support also non-multi-tenant scenarios...
+			if (String.IsNullOrWhiteSpace(subscription.TenantId))
+				throw new ArgumentException("The tenant identifier of the subscription is not set", nameof(subscription));
+
+			Logger.LogTrace("Logging the result of the delivery of a webhook of type '{WebhookType}' for tenant '{TenantId}'",
+				typeof(TWebhook), subscription.TenantId);
 
 			try {
-				var resultObj = ConvertResult(result);
+				var resultObj = ConvertResult(subscription, result);
 
-				await StoreProvider.GetStore(subscription.TenantId).CreateAsync(resultObj, cancellationToken);
+				await StoreProvider.GetTenantStore(subscription.TenantId).CreateAsync(resultObj, cancellationToken);
 			} catch (Exception ex) {
-				Logger.LogError(ex, "Could not log the result of the delivery of the Webhook of type '{EventType}' for tenant '{TenantId}' because of an error",
-					result.Webhook.EventType, subscription.TenantId);
+				Logger.LogError(ex, "Could not log the result of the delivery of the Webhook of type '{WebhookType}' for tenant '{TenantId}' because of an error",
+					typeof(TWebhook), subscription.TenantId);
 			}
 		}
 	}

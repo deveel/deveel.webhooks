@@ -19,7 +19,7 @@ namespace Deveel.Webhooks {
 	/// A default implementation of <see cref="IWebhookFilter"/> that can be used
 	/// to represent a filter expression.
 	/// </summary>
-	public class WebhookFilter : IWebhookFilter {
+	public readonly struct WebhookFilter : IWebhookFilter, IEquatable<IWebhookFilter> {
 		/// <summary>
 		/// Constructs the filter with the given expression and format.
 		/// </summary>
@@ -63,7 +63,7 @@ namespace Deveel.Webhooks {
 		/// <summary>
 		/// Gets the format of the expression.
 		/// </summary>
-		public string Format { get; set; }
+		public string Format { get; }
 
 		/// <summary>
 		/// Gets a <see cref="IWebhookFilter"/> that matches any webhook.
@@ -81,5 +81,16 @@ namespace Deveel.Webhooks {
 		/// otherwise <c>false</c>.
 		/// </returns>
 		public static bool IsWildcard(string expression) => String.Equals(expression, Wildcard);
+
+		/// <inheritdoc/>
+		public override bool Equals(object? obj) => obj is IWebhookFilter filter && Equals(filter);
+
+		/// <inheritdoc/>
+		public bool Equals(IWebhookFilter? other) => other != null &&
+			((this.IsWildcard() && other.IsWildcard()) || 
+			(Expression == other.Expression && Format == other.Format));
+
+		/// <inheritdoc/>
+		public override int GetHashCode() => this.IsWildcard() ? HashCode.Combine(Wildcard) : HashCode.Combine(Expression, Format);
 	}
 }

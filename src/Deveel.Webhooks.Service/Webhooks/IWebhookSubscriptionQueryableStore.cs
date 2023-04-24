@@ -16,8 +16,20 @@ using System;
 using System.Linq;
 
 namespace Deveel.Webhooks {
+	/// <summary>
+	/// A store for <see cref="IWebhookSubscription"/> that can be queried.
+	/// </summary>
+	/// <typeparam name="TSubscription"></typeparam>
 	public interface IWebhookSubscriptionQueryableStore<TSubscription> : IWebhookSubscriptionStore<TSubscription>
 		where TSubscription : class, IWebhookSubscription {
+		/// <summary>
+		/// Gets a queryable object that can be used to query the
+		/// subscriptions in the store.
+		/// </summary>
+		/// <returns>
+		/// Returns a <see cref="IQueryable{T}"/> object that can be used
+		/// to query the subscriptions in the store.
+		/// </returns>
 		IQueryable<TSubscription> AsQueryable();
 	}
 }

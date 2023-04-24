@@ -12,37 +12,103 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using System.Threading;
-using System.Threading.Tasks;
-
-using Deveel.Data;
-
-using Microsoft.Extensions.Options;
-
+using MongoDB.Bson;
 using MongoDB.Driver;
 
+using MongoFramework;
+using MongoFramework.Linq;
+
 namespace Deveel.Webhooks {
-	public class MongoDbWebhookDeliveryResultStore<TResult> : MongoDbStoreBase<TResult>, IWebhookDeliveryResultStore<TResult>
-		where TResult : MongoDbWebhookDeliveryResult {
-		public MongoDbWebhookDeliveryResultStore(IOptions<MongoDbOptions> options) : base(options) {
+	/// <summary>
+	/// Provides an implementation of the <see cref="IWebhookDeliveryResultStore{TResult}"/>
+	/// that is backed by a MongoDB database.
+	/// </summary>
+	/// <typeparam name="TResult">
+	/// The type of the result that is stored in the database.
+	/// </typeparam>
+	public class MongoDbWebhookDeliveryResultStore<TResult> :
+		IWebhookDeliveryResultStore<TResult>,
+		IWebhookDeliveryResultQueryableStore<TResult>
+		where TResult : MongoWebhookDeliveryResult {
+		private readonly IMongoDbWebhookContext context;
+
+		/// <summary>
+		/// Constructs the store with the given context.
+		/// </summary>
+		/// <param name="context">
+		/// The context to the MongoDB database.
+		/// </param>
+		public MongoDbWebhookDeliveryResultStore(IMongoDbWebhookContext context) {
+			this.context = context ?? throw new ArgumentNullException(nameof(context));
 		}
 
-		public MongoDbWebhookDeliveryResultStore(MongoDbOptions options) : base(options) {
+		/// <summary>
+		/// Gets the set of results stored in the database.
+		/// </summary>
+		protected IMongoDbSet<TResult> Results => context.Set<TResult>();
+
+		/// <inheritdoc/>
+		public IQueryable<TResult> AsQueryable() => Results.AsQueryable();
+
+		/// <inheritdoc/>
+		public async Task<int> CountAllAsync(CancellationToken cancellationToken) {
+			try {
+				return await Results.CountAsync(cancellationToken);
+			} catch (Exception ex) {
+				throw new WebhookMongoException("Unable to count the number of results", ex);
+			}
 		}
 
-		protected override IMongoCollection<TResult> Collection => GetCollection(Options.DeliveryResultsCollectionName());
+		/// <inheritdoc/>
+		public async Task<string> CreateAsync(TResult result, CancellationToken cancellationToken) {
+			try {
+				Results.Add(result);
+				await Results.Context.SaveChangesAsync(cancellationToken);
 
-		public async Task<TResult> FindByWebhookIdAsync(string webhookId, CancellationToken cancellationToken) {
-			ThrowIfDisposed();
+				return result.Id.ToString();
+			} catch (Exception ex) {
+				throw new WebhookMongoException("Unable to add the given result to the database", ex);
+			}
+		}
+
+		/// <inheritdoc/>
+		public async Task<bool> DeleteAsync(TResult result, CancellationToken cancellationToken) {
+			try {
+				// TODO: verify that the result was registered in the context
+				Results.Remove(result);
+				await Results.Context.SaveChangesAsync(cancellationToken);
+
+				return true;
+			} catch (Exception ex) {
+				throw new WebhookMongoException("Unable to delete the result from the database", ex);
+			}
+		}
+
+		/// <inheritdoc/>
+		public async Task<TResult?> FindByIdAsync(string id, CancellationToken cancellationToken) {
+			if (string.IsNullOrWhiteSpace(id))
+				throw new ArgumentNullException(nameof(id));
+
+			if (!ObjectId.TryParse(id, out var objId))
+				throw new ArgumentException("The given id is not a valid ObjectId", nameof(id));
+
+			try {
+				return await Results.FindAsync(objId);
+			} catch (Exception ex) {
+				throw new WebhookMongoException("An error occurred while looking up for a result", ex);
+			}
+		}
+
+		/// <inheritdoc/>
+		public async Task<TResult?> FindByWebhookIdAsync(string webhookId, CancellationToken cancellationToken) {
 			cancellationToken.ThrowIfCancellationRequested();
 
-			var filter = Builders<TResult>.Filter.Eq(x => x.Webhook.WebhookId, webhookId);
-			filter = NormalizeFilter(filter);
+			try {
+				return await Results.AsQueryable().FirstOrDefaultAsync(x => x.Webhook.WebhookId == webhookId, cancellationToken);
+			} catch (Exception ex) {
+				throw new WebhookMongoException("Unable to query the database for results", ex);
+			}
 
-			var result = await Collection.FindAsync(filter, cancellationToken: cancellationToken);
-
-			return await result.FirstOrDefaultAsync(cancellationToken);
 		}
 	}
 }

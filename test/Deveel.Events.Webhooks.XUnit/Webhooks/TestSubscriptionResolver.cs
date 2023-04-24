@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace Deveel.Webhooks {
-	public class TestSubscriptionResolver : IWebhookSubscriptionResolver {
+    public class TestSubscriptionResolver : IWebhookSubscriptionResolver {
 		private readonly Dictionary<string, List<IWebhookSubscription>> subscriptions;
 
 		public TestSubscriptionResolver() {
@@ -14,9 +13,9 @@ namespace Deveel.Webhooks {
 		}
 
 		public void AddSubscription(IWebhookSubscription subscription) {
-			if (!subscriptions.TryGetValue(subscription.TenantId, out var list)) {
+			if (!subscriptions.TryGetValue(subscription.TenantId!, out var list)) {
 				list = new List<IWebhookSubscription>();
-				subscriptions.Add(subscription.TenantId, list);
+				subscriptions.Add(subscription.TenantId!, list);
 			}
 
 			list.Add(subscription);

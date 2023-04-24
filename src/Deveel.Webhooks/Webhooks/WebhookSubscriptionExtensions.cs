@@ -44,6 +44,10 @@ namespace Deveel.Webhooks {
 				};
 			}
 
+			if (!String.IsNullOrWhiteSpace(subscription.Format) &&
+				Enum.TryParse<WebhookFormat>(subscription.Format, true, out var format))
+				destination.Format = format;
+
 			// TODO: Add support for other options
 
 			return destination;

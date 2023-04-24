@@ -18,33 +18,76 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Deveel.Webhooks {
+	/// <summary>
+	/// An object that is used to configure the webhook services.
+	/// </summary>
+	/// <typeparam name="TSubscription"></typeparam>
 	public sealed class WebhookSubscriptionBuilder<TSubscription> where TSubscription : class, IWebhookSubscription {
+		/// <summary>
+		/// Initializes a new instance of the <see cref="WebhookSubscriptionBuilder{TSubscription}"/> class.
+		/// </summary>
+		/// <param name="services">
+		/// The collection of services that are used to configure the webhook services.
+		/// </param>
+		/// <remarks>
+		/// This constructor registers a set of default services that are used to
+		/// run a webhook service.
+		/// </remarks>
+		/// <exception cref="ArgumentNullException">
+		/// Thrown when the <paramref name="services"/> argument is <c>null</c>.
+		/// </exception>
 		public WebhookSubscriptionBuilder(IServiceCollection services) {
 			Services = services ?? throw new ArgumentNullException(nameof(services));
 
 			RegisterDefaults();
 		}
 
+		/// <summary>
+		/// Gets the collection of services that are used to configure the webhook subscription service.
+		/// </summary>
 		public IServiceCollection Services { get; }
 
 		private void RegisterDefaults() {
 			Services.TryAddScoped<WebhookSubscriptionManager<TSubscription>>();
-			Services.TryAddScoped<MultiTenantWebhookSubscriptionManager<TSubscription>>();
-
 			Services.TryAddSingleton<IWebhookSubscriptionValidator<TSubscription>, WebhookSubscriptionValidator<TSubscription>>();
-			Services.TryAddSingleton<IMultiTenantWebhookSubscriptionValidator<TSubscription>, MultiTenantWebhookSubscriptionValidator<TSubscription>>();
 
-			Services.TryAddScoped<IWebhookSubscriptionResolver, DefaultWebhookSubscriptionResolver<TSubscription>>();
+			Services.TryAddScoped<IWebhookSubscriptionResolver, WebhookSubscriptionResolver<TSubscription>>();
 		}
 
+		/// <summary>
+		/// Adds the notification capabilities to the service.
+		/// </summary>
+		/// <typeparam name="TWebhook">
+		/// The type of the webhook that is notified the subscribers.
+		/// </typeparam>
+		/// <param name="configure">
+		/// A callback that is used to configure the webhook notifier.
+		/// </param>
+		/// <returns>
+		/// Returns this instance of the <see cref="WebhookSubscriptionBuilder{TSubscription}"/>.
+		/// </returns>
+		/// <seealso cref="IWebhookNotifier{TWebhook}"/>
 		public WebhookSubscriptionBuilder<TSubscription> UseNotifier<TWebhook>(Action<WebhookNotifierBuilder<TWebhook>> configure)
 			where TWebhook : class, IWebhook {
-			Services.AddWebhookNotifier<TWebhook>(configure);
+			Services.AddWebhookNotifier(configure);
 
 			return this;
 		}
 
-		public WebhookSubscriptionBuilder<TSubscription> UseManager<TManager>(ServiceLifetime lifetime = ServiceLifetime.Scoped)
+		/// <summary>
+		/// Registers a custom <see cref="WebhookSubscriptionManager{TSubscription}"/>
+		/// that overrides the default one.
+		/// </summary>
+		/// <typeparam name="TManager">
+		/// The type of the manager that is used to manage the webhook subscriptions.
+		/// </typeparam>
+		/// <param name="lifetime">
+		/// The service lifetime of the manager to be registered.
+		/// </param>
+		/// <returns>
+		/// Returns this instance of the <see cref="WebhookSubscriptionBuilder{TSubscription}"/>.
+		/// </returns>
+		public WebhookSubscriptionBuilder<TSubscription> UseSubscriptionManager<TManager>(ServiceLifetime lifetime = ServiceLifetime.Scoped)
 			where TManager : WebhookSubscriptionManager<TSubscription> {
 
 			Services.TryAdd(new ServiceDescriptor(typeof(WebhookSubscriptionManager<TSubscription>), typeof(TManager), lifetime));
@@ -55,11 +98,28 @@ namespace Deveel.Webhooks {
 			return this;
 		}
 
-		public WebhookSubscriptionBuilder<TSubscription> UseManager()
-			=> UseManager<WebhookSubscriptionManager<TSubscription>>();
+		/// <summary>
+		/// Registers the default <see cref="WebhookSubscriptionManager{TSubscription}"/>
+		/// </summary>
+		/// <returns>
+		/// Returns this instance of the <see cref="WebhookSubscriptionBuilder{TSubscription}"/>.
+		/// </returns>
+		public WebhookSubscriptionBuilder<TSubscription> UseSubscriptionManager()
+			=> UseSubscriptionManager<WebhookSubscriptionManager<TSubscription>>();
 
-
-		public WebhookSubscriptionBuilder<TSubscription> AddValidator<TValidator>(ServiceLifetime lifetime = ServiceLifetime.Singleton)
+		/// <summary>
+		/// Adds a validator of webhook subscriptions.
+		/// </summary>
+		/// <typeparam name="TValidator">
+		/// The type of the validator that is used to validate the webhook subscriptions.
+		/// </typeparam>
+		/// <param name="lifetime">
+		/// The service lifetime of the validator to be registered.
+		/// </param>
+		/// <returns>
+		/// Returns this instance of the <see cref="WebhookSubscriptionBuilder{TSubscription}"/>.
+		/// </returns>
+		public WebhookSubscriptionBuilder<TSubscription> AddSubscriptionValidator<TValidator>(ServiceLifetime lifetime = ServiceLifetime.Singleton)
 			where TValidator : class, IWebhookSubscriptionValidator<TSubscription> {
 			Services.Add(new ServiceDescriptor(typeof(IWebhookSubscriptionValidator<TSubscription>), typeof(TValidator), lifetime));
 			Services.Add(new ServiceDescriptor(typeof(TValidator), typeof(TValidator), lifetime));

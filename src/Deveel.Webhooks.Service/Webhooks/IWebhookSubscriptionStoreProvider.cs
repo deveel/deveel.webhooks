@@ -15,8 +15,25 @@
 using System;
 
 namespace Deveel.Webhooks {
+	/// <summary>
+	/// A service that resolves a store of webhook subscriptions 
+	/// for a given tenant
+	/// </summary>
+	/// <typeparam name="TSubscription">
+	/// The type of subscription that is stored in the store
+	/// </typeparam>
 	public interface IWebhookSubscriptionStoreProvider<TSubscription>
 		where TSubscription : class, IWebhookSubscription {
+		/// <summary>
+		/// Gets the store for the given tenant
+		/// </summary>
+		/// <param name="tenantId">
+		/// The unique identifier of the tenant owning the store.
+		/// </param>
+		/// <returns>
+		/// Returns an instance of <see cref="IWebhookSubscriptionStore{TSubscription}"/>
+		/// that is used to store the subscriptions for the given tenant.
+		/// </returns>
 		IWebhookSubscriptionStore<TSubscription> GetTenantStore(string tenantId);
 	}
 }

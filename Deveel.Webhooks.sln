@@ -35,7 +35,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Deveel.Webhooks.Sender.Newt
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Deveel.Webhooks.Signers", "src\Deveel.Webhooks.Signers\Deveel.Webhooks.Signers.csproj", "{6D6057E9-117F-4B13-80E7-4C18B3905AEB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Deveel.Webhooks.MongoDb.XUnit", "test\Deveel.Webhooks.MongoDb.XUnit\Deveel.Webhooks.MongoDb.XUnit.csproj", "{D61BAD7A-7B8A-4413-A0D0-8F52EE81A0B0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Deveel.Webhooks.MongoDb.XUnit", "test\Deveel.Webhooks.MongoDb.XUnit\Deveel.Webhooks.MongoDb.XUnit.csproj", "{D61BAD7A-7B8A-4413-A0D0-8F52EE81A0B0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

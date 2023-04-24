@@ -23,7 +23,7 @@ using Xunit.Abstractions;
 namespace Deveel.Webhooks {
 	public class WebhookReceiveRequestTests : IDisposable {
 		private readonly WebApplicationFactory<Program> appFactory;
-		private TestWebhook lastWebhook;
+		private TestWebhook? lastWebhook;
 
 		public WebhookReceiveRequestTests(ITestOutputHelper outputHelper) {
 			appFactory = new WebApplicationFactory<Program>()

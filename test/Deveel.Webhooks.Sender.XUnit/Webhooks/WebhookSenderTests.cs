@@ -30,7 +30,7 @@ namespace Deveel.Webhooks {
 			var retryTimeoutMs = 500;
 
 			Func<HttpRequestMessage, Task<TestWebhook>> readContent = async request => {
-				TestWebhook webhook;
+				TestWebhook? webhook;
 
 				if (request.Content!.Headers!.ContentType!.MediaType == "application/json") {
 					webhook = await request.Content!.ReadFromJsonAsync<TestWebhook>();

@@ -17,7 +17,25 @@ using System.Threading.Tasks;
 using System.Threading;
 
 namespace Deveel.Webhooks {
+	/// <summary>
+	/// Provides a contract for a store of webhook subscriptions that can be paged.
+	/// </summary>
+	/// <typeparam name="TSubscription">
+	/// The type of webhook subscription that is handled by the store.
+	/// </typeparam>
 	public interface IWebhookSubscriptionPagedStore<TSubscription> : IWebhookSubscriptionStore<TSubscription> where TSubscription : class, IWebhookSubscription {
+		/// <summary>
+		/// Gets a page of subscriptions that match the given query.
+		/// </summary>
+		/// <param name="query">
+		/// The query to execute to get the page of subscriptions.
+		/// </param>
+		/// <param name="cancellationToken">
+		/// A cancellation token used to cancel the operation.
+		/// </param>
+		/// <returns>
+		/// Returns a page of subscriptions that match the given query.
+		/// </returns>
 		Task<PagedResult<TSubscription>> GetPageAsync(PagedQuery<TSubscription> query, CancellationToken cancellationToken);
 	}
 }

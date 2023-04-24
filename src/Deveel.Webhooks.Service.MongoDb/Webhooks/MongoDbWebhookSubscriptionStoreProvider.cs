@@ -12,24 +12,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-
-using Deveel.Data;
+using Finbuckle.MultiTenant;
 
 using Microsoft.Extensions.Options;
 
 namespace Deveel.Webhooks {
-	public class MongoDbWebhookSubscriptionStoreProvider : MongoDbWebhookSubscriptionStoreProvider<MongoDbWebhookSubscription>,
-							IWebhookSubscriptionStoreProvider<MongoDbWebhookSubscription> {
-		public MongoDbWebhookSubscriptionStoreProvider(IOptions<MongoDbOptions> baseOptions) : base(baseOptions) {
+	/// <summary>
+	/// A default implementation of the <see cref="IWebhookSubscriptionStoreProvider{TSubscription}"/>
+	/// </summary>
+	/// <typeparam name="TTenantInfo">
+	/// The type of the tenant information.
+	/// </typeparam>
+    public class MongoDbWebhookSubscriptionStoreProvider<TTenantInfo> : MongoDbWebhookSubscriptionStoreProvider<TTenantInfo, MongoWebhookSubscription>,
+							IWebhookSubscriptionStoreProvider<MongoWebhookSubscription>
+		where TTenantInfo : class, ITenantInfo, new() {
+		/// <inheritdoc/>
+		public MongoDbWebhookSubscriptionStoreProvider(IOptions<MongoDbWebhookOptions> options, IMultiTenantStore<TTenantInfo> tenantStore) 
+			: base(options, tenantStore) {
 		}
-
-		public MongoDbWebhookSubscriptionStoreProvider(MongoDbOptions baseOptions) : base(baseOptions) {
-		}
-
-		protected override MongoDbStoreBase<MongoDbWebhookSubscription> CreateStore(MongoDbOptions options) => new MongoDbWebhookSubscriptionStrore(options);
-
-		IWebhookSubscriptionStore<MongoDbWebhookSubscription> IWebhookSubscriptionStoreProvider<MongoDbWebhookSubscription>.GetTenantStore(string tenantId)
-			=> (IWebhookSubscriptionStore<MongoDbWebhookSubscription>)GetStore(tenantId);
 	}
 }

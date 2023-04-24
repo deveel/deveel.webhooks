@@ -477,6 +477,15 @@
             otherwise <c>false</c>.
             </returns>
         </member>
+        <member name="M:Deveel.Webhooks.WebhookFilter.Equals(System.Object)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Deveel.Webhooks.WebhookFilter.Equals(Deveel.Webhooks.IWebhookFilter)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Deveel.Webhooks.WebhookFilter.GetHashCode">
+            <inheritdoc/>
+        </member>
         <member name="T:Deveel.Webhooks.WebhookFilterExtensions">
             <summary>
             Extens the <see cref="T:Deveel.Webhooks.IWebhookFilter"/> to add some utility methods.
@@ -985,6 +994,86 @@
             set to <see cref="F:Microsoft.Extensions.DependencyInjection.ServiceLifetime.Scoped"/>).
             </param>
             <returns></returns>
+        </member>
+        <member name="T:Deveel.Webhooks.WebhooksBuilder`1">
+            <summary>
+            An object that is used to configure the webhooks service,
+            providing a fluent API to configure the sub-services.
+            </summary>
+            <typeparam name="TWebhook">
+            The type of the webhook that is handled by the service.
+            </typeparam>
+            <remarks>
+            <para>
+            The main goal of this class is to provide a fluent API to configure
+            other services, such as the <see cref="T:Deveel.Webhooks.IWebhookNotifier`1"/>,
+            the <see cref="T:Deveel.Webhooks.IWebhookSender`1"/>, aligning them in the
+            bounded context of the given <typeparamref name="TWebhook"/>.
+            </para>
+            <para>
+            This class is aiming to provide consistency in the configuration
+            process of the webhooks service, by providing a single entry point
+            for the configuration of the sub-services.
+            </para>
+            </remarks>
+        </member>
+        <member name="M:Deveel.Webhooks.WebhooksBuilder`1.#ctor(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            Constructs the <see cref="T:Deveel.Webhooks.WebhooksBuilder`1"/> instance
+            </summary>
+            <param name="services">
+            The service collection that is used to register the services
+            </param>
+            <exception cref="T:System.ArgumentNullException">
+            Thrown when the given <paramref name="services"/> is <c>null</c>
+            </exception>
+        </member>
+        <member name="P:Deveel.Webhooks.WebhooksBuilder`1.Services">
+            <summary>
+            Gets the service collection that is used to register the services
+            </summary>
+        </member>
+        <member name="M:Deveel.Webhooks.WebhooksBuilder`1.AddNotifier">
+            <summary>
+            Adds the notifier service to the webhooks service.
+            </summary>
+            <returns>
+            Returns a <see cref="T:Deveel.Webhooks.WebhookNotifierBuilder`1"/> instance that
+            can be used to configure the notifier service.
+            </returns>
+        </member>
+        <member name="M:Deveel.Webhooks.WebhooksBuilder`1.AddNotifier(System.Action{Deveel.Webhooks.WebhookNotifierBuilder{`0}})">
+            <summary>
+            Adds the notifier service to the webhooks service.
+            </summary>
+            <param name="configure">
+            A function that is used to configure the notifier service.
+            </param>
+            <returns>
+            Returns the current <see cref="T:Deveel.Webhooks.WebhooksBuilder`1"/> instance
+            for chaining.
+            </returns>
+        </member>
+        <member name="M:Deveel.Webhooks.WebhooksBuilder`1.AddSender">
+            <summary>
+            Adds the sender service to the webhooks service.
+            </summary>
+            <returns>
+            Returns a <see cref="T:Deveel.Webhooks.WebhookSenderBuilder`1"/> instance that
+            can be used to configure the sender service.
+            </returns>
+        </member>
+        <member name="M:Deveel.Webhooks.WebhooksBuilder`1.AddSender(System.Action{Deveel.Webhooks.WebhookSenderBuilder{`0}})">
+            <summary>
+            Adds the sender service to the webhooks service.
+            </summary>
+            <param name="configure">
+            A function that is used to configure the sender service.
+            </param>
+            <returns>
+            Returns the current <see cref="T:Deveel.Webhooks.WebhooksBuilder`1"/> instance
+            for chaining.
+            </returns>
         </member>
         <member name="T:Deveel.Webhooks.WebhookSubscriptionExtensions">
             <summary>

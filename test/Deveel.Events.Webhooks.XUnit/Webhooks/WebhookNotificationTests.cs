@@ -27,8 +27,8 @@ namespace Deveel.Webhooks {
 		private TestSubscriptionResolver subscriptionResolver;
 		private IWebhookNotifier<Webhook> notifier;
 
-		private Webhook lastWebhook;
-		private HttpResponseMessage testResponse;
+		private Webhook? lastWebhook;
+		private HttpResponseMessage? testResponse;
 
 		public WebhookNotificationTests(ITestOutputHelper outputHelper) : base(outputHelper) {
 			notifier = Services.GetRequiredService<IWebhookNotifier<Webhook>>();
@@ -37,7 +37,7 @@ namespace Deveel.Webhooks {
 
 		protected override void ConfigureWebhookService(WebhookSubscriptionBuilder<TestWebhookSubscription> builder) {
 			builder
-				.UseManager()
+				.UseSubscriptionManager()
 				.UseNotifier<Webhook>(config => config
 					.UseWebhookFactory<DefaultWebhookFactory>()
 					.AddDataTranformer<TestDataFactory>()
@@ -56,7 +56,7 @@ namespace Deveel.Webhooks {
 					return new HttpResponseMessage(HttpStatusCode.RequestTimeout);
 				}
 
-				lastWebhook = await httpRequest.Content.ReadFromJsonAsync<Webhook>();
+				lastWebhook = await httpRequest.Content!.ReadFromJsonAsync<Webhook>();
 
 				if (testResponse != null)
 					return testResponse;
@@ -67,30 +67,23 @@ namespace Deveel.Webhooks {
 			}
 		}
 
-		private string CreateSubscription(string name, string eventType, params IWebhookFilter[] filters) {
-			return CreateSubscription(new WebhookSubscriptionInfo(eventType, "https://callback.example.com/webhook") {
+		private string CreateSubscription(string name, string eventType, params WebhookFilter[] filters) {
+			return CreateSubscription(new TestWebhookSubscription { 
+				EventTypes = new[] { eventType }, 
+				DestinationUrl = "https://callback.example.com/webhook",
 				Name = name,
 				RetryCount = 3,
-				Filters = filters
+				Filters = filters,
+				Status = WebhookSubscriptionStatus.Active,
+				CreatedAt = DateTimeOffset.UtcNow
 			}, true);
 		}
 
-		private string CreateSubscription(WebhookSubscriptionInfo subscriptionInfo, bool enabled = true) {
+		private string CreateSubscription(TestWebhookSubscription subscription, bool enabled = true) {
 			var id = Guid.NewGuid().ToString();
-			var subscription = new TestWebhookSubscription {
-				SubscriptionId = id,
-				Name = subscriptionInfo.Name,
-				TenantId = tenantId,
-				DestinationUrl = subscriptionInfo.DestinationUrl.ToString(),
-				EventTypes = subscriptionInfo.EventTypes,
-				Filters = subscriptionInfo.Filters,
-				Status = enabled ? WebhookSubscriptionStatus.Active : WebhookSubscriptionStatus.Suspended,
-				RetryCount = subscriptionInfo.RetryCount,
-				Headers = subscriptionInfo.Headers,
-				CreatedAt = DateTimeOffset.UtcNow,
-				Secret = subscriptionInfo.Secret,
-				Metadata = subscriptionInfo.Metadata
-			};
+
+			subscription.SubscriptionId = id;
+			subscription.TenantId = tenantId;
 
 			subscriptionResolver.AddSubscription(subscription);
 
@@ -115,9 +108,9 @@ namespace Deveel.Webhooks {
 			Assert.NotEmpty(result.Successful);
 			Assert.Empty(result.Failed);
 
-			Assert.Single(result[subscriptionId]);
+			Assert.Single(result[subscriptionId]!);
 
-			var webhookResult = result[subscriptionId][0];
+			var webhookResult = result[subscriptionId]![0];
 
 			Assert.Equal(subscriptionId, webhookResult.Webhook.SubscriptionId);
 			Assert.True(webhookResult.Successful);
@@ -153,14 +146,15 @@ namespace Deveel.Webhooks {
 			Assert.NotEmpty(result.Successful);
 			Assert.Empty(result.Failed);
 
-			Assert.Single(result[subscriptionId]);
+			Assert.Single(result[subscriptionId]!);
 
-			var webhookResult = result[subscriptionId][0];
+			var webhookResult = result[subscriptionId]![0];
 
 			Assert.Equal(subscriptionId, webhookResult.Webhook.SubscriptionId);
 			Assert.True(webhookResult.HasAttempted);
 			Assert.True(webhookResult.Successful);
 			Assert.Single(webhookResult.Attempts);
+			Assert.NotNull(webhookResult.LastAttempt);
 			Assert.True(webhookResult.LastAttempt.HasResponse);
 
 			Assert.NotNull(lastWebhook);
@@ -191,9 +185,10 @@ namespace Deveel.Webhooks {
 			Assert.NotEmpty(result);
 			Assert.Single(result);
 
-			Assert.Single(result[subscriptionId]);
+			Assert.NotNull(result[subscriptionId]);
+			Assert.Single(result[subscriptionId]!);
 
-			var webhookResult = result[subscriptionId][0];
+			var webhookResult = result[subscriptionId]![0];
 
 			Assert.Equal(subscriptionId, webhookResult.Webhook.SubscriptionId);
 			Assert.True(webhookResult.Successful);
@@ -208,7 +203,7 @@ namespace Deveel.Webhooks {
 
 		[Fact]
 		public async Task DeliverWebhookWithoutFilter() {
-			var subscriptionId = CreateSubscription("Data Created", "data.created", null);
+			var subscriptionId = CreateSubscription("Data Created", "data.created");
 			var notification = new EventInfo("test", "data.created", new {
 				creationTime = DateTimeOffset.UtcNow,
 				type = "test"
@@ -220,9 +215,10 @@ namespace Deveel.Webhooks {
 			Assert.NotEmpty(result);
 			Assert.Single(result);
 
-			Assert.Single(result[subscriptionId]);
+			Assert.NotNull(result[subscriptionId]);
+			Assert.Single(result[subscriptionId]!);
 
-			var webhookResult = result[subscriptionId][0];
+			var webhookResult = result[subscriptionId]![0];
 
 			Assert.Equal(subscriptionId, webhookResult.Webhook.SubscriptionId);
 			Assert.True(webhookResult.Successful);
@@ -236,11 +232,14 @@ namespace Deveel.Webhooks {
 
 		[Fact]
 		public async Task DeliverSignedWebhookFromEvent() {
-			var subscriptionId = CreateSubscription(new WebhookSubscriptionInfo("data.created", "https://callback.example.com") {
-				Filter = new WebhookFilter("hook.data.data_type == \"test-data\"", "linq"),
+			var subscriptionId = CreateSubscription(new TestWebhookSubscription { 
+				EventTypes = new[] { "data.created" },
+				DestinationUrl = "https://callback.example.com",
+				Filters = new[] { new WebhookFilter("hook.data.data_type == \"test-data\"", "linq") },
 				Name = "Data Created",
 				Secret = "abc12345",
-				RetryCount = 3
+				RetryCount = 3,
+				Status = WebhookSubscriptionStatus.Active
 			});
 
 			var notification = new EventInfo("test", "data.created", new {
@@ -254,9 +253,10 @@ namespace Deveel.Webhooks {
 			Assert.NotEmpty(result);
 			Assert.Single(result);
 
-			Assert.Single(result[subscriptionId]);
+			Assert.NotNull(result[subscriptionId]);
+			Assert.Single(result[subscriptionId]!);
 
-			var webhookResult = result[subscriptionId][0];
+			var webhookResult = result[subscriptionId]![0];
 
 			Assert.Equal(subscriptionId, webhookResult.Webhook.SubscriptionId);
 			Assert.True(webhookResult.Successful);
@@ -286,9 +286,10 @@ namespace Deveel.Webhooks {
 			Assert.NotEmpty(result.Failed);
 			Assert.True(result.HasFailed);
 
-			Assert.Single(result[subscriptionId]);
+			Assert.NotNull(result[subscriptionId]);
+			Assert.Single(result[subscriptionId]!);
 
-			var webhookResult = result[subscriptionId][0];
+			var webhookResult = result[subscriptionId]![0];
 
 			Assert.Equal(subscriptionId, webhookResult.Webhook.SubscriptionId);
 			Assert.False(webhookResult.Successful);
@@ -312,9 +313,10 @@ namespace Deveel.Webhooks {
 			Assert.NotEmpty(result);
 			Assert.Single(result);
 
-			Assert.Single(result[subscriptionId]);
+			Assert.NotNull(result[subscriptionId]);
+			Assert.Single(result[subscriptionId]!);
 
-			var webhookResult = result[subscriptionId][0];
+			var webhookResult = result[subscriptionId]![0];
 
 			Assert.Equal(subscriptionId, webhookResult.Webhook.SubscriptionId);
 			Assert.False(webhookResult.Successful);
@@ -340,7 +342,7 @@ namespace Deveel.Webhooks {
 
 		[Fact]
 		public async Task NoTenantMatches() {
-			var subscriptionId = CreateSubscription("Data Created", "data.created", new WebhookFilter("hook.data.data_type == \"test-data\"", "linq"));
+			CreateSubscription("Data Created", "data.created", new WebhookFilter("hook.data.data_type == \"test-data\"", "linq"));
 			var notification = new EventInfo("test", "data.created", new { 
 				creationTime = DateTimeOffset.UtcNow, 
 				type = "test" 

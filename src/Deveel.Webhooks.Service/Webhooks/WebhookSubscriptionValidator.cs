@@ -13,33 +13,50 @@
 // limitations under the License.
 
 using System;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Deveel.Webhooks {
+	/// <summary>
+	/// A default implementation of the <see cref="IWebhookSubscriptionValidator{TSubscription}"/>
+	/// </summary>
+	/// <typeparam name="TSubscription">
+	/// The type of the subscription that is validated.
+	/// </typeparam>
 	public class WebhookSubscriptionValidator<TSubscription> : IWebhookSubscriptionValidator<TSubscription> where TSubscription : class, IWebhookSubscription {
-		public virtual Task<WebhookValidationResult> ValidateAsync(WebhookSubscriptionManager<TSubscription> manager, TSubscription subscription, CancellationToken cancellationToken) {
+		/// <summary>
+		/// Validates the given <paramref name="subscription"/> to have
+		/// the required properties to be registered
+		/// </summary>
+		/// <param name="manager">
+		/// The manager that is used to validate the subscription
+		/// </param>
+		/// <param name="subscription">
+		/// The webhook subscription entity to validate
+		/// </param>
+		/// <param name="cancellationToken">
+		/// A cancellation token used to cancel the validation
+		/// </param>
+		/// <returns>
+		/// Returns a <see cref="WebhookValidationResult"/> that indicates
+		/// whether the subscription is valid or not.
+		/// </returns>
+		public virtual async Task<WebhookValidationResult> ValidateAsync(WebhookSubscriptionManager<TSubscription> manager, TSubscription subscription, CancellationToken cancellationToken) {
 			cancellationToken.ThrowIfCancellationRequested();
 
-			var result = Validate(manager, subscription);
+            if (String.IsNullOrWhiteSpace(subscription.DestinationUrl))
+                return WebhookValidationResult.Failed("The destination URL of the webhook is missing");
 
-			return Task.FromResult(result);
-		}
+            if (!Uri.TryCreate(subscription.DestinationUrl, UriKind.Absolute, out var url))
+                return WebhookValidationResult.Failed("The destination URL format is invalid");
 
-		public virtual WebhookValidationResult Validate(WebhookSubscriptionManager<TSubscription> manager, TSubscription subscription) {
-			if (String.IsNullOrWhiteSpace(subscription.DestinationUrl))
-				return WebhookValidationResult.Failed("The destination URL of the webhook is missing");
+            // TODO: obtain the configuration of supported delivery channels: for the moment only HTTP(S)
+            // in future implementations we might extend this to support more channels
+            if (url.Scheme != Uri.UriSchemeHttps &&
+                url.Scheme != Uri.UriSchemeHttp)
+                return WebhookValidationResult.Failed($"URL scheme '{url.Scheme}' not supported");
 
-			if (!Uri.TryCreate(subscription.DestinationUrl, UriKind.Absolute, out var url))
-				return WebhookValidationResult.Failed("The destination URL format is invalid");
+			await Task.CompletedTask;
 
-			// TODO: obtain the configuration of supported delivery channels: for the moment only HTTP(S)
-			// in future implementations we might extend this to support more channels
-			if (url.Scheme != Uri.UriSchemeHttps &&
-				url.Scheme != Uri.UriSchemeHttp)
-				return WebhookValidationResult.Failed($"URL scheme '{url.Scheme}' not supported");
-
-			return WebhookValidationResult.Success;
+            return WebhookValidationResult.Success;
 		}
 	}
 }

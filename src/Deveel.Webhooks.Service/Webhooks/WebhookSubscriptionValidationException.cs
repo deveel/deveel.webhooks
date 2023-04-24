@@ -20,16 +20,32 @@ namespace Deveel.Webhooks {
 	/// of a webhook subscription to be created or updated
 	/// </summary>
 	public class WebhookSubscriptionValidationException : WebhookServiceException {
-		public WebhookSubscriptionValidationException(string[] errors = null) : this("The webhook subscription is invalid", errors) {
+		/// <summary>
+		/// Constructs a new instance of the exception
+		/// </summary>
+		/// <param name="errors">
+		/// An array of errors that occurred during the validation
+		/// </param>
+		public WebhookSubscriptionValidationException(string[]? errors = null) 
+			: this("The webhook subscription is invalid", errors) {
 		}
 
-		public WebhookSubscriptionValidationException(string message, string[] errors = null) : base(message) {
+		/// <summary>
+		/// Constructs a new instance of the exception
+		/// </summary>
+		/// <param name="message">
+		/// A message describing the overall exception
+		/// </param>
+		/// <param name="errors">
+		/// An array of errors that occurred during the validation
+		/// </param>
+		public WebhookSubscriptionValidationException(string message, string[]? errors = null) : base(message) {
 			Errors = errors;
 		}
 
 		/// <summary>
 		/// Gets a set of errors during the validation of the subscription
 		/// </summary>
-		public string[] Errors { get; }
+		public string[]? Errors { get; }
 	}
 }

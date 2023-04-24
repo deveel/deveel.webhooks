@@ -1,48 +1,53 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
-    <VersionPrefix>2.0.1</VersionPrefix>
-    <RootNamespace>Deveel</RootNamespace>
-    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-    <Authors>antonello</Authors>
-    <Company>Deveel AS</Company>
-    <Description>An implementation of the Deveel Webhooks storage layer based on MongoDb</Description>
-    <Copyright>Copyright (C) 2021-2023 Deveel AS</Copyright>
-    <PackageLicenseFile>LICENSE</PackageLicenseFile>
-    <PackageProjectUrl>https://deveel.com</PackageProjectUrl>
-    <PackageIcon>deveel-logo.png</PackageIcon>
-    <RepositoryUrl>https://github.com/deveel/deveel.webhooks</RepositoryUrl>
-    <RepositoryType>git</RepositoryType>
-    <PackageTags>webhook data mongodb mongo events event</PackageTags>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net6.0</TargetFramework>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<VersionPrefix>2.0.1</VersionPrefix>
+		<RootNamespace>Deveel</RootNamespace>
+		<GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+		<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+		<Authors>antonello</Authors>
+		<Company>Deveel AS</Company>
+		<Description>An implementation of the Deveel Webhooks storage layer based on MongoDb</Description>
+		<Copyright>Copyright (C) 2021-2023 Deveel AS</Copyright>
+		<PackageLicenseFile>LICENSE</PackageLicenseFile>
+		<PackageProjectUrl>https://deveel.com</PackageProjectUrl>
+		<PackageIcon>deveel-logo.png</PackageIcon>
+		<RepositoryUrl>https://github.com/deveel/deveel.webhooks</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
+		<PackageTags>webhook data mongodb mongo events event</PackageTags>
+		<DocumentationFile>./Deveel.Webhooks.MongoDb.xml</DocumentationFile>
+		<GenerateDocumentationFile>true</GenerateDocumentationFile>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <Compile Remove="Webhooks\MongoDbWebhookStorageBuilderImpl.cs" />
-  </ItemGroup>
+	<ItemGroup>
+		<Compile Remove="Webhooks\MongoDbWebhookStorageBuilderImpl.cs" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <None Include="..\..\deveel-logo.png">
-      <Pack>True</Pack>
-      <PackagePath></PackagePath>
-    </None>
-    <None Include="..\..\LICENSE">
-      <Pack>True</Pack>
-      <PackagePath></PackagePath>
-    </None>
-  </ItemGroup>
+	<ItemGroup>
+		<None Include="..\..\deveel-logo.png">
+			<Pack>True</Pack>
+			<PackagePath></PackagePath>
+		</None>
+		<None Include="..\..\LICENSE">
+			<Pack>True</Pack>
+			<PackagePath></PackagePath>
+		</None>
+	</ItemGroup>
 
 	<ItemGroup>
 		<None Include="..\..\apl-2.licenseheader" Link="apl-2.licenseheader" />
 	</ItemGroup>
 
 	<ItemGroup>
-    <PackageReference Include="MongoDB.Driver" Version="2.19.1" />
-  </ItemGroup>
+		<PackageReference Include="Finbuckle.MultiTenant" Version="6.10.0" />
+		<PackageReference Include="MongoFramework" Version="0.28.1" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\Deveel.Webhooks.Service\Deveel.Webhooks.Service.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\Deveel.Webhooks.Service\Deveel.Webhooks.Service.csproj" />
+	</ItemGroup>
 
 </Project>

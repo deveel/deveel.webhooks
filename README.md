@@ -21,12 +21,12 @@ The libraries currently provided by the framework are the following:
 
 | Library                                 | Description                                                                                                          | NuGet                                                                  | GitHub (prerelease) |
 | ----------------------------------------| ---------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------- |---------------------|
-| **Deveel.Webhooks**                     | Provides the capabilities to handle webhook subscriptions and notifications                                          | ![Nuget](https://img.shields.io/nuget/dt/Deveel.Webhooks?label=Deveel.Webhooks&logo=nuget) | [![GitHub](https://img.shields.io/static/v1?label=Deveel.Webhooks&message=Pre-Release&color=yellow&logo=github)](https://github.com/deveel/deveel.webhooks/pkgs/nuget/Deveel.Webhooks) |
-| **Deveel.Webhooks.Sender**              | Provides services and functions to send webhooks to remote endpoints                                                 | ![Nuget](https://img.shields.io/nuget/dt/Deveel.Webhooks.Sender?label=Deveel.Webhooks.Sender&logo=nuget) | [![GitHub](https://img.shields.io/static/v1?label=Deveel.Webhooks.Sender&message=Pre-Release&color=yellow&logo=github)](https://github.com/deveel/deveel.webhooks/pkgs/nuget/Deveel.Webhooks.Service) |
-| **Deveel.Webhooks.Service**             | Implements the functions to manage and resolve webhook subscriptions                                                 | ![Nuget](https://img.shields.io/nuget/dt/Deveel.Webhooks.Service?label=Deveel.Webhooks.Service&logo=nuget)| [![GitHub](https://img.shields.io/static/v1?label=Deveel.Webhooks.Service&message=Pre-Release&color=yellow&logo=github)](https://github.com/deveel/deveel.webhooks/pkgs/nuget/Deveel.Webhooks.Service) |
-| **Deveel.Webhooks.MongoDb**             | An implementation of the webhoom management data layer that is backed by [MongoDB](https://mongodb.com) databases    | ![Nuget](https://img.shields.io/nuget/dt/Deveel.Webhooks.MongoDb?label=Deveel.Webhooks.MongoDb&logo=nuget) | [![GitHub](https://img.shields.io/static/v1?label=Deveel.Webhooks.MongoDb&message=Pre-Release&color=yellow&logo=github)](https://github.com/deveel/deveel.webhooks/pkgs/nuget/Deveel.Webhooks.MongoDb) |
-| **Deveel.Webhooks.DynamicLinq**         | The webhook subscription filtering engine that uses the [Dynamic LINQ](https://dynamic-linq.net/) expressions        | ![Nuget](https://img.shields.io/nuget/dt/Deveel.Webhooks.DynamicLinq?label=Deveel.Webhooks.DynamicLinq&logo=nuget) | [![GitHub](https://img.shields.io/static/v1?label=Deveel.Webhooks.DynamicLinq&message=Pre-Release&color=yellow&logo=github)](https://github.com/deveel/deveel.webhooks/pkgs/nuget/Deveel.Webhooks.DynamicLinq) |
-| **Deveel.Webhooks.Receiver.AspNetCore** | An implementation of the webhook receiver that is backed by [ASP.NET Core](https://dotnet.microsoft.com/apps/aspnet) | ![Nuget](https://img.shields.io/nuget/dt/Deveel.Webhooks?label=Deveel.Webhooks.Receiver.AspNetCore&logo=nuget) | [![GitHub](https://img.shields.io/static/v1?label=Deveel.Webhooks.Receiver.AspNetCore&message=Pre-Release&color=yellow&logo=github)](https://github.com/deveel/deveel.webhooks/pkgs/nuget/Deveel.Webhooks.Receiver.AspNetCore) |
+| **Deveel.Webhooks**                     | Provides the capabilities to handle webhook subscriptions and notifications                                          | ![Nuget](https://img.shields.io/nuget/dt/Deveel.Webhooks?label=NuGet&logo=nuget) | [![GitHub](https://img.shields.io/static/v1?label=GitHub&message=Pre-Release&color=yellow&logo=github)](https://github.com/deveel/deveel.webhooks/pkgs/nuget/Deveel.Webhooks) |
+| **Deveel.Webhooks.Sender**              | Provides services and functions to send webhooks to remote endpoints                                                 | ![Nuget](https://img.shields.io/nuget/dt/Deveel.Webhooks.Sender?label=NuGet&logo=nuget) | [![GitHub](https://img.shields.io/static/v1?label=GitHub&message=Pre-Release&color=yellow&logo=github)](https://github.com/deveel/deveel.webhooks/pkgs/nuget/Deveel.Webhooks.Sender) |
+| **Deveel.Webhooks.Service**             | Implements the functions to manage and resolve webhook subscriptions                                                 | ![Nuget](https://img.shields.io/nuget/dt/Deveel.Webhooks.Service?label=NuGet&logo=nuget)| [![GitHub](https://img.shields.io/static/v1?label=NuGet&message=Pre-Release&color=yellow&logo=github)](https://github.com/deveel/deveel.webhooks/pkgs/nuget/Deveel.Webhooks.Service) |
+| **Deveel.Webhooks.MongoDb**             | An implementation of the webhoom management data layer that is backed by [MongoDB](https://mongodb.com) databases    | ![Nuget](https://img.shields.io/nuget/dt/Deveel.Webhooks.MongoDb?label=NuGet&logo=nuget) | [![GitHub](https://img.shields.io/static/v1?label=GitHub&message=Pre-Release&color=yellow&logo=github)](https://github.com/deveel/deveel.webhooks/pkgs/nuget/Deveel.Webhooks.MongoDb) |
+| **Deveel.Webhooks.DynamicLinq**         | The webhook subscription filtering engine that uses the [Dynamic LINQ](https://dynamic-linq.net/) expressions        | ![Nuget](https://img.shields.io/nuget/dt/Deveel.Webhooks.DynamicLinq?label=NuGet&logo=nuget) | [![GitHub](https://img.shields.io/static/v1?label=GitHub&message=Pre-Release&color=yellow&logo=github)](https://github.com/deveel/deveel.webhooks/pkgs/nuget/Deveel.Webhooks.DynamicLinq) |
+| **Deveel.Webhooks.Receiver.AspNetCore** | An implementation of the webhook receiver that is backed by [ASP.NET Core](https://dotnet.microsoft.com/apps/aspnet) | ![Nuget](https://img.shields.io/nuget/dt/Deveel.Webhooks?label=NuGet&logo=nuget) | [![GitHub](https://img.shields.io/static/v1?label=GitHub&message=Pre-Release&color=yellow&logo=github)](https://github.com/deveel/deveel.webhooks/pkgs/nuget/Deveel.Webhooks.Receiver.AspNetCore) |
 
 You can obtain the stable versions of these libraries from the [NuGet Official](https://nuget.org) channel.
 
@@ -45,6 +45,74 @@ While working on a .NET Core 3.1/.NET 5 *aaS (_as-a-Service_) project that funct
 ## Usage Documentation
 
 We would like to help you getting started with this framework and to eventually extend it: please refer to the [Documentation](docs/README.md) section that we have produced for you.
+
+The easiest way to get started is to follow the [Quick Start](docs/QUICKSTART.md) guide, but you can also refer to the [Frequently Asked Questions](docs/FAQS.md) section to get answers to the most common questions.
+
+## A Simple Example
+
+The following example shows how to create a webhook subscription, and how to send a notification to the subscribed endpoint:
+
+```csharp
+using Microsoft.AspNetCore.Builder;
+
+using Deveel.Webhooks;
+
+namespace Example {
+	public class Program {
+		public static void Main(string[] args) {
+			var builder = WebApplication.CreateBuilder(args);
+			
+			// configure your other services ...
+
+			// ... and then configure the webhooks
+			builder.Services.AddWebhooks(webhooks => {
+				webhooks.AddSubscriptions<MongoWebhookSubscription>(subs => {
+					subs.UseMongoDb("mongodb://localhost:27017")
+						.UseSubscriptionResolver();
+				});
+
+				webhooks.AddNotifier<MyWebhook>(notifier => {
+					notifier.UseSender(sender => {
+						sender.Configure(options => {
+							options.Timeout = TimeSpan.FromSeconds(30);
+						});
+					});
+				});
+			});
+
+			var app = builder.Build();
+
+			// configure your other middlewares ...
+
+			// ... and then configure the webhooks
+			// to manually send the webhooks ...
+			app.MapPost("/webhooks", async (HttpContext context, 
+				[FromServices] IWebhookSender<MyWebhook> sender, [FromBody] MyWebhookModel webhook) => {
+				var destination = webhook.Destination.ToWebhookDestination();
+				var result = await sender.SendAsync(destination webhook, context.HttpContext.RequestAborted);
+
+				// you can log the result of the delivery ...
+
+				return Results.Ok();
+			});
+
+			// ... or notify the webhooks automatically from subscriptions
+			app.MapPost("/webhooks/notify", async (HttpContext context, 
+				[FromServices] IWebhookNotifier<MyWebhook> notifier, [FromBody] MyEventModel eventModel) => {
+				var eventInfo = eventModel.AsEventInfo();
+				var result = await notifier.NotifyAsync(eventInfo, context.HttpContext.RequestAborted);
+
+				// you can log the result of the notification to all receivers ...
+				return Results.Ok();
+			});
+
+			app.Run();
+		}
+	}
+}
+```
+
+More examples are available in the [Examples](examples/README.md) section.
 
 ## Contribute
 

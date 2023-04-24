@@ -77,6 +77,13 @@ namespace Deveel.Webhooks {
 
             Assert.NotNull(found);
             Assert.Equal(result.Id, found.Id);
+
+			var deliveryResult = Assert.IsAssignableFrom<IWebhookDeliveryResult>(found);
+
+			Assert.Equal(result.Webhook.WebhookId, deliveryResult.Webhook.Id);
+			Assert.Equal(result.Webhook.EventType, deliveryResult.Webhook.EventType);
+			Assert.Equal(result.Webhook.TimeStamp, deliveryResult.Webhook.TimeStamp);
+			Assert.Equal(result.DeliveryAttempts.Count, deliveryResult.DeliveryAttempts.Count());
         }
 
         [Fact]

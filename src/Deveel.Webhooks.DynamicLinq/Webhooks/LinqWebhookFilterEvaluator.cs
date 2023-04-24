@@ -28,9 +28,6 @@ namespace Deveel.Webhooks {
 		string IWebhookFilterEvaluator<TWebhook>.Format => "linq";
 
 		private Func<object, bool> Compile(Type objType, string filter) {
-			if (filter == null)
-				throw new ArgumentNullException(nameof(filter));
-
 			if (!filterCache.TryGetValue(filter, out var compiled)) {
 				var config = ParsingConfig.Default;
 
@@ -61,7 +58,7 @@ namespace Deveel.Webhooks {
 				throw new ArgumentNullException(nameof(webhook));
 
 			if (filter.FilterFormat != "linq")
-				throw new ArgumentException($"Filter format '{filter.FilterFormat}' not supported by the DLINQ evaluator");
+				throw new ArgumentException($"Filter format '{filter.FilterFormat}' not supported by the LINQ evaluator");
 
 			if (filter.IsWildcard)
 				return true;
@@ -73,9 +70,6 @@ namespace Deveel.Webhooks {
 					return false;
 
 				var evalFilter = Compile(obj.GetType(), filter.Filters);
-
-				if (evalFilter == null)
-					return false;
 
 				var result = evalFilter(obj);
 

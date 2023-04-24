@@ -40,6 +40,6 @@ namespace Deveel.Webhooks {
 		/// match the conditions given against the provided webhook instance,
 		/// <strong>false</strong> otherwise.
 		/// </returns>
-		Task<bool> MatchesAsync(WebhookSubscriptionFilter filterRequest, TWebhook webhook, CancellationToken cancellationToken);
+		Task<bool> MatchesAsync(WebhookSubscriptionFilter filterRequest, TWebhook webhook, CancellationToken cancellationToken = default);
 	}
 }

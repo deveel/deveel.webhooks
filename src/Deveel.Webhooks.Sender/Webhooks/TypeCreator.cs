@@ -17,7 +17,7 @@ using System.Reflection.Emit;
 
 namespace Deveel.Webhooks {
 	static class TypeCreator {
-		private static int anonymousCounter = -1;
+		private static int anonymousCounter = 0;
 
 		private static void CreateProperty(TypeBuilder typeBuilder, string propertyName, Type propertyType) {
 			var fieldBuilder = typeBuilder.DefineField($"_{propertyName}", propertyType, FieldAttributes.Private);
@@ -60,7 +60,7 @@ namespace Deveel.Webhooks {
 				TypeAttributes.AutoLayout |
 				TypeAttributes.BeforeFieldInit;
 
-			var typeBuilder = moduleBuilder.DefineType($"{Namespace}.__Anonynous_{anonymousCounter++}", typeAtts);
+			var typeBuilder = moduleBuilder.DefineType($"{Namespace}._Anonynous_{anonymousCounter++}", typeAtts);
 
 			foreach (var propertyType in propertyTypes) {
 				string propertyName = propertyType.Key;

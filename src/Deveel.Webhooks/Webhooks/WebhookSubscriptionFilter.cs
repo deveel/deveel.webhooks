@@ -107,5 +107,21 @@ namespace Deveel.Webhooks {
 				filters.Add(expression);
 			}
 		}
+
+		/// <summary>
+		/// Creates a new instance of the <see cref="WebhookSubscriptionFilter"/> class
+		/// </summary>
+		/// <param name="format">
+		/// The format of the expression.
+		/// </param>
+		/// <param name="filters">
+		/// The list of filter expressions.
+		/// </param>
+		/// <returns>
+		/// Returns a new instance of the <see cref="WebhookSubscriptionFilter"/> class.
+		/// </returns>
+		public static WebhookSubscriptionFilter Create(string format, params string[] filters) {
+			return new WebhookSubscriptionFilter(format, filters);
+		}
 	}
 }

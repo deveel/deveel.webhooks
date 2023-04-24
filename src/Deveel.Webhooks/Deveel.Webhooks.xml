@@ -1169,5 +1169,19 @@
             Thrown when the given <paramref name="expression"/> is <c>null</c> or empty.
             </exception>
         </member>
+        <member name="M:Deveel.Webhooks.WebhookSubscriptionFilter.Create(System.String,System.String[])">
+            <summary>
+            Creates a new instance of the <see cref="T:Deveel.Webhooks.WebhookSubscriptionFilter"/> class
+            </summary>
+            <param name="format">
+            The format of the expression.
+            </param>
+            <param name="filters">
+            The list of filter expressions.
+            </param>
+            <returns>
+            Returns a new instance of the <see cref="T:Deveel.Webhooks.WebhookSubscriptionFilter"/> class.
+            </returns>
+        </member>
     </members>
 </doc>

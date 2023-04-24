@@ -12,20 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace Deveel.Webhooks {
-	public sealed class WebhookMongoException : WebhookServiceException {
-		public WebhookMongoException() {
+    /// <summary>
+    /// An exception that is thrwn when an error occurs in the
+    /// MongoDB storage.
+    /// </summary>
+    public sealed class WebhookMongoException : WebhookServiceException {
+        /// <inheritdoc/>
+        public WebhookMongoException() {
 		}
 
+        /// <inheritdoc/>
 		public WebhookMongoException(string message) : base(message) {
 		}
 
+        /// <inheritdoc/>
 		public WebhookMongoException(string message, Exception innerException) : base(message, innerException) {
 		}
 	}

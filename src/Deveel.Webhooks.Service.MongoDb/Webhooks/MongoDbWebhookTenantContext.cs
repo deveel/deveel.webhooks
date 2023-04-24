@@ -14,24 +14,47 @@
 
 using Finbuckle.MultiTenant;
 
+using Microsoft.Extensions.Options;
+
 using MongoFramework;
 using MongoFramework.Infrastructure;
 
 namespace Deveel.Webhooks {
+	/// <summary>
+	/// Represents a multi-tenant MongoDB context that can be used to
+	/// access to tenant-specific databases
+	/// </summary>
+	/// <typeparam name="TTenantInfo">
+	/// The type of the tenant information.
+	/// </typeparam>
     public class MongoDbWebhookTenantContext<TTenantInfo> : MongoDbTenantContext, IMongoDbWebhookContext
 		where TTenantInfo : class, ITenantInfo, new() {
-		public MongoDbWebhookTenantContext(IMultiTenantContext<TTenantInfo> multiTenantContext) 
-			: base(BuildConnection(multiTenantContext?.TenantInfo), multiTenantContext?.TenantInfo?.Id) {
-		}
+        
+		/// <summary>
+		/// Constructs the context with the given options and the current tenant
+		/// retrieved from the provided <see cref="IMultiTenantContext{TTenantInfo}"/>.
+		/// </summary>
+		/// <param name="options">
+		/// The set of options that are used to configure the connection to the store.
+		/// </param>
+		/// <param name="multiTenantContext">
+		/// The context that provides access to the current tenant.
+		/// </param>
+		/// <exception cref="ArgumentNullException">
+		/// Thrown when either the <paramref name="options"/> or the <paramref name="multiTenantContext"/>
+		/// are <c>null</c>, or when it is not possible to retrieve the tenant information from the context.
+		/// </exception>
+        public MongoDbWebhookTenantContext(IOptions<MongoDbWebhookOptions> options, IMultiTenantContext<TTenantInfo> multiTenantContext) 
+			: base(options.Value.BuildConnection(multiTenantContext?.TenantInfo?.ConnectionString ?? throw new ArgumentNullException()), multiTenantContext?.TenantInfo?.Id) {
+            Options = options.Value;
+        }
 
-		private static IMongoDbConnection BuildConnection(ITenantInfo? tenantInfo) {
-			if (tenantInfo == null)
-				throw new ArgumentNullException(nameof(tenantInfo));
+		/// <summary>
+		/// Gets the set of options that are used to configure the connection to the store.
+		/// </summary>
+        public MongoDbWebhookOptions Options { get; }
 
-			return MongoDbConnection.FromConnectionString(tenantInfo.ConnectionString);
-		}
-
-		private void CheckAdd(object entity) {
+        private void CheckAdd(object entity) {
 			if (entity is MongoWebhookSubscription subscription) {
 				if (String.IsNullOrWhiteSpace(subscription.TenantId)) {
 					subscription.TenantId = TenantId;
@@ -62,6 +85,7 @@ namespace Deveel.Webhooks {
 			}
 		}
 
+		/// <inheritdoc/>
 		protected override void AfterDetectChanges() {
 			foreach (var entity in ChangeTracker.Entries()) {
 				if (entity.State == EntityEntryState.Added) {
@@ -74,13 +98,15 @@ namespace Deveel.Webhooks {
 			base.AfterDetectChanges();
 		}
 
+		/// <inheritdoc/>
 		public override void Attach<TEntity>(TEntity entity) {
 			AttachEntity(entity);
 
 			base.Attach(entity);
 		}
 
-		public override void AttachRange<TEntity>(IEnumerable<TEntity> entities) {
+        /// <inheritdoc/>
+        public override void AttachRange<TEntity>(IEnumerable<TEntity> entities) {
 			foreach (var entity in entities) {
 				AttachEntity(entity);
 			}
@@ -88,31 +114,12 @@ namespace Deveel.Webhooks {
 			base.AttachRange(entities);
 		}
 
+		/// <inheritdoc/>
 		protected override void OnConfigureMapping(MappingBuilder mappingBuilder) {
 			mappingBuilder.Entity<MongoWebhookSubscription>();
 			mappingBuilder.Entity<MongoWebhookDeliveryResult>();
 
 			base.OnConfigureMapping(mappingBuilder);
 		}
-
-		//public void CheckEntities(IEnumerable<IHaveTenantId> entities) {
-		//	foreach (var entity in entities) {
-		//		if (entity.TenantId != TenantId)
-		//			throw new MongoFramework.MultiTenantException($"Entity type {entity.GetType().Name}, tenant ID does not match. Expected: {TenantId}, Entity has: {entity.TenantId}");
-		//	}
-		//}
-
-		//public void CheckEntity(IHaveTenantId entity) {
-		//	if (entity.TenantId != TenantId)
-		//		throw new MongoFramework.MultiTenantException($"Entity type {entity.GetType().Name}, tenant ID does not match. Expected: {TenantId}, Entity has: {entity.TenantId}");
-		//}
-
-		//protected override void AfterDetectChanges() {
-		//	ChangeTracker.EnforceMultiTenant(TenantId);
-		//}
-
-		//protected override WriteModelOptions GetWriteModelOptions() {
-		//	return new WriteModelOptions { TenantId = TenantId };
-		//}
-	}
+    }
 }

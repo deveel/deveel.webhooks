@@ -18,19 +18,33 @@
 using MongoDB.Bson;
 
 namespace Deveel.Webhooks {
+	/// <summary>
+	/// An implementation of the <see cref="IWebhook"/> that is backed by a MongoDB database.
+	/// </summary>
 	public class MongoWebhook : IWebhook {
 		string IWebhook.Id => WebhookId;
 
-
+		/// <summary>
+		/// Gets or sets the identifier of the event / webhook notified.
+		/// </summary>
 		public string WebhookId { get; set; }
 
+		/// <summary>
+		/// Gets or sets the timestamp of the event.
+		/// </summary>
 		public DateTimeOffset TimeStamp { get; set; }
 
+		/// <summary>
+		/// Gets or sets the type of the event.
+		/// </summary>
 		public string EventType { get; set; }
 
 		// TODO: convert this to a dynamic object?
 		object IWebhook.Data => Data;
 
+		/// <summary>
+		/// Gets or sets the data of the event.
+		/// </summary>
 		public BsonDocument Data { get; set; }
 	}
 }

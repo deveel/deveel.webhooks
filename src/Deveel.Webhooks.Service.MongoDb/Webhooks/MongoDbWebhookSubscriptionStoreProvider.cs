@@ -14,11 +14,21 @@
 
 using Finbuckle.MultiTenant;
 
+using Microsoft.Extensions.Options;
+
 namespace Deveel.Webhooks {
+	/// <summary>
+	/// A default implementation of the <see cref="IWebhookSubscriptionStoreProvider{TSubscription}"/>
+	/// </summary>
+	/// <typeparam name="TTenantInfo">
+	/// The type of the tenant information.
+	/// </typeparam>
     public class MongoDbWebhookSubscriptionStoreProvider<TTenantInfo> : MongoDbWebhookSubscriptionStoreProvider<TTenantInfo, MongoWebhookSubscription>,
 							IWebhookSubscriptionStoreProvider<MongoWebhookSubscription>
 		where TTenantInfo : class, ITenantInfo, new() {
-		public MongoDbWebhookSubscriptionStoreProvider(IMultiTenantStore<TTenantInfo> tenantStore) : base(tenantStore) {
+		/// <inheritdoc/>
+		public MongoDbWebhookSubscriptionStoreProvider(IOptions<MongoDbWebhookOptions> options, IMultiTenantStore<TTenantInfo> tenantStore) 
+			: base(options, tenantStore) {
 		}
 	}
 }

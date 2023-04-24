@@ -145,6 +145,21 @@
             for the given query.
             </returns>
         </member>
+        <member name="T:Deveel.Webhooks.IWebhookDeliveryResultQueryableStore`1">
+            <summary>
+            Provides a queryable store for the <see cref="T:Deveel.Webhooks.IWebhookDeliveryResultStore`1"/>
+            </summary>
+            <typeparam name="TResult"></typeparam>
+        </member>
+        <member name="M:Deveel.Webhooks.IWebhookDeliveryResultQueryableStore`1.AsQueryable">
+            <summary>
+            Gets a queryable object that can be used to query the store.
+            </summary>
+            <returns>
+            Returns an instance of <see cref="T:System.Linq.IQueryable`1"/> that can be used
+            to query the store.
+            </returns>
+        </member>
         <member name="T:Deveel.Webhooks.IWebhookDeliveryResultStore`1">
             <summary>
             Provides a contract to store of webhook delivery results
@@ -779,6 +794,100 @@
             object used to query the subscriptions.
             </summary>
         </member>
+        <member name="M:Deveel.Webhooks.WebhookSubscriptionManager`1.ValidateSubscriptionAsync(`0)">
+            <summary>
+            Validates the webhook subscription.
+            </summary>
+            <param name="subscription">
+            The subscription to validate.
+            </param>
+            <returns></returns>
+            <exception cref="T:Deveel.Webhooks.WebhookSubscriptionValidationException"></exception>
+        </member>
+        <member name="M:Deveel.Webhooks.WebhookSubscriptionManager`1.CreateSubscriptionAsync(`0)">
+            <summary>
+            Actually creates the subscription in the underlying store after
+            a successful validation.
+            </summary>
+            <param name="subscription">
+            The webhook subscription entity to create.
+            </param>
+            <returns>
+            Reurns a task that completes when the subscription has been created.
+            </returns>
+        </member>
+        <member name="M:Deveel.Webhooks.WebhookSubscriptionManager`1.CreateAsync(`0)">
+            <summary>
+            Creates a new webhook subscription in the underlying store.
+            </summary>
+            <param name="subscription">
+            The webhook subscription entity to create.
+            </param>
+            <returns>
+            Returns the unique identifier of the subscription.
+            </returns>
+            <exception cref="T:Deveel.Webhooks.WebhookSubscriptionValidationException">
+            Thrown if the webhook subscription is invalid.
+            </exception>
+            <exception cref="T:Deveel.Webhooks.WebhookException">
+            Thrown if the subscription could not be created because of an unhanded error.
+            </exception>
+        </member>
+        <member name="M:Deveel.Webhooks.WebhookSubscriptionManager`1.DeleteSubscriptionAsync(`0)">
+            <summary>
+            Actually deletes the subscription in the underlying store after
+            it is verified it exists.
+            </summary>
+            <param name="subscription">
+            The instance of the subscription to delete.
+            </param>
+            <returns>
+            Returns a task that completes when the subscription has been deleted.
+            </returns>
+        </member>
+        <member name="M:Deveel.Webhooks.WebhookSubscriptionManager`1.DeleteAsync(`0)">
+            <summary>
+            Deletes a webhook subscription from the underlying store.
+            </summary>
+            <param name="subscription">
+            The instance of the subscription to delete.
+            </param>
+            <returns>
+            Returns <c>true</c> if the subscription was deleted, or <c>false</c>
+            </returns>
+            <exception cref="T:Deveel.Webhooks.WebhookException">
+            Thrown if the subscription could not be deleted because of an unhanded error.
+            </exception>
+        </member>
+        <member name="M:Deveel.Webhooks.WebhookSubscriptionManager`1.UpdateSubscriptionAsync(`0)">
+            <summary>
+            Actually updates the subscription in the underlying store after
+            the validation has been performed successfully.
+            </summary>
+            <param name="subscription">
+            The subscription to update.
+            </param>
+            <returns>
+            Returns a task that completes when the subscription has been updated.
+            </returns>
+        </member>
+        <member name="M:Deveel.Webhooks.WebhookSubscriptionManager`1.UpdateAsync(`0)">
+            <summary>
+            Updates a webhook subscription in the underlying store.
+            </summary>
+            <param name="subscription">
+            The wbhook subscription entity to update.
+            </param>
+            <returns>
+            Returns a task that completes when the subscription has been updated.
+            </returns>
+            <exception cref="T:Deveel.Webhooks.WebhookSubscriptionValidationException">
+            Thrown if the webhook subscription is invalid.
+            </exception>
+            <exception cref="T:Deveel.Webhooks.WebhookException">
+            Thrown if the subscription could not be updated because of an unhanded error.
+            </exception>
+        </member>
         <member name="M:Deveel.Webhooks.WebhookSubscriptionManager`1.SetStatusAsync(`0,Deveel.Webhooks.WebhookSubscriptionStatus)">
             <summary>
             Sets the new status of a subscription.
@@ -797,15 +906,39 @@
             an unhanded exception.
             </exception>
         </member>
-        <member name="M:Deveel.Webhooks.WebhookSubscriptionManager`1.ValidateSubscriptionAsync(`0)">
+        <member name="M:Deveel.Webhooks.WebhookSubscriptionManager`1.DisableAsync(`0)">
             <summary>
-            Validates the webhook subscription.
+            Disables a webhook subscription by setting its status to <see cref="F:Deveel.Webhooks.WebhookSubscriptionStatus.Suspended"/>.
             </summary>
             <param name="subscription">
-            The subscription to validate.
+            The instance of the webhook subscription to disable.
             </param>
-            <returns></returns>
-            <exception cref="T:Deveel.Webhooks.WebhookSubscriptionValidationException"></exception>
+            <returns>
+            Returns <c>true</c> if the subscription was disabled, or <c>false</c>
+            if the subscription was already disabled.
+            </returns>
+            <seealso cref="M:Deveel.Webhooks.WebhookSubscriptionManager`1.SetStatusAsync(`0,Deveel.Webhooks.WebhookSubscriptionStatus)"/>
+        </member>
+        <member name="M:Deveel.Webhooks.WebhookSubscriptionManager`1.EnableAsync(`0)">
+            <summary>
+            Enables a webhook subscription by setting its status to <see cref="F:Deveel.Webhooks.WebhookSubscriptionStatus.Active"/>.
+            </summary>
+            <param name="subscription">
+            The instance of the webhook subscription to enable.
+            </param>
+            <returns>
+            Returns <c>true</c> if the subscription was enabled, or <c>false</c>
+            if the subscription was already enabled.
+            </returns>
+        </member>
+        <member name="M:Deveel.Webhooks.WebhookSubscriptionManager`1.FindByIdAsync(System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Deveel.Webhooks.WebhookSubscriptionManager`1.GetPageAsync(Deveel.Webhooks.PagedQuery{`0})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Deveel.Webhooks.WebhookSubscriptionManager`1.CountAllAsync">
+            <inheritdoc/>
         </member>
         <member name="T:Deveel.Webhooks.WebhookSubscriptionValidationException">
             <summary>
@@ -836,6 +969,33 @@
             <summary>
             Gets a set of errors during the validation of the subscription
             </summary>
+        </member>
+        <member name="T:Deveel.Webhooks.WebhookSubscriptionValidator`1">
+            <summary>
+            A default implementation of the <see cref="T:Deveel.Webhooks.IWebhookSubscriptionValidator`1"/>
+            </summary>
+            <typeparam name="TSubscription">
+            The type of the subscription that is validated.
+            </typeparam>
+        </member>
+        <member name="M:Deveel.Webhooks.WebhookSubscriptionValidator`1.ValidateAsync(Deveel.Webhooks.WebhookSubscriptionManager{`0},`0,System.Threading.CancellationToken)">
+            <summary>
+            Validates the given <paramref name="subscription"/> to have
+            the required properties to be registered
+            </summary>
+            <param name="manager">
+            The manager that is used to validate the subscription
+            </param>
+            <param name="subscription">
+            The webhook subscription entity to validate
+            </param>
+            <param name="cancellationToken">
+            A cancellation token used to cancel the validation
+            </param>
+            <returns>
+            Returns a <see cref="T:Deveel.Webhooks.WebhookValidationResult"/> that indicates
+            whether the subscription is valid or not.
+            </returns>
         </member>
         <member name="T:Deveel.Webhooks.WebhookValidationResult">
             <summary>

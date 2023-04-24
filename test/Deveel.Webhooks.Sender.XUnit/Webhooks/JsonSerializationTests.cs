@@ -104,15 +104,16 @@ namespace Deveel.Webhooks {
 			Assert.Equal(timestamp.ToUnixTimeMilliseconds(), obj.GetType().GetProperty("timestamp")!.GetValue(obj));
 		}
 
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
-		class TestWebhook {
+        class TestWebhook {
 			[JsonPropertyName("name")]
 			public string Name { get; set; }
 
 			[JsonPropertyName("event_type")]
-			public string Type { get; set; }
+            public string Type { get; set; }
 
-			[JsonIgnore]
+            [JsonIgnore]
 			public DateTime IgnoredTime { get; set; }
 
 			[JsonPropertyName("states")]
@@ -143,5 +144,6 @@ namespace Deveel.Webhooks {
 			[JsonPropertyName("data_type")]
 			public Type DataType { get; set; }
 		}
-	}
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+    }
 }

@@ -12,14 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-
-using Microsoft.Extensions.Options;
-
-using MongoFramework;
-
 namespace Deveel.Webhooks {
-	public class MongoDbWebhookDeliveryResultStore : MongoDbWebhookDeliveryResultStore<MongoWebhookDeliveryResult> {
+	/// <summary>
+	/// A default implementation of the <see cref="IWebhookDeliveryResultStore{T}"/>
+	/// that uses the <see cref="MongoWebhookDeliveryResult"/> as the entity
+	/// </summary>
+    public class MongoDbWebhookDeliveryResultStore : MongoDbWebhookDeliveryResultStore<MongoWebhookDeliveryResult> {
+		/// <summary>
+		/// Constructs the store with the given context.
+		/// </summary>
+		/// <param name="context">
+		/// The context to the MongoDB database.
+		/// </param>
 		public MongoDbWebhookDeliveryResultStore(IMongoDbWebhookContext context) : base(context) {
 		}
 	}

@@ -12,14 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-
-using Microsoft.Extensions.Options;
-
-using MongoFramework;
-
 namespace Deveel.Webhooks {
-	public class MongoDbWebhookSubscriptionStrore : MongoDbWebhookSubscriptionStrore<MongoWebhookSubscription> {
+    /// <summary>
+    /// Provides an implementation of the <see cref="IWebhookSubscriptionStore{TSubscription}"/>
+    /// </summary>
+    public class MongoDbWebhookSubscriptionStrore : MongoDbWebhookSubscriptionStrore<MongoWebhookSubscription> {
+        /// <inheritdoc/>
 		public MongoDbWebhookSubscriptionStrore(IMongoDbWebhookContext context) : base(context) {
 		}
 	}

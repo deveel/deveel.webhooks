@@ -17,6 +17,10 @@ using System;
 using MongoFramework;
 
 namespace Deveel.Webhooks {
+	/// <summary>
+	/// Represents an instance of the <see cref="IMongoDbContext"/> that
+	/// is specific for the Webhooks service.
+	/// </summary>
 	public interface IMongoDbWebhookContext : IMongoDbContext {
 	}
 }

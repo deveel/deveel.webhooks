@@ -15,13 +15,31 @@
 using System;
 
 namespace Deveel.Webhooks {
+	/// <summary>
+	/// The model of a delivery attempt of a webhook that is
+	/// stored in a MongoDB storage.
+	/// </summary>
 	public class MongoWebhookDeliveryAttempt : IWebhookDeliveryAttempt {
+		/// <summary>
+		/// Gets or sets the code returned by the remote endpoint
+		/// when the delivery was attempted.
+		/// </summary>
 		public int? ResponseStatusCode { get; set; }
 
+		/// <summary>
+		/// Gets or sets the message returned by the remote endpoint
+		/// when the delivery was attempted.
+		/// </summary>
 		public string? ResponseMessage { get; set; }
 
+		/// <summary>
+		/// Gets or sets the time-stamp when the delivery was attempted.
+		/// </summary>
 		public DateTimeOffset StartedAt { get; set; }
 
+		/// <summary>
+		/// Gets or sets the time-stamp when the delivery attempt ended.
+		/// </summary>
 		public DateTimeOffset? EndedAt { get; set; }
 	}
 }

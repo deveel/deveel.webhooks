@@ -12,15 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using System.Collections.Generic;
-
 namespace Deveel.Webhooks {
-	/// <summary>
-	/// Represents the subscription to the notification
-	/// of the occurrence of an event
-	/// </summary>
-	public interface IWebhookSubscription {
+    /// <summary>
+    /// Represents the subscription to the notification
+    /// of the occurrence of an event
+    /// </summary>
+    public interface IWebhookSubscription {
 		/// <summary>
 		/// Gets the unique identifier of the subscription
 		/// </summary>
@@ -85,9 +82,10 @@ namespace Deveel.Webhooks {
 		IDictionary<string, string>? Headers { get; }
 
 		/// <summary>
-		/// Gets an optional set of metadata of the subscription
+		/// Gets an optional set of properties for the
+		/// subscription, that can extend the model dynamically
 		/// </summary>
-		IDictionary<string, object>? Metadata { get; }
+		IDictionary<string, object>? Properties { get; }
 
 		/// <summary>
 		/// Gets the exact time of the creation of the subscription

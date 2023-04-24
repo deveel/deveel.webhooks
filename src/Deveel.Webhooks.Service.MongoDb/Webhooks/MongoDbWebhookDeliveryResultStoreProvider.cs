@@ -14,10 +14,29 @@
 
 using Finbuckle.MultiTenant;
 
+using Microsoft.Extensions.Options;
+
 namespace Deveel.Webhooks {
+	/// <summary>
+	/// Provides an implementation of the <see cref="IWebhookDeliveryResultStore{TResult}"/>
+	/// that is backed by a MongoDB database.
+	/// </summary>
+	/// <typeparam name="TTenantInfo">
+	/// The type of the tenant information.
+	/// </typeparam>
     public class MongoDbWebhookDeliveryResultStoreProvider<TTenantInfo> : MongoDbWebhookDeliveryResultStoreProvider<TTenantInfo, MongoWebhookDeliveryResult>
 		where TTenantInfo : class, ITenantInfo, new() {
-		public MongoDbWebhookDeliveryResultStoreProvider(IMultiTenantStore<TTenantInfo> tenantStore) : base(tenantStore) {
+		/// <summary>
+		/// Constructs the store with the given store.
+		/// </summary>
+		/// <param name="options">
+		/// The set of options that are used to configure the connection to the store.
+		/// </param>
+		/// <param name="tenantStore">
+		/// The store that provides access to the tenants.
+		/// </param>
+		public MongoDbWebhookDeliveryResultStoreProvider(IOptions<MongoDbWebhookOptions> options, IMultiTenantStore<TTenantInfo> tenantStore) 
+			: base(options, tenantStore) {
 		}
 	}
 }

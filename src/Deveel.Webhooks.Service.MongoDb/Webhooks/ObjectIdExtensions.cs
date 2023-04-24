@@ -15,7 +15,7 @@
 using MongoDB.Bson;
 
 namespace Deveel.Webhooks {
-	public static class ObjectIdExtensions {
+	static class ObjectIdExtensions {
 		public static string? ToEntityId(this ObjectId objectId) {
 			if (objectId == ObjectId.Empty)
 				return null;

@@ -34,8 +34,8 @@ namespace Deveel.Webhooks {
 		protected IWebhookSubscriptionStore<MongoWebhookSubscription> Store
 			=> Services.GetRequiredService<IWebhookSubscriptionStore<MongoWebhookSubscription>>();
 
-		private async Task<string> CreateSubscription(MongoWebhookSubscription subscription) {
-			return await Store.CreateAsync(subscription, default);
+		private async Task CreateSubscription(MongoWebhookSubscription subscription) {
+			await Store.CreateAsync(subscription, default);
 		}
 
 		private async Task<IWebhookSubscription?> GetSubscription(string subscriptionId)
@@ -171,7 +171,7 @@ namespace Deveel.Webhooks {
 			Assert.True(result);
 			Assert.Equal(WebhookSubscriptionStatus.Suspended, subscription.Status);
 
-			Assert.True(await Manager.UpdateAsync(subscription));
+			await Manager.UpdateAsync(subscription);
 		}
 
 		[Fact]

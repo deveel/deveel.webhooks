@@ -54,7 +54,7 @@ namespace Deveel.Webhooks {
 		/// <returns>
 		/// Returns the unique identifier of the subscription created.
 		/// </returns>
-		Task<string> CreateAsync(TSubscription subscription, CancellationToken cancellationToken);
+		Task CreateAsync(TSubscription subscription, CancellationToken cancellationToken);
 
 		/// <summary>
 		/// Finds a subscription by its unique identifier.
@@ -84,7 +84,7 @@ namespace Deveel.Webhooks {
 		/// Returns <c>true</c> if the subscription was deleted,
 		/// otherwise <c>false</c>.
 		/// </returns>
-		Task<bool> DeleteAsync(TSubscription subscription, CancellationToken cancellationToken);
+		Task DeleteAsync(TSubscription subscription, CancellationToken cancellationToken);
 
 		/// <summary>
 		/// Updates the given subscription in the store.
@@ -99,7 +99,7 @@ namespace Deveel.Webhooks {
 		/// Returns <c>true</c> if the subscription was updated,
 		/// otherwise <c>false</c>.
 		/// </returns>
-		Task<bool> UpdateAsync(TSubscription subscription, CancellationToken cancellationToken);
+		Task UpdateAsync(TSubscription subscription, CancellationToken cancellationToken);
 
 		/// <summary>
 		/// Gets the total number of subscriptions in the store.

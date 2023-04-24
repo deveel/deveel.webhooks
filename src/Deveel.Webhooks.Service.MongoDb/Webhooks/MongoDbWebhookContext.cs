@@ -12,22 +12,36 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
 
 using MongoFramework;
 
 namespace Deveel.Webhooks {
-	public class MongoDbWebhookContext : MongoDbContext, IMongoDbWebhookContext {
-		public MongoDbWebhookContext(IMongoDbConnection connection) : base(connection) {
-		}
+    /// <summary>
+    /// A default instance of the <see cref="IMongoDbWebhookContext"/> that
+    /// is used to store the subscriptions and delivery results.
+    /// </summary>
+    public class MongoDbWebhookContext : MongoDbContext, IMongoDbWebhookContext {
+        /// <summary>
+        /// Creates an instance of the context with the given options.
+        /// </summary>
+        /// <param name="options">
+        /// The options used to connect to the database.
+        /// </param>
+		public MongoDbWebhookContext(IOptions<MongoDbWebhookOptions> options) 
+			: base(options.Value.BuildConnection()) {
+            Options = options.Value;
+        }
 
-		protected override void OnConfigureMapping(MappingBuilder mappingBuilder) {
-			mappingBuilder.Entity<MongoWebhookSubscription>();
-			mappingBuilder.Entity<MongoWebhookDeliveryResult>();
+        /// <summary>
+        /// Gets the options used to connect to the database.
+        /// </summary>
+        public MongoDbWebhookOptions Options { get; }
+
+        /// <inheritdoc/>
+        protected override void OnConfigureMapping(MappingBuilder mappingBuilder) {
+            mappingBuilder.Entity<MongoWebhookSubscription>();
+            mappingBuilder.Entity<MongoWebhookDeliveryResult>();
 
 			base.OnConfigureMapping(mappingBuilder);
 		}

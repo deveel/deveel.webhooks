@@ -51,7 +51,7 @@ namespace Deveel.Webhooks {
 				.UseMongoSubscriptionResolver())
 			.UseMongoDb(options => options
 				.UseMultiTenant()
-				.UseDeliveryResultLogger());
+				.UseDeliveryResultLogger<Webhook>());
 		}
 
 		protected override async Task<HttpResponseMessage> OnRequestAsync(HttpRequestMessage httpRequest) {
@@ -93,7 +93,9 @@ namespace Deveel.Webhooks {
 			subscription.TenantId = tenantId;
 
 			var store = webhookStoreProvider.GetTenantStore(tenantId);
-			return await store.CreateAsync(subscription, default);
+			await store.CreateAsync(subscription, default);
+
+			return subscription.Id.ToString();
 		}
 
 		[Fact]

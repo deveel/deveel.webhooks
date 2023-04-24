@@ -26,46 +26,70 @@ using MongoFramework;
 using MongoFramework.Attributes;
 
 namespace Deveel.Webhooks {
+	/// <summary>
+	/// An entity that represents a subscription to a webhook
+	/// and that is stored in a MongoDB storage.
+	/// </summary>
 	[Table(MongoDbWebhookStorageConstants.SubscriptionCollectionName)]
 	public class MongoWebhookSubscription : IWebhookSubscription {
 		string? IWebhookSubscription.SubscriptionId => Id.Equals(ObjectId.Empty) ? null : Id.ToString();
 
+		/// <summary>
+		/// Gets or sets the identifier of the subscription entity.
+		/// </summary>
 		[BsonId, Key]
 		public ObjectId Id { get; set; }
 
+		/// <inheritdoc/>
 		public string Name { get; set; }
 
-		public string DestinationUrl { get; set; }
+        /// <inheritdoc/>
+        public string DestinationUrl { get; set; }
 
-		public string Secret { get; set; }
+        /// <inheritdoc/>
+        public string Secret { get; set; }
 
-		public WebhookSubscriptionStatus Status { get; set; }
+        /// <inheritdoc/>
+        public WebhookSubscriptionStatus Status { get; set; }
 
+		/// <summary>
+		/// Gets or sets the time when the last status of the subscription
+		/// was set.
+		/// </summary>
 		public DateTimeOffset? LastStatusTime { get; set; }
 
-		public string TenantId { get; set; }
+        /// <inheritdoc/>
+        public string TenantId { get; set; }
 
-		public int? RetryCount { get; set; }
+        /// <inheritdoc/>
+        public int? RetryCount { get; set; }
 
-		public IDictionary<string, string> Headers { get; set; }
+        /// <inheritdoc/>
+        public IDictionary<string, string> Headers { get; set; }
 
-		public string Format { get; set; }
+        /// <inheritdoc/>
+        public string Format { get; set; }
 
-		[Index("by_event_type", IndexSortOrder.Descending)]
+        /// <inheritdoc/>
+        [Index("by_event_type", IndexSortOrder.Descending)]
 		public List<string> EventTypes { get; set; }
 
 		IEnumerable<string> IWebhookSubscription.EventTypes => EventTypes?.ToArray() ?? Array.Empty<string>();
 
-		public IList<MongoWebhookFilter> Filters { get; set; }
+        /// <inheritdoc/>
+        public IList<MongoWebhookFilter> Filters { get; set; }
 
 		IEnumerable<IWebhookFilter> IWebhookSubscription.Filters => Filters;
 
 
-		[BsonDictionaryOptions(DictionaryRepresentation.ArrayOfDocuments)]
-		public IDictionary<string, object> Metadata { get; set; }
+        /// <inheritdoc/>
+        [BsonDictionaryOptions(DictionaryRepresentation.ArrayOfDocuments)]
+		public IDictionary<string, object> Properties { get; set; }
 
-		public DateTimeOffset? CreatedAt { get; set; }
+        /// <inheritdoc/>
+        public DateTimeOffset? CreatedAt { get; set; }
 
-		public DateTimeOffset? UpdatedAt { get; set; }
+        /// <inheritdoc/>
+        public DateTimeOffset? UpdatedAt { get; set; }
 	}
 }

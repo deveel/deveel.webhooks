@@ -15,8 +15,23 @@
 using System;
 
 namespace Deveel.Webhooks {
+	/// <summary>
+	/// Provides a set of constants for the MongoDB storage of webhook entities
+	/// </summary>
 	public static class MongoDbWebhookStorageConstants {
+		/// <summary>
+		/// The default database name, when not provided in the connection string.
+		/// </summary>
+		public const string DefaultDatabaseName = "webhooks";
+
+		/// <summary>
+		/// The default name of the collection that stores the subscriptions.
+		/// </summary>
 		public const string SubscriptionCollectionName = "subscriptions";
+
+		/// <summary>
+		/// The default name of the collection that stores the delivery results.
+		/// </summary>
 		public const string DeliveryResultsCollectionName = "delivery_results";
 	}
 }

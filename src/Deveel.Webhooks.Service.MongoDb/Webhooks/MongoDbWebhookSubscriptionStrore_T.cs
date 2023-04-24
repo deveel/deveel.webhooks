@@ -16,15 +16,33 @@ using MongoDB.Bson;
 using MongoDB.Driver;
 
 using MongoFramework;
+using MongoFramework.Infrastructure;
 using MongoFramework.Linq;
 
 namespace Deveel.Webhooks {
+	/// <summary>
+	/// Provides an implementation of the <see cref="IWebhookSubscriptionStore{TSubscription}"/>
+	/// that is backed by a MongoDB database.
+	/// </summary>
+	/// <typeparam name="TSubscription">
+	/// The type of the webhook subscription, that is
+	/// derived from <see cref="MongoWebhookSubscription"/>.
+	/// </typeparam>
 	public class MongoDbWebhookSubscriptionStrore<TSubscription> :
 			IWebhookSubscriptionStore<TSubscription>,
 			IWebhookSubscriptionQueryableStore<TSubscription>,
 			IWebhookSubscriptionPagedStore<TSubscription>
 			where TSubscription : MongoWebhookSubscription {
 
+		/// <summary>
+		/// Constructs the store with the given context.
+		/// </summary>
+		/// <param name="context">
+		/// The context that is used to access the MongoDB database.
+		/// </param>
+		/// <exception cref="ArgumentNullException">
+		/// Thrown when the given <paramref name="context"/> is <c>null</c>.
+		/// </exception>
 		public MongoDbWebhookSubscriptionStrore(IMongoDbWebhookContext context) {
 			if (context is null) 
 				throw new ArgumentNullException(nameof(context));
@@ -32,10 +50,16 @@ namespace Deveel.Webhooks {
 			Subscriptions = context.Set<TSubscription>();
 		}
 
+		/// <summary>
+		/// Gets a set that is used to access the webhook subscriptions
+		/// stored in the database.
+		/// </summary>
 		protected IMongoDbSet<TSubscription> Subscriptions { get; }
 
+		/// <inheritdoc/>
 		public IQueryable<TSubscription> AsQueryable() => Subscriptions.AsQueryable();
 
+		/// <inheritdoc/>
 		public Task<int> CountAllAsync(CancellationToken cancellationToken = default) {
 			try {
 				return Subscriptions.CountAsync(cancellationToken);
@@ -44,38 +68,43 @@ namespace Deveel.Webhooks {
 			}
 		}
 
+		/// <inheritdoc/>
 		public Task<string?> GetIdAsync(TSubscription subscription, CancellationToken cancellationToken) {
 			cancellationToken.ThrowIfCancellationRequested();
 
 			return Task.FromResult(subscription.Id.ToEntityId());
 		}
 
-		public async Task<string> CreateAsync(TSubscription subscription, CancellationToken cancellationToken) {
+		/// <inheritdoc/>
+		public async Task CreateAsync(TSubscription subscription, CancellationToken cancellationToken) {
 			try {
 				if (subscription.CreatedAt == null)
 					subscription.CreatedAt = DateTimeOffset.UtcNow;
 
 				Subscriptions.Add(subscription);
 				await Subscriptions.Context.SaveChangesAsync(cancellationToken);
-
-				return subscription.Id.ToString();
 			} catch (Exception ex) {
 				throw new WebhookMongoException("Could not create the subscription", ex);
 			}
 		}
 
-		public async Task<bool> DeleteAsync(TSubscription subscription, CancellationToken cancellationToken) {
+		/// <inheritdoc/>
+		public async Task DeleteAsync(TSubscription subscription, CancellationToken cancellationToken) {
 			try {
+				// TODO: Check if the subscription already exists
+				var entry = Subscriptions.Context.ChangeTracker.GetEntry(subscription);
+				if (entry != null && entry.State == EntityEntryState.Deleted)
+                    throw new WebhookMongoException("The subscription was already deleted");
+
 				Subscriptions.Remove(subscription);
 				await Subscriptions.Context.SaveChangesAsync(cancellationToken);
-
-				return true;
 			} catch (Exception ex) {
 				throw new WebhookMongoException("Unable to delete the subscription", ex);
 			}
 		}
 
-		public async Task<TSubscription?> FindByIdAsync(string id, CancellationToken cancellationToken = default) {
+        /// <inheritdoc/>
+        public async Task<TSubscription?> FindByIdAsync(string id, CancellationToken cancellationToken = default) {
 			if (string.IsNullOrWhiteSpace(id)) 
 				throw new ArgumentException($"'{nameof(id)}' cannot be null or whitespace.", nameof(id));
 
@@ -89,6 +118,7 @@ namespace Deveel.Webhooks {
 			}
 		}
 
+		/// <inheritdoc/>
 		public async Task<IList<TSubscription>> GetByEventTypeAsync(string eventType, bool activeOnly, CancellationToken cancellationToken) {
 			try {
 				var query = Subscriptions.Where(s => s.EventTypes.Any(y => y == eventType));
@@ -101,6 +131,7 @@ namespace Deveel.Webhooks {
 			}
 		}
 
+		/// <inheritdoc/>
 		public async Task<PagedResult<TSubscription>> GetPageAsync(PagedQuery<TSubscription> query, CancellationToken cancellationToken) {
 			try {
 				var querySet = Subscriptions.AsQueryable();
@@ -121,6 +152,7 @@ namespace Deveel.Webhooks {
 			}
 		}
 
+		/// <inheritdoc/>
 		public Task SetStatusAsync(TSubscription subscription, WebhookSubscriptionStatus status, CancellationToken cancellationToken) {
 			cancellationToken.ThrowIfCancellationRequested();
 
@@ -130,7 +162,8 @@ namespace Deveel.Webhooks {
 			return Task.CompletedTask;
 		}
 
-		public async Task<bool> UpdateAsync(TSubscription subscription, CancellationToken cancellationToken = default) {
+		/// <inheritdoc/>
+		public async Task UpdateAsync(TSubscription subscription, CancellationToken cancellationToken = default) {
 			try {
 				// TODO: find a way to check if the entity was updated
 
@@ -142,8 +175,6 @@ namespace Deveel.Webhooks {
 
 				Subscriptions.Update(subscription);
 				await Subscriptions.Context.SaveChangesAsync(cancellationToken);
-
-				return true;
 			} catch (Exception ex) {
 				throw new WebhookMongoException("Unable to update the subscription", ex);
 			}

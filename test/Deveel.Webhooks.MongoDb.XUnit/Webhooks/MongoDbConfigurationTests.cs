@@ -76,7 +76,7 @@ namespace Deveel.Webhooks {
 			var provider = new ServiceCollection()
 				.AddWebhookSubscriptions<MongoWebhookSubscription>(webhook => webhook
 					.UseMongoDb(builder => {
-						builder.WithConnectionString("mongodb://127.0.0.1:2709");
+						builder.WithConnectionString("mongodb://127.0.0.1:2709/my_db");
 						builder.UseSubscriptionStore<MyMongoDbWebhookSubscriptionStore>();
 					}))
 				.BuildServiceProvider();

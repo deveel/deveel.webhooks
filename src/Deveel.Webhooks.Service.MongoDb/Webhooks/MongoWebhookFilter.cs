@@ -17,10 +17,19 @@
 
 
 namespace Deveel.Webhooks {
+	/// <summary>
+	/// Represents a webhook filter that is stored in a MongoDB storage.
+	/// </summary>
 	public class MongoWebhookFilter : IWebhookFilter {
-
+		/// <summary>
+		/// Gets or sets the expression used to filter the webhook
+		/// to be delivered to a receiver.
+		/// </summary>
 		public string Expression { get; set; }
 
+		/// <summary>
+		/// Gets or sets the format of the expression
+		/// </summary>
 		public string Format { get; set; }
 	}
 }

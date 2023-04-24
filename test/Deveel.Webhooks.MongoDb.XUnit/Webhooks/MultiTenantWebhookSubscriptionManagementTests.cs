@@ -43,10 +43,10 @@ namespace Deveel.Webhooks {
 		protected IWebhookSubscriptionStoreProvider<MongoWebhookSubscription> StoreProvider
 			=> Services.GetRequiredService<IWebhookSubscriptionStoreProvider<MongoWebhookSubscription>>();
 
-		private async Task<string> CreateSubscription(string tenantId, MongoWebhookSubscription subscription) {
+		private async Task CreateSubscription(string tenantId, MongoWebhookSubscription subscription) {
 			var store = StoreProvider.GetTenantStore(tenantId);
 
-			return await store.CreateAsync(subscription, default);
+			await store.CreateAsync(subscription, default);
 		}
 
 		private async Task<IWebhookSubscription?> GetSubscription(string tenantId, string subscriptionId)

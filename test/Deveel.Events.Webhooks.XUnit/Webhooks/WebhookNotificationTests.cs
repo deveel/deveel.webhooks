@@ -27,8 +27,8 @@ namespace Deveel.Webhooks {
 		private TestSubscriptionResolver subscriptionResolver;
 		private IWebhookNotifier<Webhook> notifier;
 
-		private Webhook lastWebhook;
-		private HttpResponseMessage testResponse;
+		private Webhook? lastWebhook;
+		private HttpResponseMessage? testResponse;
 
 		public WebhookNotificationTests(ITestOutputHelper outputHelper) : base(outputHelper) {
 			notifier = Services.GetRequiredService<IWebhookNotifier<Webhook>>();
@@ -56,7 +56,7 @@ namespace Deveel.Webhooks {
 					return new HttpResponseMessage(HttpStatusCode.RequestTimeout);
 				}
 
-				lastWebhook = await httpRequest.Content.ReadFromJsonAsync<Webhook>();
+				lastWebhook = await httpRequest.Content!.ReadFromJsonAsync<Webhook>();
 
 				if (testResponse != null)
 					return testResponse;
@@ -108,9 +108,9 @@ namespace Deveel.Webhooks {
 			Assert.NotEmpty(result.Successful);
 			Assert.Empty(result.Failed);
 
-			Assert.Single(result[subscriptionId]);
+			Assert.Single(result[subscriptionId]!);
 
-			var webhookResult = result[subscriptionId][0];
+			var webhookResult = result[subscriptionId]![0];
 
 			Assert.Equal(subscriptionId, webhookResult.Webhook.SubscriptionId);
 			Assert.True(webhookResult.Successful);
@@ -146,14 +146,15 @@ namespace Deveel.Webhooks {
 			Assert.NotEmpty(result.Successful);
 			Assert.Empty(result.Failed);
 
-			Assert.Single(result[subscriptionId]);
+			Assert.Single(result[subscriptionId]!);
 
-			var webhookResult = result[subscriptionId][0];
+			var webhookResult = result[subscriptionId]![0];
 
 			Assert.Equal(subscriptionId, webhookResult.Webhook.SubscriptionId);
 			Assert.True(webhookResult.HasAttempted);
 			Assert.True(webhookResult.Successful);
 			Assert.Single(webhookResult.Attempts);
+			Assert.NotNull(webhookResult.LastAttempt);
 			Assert.True(webhookResult.LastAttempt.HasResponse);
 
 			Assert.NotNull(lastWebhook);
@@ -184,9 +185,10 @@ namespace Deveel.Webhooks {
 			Assert.NotEmpty(result);
 			Assert.Single(result);
 
-			Assert.Single(result[subscriptionId]);
+			Assert.NotNull(result[subscriptionId]);
+			Assert.Single(result[subscriptionId]!);
 
-			var webhookResult = result[subscriptionId][0];
+			var webhookResult = result[subscriptionId]![0];
 
 			Assert.Equal(subscriptionId, webhookResult.Webhook.SubscriptionId);
 			Assert.True(webhookResult.Successful);
@@ -201,7 +203,7 @@ namespace Deveel.Webhooks {
 
 		[Fact]
 		public async Task DeliverWebhookWithoutFilter() {
-			var subscriptionId = CreateSubscription("Data Created", "data.created", null);
+			var subscriptionId = CreateSubscription("Data Created", "data.created");
 			var notification = new EventInfo("test", "data.created", new {
 				creationTime = DateTimeOffset.UtcNow,
 				type = "test"
@@ -213,9 +215,10 @@ namespace Deveel.Webhooks {
 			Assert.NotEmpty(result);
 			Assert.Single(result);
 
-			Assert.Single(result[subscriptionId]);
+			Assert.NotNull(result[subscriptionId]);
+			Assert.Single(result[subscriptionId]!);
 
-			var webhookResult = result[subscriptionId][0];
+			var webhookResult = result[subscriptionId]![0];
 
 			Assert.Equal(subscriptionId, webhookResult.Webhook.SubscriptionId);
 			Assert.True(webhookResult.Successful);
@@ -250,9 +253,10 @@ namespace Deveel.Webhooks {
 			Assert.NotEmpty(result);
 			Assert.Single(result);
 
-			Assert.Single(result[subscriptionId]);
+			Assert.NotNull(result[subscriptionId]);
+			Assert.Single(result[subscriptionId]!);
 
-			var webhookResult = result[subscriptionId][0];
+			var webhookResult = result[subscriptionId]![0];
 
 			Assert.Equal(subscriptionId, webhookResult.Webhook.SubscriptionId);
 			Assert.True(webhookResult.Successful);
@@ -282,9 +286,10 @@ namespace Deveel.Webhooks {
 			Assert.NotEmpty(result.Failed);
 			Assert.True(result.HasFailed);
 
-			Assert.Single(result[subscriptionId]);
+			Assert.NotNull(result[subscriptionId]);
+			Assert.Single(result[subscriptionId]!);
 
-			var webhookResult = result[subscriptionId][0];
+			var webhookResult = result[subscriptionId]![0];
 
 			Assert.Equal(subscriptionId, webhookResult.Webhook.SubscriptionId);
 			Assert.False(webhookResult.Successful);
@@ -308,9 +313,10 @@ namespace Deveel.Webhooks {
 			Assert.NotEmpty(result);
 			Assert.Single(result);
 
-			Assert.Single(result[subscriptionId]);
+			Assert.NotNull(result[subscriptionId]);
+			Assert.Single(result[subscriptionId]!);
 
-			var webhookResult = result[subscriptionId][0];
+			var webhookResult = result[subscriptionId]![0];
 
 			Assert.Equal(subscriptionId, webhookResult.Webhook.SubscriptionId);
 			Assert.False(webhookResult.Successful);
@@ -336,7 +342,7 @@ namespace Deveel.Webhooks {
 
 		[Fact]
 		public async Task NoTenantMatches() {
-			var subscriptionId = CreateSubscription("Data Created", "data.created", new WebhookFilter("hook.data.data_type == \"test-data\"", "linq"));
+			CreateSubscription("Data Created", "data.created", new WebhookFilter("hook.data.data_type == \"test-data\"", "linq"));
 			var notification = new EventInfo("test", "data.created", new { 
 				creationTime = DateTimeOffset.UtcNow, 
 				type = "test" 

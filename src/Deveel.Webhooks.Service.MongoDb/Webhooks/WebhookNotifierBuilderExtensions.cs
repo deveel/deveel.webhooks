@@ -12,17 +12,29 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace Deveel.Webhooks {
-	public static class WebhookNotifierBuilderExtensions {
+    /// <summary>
+    /// Provides extensions to the <see cref="WebhookNotifierBuilder{TWebhook}"/>
+    /// to register the MongoDB storage for the notifier.
+    /// </summary>
+    public static class WebhookNotifierBuilderExtensions {
+		/// <summary>
+		/// Registers the MongoDB storage for resolving
+		/// webhook subscriptions to the notifier.
+		/// </summary>
+		/// <typeparam name="TWebhook">
+		/// The type of the webhook to be notified.
+		/// </typeparam>
+		/// <param name="builder">
+		/// The builder of the notifier service where to register
+		/// the resolver.
+		/// </param>
+		/// <returns>
+		/// Returns the builder to continue the configuration.
+		/// </returns>
 		public static WebhookNotifierBuilder<TWebhook> UseMongoSubscriptionResolver<TWebhook>(this WebhookNotifierBuilder<TWebhook> builder)
 			where TWebhook : class {
-			return builder.UseDefaultSubscriptionResolver<TWebhook>(typeof(MongoWebhookSubscription));
+			return builder.UseDefaultSubscriptionResolver(typeof(MongoWebhookSubscription));
 		}
 	}
 }

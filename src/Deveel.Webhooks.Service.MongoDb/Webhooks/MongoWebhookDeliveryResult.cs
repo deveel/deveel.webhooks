@@ -22,24 +22,38 @@ using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
 namespace Deveel.Webhooks {
+	/// <summary>
+	/// The model of a delivery result of a webhook that is
+	/// stored in a MongoDB storage.
+	/// </summary>
 	[Table(MongoDbWebhookStorageConstants.DeliveryResultsCollectionName)]
 	public class MongoWebhookDeliveryResult : IWebhookDeliveryResult {
+		/// <summary>
+		/// Gets or sets the identifier of the delivery result entity.
+		/// </summary>
 		[BsonId, Key]
 		public ObjectId Id { get; set; }
 
 		IWebhook IWebhookDeliveryResult.Webhook => Webhook;
 
 
-		public virtual MongoWebhookReceiver Receiver { get; set; }
+        /// <inheritdoc/>
+        public virtual MongoWebhookReceiver Receiver { get; set; }
 
 		IWebhookReceiver IWebhookDeliveryResult.Receiver => Receiver;
 
+        /// <inheritdoc/>
 		public virtual MongoWebhook Webhook { get; set; }
 
-		IEnumerable<IWebhookDeliveryAttempt> IWebhookDeliveryResult.DeliveryAttempts => DeliveryAttempts;
+        IEnumerable<IWebhookDeliveryAttempt> IWebhookDeliveryResult.DeliveryAttempts => DeliveryAttempts;
 
-		public virtual List<MongoWebhookDeliveryAttempt> DeliveryAttempts { get; set; }
+        /// <inheritdoc/>
+        public virtual List<MongoWebhookDeliveryAttempt> DeliveryAttempts { get; set; }
 
+		/// <summary>
+		/// Gets or sets the unique identifier of the tenant that owns
+		/// the webhook
+		/// </summary>
 		public string? TenantId { get; set; }
 	}
 }

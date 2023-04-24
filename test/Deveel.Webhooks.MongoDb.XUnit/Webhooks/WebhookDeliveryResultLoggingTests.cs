@@ -50,7 +50,7 @@ namespace Deveel.Webhooks {
 				.UseWebhookFactory<DefaultWebhookFactory>()
 				.UseMongoSubscriptionResolver())
 			.UseMongoDb(options => options
-				.WithConnectionString($"{ConnectionString}webhooks")
+				.UseMultiTenant()
 				.UseDeliveryResultLogger());
 		}
 

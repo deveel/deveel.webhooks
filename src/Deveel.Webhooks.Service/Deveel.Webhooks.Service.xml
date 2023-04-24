@@ -706,6 +706,107 @@
             Returns this instance of the <see cref="T:Deveel.Webhooks.WebhookSubscriptionBuilder`1"/>.
             </returns>
         </member>
+        <member name="T:Deveel.Webhooks.WebhookSubscriptionManager`1">
+            <summary>
+            A manager of webhook subscriptions that provides a set of operations
+            for the handling of entities in a store.
+            </summary>
+            <typeparam name="TSubscription">
+            The type of the subscription handled by the manager.
+            </typeparam>
+        </member>
+        <member name="M:Deveel.Webhooks.WebhookSubscriptionManager`1.#ctor(Deveel.Webhooks.IWebhookSubscriptionStore{`0},System.Collections.Generic.IEnumerable{Deveel.Webhooks.IWebhookSubscriptionValidator{`0}},Microsoft.AspNetCore.Http.IHttpContextAccessor,Microsoft.Extensions.Logging.ILogger{Deveel.Webhooks.WebhookSubscriptionManager{`0}})">
+            <summary>
+            Creates a new instance of the manager wrapping a given store
+            of webhook subscriptions entities
+            </summary>
+            <param name="subscriptionStore">
+            The store of webhook subscriptions entities.
+            </param>
+            <param name="validators">
+            An optional collection of validators to be used to validate
+            webhook subscriptions before creating or updating them.
+            </param>
+            <param name="httpContextAccessor">
+            An accessor to the current HTTP context.
+            </param>
+            <param name="logger">
+            A logger to be used to log messages informing on the operations
+            of the manager.
+            </param>
+            <exception cref="T:System.ArgumentNullException"></exception>
+        </member>
+        <member name="P:Deveel.Webhooks.WebhookSubscriptionManager`1.Logger">
+            <summary>
+            Gets the logger used by the manager to log messages.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.WebhookSubscriptionManager`1.Store">
+            <summary>
+            Gets the store of webhook subscriptions entities.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.WebhookSubscriptionManager`1.Validators">
+            <summary>
+            Gets the collection of validators used to validate webhook
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.WebhookSubscriptionManager`1.CancellationToken">
+            <summary>
+            Gets the cancellation token to be used to cancel the current
+            operation context.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.WebhookSubscriptionManager`1.SupportsPaging">
+            <summary>
+            Gets a value indicating whether the store supports paging.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.WebhookSubscriptionManager`1.SupportsQueries">
+            <summary>
+            Gets a value indicating whether the store supports queries.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.WebhookSubscriptionManager`1.PagedStore">
+            <summary>
+            When the store supports paging, this gets the instance of the
+            store to access pages of subscriptions.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.WebhookSubscriptionManager`1.Subscriptions">
+            <summary>
+            When the store supports queries, this gets a queryable
+            object used to query the subscriptions.
+            </summary>
+        </member>
+        <member name="M:Deveel.Webhooks.WebhookSubscriptionManager`1.SetStatusAsync(`0,Deveel.Webhooks.WebhookSubscriptionStatus)">
+            <summary>
+            Sets the new status of a subscription.
+            </summary>
+            <param name="subscription">
+            The subscription to change the status.
+            </param>
+            <param name="status">
+            The new status to set.
+            </param>
+            <returns>
+            Returns <c>true</c> if the status was changed, or <c>false</c>
+            </returns>
+            <exception cref="T:Deveel.Webhooks.WebhookException">
+            Thrown if the status of the subscription could not be changed because of
+            an unhanded exception.
+            </exception>
+        </member>
+        <member name="M:Deveel.Webhooks.WebhookSubscriptionManager`1.ValidateSubscriptionAsync(`0)">
+            <summary>
+            Validates the webhook subscription.
+            </summary>
+            <param name="subscription">
+            The subscription to validate.
+            </param>
+            <returns></returns>
+            <exception cref="T:Deveel.Webhooks.WebhookSubscriptionValidationException"></exception>
+        </member>
         <member name="T:Deveel.Webhooks.WebhookSubscriptionValidationException">
             <summary>
             An exception that is thrown during the validation

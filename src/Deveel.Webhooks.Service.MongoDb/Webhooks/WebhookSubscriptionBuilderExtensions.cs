@@ -12,16 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
-
-using MongoFramework;
-
 namespace Deveel.Webhooks {
-	public static class WebhookSubscriptionBuilderExtensions {
+    public static class WebhookSubscriptionBuilderExtensions {
 		public static MongoDbWebhookStorageBuilder<TSubscription> UseMongoDb<TSubscription>(this WebhookSubscriptionBuilder<TSubscription> builder, string connectionString)
 			where TSubscription : MongoWebhookSubscription
 			=> new MongoDbWebhookStorageBuilder<TSubscription>(builder).WithConnectionString(connectionString);

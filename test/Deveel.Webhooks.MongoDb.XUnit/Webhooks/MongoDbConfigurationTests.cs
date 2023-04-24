@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Finbuckle.MultiTenant;
+
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 using MongoFramework;
@@ -14,7 +16,7 @@ namespace Deveel.Webhooks {
 
 			var context = provider.GetService<IMongoDbWebhookContext>();
 			Assert.NotNull(context);
-			Assert.IsNotType<MongoDbWebhookTenantContext>(context);
+			Assert.IsNotType<MongoDbWebhookTenantContext<TenantInfo>>(context);
 			Assert.NotNull(context.Connection);
 			
 			var dbConnection = Assert.IsType<MongoDbConnection>(context.Connection);
@@ -37,7 +39,7 @@ namespace Deveel.Webhooks {
 
 			var context = provider.GetService<IMongoDbWebhookContext>();
 			Assert.NotNull(context);
-			Assert.IsNotType<MongoDbWebhookTenantContext>(context);
+			Assert.IsNotType<MongoDbWebhookTenantContext<TenantInfo>>(context);
 			Assert.NotNull(context.Connection);
 
 			var dbConnection = Assert.IsType<MongoDbConnection>(context.Connection);
@@ -61,7 +63,7 @@ namespace Deveel.Webhooks {
 
 			var context = provider.GetService<IMongoDbWebhookContext>();
 			Assert.NotNull(context);
-			Assert.IsNotType<MongoDbWebhookTenantContext>(context);
+			Assert.IsNotType<MongoDbWebhookTenantContext<TenantInfo>>(context);
 			Assert.NotNull(context.Connection);
 
 			var dbConnection = Assert.IsType<MongoDbConnection>(context.Connection);

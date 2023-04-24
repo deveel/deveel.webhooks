@@ -69,7 +69,7 @@ namespace Deveel.Webhooks {
 		/// <seealso cref="IWebhookNotifier{TWebhook}"/>
 		public WebhookSubscriptionBuilder<TSubscription> UseNotifier<TWebhook>(Action<WebhookNotifierBuilder<TWebhook>> configure)
 			where TWebhook : class, IWebhook {
-			Services.AddWebhookNotifier<TWebhook>(configure);
+			Services.AddWebhookNotifier(configure);
 
 			return this;
 		}

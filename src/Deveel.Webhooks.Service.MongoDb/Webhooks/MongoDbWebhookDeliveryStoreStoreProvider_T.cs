@@ -12,20 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-
 using Finbuckle.MultiTenant;
 
-using Microsoft.Extensions.Options;
-
-using MongoFramework;
-
 namespace Deveel.Webhooks {
-	public class MongoDbWebhookDeliveryResultStoreProvider<TResult> : IWebhookDeliveryResultStoreProvider<TResult>
+    public class MongoDbWebhookDeliveryResultStoreProvider<TTenantInfo, TResult> : IWebhookDeliveryResultStoreProvider<TResult>
+		where TTenantInfo : class, ITenantInfo, new()
 		where TResult : MongoWebhookDeliveryResult {
-		private readonly IMultiTenantStore<TenantInfo> tenantStore;
+		private readonly IMultiTenantStore<TTenantInfo> tenantStore;
 
-		public MongoDbWebhookDeliveryResultStoreProvider(IMultiTenantStore<TenantInfo> tenantStore) {
+		public MongoDbWebhookDeliveryResultStoreProvider(IMultiTenantStore<TTenantInfo> tenantStore) {
 			this.tenantStore = tenantStore;
 		}
 
@@ -34,11 +29,11 @@ namespace Deveel.Webhooks {
 			if (tenantInfo == null)
 				throw new WebhookException($"Tenant '{tenantId}' not found");
 
-			var context = new MultiTenantContext<TenantInfo> {
+			var context = new MultiTenantContext<TTenantInfo> {
 				TenantInfo = tenantInfo
 			};
 
-			return new MongoDbWebhookDeliveryResultStore<TResult>(new MongoDbWebhookTenantContext(context));
+			return new MongoDbWebhookDeliveryResultStore<TResult>(new MongoDbWebhookTenantContext<TTenantInfo>(context));
 		}
 	}
 }

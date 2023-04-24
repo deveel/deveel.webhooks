@@ -12,17 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Collections.Generic;
-
 using Finbuckle.MultiTenant;
 
 using MongoFramework;
 using MongoFramework.Infrastructure;
-using MongoFramework.Infrastructure.Commands;
 
 namespace Deveel.Webhooks {
-	public class MongoDbWebhookTenantContext : MongoDbTenantContext, IMongoDbWebhookContext {
-		public MongoDbWebhookTenantContext(IMultiTenantContext multiTenantContext) 
+    public class MongoDbWebhookTenantContext<TTenantInfo> : MongoDbTenantContext, IMongoDbWebhookContext
+		where TTenantInfo : class, ITenantInfo, new() {
+		public MongoDbWebhookTenantContext(IMultiTenantContext<TTenantInfo> multiTenantContext) 
 			: base(BuildConnection(multiTenantContext?.TenantInfo), multiTenantContext?.TenantInfo?.Id) {
 		}
 

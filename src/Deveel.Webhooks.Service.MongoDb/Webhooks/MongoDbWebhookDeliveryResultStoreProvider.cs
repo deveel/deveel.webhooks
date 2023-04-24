@@ -12,15 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-
 using Finbuckle.MultiTenant;
 
-using Microsoft.Extensions.Options;
-
 namespace Deveel.Webhooks {
-	public class MongoDbWebhookDeliveryResultStoreProvider : MongoDbWebhookDeliveryResultStoreProvider<MongoWebhookDeliveryResult> {
-		public MongoDbWebhookDeliveryResultStoreProvider(IMultiTenantStore<TenantInfo> tenantStore) : base(tenantStore) {
+    public class MongoDbWebhookDeliveryResultStoreProvider<TTenantInfo> : MongoDbWebhookDeliveryResultStoreProvider<TTenantInfo, MongoWebhookDeliveryResult>
+		where TTenantInfo : class, ITenantInfo, new() {
+		public MongoDbWebhookDeliveryResultStoreProvider(IMultiTenantStore<TTenantInfo> tenantStore) : base(tenantStore) {
 		}
 	}
 }

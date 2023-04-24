@@ -14,6 +14,8 @@
 
 using System;
 
+using Finbuckle.MultiTenant;
+
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -36,17 +38,11 @@ namespace Deveel.Webhooks {
 			Services.TryAddSingleton<IWebhookSubscriptionStore<MongoWebhookSubscription>, MongoDbWebhookSubscriptionStrore>();
 			Services.AddSingleton<MongoDbWebhookSubscriptionStrore>();
 			Services.TryAddSingleton<MongoDbWebhookSubscriptionStrore<MongoWebhookSubscription>>();
-			Services.TryAddSingleton<IWebhookSubscriptionStoreProvider<MongoWebhookSubscription>, MongoDbWebhookSubscriptionStoreProvider>();
-			Services.AddSingleton<MongoDbWebhookSubscriptionStoreProvider>();
-			Services.TryAddSingleton<MongoDbWebhookSubscriptionStoreProvider<MongoWebhookSubscription>>();
 
 
 			Services.TryAddSingleton<IWebhookDeliveryResultStore<MongoWebhookDeliveryResult>, MongoDbWebhookDeliveryResultStore>();
 			Services.AddSingleton<MongoDbWebhookDeliveryResultStore>();
 			Services.TryAddSingleton<MongoDbWebhookDeliveryResultStore<MongoWebhookDeliveryResult>>();
-			Services.TryAddSingleton<IWebhookDeliveryResultStoreProvider<MongoWebhookDeliveryResult>, MongoDbWebhookDeliveryResultStoreProvider>();
-			Services.AddSingleton<MongoDbWebhookDeliveryResultStoreProvider>();
-			Services.TryAddSingleton<MongoDbWebhookDeliveryResultStoreProvider<MongoWebhookDeliveryResult>>();
 		}
 
 		public MongoDbWebhookStorageBuilder<TSubscription> Configure(string sectionPath) {
@@ -83,13 +79,24 @@ namespace Deveel.Webhooks {
 		}
 
 
-		public MongoDbWebhookStorageBuilder<TSubscription> UseMultiTenant() {
+		public MongoDbWebhookStorageBuilder<TSubscription> UseMultiTenant<TTenantInfo>() where TTenantInfo : class, ITenantInfo, new() {
 			Services.RemoveAll<IMongoDbWebhookContext>();
-			Services.AddSingleton<IMongoDbWebhookContext, MongoDbWebhookTenantContext>();
-			Services.AddSingleton<MongoDbWebhookTenantContext>();
+			Services.AddSingleton<IMongoDbWebhookContext, MongoDbWebhookTenantContext<TTenantInfo>>();
+			Services.AddSingleton<MongoDbWebhookTenantContext<TTenantInfo>>();
 
-			return this;
+            Services.TryAddSingleton<IWebhookSubscriptionStoreProvider<MongoWebhookSubscription>, MongoDbWebhookSubscriptionStoreProvider<TTenantInfo>>();
+            Services.AddSingleton<MongoDbWebhookSubscriptionStoreProvider<TTenantInfo>>();
+            Services.TryAddSingleton<MongoDbWebhookSubscriptionStoreProvider<TTenantInfo, MongoWebhookSubscription>>();
+
+            Services.TryAddSingleton<IWebhookDeliveryResultStoreProvider<MongoWebhookDeliveryResult>, MongoDbWebhookDeliveryResultStoreProvider<TTenantInfo>>();
+            Services.AddSingleton<MongoDbWebhookDeliveryResultStoreProvider<TTenantInfo>>();
+            Services.TryAddSingleton<MongoDbWebhookDeliveryResultStoreProvider<TTenantInfo, MongoWebhookDeliveryResult>>();
+
+            return this;
 		}
+
+		public MongoDbWebhookStorageBuilder<TSubscription> UseMultiTenant()
+			=> UseMultiTenant<TenantInfo>();
 
 		public MongoDbWebhookStorageBuilder<TSubscription> UseSubscriptionStore<TStore>()
 			where TStore : MongoDbWebhookSubscriptionStrore {

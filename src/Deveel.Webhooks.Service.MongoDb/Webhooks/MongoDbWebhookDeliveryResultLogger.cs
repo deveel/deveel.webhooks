@@ -22,13 +22,13 @@ namespace Deveel.Webhooks {
 		where TWebhook : class, IWebhook
 		where TResult : MongoWebhookDeliveryResult, new() {
 		public MongoDbWebhookDeliveryResultLogger(
-			MongoDbWebhookDeliveryResultStoreProvider<TResult> storeProvider, 
+			IWebhookDeliveryResultStoreProvider<TResult> storeProvider, 
 			ILogger<MongoDbWebhookDeliveryResultLogger<TWebhook, TResult>>? logger = null) {
 			StoreProvider = storeProvider;
 			Logger = logger ?? NullLogger<MongoDbWebhookDeliveryResultLogger<TWebhook, TResult>>.Instance;
 		}
 
-		protected MongoDbWebhookDeliveryResultStoreProvider<TResult> StoreProvider { get; }
+		protected IWebhookDeliveryResultStoreProvider<TResult> StoreProvider { get; }
 
 		protected ILogger<MongoDbWebhookDeliveryResultLogger<TWebhook, TResult>> Logger { get; }
 

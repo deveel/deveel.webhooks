@@ -54,7 +54,7 @@ namespace Deveel.Webhooks {
 
 
 		protected override void ConfigureServices(IServiceCollection services) {
-			services.AddSingleton<IMultiTenantContext>(_ => new MultiTenantContext<TenantInfo> {
+			services.AddSingleton<IMultiTenantContext<TenantInfo>>(_ => new MultiTenantContext<TenantInfo> {
 				TenantInfo = new TenantInfo {
 					Id = TenantId,
 					Identifier = TenantId,

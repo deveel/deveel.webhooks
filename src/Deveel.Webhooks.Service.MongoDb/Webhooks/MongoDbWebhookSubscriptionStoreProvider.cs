@@ -12,16 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-
 using Finbuckle.MultiTenant;
 
-using Microsoft.Extensions.Options;
-
 namespace Deveel.Webhooks {
-	public class MongoDbWebhookSubscriptionStoreProvider : MongoDbWebhookSubscriptionStoreProvider<MongoWebhookSubscription>,
-							IWebhookSubscriptionStoreProvider<MongoWebhookSubscription> {
-		public MongoDbWebhookSubscriptionStoreProvider(IMultiTenantStore<TenantInfo> tenantStore) : base(tenantStore) {
+    public class MongoDbWebhookSubscriptionStoreProvider<TTenantInfo> : MongoDbWebhookSubscriptionStoreProvider<TTenantInfo, MongoWebhookSubscription>,
+							IWebhookSubscriptionStoreProvider<MongoWebhookSubscription>
+		where TTenantInfo : class, ITenantInfo, new() {
+		public MongoDbWebhookSubscriptionStoreProvider(IMultiTenantStore<TTenantInfo> tenantStore) : base(tenantStore) {
 		}
 	}
 }

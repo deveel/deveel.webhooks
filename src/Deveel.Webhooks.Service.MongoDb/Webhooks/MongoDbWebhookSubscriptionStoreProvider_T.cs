@@ -12,24 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-
 using Finbuckle.MultiTenant;
 
-using Microsoft.Extensions.Options;
-
-using MongoFramework;
-
 namespace Deveel.Webhooks {
-	public class MongoDbWebhookSubscriptionStoreProvider<TSubscription> : 
-		IWebhookSubscriptionStoreProvider<TSubscription>,
-		IDisposable
-			where TSubscription : MongoWebhookSubscription {
-		private readonly IMultiTenantStore<TenantInfo> tenantStore;
+    public class MongoDbWebhookSubscriptionStoreProvider<TTenantInfo, TSubscription> : IWebhookSubscriptionStoreProvider<TSubscription>, IDisposable
+		where TTenantInfo : class, ITenantInfo, new()
+		where TSubscription : MongoWebhookSubscription {
+		private readonly IMultiTenantStore<TTenantInfo> tenantStore;
 		private Dictionary<string, IWebhookSubscriptionStore<TSubscription>>? stores;
 		private bool disposedValue;
 
-		public MongoDbWebhookSubscriptionStoreProvider(IMultiTenantStore<TenantInfo> tenantStore) {
+		public MongoDbWebhookSubscriptionStoreProvider(IMultiTenantStore<TTenantInfo> tenantStore) {
 			this.tenantStore = tenantStore;
 		}
 
@@ -43,11 +36,11 @@ namespace Deveel.Webhooks {
 				if (tenantInfo == null)
 					throw new ArgumentException($"Tenant '{tenantId}' not found");
 
-				var context = new MultiTenantContext<TenantInfo> {
+				var context = new MultiTenantContext<TTenantInfo> {
 					TenantInfo = tenantInfo
 				};
 
-				store = new MongoDbWebhookSubscriptionStrore<TSubscription>(new MongoDbWebhookTenantContext(context));
+				store = new MongoDbWebhookSubscriptionStrore<TSubscription>(new MongoDbWebhookTenantContext<TTenantInfo>(context));
 
 				if (stores == null)
 					stores = new Dictionary<string, IWebhookSubscriptionStore<TSubscription>>();

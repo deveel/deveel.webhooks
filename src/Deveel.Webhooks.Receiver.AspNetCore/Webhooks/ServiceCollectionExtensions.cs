@@ -19,7 +19,7 @@ using Deveel.Webhooks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
-namespace Deveel {
+namespace Deveel.Webhooks {
 	/// <summary>
 	/// Extends a <see cref="IServiceCollection"/> object to register
 	/// a receiver of a specific type of webhooks.

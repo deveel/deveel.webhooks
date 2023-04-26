@@ -49,7 +49,6 @@ namespace Deveel.Webhooks {
 
 			Services.TryAddSingleton(this);
 
-			// RegisterReceiverMiddleware();
 			RegisterDefaultServices();
 		}
 
@@ -66,17 +65,12 @@ namespace Deveel.Webhooks {
 		/// </summary>
 		public IServiceCollection Services { get; }
 
-		//private void RegisterReceiverMiddleware() {
-		//	Services.TryAddScoped<WebhookReceiverMiddleware<TWebhook>>();
-		//}
-
-		//private void RegisterVerifierMiddleware() {
-		//	Services.TryAddScoped<WebhookRequestVerfierMiddleware<TWebhook>>();
-		//}
-
 		private void RegisterDefaultServices() {
 			Services.TryAddTransient<IWebhookReceiver<TWebhook>, WebhookReceiver<TWebhook>>();
 			Services.TryAddTransient<WebhookReceiver<TWebhook>>();
+
+			Services.TryAddTransient<IWebhookSignerProvider<TWebhook>, DefaultWebhookSignerProvider>();
+			Services.TryAddSingleton<IWebhookSigner<TWebhook>>(new WebhookSignerWrapper(new Sha256WebhookSigner()));
 
 			Services.TryAddSingleton<IWebhookJsonParser<TWebhook>, SystemTextWebhookJsonParser<TWebhook>>();
 		}
@@ -342,7 +336,7 @@ namespace Deveel.Webhooks {
 			}
 
             Services.TryAddSingleton<TSigner>();
-            Services.TryAddSingleton<IWebhookSignerProvider<TWebhook>, DefaultWebhookSignerProvider>();
+            Services.TryAddTransient<IWebhookSignerProvider<TWebhook>, DefaultWebhookSignerProvider>();
 
 			return this;
 		}

@@ -150,13 +150,23 @@ namespace Deveel.Webhooks {
 			return await JsonParser.ParseWebhookAsync(utf8Stream, cancellationToken);
 		}
 
-		private string? GetAlgorithm(string signature) {
+		private string? GetAlgorithm(HttpRequest request, string signature) {
             var index = signature.IndexOf('=');
-			if (index == -1)
-				return ReceiverOptions?.Signature?.Algorithm;
+			if (index != -1)
+				return signature.Substring(0, index);
 
-			return signature.Substring(0, index);
-        }
+			if (ReceiverOptions.Signature?.Location == WebhookSignatureLocation.QueryString) {
+				if (!String.IsNullOrWhiteSpace(ReceiverOptions.Signature.AlgorithmQueryParameter) &&
+					request.Query.TryGetValue(ReceiverOptions.Signature.AlgorithmQueryParameter, out var value))
+					return value;
+			} else if (ReceiverOptions.Signature?.Location == WebhookSignatureLocation.Header) {
+				if (!String.IsNullOrWhiteSpace(ReceiverOptions.Signature.AlgorithmHeaderName) &&
+										request.Headers.TryGetValue(ReceiverOptions.Signature.AlgorithmHeaderName, out var value))
+					return value;
+			}
+
+			return ReceiverOptions?.Signature?.Algorithm;
+		}
 
 		private bool ValidateSignature()
 			=> (ReceiverOptions.VerifySignature ?? false) && 
@@ -237,11 +247,20 @@ namespace Deveel.Webhooks {
 			if (String.IsNullOrWhiteSpace(ReceiverOptions?.Signature?.Secret))
 				return false;
 
+			var index = signature.IndexOf('=');
+			if (index != -1) {
+				var algorithmName = signature.Substring(0, index);
+				if (!String.Equals(algorithm, algorithmName, StringComparison.OrdinalIgnoreCase))
+					return false;
+
+				signature = signature.Substring(index + 1);
+			}
+
 			var computedSignature = SignWebhook(jsonBody, algorithm, ReceiverOptions.Signature.Secret);
 			if (String.IsNullOrWhiteSpace(computedSignature))
 				return false;
 
-			return String.Equals(computedSignature, signature, StringComparison.Ordinal);
+			return String.Equals(computedSignature, signature, StringComparison.OrdinalIgnoreCase);
 		}
 
 		/// <summary>
@@ -260,7 +279,8 @@ namespace Deveel.Webhooks {
 				String.IsNullOrWhiteSpace(signature))
 				return new ValidateResult(jsonBody, false, null);
 
-			var algorithm = GetAlgorithm(signature);
+			var algorithm = GetAlgorithm(request, signature);
+
 			if (String.IsNullOrWhiteSpace(algorithm))
 				return new ValidateResult(jsonBody, true, false);
 

@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Text;
+
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -151,6 +153,43 @@ namespace Deveel.Webhooks {
         }
 
 		/// <summary>
+		/// Handles the response of the webhook receiver middleware.
+		/// </summary>
+		/// <param name="context">
+		/// The HTTP context of the request that contains the webhook
+		/// </param>
+		/// <param name="result">
+		/// The result of the webhook reception operation.
+		/// </param>
+		/// <returns>
+		/// Returns a task that completes when the response has been handled.
+		/// </returns>
+		protected virtual async Task OnWebhookHandledAsync(HttpContext context, WebhookReceiveResult<TWebhook> result) {
+			if (result.Successful) {
+				context.Response.StatusCode = SuccessStatusCode;
+
+				// Handle more complex objects as result ...
+				context.Response.ContentType = "text/plain";
+
+				if (SuccessStatusCode == 200) {
+					await context.Response.WriteAsync("OK", Encoding.UTF8, context.RequestAborted);
+				}
+			} else if (result.SignatureFailed) {
+				context.Response.StatusCode = InvalidStatusCode;
+
+				if (InvalidStatusCode == 400) {
+					await context.Response.WriteAsync("Invalid signature", Encoding.UTF8, context.RequestAborted);
+				}
+			} else if (!result.Successful) {
+				context.Response.StatusCode = FailureStatusCode;
+
+				if (FailureStatusCode == 500) {
+					await context.Response.WriteAsync("Invalid webhook", Encoding.UTF8, context.RequestAborted);
+				}
+			}
+		}
+
+		/// <summary>
 		/// The main entry point of the middleware.
 		/// </summary>
 		/// <param name="context">
@@ -184,16 +223,7 @@ namespace Deveel.Webhooks {
 				await next.Invoke(context);
 
 				if (!context.Response.HasStarted) {
-					if (result.Successful) {
-                        context.Response.StatusCode = SuccessStatusCode;
-                    } else if (result.SignatureFailed) {
-						context.Response.StatusCode = InvalidStatusCode;
-					} else {
-						context.Response.StatusCode = FailureStatusCode;
-					}
-
-					// TODO: should we emit anything here?
-                    await context.Response.WriteAsync("");
+					await OnWebhookHandledAsync(context, result);
 				}
 			} catch (WebhookReceiverException ex) {
 				logger.LogUnhandledReceiveError(ex);

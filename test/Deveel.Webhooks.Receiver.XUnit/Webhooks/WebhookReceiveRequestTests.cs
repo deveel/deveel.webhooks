@@ -125,8 +125,7 @@ namespace Deveel.Webhooks {
 
 			var secret = config["Webhook:Receiver:Signature:Secret"];
 
-			var sha256Signer = new Sha256WebhookSigner();
-			return sha256Signer.SignWebhook(json, secret);
+			return WebhookSignature.Create("sha256", json, secret);
 		}
 
 		[Fact]
@@ -139,7 +138,7 @@ namespace Deveel.Webhooks {
 				TimeStamp = DateTimeOffset.Now,
 			});
 
-			var sha256Sig = GetSha256Signature(json);
+			var sha256Sig = $"sha256={GetSha256Signature(json)}";
 
 			var request = new HttpRequestMessage(HttpMethod.Post, "/webhook/signed") {
 				Content = new StringContent(json, Encoding.UTF8, "application/json")
@@ -163,7 +162,7 @@ namespace Deveel.Webhooks {
 				TimeStamp = DateTimeOffset.Now,
 			});
 
-			var sha256Sig = GetSha256Signature(json + "...");
+			var sha256Sig = $"sha256={GetSha256Signature(json + "...")}";
 
 			var request = new HttpRequestMessage(HttpMethod.Post, "/webhook/signed") {
 				Content = new StringContent(json, Encoding.UTF8, "application/json")

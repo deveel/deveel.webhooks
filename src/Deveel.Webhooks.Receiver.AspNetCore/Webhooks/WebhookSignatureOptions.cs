@@ -34,6 +34,18 @@ namespace Deveel.Webhooks {
 		public string? Algorithm { get; set; }
 
 		/// <summary>
+		/// Gets or sets the name of the query parameter that contains the algorithm,
+		/// when the signature is sent in a query string.
+		/// </summary>
+		public string? AlgorithmQueryParameter { get; set; } = "sig_alg";
+
+		/// <summary>
+		/// Gets or sets the name of the header that contains the algorithm,
+		/// when the signature is sent in a header.
+		/// </summary>
+		public string? AlgorithmHeaderName { get; set; } = "X-Signature-Algorithm";
+
+		/// <summary>
 		/// Gets or sets the secret used to compute the signature.
 		/// </summary>
 		public string? Secret { get; set; }

@@ -28,6 +28,6 @@ namespace Deveel.Webhooks {
 		/// <summary>
 		/// Gets or sets the options for the signature verification.
 		/// </summary>
-		public WebhookSignatureOptions? Signature { get; set; } = new WebhookSignatureOptions();
+		public WebhookSignatureOptions Signature { get; set; } = new WebhookSignatureOptions();
 	}
 }

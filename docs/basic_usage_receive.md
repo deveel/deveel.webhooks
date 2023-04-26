@@ -81,11 +81,11 @@ To use the middleware, you must first register it in the `Startup` class of your
 ```csharp
 public class Startup {
   public void ConfigureServices(IServiceCollection services) {
-    services.AddWebhooks<MyWebhook>();
+    services.AddWebhookReceiver<MyWebhook>();
   }
 
 public void Configure(IApplicationBuilder app, IWebHostEnvironment env) {
-	app.UseWebhooks<MyWebhook>("/webhook");
+	app.UseWebhookReceiver<MyWebhook>("/webhook");
   }
 }
 ```
@@ -95,11 +95,11 @@ If you are using the minimal API pattern, you can use the following code:
 ```csharp
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddWebhooks<MyWebhook>();
+builder.Services.AddWebhookReceiver<MyWebhook>();
 
 var app = builder.Build();
 
-app.UseWebhooks<MyWebhook>("/webhook");
+app.UseWebhookReceiver<MyWebhook>("/webhook");
 
 app.Run();
 ```
@@ -113,7 +113,7 @@ The middleware design allows to handle the webhooks without any prior registered
 ```csharp
 [...]
 
-app.UseWebhooks<MyWebhook>("/webhook", (context, webhook, cancellationToken) => {
+app.UseWebhookReceiver<MyWebhook>("/webhook", (context, webhook, cancellationToken) => {
   // Handle the webhook here
 });
 ```
@@ -123,7 +123,7 @@ Or a alternatively a synchronous handling delegate:
 ```csharp
 [...]
 
-app.UseWebhooks<MyWebhook>("/webhook", (context, webhook) => {
+app.UseWebhookReceiver<MyWebhook>("/webhook", (context, webhook) => {
   // Handle the webhook here
 });
 ```

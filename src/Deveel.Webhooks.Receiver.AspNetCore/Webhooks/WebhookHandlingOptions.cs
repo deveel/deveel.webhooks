@@ -1,4 +1,8 @@
 ﻿namespace Deveel.Webhooks {
+    /// <summary>
+    /// Defines the options for the handling of a received webhook
+    /// from a single instance of a middleware of an application.
+    /// </summary>
     public class WebhookHandlingOptions {
         /// <summary>
         /// Gets or sets the HTTP status code to return when the webhook

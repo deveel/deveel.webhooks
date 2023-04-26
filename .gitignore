@@ -351,3 +351,4 @@ MigrationBackup/
 
 publish.ps1
 /api
+/docfx/api

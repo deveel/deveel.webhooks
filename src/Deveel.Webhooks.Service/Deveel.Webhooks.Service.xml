@@ -595,7 +595,7 @@
             Returns the collection where the webhook management service is registered.
             </returns>
         </member>
-        <member name="M:Deveel.Webhooks.ServiceCollectionExtensions.AddWebhooksSubscriptions``1(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+        <member name="M:Deveel.Webhooks.ServiceCollectionExtensions.AddWebhookSubscriptions``1(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
             <summary>
             Adds the default services to support the webhook
             management provided by the framework.
@@ -647,7 +647,9 @@
             <summary>
             An object that is used to configure the webhook services.
             </summary>
-            <typeparam name="TSubscription"></typeparam>
+            <typeparam name="TSubscription">
+            The type of the subscription that is used to notify webhooks.
+            </typeparam>
         </member>
         <member name="M:Deveel.Webhooks.WebhookSubscriptionBuilder`1.#ctor(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
             <summary>

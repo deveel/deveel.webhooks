@@ -45,6 +45,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebhookReceiverApp", "sampl
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebhookReceiverApp.MinimalApi", "samples\WebhookReceiverApp.MinimalApi\WebhookReceiverApp.MinimalApi.csproj", "{7813C673-82F7-496D-9671-B2654E1A1C9E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebhookNotifierApp", "samples\WebhookNotifierApp\WebhookNotifierApp.csproj", "{7F2D88F5-10C8-4523-A629-2187F511C2AF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -123,6 +125,10 @@ Global
 		{7813C673-82F7-496D-9671-B2654E1A1C9E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7813C673-82F7-496D-9671-B2654E1A1C9E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7813C673-82F7-496D-9671-B2654E1A1C9E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7F2D88F5-10C8-4523-A629-2187F511C2AF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7F2D88F5-10C8-4523-A629-2187F511C2AF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7F2D88F5-10C8-4523-A629-2187F511C2AF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7F2D88F5-10C8-4523-A629-2187F511C2AF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -146,6 +152,7 @@ Global
 		{A220DFA9-28DA-434F-AF49-7E237B1DEF30} = {07F23FF6-2FE1-4072-BF37-9238E3750AA1}
 		{DFAEC929-860E-4DE1-86C7-C91F3CAD0FA6} = {65A317B9-C8E2-4055-96A0-E6195881BD95}
 		{7813C673-82F7-496D-9671-B2654E1A1C9E} = {65A317B9-C8E2-4055-96A0-E6195881BD95}
+		{7F2D88F5-10C8-4523-A629-2187F511C2AF} = {65A317B9-C8E2-4055-96A0-E6195881BD95}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {E682A9F5-43D7-4D4C-82EA-953545B8F4DE}

@@ -41,6 +41,39 @@ namespace Deveel.Webhooks {
 
 		private int InvalidStatusCode => options.InvalidStatusCode ?? 400;
 
+		private async Task HandleWebhookAsync(TWebhook webhook, CancellationToken cancellationToken) {
+			if (handlers == null)
+				return;
+
+			var mode = options.ExecutionMode ?? HandlerExecutionMode.Parallel;
+
+			switch (mode) {
+				case HandlerExecutionMode.Sequential:
+					foreach (var handler in handlers) {
+						await ExecuteAsync(handler, webhook, cancellationToken);
+					}
+					break;
+				case HandlerExecutionMode.Parallel:
+					var parallelOptions = new ParallelOptions {
+						CancellationToken = cancellationToken,
+						MaxDegreeOfParallelism = options.MaxParallelThreads ?? Environment.ProcessorCount
+					};
+					await Parallel.ForEachAsync(handlers, parallelOptions, async (handler, token) => {
+						await ExecuteAsync(handler, webhook, token);
+					});
+
+					break;
+			}
+		}
+
+		private async Task ExecuteAsync(IWebhookHandler<TWebhook> handler, TWebhook webhook, CancellationToken cancellationToken) {
+			try {
+				await handler.HandleAsync(webhook, cancellationToken);
+			} catch (Exception ex) {
+				logger.LogUnhandledHandlerError(ex, handler.GetType(), typeof(TWebhook));
+			}
+		}
+
 		public async Task InvokeAsync(HttpContext context, RequestDelegate next) {
 			try {
 				logger.TraceWebhookArrived();
@@ -56,11 +89,7 @@ namespace Deveel.Webhooks {
 				}
 
 				if (handlers != null && result.Successful && result.Webhook != null) {
-					foreach (var handler in handlers) {
-						await handler.HandleAsync(result.Webhook, context.RequestAborted);
-
-						logger.TraceWebhookHandled(handler.GetType());
-					}
+					await HandleWebhookAsync(result.Webhook, context.RequestAborted);
 				}
 
 				await next.Invoke(context);

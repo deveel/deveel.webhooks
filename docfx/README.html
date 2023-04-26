@@ -1,0 +1,246 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>Deveel Webhooks | Deveel Webhooks </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="Deveel Webhooks | Deveel Webhooks ">
+    
+      <link rel="shortcut icon" href="favicon.ico">
+      <link rel="stylesheet" href="styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="styles/docfx.css">
+      <link rel="stylesheet" href="styles/main.css">
+      <meta property="docfx:navrel" content="">
+      <meta property="docfx:tocrel" content="">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="index.html">
+                <img id="logo" class="svg" src="logo.svg" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+        <div class="article row grid">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="deveel-webhooks">Deveel Webhooks</h1>
+
+<p><img src="https://img.shields.io/github/v/release/deveel/deveel.webhooks?display_name=tag&amp;logo=github" alt="GitHub release (latest by date)">
+<img src="https://img.shields.io/github/actions/workflow/status/deveel/deveel.webhooks/cd.yml?logo=github" alt="GitHub Workflow Status">
+<a href="https://codecov.io/gh/deveel/deveel.webhooks"><img src="https://codecov.io/gh/deveel/deveel.webhooks/branch/main/graph/badge.svg?token=BKRX2N1IZ1" alt="Code Coverage"></a>
+<a href="https://codeclimate.com/github/deveel/deveel.webhooks/maintainability"><img src="https://api.codeclimate.com/v1/badges/d6af433587d35d4eaee3/maintainability" alt="Maintainability"></a>
+<img src="https://img.shields.io/github/license/deveel/deveel.webhooks" alt="License"></p>
+<p>This project provides a set of .NET tools for the management of subscriptions to events, basic transformations and notifications of such event occurrences (<em><a href="docs/concept_webhook.md">webhooks</a></em>): in a global design scope, this model enables event-driven architectures, triggering system processes upon the occurrence of expected occurrences from other systems.</p>
+<p>Although this integration model is widely adopted by major service providers (like <em><a href="https://docs.sendgrid.com/for-developers/tracking-events/getting-started-event-webhook">SendGrid</a></em>, <em><a href="https://www.twilio.com/docs/usage/webhooks">Twilio</a></em>, <em><a href="https://docs.github.com/en/developers/webhooks-and-events/webhooks/about-webhooks">GitHub</a></em>, <em><a href="https://api.slack.com/messaging/webhooks">Slack</a></em>, etc.), there is no formal protocol or authority that would enforce a compliance (like for other cases, such as OpenID, OpenAPI, etc.).</p>
+<p>Anyway, a typical implementation consists of the following elements:</p>
+<ul>
+<li>Webhooks are transported through <em>HTTP POST</em> callbacks</li>
+<li>The webhook payload is formatted as a JSON object (or alternatively, in lesser common scenarios, as XML or Form)</li>
+<li>The webhook payload includes properties that describe the type of event and the time-stamp of the occurrence</li>
+<li>An optional signature in the header of the request or a query-string parameter ensures the authenticity of the caller</li>
+</ul>
+<p>I tried to express the concepts in more details in <a href="docs/concept_webhook.md">this page</a> within this repository (without any ambition to be pedagogic).</p>
+<h2 id="the-framework-libraries">The Framework Libraries</h2>
+<p>The libraries currently provided by the framework are the following:</p>
+<table>
+<thead>
+<tr>
+<th>Library</th>
+<th>Description</th>
+<th>NuGet</th>
+<th>GitHub (prerelease)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Deveel.Webhooks</strong></td>
+<td>Provides the capabilities to handle webhook subscriptions and notifications</td>
+<td><img src="https://img.shields.io/nuget/v/Deveel.Webhooks?label=NuGet&amp;logo=nuget" alt="Nuget"></td>
+<td><a href="https://github.com/deveel/deveel.webhooks/pkgs/nuget/Deveel.Webhooks"><img src="https://img.shields.io/static/v1?label=GitHub&amp;message=preview&amp;color=yellow&amp;logo=github" alt="GitHub"></a></td>
+</tr>
+<tr>
+<td><strong>Deveel.Webhooks.Sender</strong></td>
+<td>Provides services and functions to send webhooks to remote endpoints</td>
+<td><img src="https://img.shields.io/nuget/v/Deveel.Webhooks.Sender?label=latest&amp;logo=nuget" alt="Nuget"></td>
+<td><a href="https://github.com/deveel/deveel.webhooks/pkgs/nuget/Deveel.Webhooks.Sender"><img src="https://img.shields.io/static/v1?label=GitHub&amp;message=preview&amp;color=yellow&amp;logo=github" alt="GitHub"></a></td>
+</tr>
+<tr>
+<td><strong>Deveel.Webhooks.Service</strong></td>
+<td>Implements the functions to manage and resolve webhook subscriptions</td>
+<td><img src="https://img.shields.io/nuget/v/Deveel.Webhooks.Service?label=NuGet&amp;logo=nuget" alt="Nuget"></td>
+<td><a href="https://github.com/deveel/deveel.webhooks/pkgs/nuget/Deveel.Webhooks.Service"><img src="https://img.shields.io/static/v1?label=NuGet&amp;message=preview&amp;color=yellow&amp;logo=github" alt="GitHub"></a></td>
+</tr>
+<tr>
+<td><strong>Deveel.Webhooks.MongoDb</strong></td>
+<td>An implementation of the webhoom management data layer that is backed by <a href="https://mongodb.com">MongoDB</a> databases</td>
+<td><img src="https://img.shields.io/nuget/v/Deveel.Webhooks.MongoDb?label=NuGet&amp;logo=nuget" alt="Nuget"></td>
+<td><a href="https://github.com/deveel/deveel.webhooks/pkgs/nuget/Deveel.Webhooks.MongoDb"><img src="https://img.shields.io/static/v1?label=GitHub&amp;message=preview&amp;color=yellow&amp;logo=github" alt="GitHub"></a></td>
+</tr>
+<tr>
+<td><strong>Deveel.Webhooks.DynamicLinq</strong></td>
+<td>The webhook subscription filtering engine that uses the <a href="https://dynamic-linq.net/">Dynamic LINQ</a> expressions</td>
+<td><img src="https://img.shields.io/nuget/v/Deveel.Webhooks.DynamicLinq?label=NuGet&amp;logo=nuget" alt="Nuget"></td>
+<td><a href="https://github.com/deveel/deveel.webhooks/pkgs/nuget/Deveel.Webhooks.DynamicLinq"><img src="https://img.shields.io/static/v1?label=GitHub&amp;message=preview&amp;color=yellow&amp;logo=github" alt="GitHub"></a></td>
+</tr>
+<tr>
+<td><strong>Deveel.Webhooks.Receiver.AspNetCore</strong></td>
+<td>An implementation of the webhook receiver that is backed by <a href="https://dotnet.microsoft.com/apps/aspnet">ASP.NET Core</a></td>
+<td><img src="https://img.shields.io/nuget/v/Deveel.Webhooks?label=NuGet&amp;logo=nuget" alt="Nuget"></td>
+<td><a href="https://github.com/deveel/deveel.webhooks/pkgs/nuget/Deveel.Webhooks.Receiver.AspNetCore"><img src="https://img.shields.io/static/v1?label=GitHub&amp;message=preview&amp;color=yellow&amp;logo=github" alt="GitHub"></a></td>
+</tr>
+</tbody>
+</table>
+<p>You can obtain the stable versions of these libraries from the <a href="https://nuget.org">NuGet Official</a> channel.</p>
+<p>To get the latest pre-release versions of the packages you can restore from the <a href="https://github.com/orgs/deveel/packages">Deveel Package Manager</a>.</p>
+<h2 id="motivation">Motivation</h2>
+<p>While working on a .NET Core 3.1/.NET 5 *aaS (<em>as-a-Service</em>) project that functionally required the capability of users of the service being able to create system-to-system subscriptions and notifications of events through HTTP channel (that is typically named <em>webhooks</em>, or <em>HTTP callbacks</em>), I started my design with the ambition to use existing solutions, to avoid the bad practice of <em>reinventing the wheel</em>, but I ended up frustrated in such ambition:</p>
+<ul>
+<li><a href="https://github.com/aspnet/WebHooks">Microsoft's ASP.NET Webhooks</a> project was archived and moved back to the <a href="https://github.com/aspnet/AspLabs/tree/main/src/WebHooks">Microsoft ASP Labs</a> (that has no visibility on its release), aiming one day to provide compatibility with .NET Core (which eventually evolved, becoming LTS)</li>
+<li>Both Microsoft's projects (the <em>legacy</em> and the <em>experimental</em> ones) are not compatible with the latest .NET stacks (<em>.NET 5</em> / <em>.NET 6</em>)</li>
+<li>Microsoft's <em>experimental</em> projects never implemented any capability of handling subscriptions, and eventually removing also the <em>sender</em> capability, focusing exclusively on <em>receivers</em></li>
+<li>Alternative implementations providing similar capabilities are embedded and organic part of larger frameworks (like <a href="https://github.com/aspnetboilerplate/aspnetboilerplate">ASP.NET Boilerplate</a>), that would have forced me to adopt the the entirety of such frameworks, beyond my design intentions</li>
+</ul>
+<h2 id="usage-documentation">Usage Documentation</h2>
+<p>We would like to help you getting started with this framework and to eventually extend it: please refer to the <a href="docs/README.md">Documentation</a> section that we have produced for you.</p>
+<p>The easiest way to get started is to follow the <a href="docs/QUICKSTART.md">Quick Start</a> guide, but you can also refer to the <a href="docs/FAQS.md">Frequently Asked Questions</a> section to get answers to the most common questions.</p>
+<h2 id="a-simple-example">A Simple Example</h2>
+<p>The following example shows how to create a webhook subscription, and how to send a notification to the subscribed endpoint:</p>
+<pre><code class="lang-csharp">using Microsoft.AspNetCore.Builder;
+
+using Deveel.Webhooks;
+
+namespace Example {
+	public class Program {
+		public static void Main(string[] args) {
+			var builder = WebApplication.CreateBuilder(args);
+			
+			// configure your other services ...
+
+			// ... and then configure the webhooks
+			builder.Services.AddWebhooks(webhooks =&gt; {
+				webhooks.AddSubscriptions&lt;MongoWebhookSubscription&gt;(subs =&gt; {
+					subs.UseMongoDb(&quot;mongodb://localhost:27017&quot;)
+						.UseSubscriptionResolver();
+				});
+
+				webhooks.AddNotifier&lt;MyWebhook&gt;(notifier =&gt; {
+					notifier.UseSender(sender =&gt; {
+						sender.Configure(options =&gt; {
+							options.Timeout = TimeSpan.FromSeconds(30);
+						});
+					});
+				});
+			});
+
+			var app = builder.Build();
+
+			// configure your other middlewares ...
+
+			// ... and then configure the webhooks
+			// to manually send the webhooks ...
+			app.MapPost(&quot;/webhooks&quot;, async (HttpContext context, 
+				[FromServices] IWebhookSender&lt;MyWebhook&gt; sender, [FromBody] MyWebhookModel webhook) =&gt; {
+				var destination = webhook.Destination.ToWebhookDestination();
+				var result = await sender.SendAsync(destination webhook, context.HttpContext.RequestAborted);
+
+				// you can log the result of the delivery ...
+
+				return Results.Ok();
+			});
+
+			// ... or notify the webhooks automatically from subscriptions
+			app.MapPost(&quot;/webhooks/notify&quot;, async (HttpContext context, 
+				[FromServices] IWebhookNotifier&lt;MyWebhook&gt; notifier, [FromBody] MyEventModel eventModel) =&gt; {
+				var eventInfo = eventModel.AsEventInfo();
+				var result = await notifier.NotifyAsync(eventInfo, context.HttpContext.RequestAborted);
+
+				// you can log the result of the notification to all receivers ...
+				return Results.Ok();
+			});
+
+			app.Run();
+		}
+	}
+}
+</code></pre>
+<p>More examples are available in the <a href="examples/README.md">Examples</a> section.</p>
+<h2 id="contribute">Contribute</h2>
+<p>Contributions to open-source projects, like <strong>Deveel Webhooks</strong>, is generally driven by interest in using the product and services, if they would respect some of the expectations we have to its functions.</p>
+<p>The best ways to contribute and improve the quality of this project is by trying it, filing issues, joining in design conversations, and make pull-requests.</p>
+<p>Please refer to the <a href="CONTRIBUTING.md">Contributing Guidelines</a> to receive more details on how you can contribute to this project.</p>
+<p>We aim to address most of the questions you might have by providing <a href="docs/README.md">documentations</a>, answering <a href="docs/FAQS.md">frequently asked questions</a> and following up on issues like bug reports and feature requests.</p>
+<h3 id="contributors">Contributors</h3>
+<a href="https://github.com/deveel/deveel.webhooks/graphs/contributors">
+<img src="https://contrib.rocks/image?repo=deveel/deveel.webhooks">
+</a>
+<h2 id="license-information">License Information</h2>
+<p>This project is released under the <a href="https://www.apache.org/licenses/LICENSE-2.0">Apache 2 Open-Source Licensing agreement</a>.</p>
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+                <h5>In This Article</h5>
+                <div></div>
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      
+      <span>Generated by <strong>DocFX</strong></span>
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="styles/docfx.js"></script>
+    <script type="text/javascript" src="styles/main.js"></script>
+  </body>
+</html>

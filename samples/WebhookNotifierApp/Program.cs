@@ -29,6 +29,8 @@ namespace Deveel.Webhooks {
 			});
 
 			builder.Services.AddMultiTenant<TenantInfo>()
+				.WithClaimStrategy("tenant")
+				.WithRouteStrategy("tenant")
 				.WithInMemoryStore(options => {
 					options.Tenants.Add(new TenantInfo {
 						Id = "339191991",
@@ -47,6 +49,8 @@ namespace Deveel.Webhooks {
 				.UseMongoDb(mongo => mongo.UseMultiTenant());
 
 			var app = builder.Build();
+
+			app.UseMultiTenant();
 
 			// Configure the HTTP request pipeline.
 

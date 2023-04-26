@@ -12,36 +12,30 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using System.Threading.Tasks;
-
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
-using Microsoft.Extensions.Options;
 
 namespace Deveel.Webhooks {
-	class WebhookRequestVerfierMiddleware<TWebhook> : IMiddleware where TWebhook : class {
-        private readonly WebhookReceiverOptions options;
-		private readonly IWebhookRequestVerifier<TWebhook> requestVerifier;
+    class WebhookRequestVerfierMiddleware<TWebhook>  where TWebhook : class {
+        private readonly RequestDelegate next;
         private readonly ILogger logger;
 
         public WebhookRequestVerfierMiddleware(
-            IOptionsSnapshot<WebhookReceiverOptions> options,
-            IWebhookRequestVerifier<TWebhook> requestVerifier, 
+            RequestDelegate next,
             ILogger<WebhookRequestVerfierMiddleware<TWebhook>>? logger = null) {
-            this.options = options.GetReceiverOptions<TWebhook>();
-            this.requestVerifier = requestVerifier;
+            this.next = next;
             this.logger = logger ?? NullLogger<WebhookRequestVerfierMiddleware<TWebhook>>.Instance;
         }
 
-		private int FailureStatusCode => options.ErrorStatusCode ?? 500;
-
-        public async Task InvokeAsync(HttpContext context, RequestDelegate next) {
+        public async Task InvokeAsync(HttpContext context) {
             try {
+                var verifier = context.RequestServices.GetRequiredService<IWebhookRequestVerifier<TWebhook>>();
+
 				logger.TraceVerificationRequest();
 
-                var result = await requestVerifier.VerifyRequestAsync(context.Request, context.RequestAborted);
+                var result = await verifier.VerifyRequestAsync(context.Request, context.RequestAborted);
 
 				if (result != null) {
 					if (result.IsVerified) {
@@ -54,13 +48,14 @@ namespace Deveel.Webhooks {
                 await next.Invoke(context);
 
                 if (!context.Response.HasStarted && result != null) {
-					await requestVerifier.HandleResultAsync(result, context.Response, context.RequestAborted);
+					await verifier.HandleResultAsync(result, context.Response, context.RequestAborted);
                 }
             } catch (WebhookReceiverException ex) {
 				logger.LogUnhandledReceiveError(ex);
 
                 if (!context.Response.HasStarted) {
-					context.Response.StatusCode = FailureStatusCode;
+                    // TODO: make this configurable...
+					context.Response.StatusCode = 500;
 
 					// TODO: Should we emit anything here?
 					await context.Response.WriteAsync("");

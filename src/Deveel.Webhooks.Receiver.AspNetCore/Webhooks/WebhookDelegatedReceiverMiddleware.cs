@@ -16,42 +16,38 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
-using Microsoft.Extensions.Options;
 
 namespace Deveel.Webhooks {
     class WebhookDelegatedReceiverMiddleware<TWebhook> where TWebhook : class {
 		private readonly RequestDelegate next;
 		private readonly Func<HttpContext, TWebhook, CancellationToken, Task>? asyncHandler;
 		private readonly Action<HttpContext, TWebhook>? syncHandler;
+		private readonly WebhookHandlingOptions options;
+		private readonly ILogger logger;
 
-		public WebhookDelegatedReceiverMiddleware(RequestDelegate next,
-			Func<HttpContext, TWebhook, CancellationToken, Task> handler) {
+		public WebhookDelegatedReceiverMiddleware(
+			RequestDelegate next,
+            WebhookHandlingOptions options ,
+            Func<HttpContext, TWebhook, CancellationToken, Task> handler,
+			ILogger<WebhookDelegatedReceiverMiddleware<TWebhook>>? logger = null) {
 			this.next = next;
+			this.options = options;
+			this.logger = logger ?? NullLogger<WebhookDelegatedReceiverMiddleware<TWebhook>>.Instance;
 			asyncHandler = handler;
 		}
 
-		public WebhookDelegatedReceiverMiddleware(RequestDelegate next,
-			Action<HttpContext, TWebhook> handler) {
+		public WebhookDelegatedReceiverMiddleware(
+			RequestDelegate next,
+			WebhookHandlingOptions options,
+			Action<HttpContext, TWebhook> handler,
+			ILogger<WebhookDelegatedReceiverMiddleware<TWebhook>>? logger = null) {
 			this.next = next;
+			this.options = options;
+			this.logger = logger ?? NullLogger<WebhookDelegatedReceiverMiddleware<TWebhook>>.Instance;
 			syncHandler = handler;
 		}
 
-		private WebhookReceiverOptions GetOptions(HttpContext context) {
-			var snapshot = context?.RequestServices?.GetService<IOptionsSnapshot<WebhookReceiverOptions>>();
-			return snapshot?.GetReceiverOptions<TWebhook>() ?? new WebhookReceiverOptions();
-		}
-
-		private ILogger GetLogger(HttpContext context) {
-			var loggerFactory = context?.RequestServices?.GetService<ILoggerFactory>();
-            return loggerFactory?.CreateLogger<WebhookDelegatedReceiverMiddleware<TWebhook>>() ?? 
-				NullLogger<WebhookDelegatedReceiverMiddleware<TWebhook>>.Instance;
-		}
-
-
 		public async Task InvokeAsync(HttpContext context) {
-            var options = GetOptions(context);
-			var logger = GetLogger(context);
-
             try {
 				logger.TraceWebhookArrived();
 
@@ -111,5 +107,5 @@ namespace Deveel.Webhooks {
 				}
 			}
 		}
-	}
+    }
 }

@@ -43,11 +43,11 @@ namespace Deveel.Webhooks {
 		/// Returns the instance of the <see cref="IApplicationBuilder"/> that handles
 		/// webhooks posted to the given path.
 		/// </returns>
-		public static IApplicationBuilder UseWebhookReceiver<TWebhook>(this IApplicationBuilder app, string path)
+		public static IApplicationBuilder UseWebhookReceiver<TWebhook>(this IApplicationBuilder app, string path, WebhookHandlingOptions? options = null)
 			where TWebhook : class {
 			return app.MapWhen(
 				context => context.Request.Method == "POST" && context.Request.Path.Equals(path),
-				builder => builder.UseMiddleware<WebhookReceiverMiddleware<TWebhook>>()
+				builder => builder.UseMiddleware<WebhookReceiverMiddleware<TWebhook>>(options ?? new WebhookHandlingOptions())
 			);
 		}
 
@@ -138,7 +138,7 @@ namespace Deveel.Webhooks {
 			where TWebhook : class {
 			return app.MapWhen(
 				context => context.Request.Method == "POST" && context.Request.Path.Equals(path),
-				builder => builder.UseMiddleware<WebhookDelegatedReceiverMiddleware<TWebhook>>(receiver)
+				builder => builder.UseMiddleware<WebhookDelegatedReceiverMiddleware<TWebhook>>(new WebhookHandlingOptions(), receiver)
 			);
 		}
 
@@ -170,7 +170,7 @@ namespace Deveel.Webhooks {
 			where TWebhook : class {
 			return app.MapWhen(
 				context => context.Request.Method == "POST" && context.Request.Path.Equals(path),
-				builder => builder.UseMiddleware<WebhookDelegatedReceiverMiddleware<TWebhook>>(receiver)
+				builder => builder.UseMiddleware<WebhookDelegatedReceiverMiddleware<TWebhook>>(new WebhookHandlingOptions(), receiver)
 			);
 		}
 

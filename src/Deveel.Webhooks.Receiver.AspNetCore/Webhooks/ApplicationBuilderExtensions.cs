@@ -28,6 +28,7 @@ namespace Deveel.Webhooks {
 		/// <typeparam name="TWebhook">The type of the webhook to be received</typeparam>
 		/// <param name="app">The application builder instance</param>
 		/// <param name="path">The relative path to listen for webhook posts</param>
+		/// <param name="options">The options for the execution of the handlers</param>
 		/// <remarks>
 		/// <para>
 		/// The middleware will listen only for POST requests to the given path using

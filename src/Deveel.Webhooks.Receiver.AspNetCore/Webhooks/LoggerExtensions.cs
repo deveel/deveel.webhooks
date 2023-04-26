@@ -57,5 +57,9 @@ namespace Deveel.Webhooks {
 		[LoggerMessage(EventId = -20223, Level = LogLevel.Error,
 						Message = "It was not possible to receive a webhook for an unhandled error")]
 		public static partial void LogUnhandledReceiveError(this ILogger logger, Exception error);
+
+		[LoggerMessage(EventId = -20227, Level = LogLevel.Error,
+									Message = "Unhandled error while executing the handler of type '{HandlerType}' for webhooks of type '{WebhookType}'")]
+		public static partial void LogUnhandledHandlerError(this ILogger logger, Exception error, Type handlerType, Type webhookType);
     }
 }

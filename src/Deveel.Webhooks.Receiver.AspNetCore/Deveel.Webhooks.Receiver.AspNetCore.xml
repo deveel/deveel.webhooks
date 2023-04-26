@@ -91,6 +91,7 @@
             <typeparam name="TWebhook">The type of the webhook to be received</typeparam>
             <param name="app">The application builder instance</param>
             <param name="path">The relative path to listen for webhook posts</param>
+            <param name="options">The options for the execution of the handlers</param>
             <remarks>
             <para>
             The middleware will listen only for POST requests to the given path using
@@ -209,6 +210,22 @@
             Returns the instance of the <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/> that handles
             webhooks posted to the given path.
             </returns>
+        </member>
+        <member name="T:Deveel.Webhooks.HandlerExecutionMode">
+            <summary>
+            Enumerates the possible execution modes for webhook handles
+            when received and processed.
+            </summary>
+        </member>
+        <member name="F:Deveel.Webhooks.HandlerExecutionMode.Sequential">
+            <summary>
+            The handlers are executed sequentially, one at a time.
+            </summary>
+        </member>
+        <member name="F:Deveel.Webhooks.HandlerExecutionMode.Parallel">
+            <summary>
+            The handlers are executed in parallel, all at the same time.
+            </summary>
         </member>
         <member name="T:Deveel.Webhooks.IWebhookHandler`1">
             <summary>
@@ -972,6 +989,20 @@
             <summary>
             Gets or sets the HTTP status code to return when the webhook
             from the sender is invalid (<c>400</c> by default).
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.WebhookReceiverOptions.ExecutionMode">
+            <summary>
+            Gets or sets the execution mode for the handlers
+            during the processing of a received webhook 
+            (default: <see cref="F:Deveel.Webhooks.HandlerExecutionMode.Parallel"/>).
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.WebhookReceiverOptions.MaxParallelThreads">
+            <summary>
+            Gets or sets the maximum number of threads to use when
+            executing the handlers in parallel. By default the number
+            of processors in the machine is used.
             </summary>
         </member>
         <member name="T:Deveel.Webhooks.WebhookRequestVerifier`1">

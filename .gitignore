@@ -350,3 +350,4 @@ MigrationBackup/
 .ionide/
 
 publish.ps1
+/api

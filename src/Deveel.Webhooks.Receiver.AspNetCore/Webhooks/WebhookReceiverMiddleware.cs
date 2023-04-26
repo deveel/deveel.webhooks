@@ -13,26 +13,42 @@
 // limitations under the License.
 
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
-using Microsoft.Extensions.Options;
 
 namespace Deveel.Webhooks {
-	class WebhookReceiverMiddleware<TWebhook> : IMiddleware where TWebhook : class {
-		private readonly IEnumerable<IWebhookHandler<TWebhook>>? handlers;
-		private readonly IWebhookReceiver<TWebhook> receiver;
-		private readonly WebhookReceiverOptions options;
-		private readonly ILogger logger;
+	/// <summary>
+	/// A middleware that handles the incoming webhooks through
+	/// HTTP requests sent to a specific path in a web application.
+	/// </summary>
+	/// <typeparam name="TWebhook">
+	/// The type of webhooks that are handled by this middleware
+	/// </typeparam>
+	public class WebhookReceiverMiddleware<TWebhook> where TWebhook : class {
+		private readonly RequestDelegate next;
+        private readonly WebhookHandlingOptions options;
+        private readonly ILogger logger;
 
+		/// <summary>
+		/// Constructs a new instance of the middleware
+		/// </summary>
+		/// <param name="next">
+		/// The next middleware in the pipeline of the web application
+		/// </param>
+		/// <param name="options">
+		/// An optional set of options to configure the middleware behaviors
+		/// </param>
+		/// <param name="logger">
+		/// A logger to use for tracing the execution of the middleware
+		/// </param>
 		public WebhookReceiverMiddleware(
-			IOptionsSnapshot<WebhookReceiverOptions> options,
-			IWebhookReceiver<TWebhook> receiver,
-			IEnumerable<IWebhookHandler<TWebhook>>? handlers = null,
+			RequestDelegate next,
+			WebhookHandlingOptions? options = null,
 			ILogger<WebhookReceiverMiddleware<TWebhook>>? logger = null) {
-			this.options = options.GetReceiverOptions<TWebhook>();
-			this.receiver = receiver;
-			this.handlers = handlers;
-			this.logger = logger ?? NullLogger<WebhookReceiverMiddleware<TWebhook>>.Instance;
+            this.next = next;
+            this.options = options ?? new WebhookHandlingOptions();
+            this.logger = logger ?? NullLogger<WebhookReceiverMiddleware<TWebhook>>.Instance;
 		}
 
 		private int SuccessStatusCode => options.ResponseStatusCode ?? 200;
@@ -41,7 +57,7 @@ namespace Deveel.Webhooks {
 
 		private int InvalidStatusCode => options.InvalidStatusCode ?? 400;
 
-		private async Task HandleWebhookAsync(TWebhook webhook, CancellationToken cancellationToken) {
+		private async Task HandleWebhookAsync(IEnumerable<IWebhookHandler<TWebhook>> handlers, TWebhook webhook, CancellationToken cancellationToken) {
 			if (handlers == null)
 				return;
 
@@ -50,7 +66,7 @@ namespace Deveel.Webhooks {
 			switch (mode) {
 				case HandlerExecutionMode.Sequential:
 					foreach (var handler in handlers) {
-						await ExecuteAsync(handler, webhook, cancellationToken);
+						await ExecuteSequentialAsync(handler, webhook, cancellationToken);
 					}
 					break;
 				case HandlerExecutionMode.Parallel:
@@ -59,26 +75,95 @@ namespace Deveel.Webhooks {
 						MaxDegreeOfParallelism = options.MaxParallelThreads ?? Environment.ProcessorCount
 					};
 					await Parallel.ForEachAsync(handlers, parallelOptions, async (handler, token) => {
-						await ExecuteAsync(handler, webhook, token);
+						await ExecuteParallelAsync(handler, webhook, token);
 					});
 
 					break;
 			}
 		}
 
-		private async Task ExecuteAsync(IWebhookHandler<TWebhook> handler, TWebhook webhook, CancellationToken cancellationToken) {
+        private async Task ExecuteParallelAsync(IWebhookHandler<TWebhook> handler, TWebhook webhook, CancellationToken cancellationToken) {
+            try {
+                await HandleWebhookAsync(handler, webhook, cancellationToken);
+            } catch (Exception ex) {
+                logger.LogUnhandledHandlerError(ex, handler.GetType(), typeof(TWebhook));
+            }
+        }
+
+
+        private async Task ExecuteSequentialAsync(IWebhookHandler<TWebhook> handler, TWebhook webhook, CancellationToken cancellationToken) {
 			try {
-				await handler.HandleAsync(webhook, cancellationToken);
+				await HandleWebhookAsync(handler, webhook, cancellationToken);
 			} catch (Exception ex) {
 				logger.LogUnhandledHandlerError(ex, handler.GetType(), typeof(TWebhook));
+				throw new WebhookReceiverException($"Error while executing the handler '{handler.GetType()}'", ex);
 			}
 		}
 
-		public async Task InvokeAsync(HttpContext context, RequestDelegate next) {
+		/// <summary>
+		/// Receives the webhook from the HTTP request context given.
+		/// </summary>
+		/// <param name="context">
+		/// The HTTP context of the request that contains the webhook
+		/// to be received.
+		/// </param>
+		/// <returns>
+		/// Returns the result of the webhook reception operation.
+		/// </returns>
+		protected virtual Task<WebhookReceiveResult<TWebhook>> ReceiveWebhookAsync(HttpContext context) {
+            var receiver = context.RequestServices.GetRequiredService<IWebhookReceiver<TWebhook>>();
+
+			return receiver.ReceiveAsync(context.Request, context.RequestAborted);
+        }
+
+		/// <summary>
+		/// Resolves the handlers that are registered in the service container
+		/// of the application.
+		/// </summary>
+		/// <param name="context">
+		/// The HTTP context that is executed by the middleware.
+		/// </param>
+		/// <returns>
+		/// Returns a sequence of handlers that are registered in the service
+		/// container of the application.
+		/// </returns>
+		protected virtual IEnumerable<IWebhookHandler<TWebhook>> ResolveHandlers(HttpContext context) {
+			return context.RequestServices.GetServices<IWebhookHandler<TWebhook>>();
+		}
+
+		/// <summary>
+		/// Executes the given handler for the given webhook.
+		/// </summary>
+		/// <param name="handler">
+		/// The instance of the handler to be executed.
+		/// </param>
+		/// <param name="webhook">
+		/// The instance of the webhook to be handled.
+		/// </param>
+		/// <param name="cancellationToken">
+		/// A cancellation token to cancel the execution of the handler.
+		/// </param>
+		/// <returns>
+		/// Returns a task that completes when the handler has been executed.
+		/// </returns>
+		protected virtual Task HandleWebhookAsync(IWebhookHandler<TWebhook> handler, TWebhook webhook, CancellationToken cancellationToken) {
+            return handler.HandleAsync(webhook, cancellationToken);
+        }
+
+		/// <summary>
+		/// The main entry point of the middleware.
+		/// </summary>
+		/// <param name="context">
+		/// The HTTP context of the request that is executed by the middleware.
+		/// </param>
+		/// <returns>
+		/// Returns a task that completes when the middleware has finished
+		/// </returns>
+		public virtual async Task InvokeAsync(HttpContext context) {
 			try {
 				logger.TraceWebhookArrived();
 
-				var result = await receiver.ReceiveAsync(context.Request, context.RequestAborted);
+				var result = await ReceiveWebhookAsync(context);
 
 				if (result.Successful) {
 					logger.TraceWebhookReceived();
@@ -88,8 +173,12 @@ namespace Deveel.Webhooks {
 					logger.WarnInvalidWebhook();
 				}
 
-				if (handlers != null && result.Successful && result.Webhook != null) {
-					await HandleWebhookAsync(result.Webhook, context.RequestAborted);
+				if (result.Successful && result.Webhook != null) {
+					var handlers = ResolveHandlers(context);
+
+					if (handlers != null) {
+						await HandleWebhookAsync(handlers, result.Webhook, context.RequestAborted);
+					}
 				}
 
 				await next.Invoke(context);

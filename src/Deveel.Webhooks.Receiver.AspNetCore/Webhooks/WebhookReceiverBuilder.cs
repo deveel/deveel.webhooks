@@ -49,7 +49,7 @@ namespace Deveel.Webhooks {
 
 			Services.TryAddSingleton(this);
 
-			RegisterReceiverMiddleware();
+			// RegisterReceiverMiddleware();
 			RegisterDefaultServices();
 		}
 
@@ -66,17 +66,17 @@ namespace Deveel.Webhooks {
 		/// </summary>
 		public IServiceCollection Services { get; }
 
-		private void RegisterReceiverMiddleware() {
-			Services.TryAddScoped<WebhookReceiverMiddleware<TWebhook>>();
-		}
+		//private void RegisterReceiverMiddleware() {
+		//	Services.TryAddScoped<WebhookReceiverMiddleware<TWebhook>>();
+		//}
 
-		private void RegisterVerifierMiddleware() {
-			Services.TryAddScoped<WebhookRequestVerfierMiddleware<TWebhook>>();
-		}
+		//private void RegisterVerifierMiddleware() {
+		//	Services.TryAddScoped<WebhookRequestVerfierMiddleware<TWebhook>>();
+		//}
 
 		private void RegisterDefaultServices() {
-			Services.TryAddScoped<IWebhookReceiver<TWebhook>, WebhookReceiver<TWebhook>>();
-			Services.TryAddScoped<WebhookReceiver<TWebhook>>();
+			Services.TryAddTransient<IWebhookReceiver<TWebhook>, WebhookReceiver<TWebhook>>();
+			Services.TryAddTransient<WebhookReceiver<TWebhook>>();
 
 			Services.TryAddSingleton<IWebhookJsonParser<TWebhook>, SystemTextWebhookJsonParser<TWebhook>>();
 		}
@@ -91,13 +91,13 @@ namespace Deveel.Webhooks {
 		/// <returns>
 		/// Returns the current builder instance with the receiver registered
 		/// </returns>
-		public WebhookReceiverBuilder<TWebhook> UseReceiver<TReceiver>()
+		public WebhookReceiverBuilder<TWebhook> UseReceiver<TReceiver>(ServiceLifetime lifetime = ServiceLifetime.Transient)
 			where TReceiver : class, IWebhookReceiver<TWebhook> {
 
-			Services.AddScoped<IWebhookReceiver<TWebhook>, TReceiver>();
+			Services.Add(new ServiceDescriptor(typeof(TReceiver), typeof(TReceiver), lifetime));
 
 			if (!typeof(TReceiver).IsAbstract)
-				Services.AddScoped(typeof(TReceiver), typeof(TReceiver));
+				Services.Add(new ServiceDescriptor(typeof(TReceiver), typeof(TReceiver), lifetime));
 
 			return this;
 		}
@@ -115,7 +115,7 @@ namespace Deveel.Webhooks {
 		/// </returns>
 		public WebhookReceiverBuilder<TWebhook> UseVerifier<TVerifier>()
 			where TVerifier : class, IWebhookRequestVerifier<TWebhook> {
-			RegisterVerifierMiddleware();
+			// RegisterVerifierMiddleware();
 
 			Services.AddScoped<IWebhookRequestVerifier<TWebhook>, TVerifier>();
 

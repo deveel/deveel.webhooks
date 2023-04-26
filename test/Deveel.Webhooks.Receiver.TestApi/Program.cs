@@ -11,12 +11,12 @@ namespace Deveel.Webhooks.Receiver.TestApi {
 			// Add services to the container.
 			builder.Services.AddAuthorization();
 			builder.Services
-				.AddWebhooks<TestWebhook>()
+				.AddWebhookReceiver<TestWebhook>()
 				.AddHandler<TestWebhookHandler>();
 
 			var secret = builder.Configuration["Webhook:Receiver:Signature:Secret"];
 
-			builder.Services.AddWebhooks<TestSignedWebhook>()
+			builder.Services.AddWebhookReceiver<TestSignedWebhook>()
 				.Configure(options => {
 					options.VerifySignature = true;
 					options.Signature!.Secret = secret;
@@ -42,7 +42,11 @@ namespace Deveel.Webhooks.Receiver.TestApi {
 			app.UseAuthorization();
 
 			app.UseWebhookReceiver<TestWebhook>("/webhook");
-			app.UseWebhookReceiver<TestWebhook>("/webhook/handled", (context, webhook) => {
+            app.UseWebhookReceiver<TestWebhook>("/webhook/seq", new WebhookHandlingOptions {
+				ExecutionMode = HandlerExecutionMode.Sequential
+			});
+
+            app.UseWebhookReceiver<TestWebhook>("/webhook/handled", (context, webhook) => {
 				var callback = context.RequestServices.GetRequiredService<IWebhookCallback<TestWebhook>>();
 
 				callback.OnWebhookHandled(webhook);

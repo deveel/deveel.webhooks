@@ -10,7 +10,7 @@
             a receiver of a specific type of webhooks.
             </summary>
         </member>
-        <member name="M:Deveel.ServiceCollectionExtensions.AddWebhooks``1(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+        <member name="M:Deveel.ServiceCollectionExtensions.AddWebhookReceiver``1(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
             <summary>
             Adds a receiver of webhooks of a specific type to the service collection.
             </summary>
@@ -23,7 +23,7 @@
             be used to further configure the receiver.
             </returns>
         </member>
-        <member name="M:Deveel.ServiceCollectionExtensions.AddWebhooks``1(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.String)">
+        <member name="M:Deveel.ServiceCollectionExtensions.AddWebhookReceiver``1(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.String)">
             <summary>
             Adds a receiver of webhooks of a specific type to the service collection.
             </summary>
@@ -41,7 +41,7 @@
             be used to further configure the receiver.
             </returns>
         </member>
-        <member name="M:Deveel.ServiceCollectionExtensions.AddWebhooks``1(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Action{Deveel.Webhooks.WebhookReceiverOptions})">
+        <member name="M:Deveel.ServiceCollectionExtensions.AddWebhookReceiver``1(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Action{Deveel.Webhooks.WebhookReceiverOptions})">
             <summary>
             Adds a receiver of webhooks of a specific type to the service collection.
             </summary>
@@ -59,7 +59,7 @@
             be used to further configure the receiver.
             </returns>
         </member>
-        <member name="M:Deveel.ServiceCollectionExtensions.AddWebhooks``1(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Action{Deveel.Webhooks.WebhookReceiverBuilder{``0}})">
+        <member name="M:Deveel.ServiceCollectionExtensions.AddWebhookReceiver``1(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Action{Deveel.Webhooks.WebhookReceiverBuilder{``0}})">
             <summary>
             Adds a receiver of webhooks of a specific type to the service collection.
             </summary>
@@ -83,7 +83,7 @@
             for receiving webhooks within an ASP.NET Core application request pipeline.
             </summary>
         </member>
-        <member name="M:Deveel.Webhooks.ApplicationBuilderExtensions.UseWebhookReceiver``1(Microsoft.AspNetCore.Builder.IApplicationBuilder,System.String)">
+        <member name="M:Deveel.Webhooks.ApplicationBuilderExtensions.UseWebhookReceiver``1(Microsoft.AspNetCore.Builder.IApplicationBuilder,System.String,Deveel.Webhooks.WebhookHandlingOptions)">
             <summary>
             Adds a middleware to the application pipeline that receives webhooks
             of that are posted to the given path.
@@ -432,6 +432,38 @@
         <member name="M:Deveel.Webhooks.SystemTextWebhookJsonParser`1.ParseWebhookAsync(System.IO.Stream,System.Threading.CancellationToken)">
             <inheritdoc/>
         </member>
+        <member name="P:Deveel.Webhooks.WebhookHandlingOptions.ResponseStatusCode">
+            <summary>
+            Gets or sets the HTTP status code to return when the webhook
+            processing is successful (<c>201</c> by default).
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.WebhookHandlingOptions.ErrorStatusCode">
+            <summary>
+            Gets or sets the HTTP status code to return when the webhook
+            processing failed for an internal error (<c>500</c> by default).
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.WebhookHandlingOptions.InvalidStatusCode">
+            <summary>
+            Gets or sets the HTTP status code to return when the webhook
+            from the sender is invalid (<c>400</c> by default).
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.WebhookHandlingOptions.ExecutionMode">
+            <summary>
+            Gets or sets the execution mode for the handlers
+            during the processing of a received webhook 
+            (default: <see cref="F:Deveel.Webhooks.HandlerExecutionMode.Parallel"/>).
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.WebhookHandlingOptions.MaxParallelThreads">
+            <summary>
+            Gets or sets the maximum number of threads to use when
+            executing the handlers in parallel. By default the number
+            of processors in the machine is used.
+            </summary>
+        </member>
         <member name="T:Deveel.Webhooks.WebhookJsonParserExtensions">
             <summary>
             Extends the <see cref="T:Deveel.Webhooks.IWebhookJsonParser`1"/> with
@@ -694,7 +726,7 @@
             Gets the service collection to which the receiver is added
             </summary>
         </member>
-        <member name="M:Deveel.Webhooks.WebhookReceiverBuilder`1.UseReceiver``1">
+        <member name="M:Deveel.Webhooks.WebhookReceiverBuilder`1.UseReceiver``1(Microsoft.Extensions.DependencyInjection.ServiceLifetime)">
             <summary>
             Registers an implementation of the <see cref="T:Deveel.Webhooks.IWebhookReceiver`1"/>
             that is used to receive the webhooks
@@ -957,6 +989,82 @@
         <member name="M:Deveel.Webhooks.WebhookReceiverException.#ctor">
             <inheritdoc/>
         </member>
+        <member name="T:Deveel.Webhooks.WebhookReceiverMiddleware`1">
+            <summary>
+            A middleware that handles the incoming webhooks through
+            HTTP requests sent to a specific path in a web application.
+            </summary>
+            <typeparam name="TWebhook">
+            The type of webhooks that are handled by this middleware
+            </typeparam>
+        </member>
+        <member name="M:Deveel.Webhooks.WebhookReceiverMiddleware`1.#ctor(Microsoft.AspNetCore.Http.RequestDelegate,Deveel.Webhooks.WebhookHandlingOptions,Microsoft.Extensions.Logging.ILogger{Deveel.Webhooks.WebhookReceiverMiddleware{`0}})">
+            <summary>
+            Constructs a new instance of the middleware
+            </summary>
+            <param name="next">
+            The next middleware in the pipeline of the web application
+            </param>
+            <param name="options">
+            An optional set of options to configure the middleware behaviors
+            </param>
+            <param name="logger">
+            A logger to use for tracing the execution of the middleware
+            </param>
+        </member>
+        <member name="M:Deveel.Webhooks.WebhookReceiverMiddleware`1.ReceiveWebhookAsync(Microsoft.AspNetCore.Http.HttpContext)">
+            <summary>
+            Receives the webhook from the HTTP request context given.
+            </summary>
+            <param name="context">
+            The HTTP context of the request that contains the webhook
+            to be received.
+            </param>
+            <returns>
+            Returns the result of the webhook reception operation.
+            </returns>
+        </member>
+        <member name="M:Deveel.Webhooks.WebhookReceiverMiddleware`1.ResolveHandlers(Microsoft.AspNetCore.Http.HttpContext)">
+            <summary>
+            Resolves the handlers that are registered in the service container
+            of the application.
+            </summary>
+            <param name="context">
+            The HTTP context that is executed by the middleware.
+            </param>
+            <returns>
+            Returns a sequence of handlers that are registered in the service
+            container of the application.
+            </returns>
+        </member>
+        <member name="M:Deveel.Webhooks.WebhookReceiverMiddleware`1.HandleWebhookAsync(Deveel.Webhooks.IWebhookHandler{`0},`0,System.Threading.CancellationToken)">
+            <summary>
+            Executes the given handler for the given webhook.
+            </summary>
+            <param name="handler">
+            The instance of the handler to be executed.
+            </param>
+            <param name="webhook">
+            The instance of the webhook to be handled.
+            </param>
+            <param name="cancellationToken">
+            A cancellation token to cancel the execution of the handler.
+            </param>
+            <returns>
+            Returns a task that completes when the handler has been executed.
+            </returns>
+        </member>
+        <member name="M:Deveel.Webhooks.WebhookReceiverMiddleware`1.InvokeAsync(Microsoft.AspNetCore.Http.HttpContext)">
+            <summary>
+            The main entry point of the middleware.
+            </summary>
+            <param name="context">
+            The HTTP context of the request that is executed by the middleware.
+            </param>
+            <returns>
+            Returns a task that completes when the middleware has finished
+            </returns>
+        </member>
         <member name="T:Deveel.Webhooks.WebhookReceiverOptions">
             <summary>
             Provides the configuration options for a webhook receiver.
@@ -971,38 +1079,6 @@
         <member name="P:Deveel.Webhooks.WebhookReceiverOptions.Signature">
             <summary>
             Gets or sets the options for the signature verification.
-            </summary>
-        </member>
-        <member name="P:Deveel.Webhooks.WebhookReceiverOptions.ResponseStatusCode">
-            <summary>
-            Gets or sets the HTTP status code to return when the webhook
-            processing is successful (<c>201</c> by default).
-            </summary>
-        </member>
-        <member name="P:Deveel.Webhooks.WebhookReceiverOptions.ErrorStatusCode">
-            <summary>
-            Gets or sets the HTTP status code to return when the webhook
-            processing failed for an internal error (<c>500</c> by default).
-            </summary>
-        </member>
-        <member name="P:Deveel.Webhooks.WebhookReceiverOptions.InvalidStatusCode">
-            <summary>
-            Gets or sets the HTTP status code to return when the webhook
-            from the sender is invalid (<c>400</c> by default).
-            </summary>
-        </member>
-        <member name="P:Deveel.Webhooks.WebhookReceiverOptions.ExecutionMode">
-            <summary>
-            Gets or sets the execution mode for the handlers
-            during the processing of a received webhook 
-            (default: <see cref="F:Deveel.Webhooks.HandlerExecutionMode.Parallel"/>).
-            </summary>
-        </member>
-        <member name="P:Deveel.Webhooks.WebhookReceiverOptions.MaxParallelThreads">
-            <summary>
-            Gets or sets the maximum number of threads to use when
-            executing the handlers in parallel. By default the number
-            of processors in the machine is used.
             </summary>
         </member>
         <member name="T:Deveel.Webhooks.WebhookRequestVerifier`1">

@@ -365,6 +365,21 @@
             Returns the instance of <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/> to allow chaining of calls.
             </returns>
         </member>
+        <member name="M:Deveel.Webhooks.ServiceCollectionExtensions.AddWebhooks``1(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            Registers the webhook service to handle the given type of webhook.
+            </summary>
+            <typeparam name="TWebhook">
+            The type of the webhook handled by the service.
+            </typeparam>
+            <param name="services">
+            The service collection to add the service to.
+            </param>
+            <returns>
+            Returns an instance of <see cref="T:Deveel.Webhooks.WebhooksBuilder`1"/> that can be used
+            to configure the webhook service.
+            </returns>
+        </member>
         <member name="T:Deveel.Webhooks.Webhook">
             <summary>
             A default implementation of <see cref="T:Deveel.Webhooks.IWebhook"/> that can be used

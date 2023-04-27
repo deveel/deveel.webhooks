@@ -39,17 +39,17 @@ namespace Deveel.Webhooks {
 		private IServiceCollection Services => builder.Services;
 
 		private void AddDefaultStorage() {
-			Services.TryAddSingleton<IMongoDbContext, MongoDbWebhookContext>();
-			Services.TryAddSingleton<IMongoDbWebhookContext, MongoDbWebhookContext>();
+			Services.TryAddScoped<IMongoDbContext, MongoDbWebhookContext>();
+			Services.TryAddScoped<IMongoDbWebhookContext, MongoDbWebhookContext>();
 
-			Services.TryAddSingleton<IWebhookSubscriptionStore<MongoWebhookSubscription>, MongoDbWebhookSubscriptionStrore>();
-			Services.AddSingleton<MongoDbWebhookSubscriptionStrore>();
-			Services.TryAddSingleton<MongoDbWebhookSubscriptionStrore<MongoWebhookSubscription>>();
+			Services.TryAddScoped<IWebhookSubscriptionStore<MongoWebhookSubscription>, MongoDbWebhookSubscriptionStrore>();
+			Services.AddScoped<MongoDbWebhookSubscriptionStrore>();
+			Services.TryAddScoped<MongoDbWebhookSubscriptionStrore<MongoWebhookSubscription>>();
 
 
-			Services.TryAddSingleton<IWebhookDeliveryResultStore<MongoWebhookDeliveryResult>, MongoDbWebhookDeliveryResultStore>();
-			Services.AddSingleton<MongoDbWebhookDeliveryResultStore>();
-			Services.TryAddSingleton<MongoDbWebhookDeliveryResultStore<MongoWebhookDeliveryResult>>();
+			Services.TryAddScoped<IWebhookDeliveryResultStore<MongoWebhookDeliveryResult>, MongoDbWebhookDeliveryResultStore>();
+			Services.AddScoped<MongoDbWebhookDeliveryResultStore>();
+			Services.TryAddScoped<MongoDbWebhookDeliveryResultStore<MongoWebhookDeliveryResult>>();
 		}
 
 		/// <summary>
@@ -132,16 +132,16 @@ namespace Deveel.Webhooks {
 		/// </returns>
 		public MongoDbWebhookStorageBuilder<TSubscription> UseMultiTenant<TTenantInfo>() where TTenantInfo : class, ITenantInfo, new() {
 			Services.RemoveAll<IMongoDbWebhookContext>();
-			Services.AddSingleton<IMongoDbWebhookContext, MongoDbWebhookTenantContext<TTenantInfo>>();
-			Services.AddSingleton<MongoDbWebhookTenantContext<TTenantInfo>>();
+			Services.AddScoped<IMongoDbWebhookContext, MongoDbWebhookTenantContext<TTenantInfo>>();
+			Services.AddScoped<MongoDbWebhookTenantContext<TTenantInfo>>();
 
-            Services.TryAddSingleton<IWebhookSubscriptionStoreProvider<MongoWebhookSubscription>, MongoDbWebhookSubscriptionStoreProvider<TTenantInfo>>();
-            Services.AddSingleton<MongoDbWebhookSubscriptionStoreProvider<TTenantInfo>>();
-            Services.TryAddSingleton<MongoDbWebhookSubscriptionStoreProvider<TTenantInfo, MongoWebhookSubscription>>();
+            Services.TryAddScoped<IWebhookSubscriptionStoreProvider<MongoWebhookSubscription>, MongoDbWebhookSubscriptionStoreProvider<TTenantInfo>>();
+            Services.AddScoped<MongoDbWebhookSubscriptionStoreProvider<TTenantInfo>>();
+            Services.TryAddScoped<MongoDbWebhookSubscriptionStoreProvider<TTenantInfo, MongoWebhookSubscription>>();
 
-            Services.TryAddSingleton<IWebhookDeliveryResultStoreProvider<MongoWebhookDeliveryResult>, MongoDbWebhookDeliveryResultStoreProvider<TTenantInfo>>();
-            Services.AddSingleton<MongoDbWebhookDeliveryResultStoreProvider<TTenantInfo>>();
-            Services.TryAddSingleton<MongoDbWebhookDeliveryResultStoreProvider<TTenantInfo, MongoWebhookDeliveryResult>>();
+            Services.TryAddScoped<IWebhookDeliveryResultStoreProvider<MongoWebhookDeliveryResult>, MongoDbWebhookDeliveryResultStoreProvider<TTenantInfo>>();
+            Services.AddScoped<MongoDbWebhookDeliveryResultStoreProvider<TTenantInfo>>();
+            Services.TryAddScoped<MongoDbWebhookDeliveryResultStoreProvider<TTenantInfo, MongoWebhookDeliveryResult>>();
 
             return this;
 		}
@@ -168,8 +168,8 @@ namespace Deveel.Webhooks {
 		/// </returns>
 		public MongoDbWebhookStorageBuilder<TSubscription> UseSubscriptionStore<TStore>()
 			where TStore : MongoDbWebhookSubscriptionStrore {
-			Services.AddSingleton<IWebhookSubscriptionStore<MongoWebhookSubscription>, TStore>();
-			Services.AddSingleton<TStore>();
+			Services.AddScoped<IWebhookSubscriptionStore<MongoWebhookSubscription>, TStore>();
+			Services.AddScoped<TStore>();
 
 			return this;
 		}
@@ -187,7 +187,7 @@ namespace Deveel.Webhooks {
 		/// </returns>
 		public MongoDbWebhookStorageBuilder<TSubscription> UseDeliveryResultStore<TStore>()
 			where TStore : MongoDbWebhookDeliveryResultStore {
-			Services.AddSingleton<IWebhookDeliveryResultStore<MongoWebhookDeliveryResult>, TStore>();
+			Services.AddScoped<IWebhookDeliveryResultStore<MongoWebhookDeliveryResult>, TStore>();
 
 			return this;
 		}
@@ -209,7 +209,7 @@ namespace Deveel.Webhooks {
 			where TWebhook : class
 			where TResult : MongoWebhookDeliveryResult, new() {
 
-			Services.AddSingleton<IWebhookDeliveryResultLogger<TWebhook>, MongoDbWebhookDeliveryResultLogger<TWebhook, TResult>>();
+			Services.AddTransient<IWebhookDeliveryResultLogger<TWebhook>, MongoDbWebhookDeliveryResultLogger<TWebhook, TResult>>();
 
 			return this;
 		}

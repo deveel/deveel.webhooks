@@ -38,7 +38,7 @@ namespace Deveel.Webhooks {
 		public static IServiceCollection AddWebhookSubscriptions<TSubscription>(this IServiceCollection services, Action<WebhookSubscriptionBuilder<TSubscription>>? configure = null) 
 			where TSubscription : class, IWebhookSubscription {
 
-			var builder = services.AddWebhooksSubscriptions<TSubscription>();
+			var builder = services.AddWebhookSubscriptions<TSubscription>();
 			configure?.Invoke(builder);
 
 			return services;
@@ -57,7 +57,7 @@ namespace Deveel.Webhooks {
 		/// <returns>
 		/// Returns the builder used to configure the service.
 		/// </returns>
-		public static WebhookSubscriptionBuilder<TSubscription> AddWebhooksSubscriptions<TSubscription>(this IServiceCollection services) 
+		public static WebhookSubscriptionBuilder<TSubscription> AddWebhookSubscriptions<TSubscription>(this IServiceCollection services) 
 			where TSubscription : class, IWebhookSubscription {
 			var builder = new WebhookSubscriptionBuilder<TSubscription>(services);
 

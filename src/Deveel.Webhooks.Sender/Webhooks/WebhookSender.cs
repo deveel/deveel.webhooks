@@ -72,7 +72,7 @@ namespace Deveel.Webhooks {
 		/// for a configured algorithm.
 		/// </param>
 		public WebhookSender(IOptionsSnapshot<WebhookSenderOptions> options,
-			IHttpClientFactory httpClientFactory,
+			IHttpClientFactory? httpClientFactory = null,
 			IWebhookDestinationVerifier<TWebhook>? verifier = null,
 			IWebhookJsonSerializer<TWebhook>? jsonSerializer = null,
 			IWebhookXmlSerializer<TWebhook>? xmlSerializer = null,
@@ -98,7 +98,7 @@ namespace Deveel.Webhooks {
 		/// Thrown when the <paramref name="options"/> or the <paramref name="httpClientFactory"/>
 		/// are <c>null</c>
 		/// </exception>
-		protected WebhookSender(WebhookSenderOptions options, IHttpClientFactory httpClientFactory) 
+		protected WebhookSender(WebhookSenderOptions options, IHttpClientFactory? httpClientFactory = null) 
 			: base(httpClientFactory) {
 			if (options is null) throw new ArgumentNullException(nameof(options));
 

@@ -21,7 +21,9 @@ namespace Deveel.Webhooks {
 	/// <summary>
 	/// An object that is used to configure the webhook services.
 	/// </summary>
-	/// <typeparam name="TSubscription"></typeparam>
+	/// <typeparam name="TSubscription">
+	/// The type of the subscription that is used to notify webhooks.
+	/// </typeparam>
 	public sealed class WebhookSubscriptionBuilder<TSubscription> where TSubscription : class, IWebhookSubscription {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="WebhookSubscriptionBuilder{TSubscription}"/> class.

@@ -42,15 +42,17 @@ namespace Deveel.Webhooks {
         /// </summary>
         public IServiceCollection Services { get; }
 
-        /// <summary>
-        /// Adds the notifier service to the webhooks service.
-        /// </summary>
-        /// <returns>
-        /// Returns a <see cref="WebhookNotifierBuilder{TWebhook}"/> instance that
-        /// can be used to configure the notifier service.
-        /// </returns>
-        public WebhookNotifierBuilder<TWebhook> AddNotifier()
-            => Services.AddWebhookNotifier<TWebhook>();
+		/// <summary>
+		/// Adds the notifier service to the webhooks service.
+		/// </summary>
+		/// <returns>
+		/// Returns a <see cref="WebhookNotifierBuilder{TWebhook}"/> instance that
+		/// can be used to configure the notifier service.
+		/// </returns>
+		public WebhooksBuilder<TWebhook> AddNotifier() { 
+			Services.AddWebhookNotifier<TWebhook>();
+			return this;
+		}
 
         /// <summary>
         /// Adds the notifier service to the webhooks service.
@@ -67,15 +69,17 @@ namespace Deveel.Webhooks {
             return this;
         }
 
-        /// <summary>
-        /// Adds the sender service to the webhooks service.
-        /// </summary>
-        /// <returns>
-        /// Returns a <see cref="WebhookSenderBuilder{TWebhook}"/> instance that
-        /// can be used to configure the sender service.
-        /// </returns>
-        public WebhookSenderBuilder<TWebhook> AddSender()
-            => Services.AddWebhookSender<TWebhook>();
+		/// <summary>
+		/// Adds the sender service to the webhooks service.
+		/// </summary>
+		/// <returns>
+		/// Returns a <see cref="WebhookSenderBuilder{TWebhook}"/> instance that
+		/// can be used to configure the sender service.
+		/// </returns>
+		public WebhooksBuilder<TWebhook> AddSender() { 
+			Services.AddWebhookSender<TWebhook>();
+			return this;
+		}
 
         /// <summary>
         /// Adds the sender service to the webhooks service.

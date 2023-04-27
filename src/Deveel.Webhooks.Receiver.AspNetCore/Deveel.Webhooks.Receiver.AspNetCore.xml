@@ -4,79 +4,6 @@
         <name>Deveel.Webhooks.Receiver.AspNetCore</name>
     </assembly>
     <members>
-        <member name="T:Deveel.ServiceCollectionExtensions">
-            <summary>
-            Extends a <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/> object to register
-            a receiver of a specific type of webhooks.
-            </summary>
-        </member>
-        <member name="M:Deveel.ServiceCollectionExtensions.AddWebhookReceiver``1(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
-            <summary>
-            Adds a receiver of webhooks of a specific type to the service collection.
-            </summary>
-            <typeparam name="TWebhook">The type of webhooks to receive</typeparam>
-            <param name="services">
-            The service collection to which the receiver is added
-            </param>
-            <returns>
-            Returns an instance of <see cref="T:Deveel.Webhooks.WebhookReceiverBuilder`1"/> that can
-            be used to further configure the receiver.
-            </returns>
-        </member>
-        <member name="M:Deveel.ServiceCollectionExtensions.AddWebhookReceiver``1(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.String)">
-            <summary>
-            Adds a receiver of webhooks of a specific type to the service collection.
-            </summary>
-            <typeparam name="TWebhook">
-            The type of webhooks to receive
-            </typeparam>
-            <param name="services">
-            The service collection to which the receiver is added
-            </param>
-            <param name="sectionPath">
-            The path to the configuration section that contains the options for the webhook receiver
-            </param>
-            <returns>
-            Returns an instance of <see cref="T:Deveel.Webhooks.WebhookReceiverBuilder`1"/> that can
-            be used to further configure the receiver.
-            </returns>
-        </member>
-        <member name="M:Deveel.ServiceCollectionExtensions.AddWebhookReceiver``1(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Action{Deveel.Webhooks.WebhookReceiverOptions})">
-            <summary>
-            Adds a receiver of webhooks of a specific type to the service collection.
-            </summary>
-            <typeparam name="TWebhook">
-            The type of webhooks to receive
-            </typeparam>
-            <param name="services">
-            The service collection to which the receiver is added
-            </param>
-            <param name="configure">
-            A configuraton action that can be used to further configure the receiver
-            </param>
-            <returns>
-            Returns an instance of <see cref="T:Deveel.Webhooks.WebhookReceiverBuilder`1"/> that can
-            be used to further configure the receiver.
-            </returns>
-        </member>
-        <member name="M:Deveel.ServiceCollectionExtensions.AddWebhookReceiver``1(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Action{Deveel.Webhooks.WebhookReceiverBuilder{``0}})">
-            <summary>
-            Adds a receiver of webhooks of a specific type to the service collection.
-            </summary>
-            <typeparam name="TWebhook">
-            The type of webhooks to receive
-            </typeparam>
-            <param name="services">
-            The service collection to which the receiver is added
-            </param>
-            <param name="configure">
-            A configuraton action that can be used to further configure the receiver
-            </param>
-            <returns>
-            Returns an instance of <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/> that can be used to register
-            other services and configurations.
-            </returns>
-        </member>
         <member name="T:Deveel.Webhooks.ApplicationBuilderExtensions">
             <summary>
             Extends the <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/> to provide methods
@@ -405,6 +332,79 @@
             Returns the options for the verifier of the given type.
             </returns>
         </member>
+        <member name="T:Deveel.Webhooks.ServiceCollectionExtensions">
+            <summary>
+            Extends a <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/> object to register
+            a receiver of a specific type of webhooks.
+            </summary>
+        </member>
+        <member name="M:Deveel.Webhooks.ServiceCollectionExtensions.AddWebhookReceiver``1(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            Adds a receiver of webhooks of a specific type to the service collection.
+            </summary>
+            <typeparam name="TWebhook">The type of webhooks to receive</typeparam>
+            <param name="services">
+            The service collection to which the receiver is added
+            </param>
+            <returns>
+            Returns an instance of <see cref="T:Deveel.Webhooks.WebhookReceiverBuilder`1"/> that can
+            be used to further configure the receiver.
+            </returns>
+        </member>
+        <member name="M:Deveel.Webhooks.ServiceCollectionExtensions.AddWebhookReceiver``1(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.String)">
+            <summary>
+            Adds a receiver of webhooks of a specific type to the service collection.
+            </summary>
+            <typeparam name="TWebhook">
+            The type of webhooks to receive
+            </typeparam>
+            <param name="services">
+            The service collection to which the receiver is added
+            </param>
+            <param name="sectionPath">
+            The path to the configuration section that contains the options for the webhook receiver
+            </param>
+            <returns>
+            Returns an instance of <see cref="T:Deveel.Webhooks.WebhookReceiverBuilder`1"/> that can
+            be used to further configure the receiver.
+            </returns>
+        </member>
+        <member name="M:Deveel.Webhooks.ServiceCollectionExtensions.AddWebhookReceiver``1(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Action{Deveel.Webhooks.WebhookReceiverOptions})">
+            <summary>
+            Adds a receiver of webhooks of a specific type to the service collection.
+            </summary>
+            <typeparam name="TWebhook">
+            The type of webhooks to receive
+            </typeparam>
+            <param name="services">
+            The service collection to which the receiver is added
+            </param>
+            <param name="configure">
+            A configuraton action that can be used to further configure the receiver
+            </param>
+            <returns>
+            Returns an instance of <see cref="T:Deveel.Webhooks.WebhookReceiverBuilder`1"/> that can
+            be used to further configure the receiver.
+            </returns>
+        </member>
+        <member name="M:Deveel.Webhooks.ServiceCollectionExtensions.AddWebhookReceiver``1(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Action{Deveel.Webhooks.WebhookReceiverBuilder{``0}})">
+            <summary>
+            Adds a receiver of webhooks of a specific type to the service collection.
+            </summary>
+            <typeparam name="TWebhook">
+            The type of webhooks to receive
+            </typeparam>
+            <param name="services">
+            The service collection to which the receiver is added
+            </param>
+            <param name="configure">
+            A configuraton action that can be used to further configure the receiver
+            </param>
+            <returns>
+            Returns an instance of <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/> that can be used to register
+            other services and configurations.
+            </returns>
+        </member>
         <member name="T:Deveel.Webhooks.SystemTextWebhookJsonParser`1">
             <summary>
             Provides a default implementation of the <see cref="T:Deveel.Webhooks.IWebhookJsonParser`1"/>
@@ -431,6 +431,12 @@
         </member>
         <member name="M:Deveel.Webhooks.SystemTextWebhookJsonParser`1.ParseWebhookAsync(System.IO.Stream,System.Threading.CancellationToken)">
             <inheritdoc/>
+        </member>
+        <member name="T:Deveel.Webhooks.WebhookHandlingOptions">
+            <summary>
+            Defines the options for the handling of a received webhook
+            from a single instance of a middleware of an application.
+            </summary>
         </member>
         <member name="P:Deveel.Webhooks.WebhookHandlingOptions.ResponseStatusCode">
             <summary>
@@ -1054,6 +1060,20 @@
             Returns a task that completes when the handler has been executed.
             </returns>
         </member>
+        <member name="M:Deveel.Webhooks.WebhookReceiverMiddleware`1.OnWebhookHandledAsync(Microsoft.AspNetCore.Http.HttpContext,Deveel.Webhooks.WebhookReceiveResult{`0})">
+            <summary>
+            Handles the response of the webhook receiver middleware.
+            </summary>
+            <param name="context">
+            The HTTP context of the request that contains the webhook
+            </param>
+            <param name="result">
+            The result of the webhook reception operation.
+            </param>
+            <returns>
+            Returns a task that completes when the response has been handled.
+            </returns>
+        </member>
         <member name="M:Deveel.Webhooks.WebhookReceiverMiddleware`1.InvokeAsync(Microsoft.AspNetCore.Http.HttpContext)">
             <summary>
             The main entry point of the middleware.
@@ -1184,6 +1204,18 @@
         <member name="P:Deveel.Webhooks.WebhookSignatureOptions.Algorithm">
             <summary>
             Gets or sets the type of algorithm used to compute the signature.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.WebhookSignatureOptions.AlgorithmQueryParameter">
+            <summary>
+            Gets or sets the name of the query parameter that contains the algorithm,
+            when the signature is sent in a query string.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.WebhookSignatureOptions.AlgorithmHeaderName">
+            <summary>
+            Gets or sets the name of the header that contains the algorithm,
+            when the signature is sent in a header.
             </summary>
         </member>
         <member name="P:Deveel.Webhooks.WebhookSignatureOptions.Secret">

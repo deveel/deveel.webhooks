@@ -54,6 +54,7 @@ namespace Deveel.Webhooks {
 
 		private void RegisterDefaultServices() {
 			Services.TryAddScoped<IWebhookNotifier<TWebhook>, WebhookNotifier<TWebhook>>();
+			Services.TryAddScoped<IWebhookSender<TWebhook>, WebhookSender<TWebhook>>();
 
 			// TODO: register the default filter evaluator
 		}

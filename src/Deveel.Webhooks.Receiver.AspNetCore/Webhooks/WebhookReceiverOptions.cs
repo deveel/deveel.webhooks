@@ -18,7 +18,7 @@ namespace Deveel.Webhooks {
 	/// <summary>
 	/// Provides the configuration options for a webhook receiver.
 	/// </summary>
-	public class WebhookReceiverOptions {
+	public class WebhookReceiverOptions<TWebhook> where TWebhook : class {
 		/// <summary>
 		/// Gets or sets whether the signature of the incoming webhook
 		/// should be verified.
@@ -29,5 +29,17 @@ namespace Deveel.Webhooks {
 		/// Gets or sets the options for the signature verification.
 		/// </summary>
 		public WebhookSignatureOptions Signature { get; set; } = new WebhookSignatureOptions();
+
+		/// <summary>
+		/// Gets or sets the parser to use to parse the incoming webhook
+		/// of JSON content-type.
+		/// </summary>
+		public IWebhookJsonParser<TWebhook> JsonParser { get; set; } = new SystemTextWebhookJsonParser<TWebhook>();
+
+		/// <summary>
+		/// Gets or sets the parser to use to parse the incoming webhook
+		/// that are of XML content-type.
+		/// </summary>
+		public IWebhookXmlParser<TWebhook> XmlParser { get; set; } = new SystemWebhookXmlParser<TWebhook>();
 	}
 }

@@ -55,5 +55,20 @@ namespace Deveel.Webhooks {
 		/// signature is invalid (<c>400</c> by default).
 		/// </summary>
 		public int? InvalidStatusCode { get; set; } = 400;
+
+		/// <summary>
+		/// Gets or sets the <see cref="IWebhookSigner"/> to use
+		/// for verifying the signature of the webhooks.
+		/// </summary>
+		public IWebhookSigner? Signer {
+			get => Signers.Count > 0 ? Signers[0] : null;
+			set => Signers = (value != null ? new List<IWebhookSigner> { value } : new List<IWebhookSigner>());
+		}
+
+		/// <summary>
+		/// Gets or sets a list of <see cref="IWebhookSigner"/> that are supported
+		/// by the receiver for validating the signature of the webhooks.
+		/// </summary>
+		public IList<IWebhookSigner> Signers { get; set; } = new List<IWebhookSigner>();
 	}
 }

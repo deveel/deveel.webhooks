@@ -4,11 +4,11 @@ using Microsoft.Extensions.Options;
 
 namespace Deveel.Webhooks.Handlers {
 	public class TestWebhookHandler : IWebhookHandler<TestWebhook> {
-		private readonly WebhookReceiverOptions options;
+		private readonly WebhookReceiverOptions<TestWebhook> options;
 		private readonly IWebhookCallback<TestWebhook> callback;
 
-		public TestWebhookHandler(IOptionsSnapshot<WebhookReceiverOptions> options, IWebhookCallback<TestWebhook> callback) {
-			this.options = options.GetReceiverOptions<TestWebhook>();
+		public TestWebhookHandler(IOptions<WebhookReceiverOptions<TestWebhook>> options, IWebhookCallback<TestWebhook> callback) {
+			this.options = options.Value;
 			this.callback = callback;
 		}
 

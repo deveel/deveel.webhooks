@@ -130,7 +130,16 @@ namespace Deveel.Webhooks {
 		/// container of the application.
 		/// </returns>
 		protected virtual IEnumerable<IWebhookHandler<TWebhook>> ResolveHandlers(HttpContext context) {
-			return context.RequestServices.GetServices<IWebhookHandler<TWebhook>>();
+			var handlers = context.RequestServices.GetServices<IWebhookHandler<TWebhook>>();
+
+			var init = handlers.OfType<IWebhookHandlerInitialize<TWebhook>>();
+			if (init != null) {
+				foreach (var handler in init) {
+					handler.Initialize(context.RequestServices);
+				}
+			}
+
+			return handlers;
 		}
 
 		/// <summary>

@@ -14,6 +14,7 @@
 
 using System.Diagnostics.CodeAnalysis;
 using System.Text;
+using System.Xml;
 
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
@@ -37,24 +38,13 @@ namespace Deveel.Webhooks {
     /// </remarks>
     public class WebhookReceiver<TWebhook> : IWebhookReceiver<TWebhook>
 		where TWebhook : class {
-		private readonly IWebhookSignerProvider<TWebhook>? signerProvider;
-
 		/// <summary>
 		/// Constructs a <see cref="WebhookReceiver{TWebhook}"/> instance.
 		/// </summary>
 		/// <param name="options">An instance of the <see cref="IOptionsSnapshot{TOptions}"/> that is
 		/// used to resolve the configurations specific for this receiver.</param>
-		/// <param name="signerProvider">A provider of <see cref="IWebhookSigner"/> services that
-		/// are used to verify the signature of webhooks</param>
-		/// <param name="jsonParser">A parser that is used to process the JSON
-		/// content of requests and obtain instances of webhooks. By default, if this
-		/// value is <c>null</c> a new instance of <see cref="SystemTextWebhookJsonParser{TWebhook}"/>
-		/// is created using the default options.</param>
-		public WebhookReceiver(IOptionsSnapshot<WebhookReceiverOptions> options,
-            IWebhookJsonParser<TWebhook>? jsonParser = null,
-            IWebhookSignerProvider<TWebhook>? signerProvider = null)
-			: this(options.GetReceiverOptions<TWebhook>(), jsonParser) {
-			this.signerProvider = signerProvider;
+		public WebhookReceiver(IOptions<WebhookReceiverOptions<TWebhook>> options)
+			: this(options.Value) {
 		}
 
         /// <summary>
@@ -62,27 +52,22 @@ namespace Deveel.Webhooks {
         /// </summary>
         /// <param name="options">The configurations used by the receiver to
         /// process the requests</param>
-        /// <param name="jsonParser">A parser that is used to process the JSON
-        /// content of requests and obtain instances of webhooks. By default, if this
-        /// value is <c>null</c> a new instance of <see cref="SystemTextWebhookJsonParser{TWebhook}"/>
-        /// is created using the default options.</param>
         /// <exception cref="ArgumentNullException">
 		/// Thrown if the given <paramref name="options"/> is <c>null</c>
 		/// </exception>
-        protected WebhookReceiver(WebhookReceiverOptions options, IWebhookJsonParser<TWebhook>? jsonParser) {
+        protected WebhookReceiver(WebhookReceiverOptions<TWebhook> options) {
 			ReceiverOptions = options ?? throw new ArgumentNullException(nameof(options));
-			JsonParser = jsonParser ?? new SystemTextWebhookJsonParser<TWebhook>();
 		}
 
 		/// <summary>
 		/// Gets the options used by the receiver to process the requests.
 		/// </summary>
-		protected virtual WebhookReceiverOptions ReceiverOptions { get; }
+		protected virtual WebhookReceiverOptions<TWebhook> ReceiverOptions { get; }
 
-		/// <summary>
-		/// Gets the parser used to process the JSON content of requests
-		/// </summary>
-		protected virtual IWebhookJsonParser<TWebhook> JsonParser { get; }
+		///// <summary>
+		///// Gets the parser used to process the JSON content of requests
+		///// </summary>
+		//protected virtual IWebhookJsonParser<TWebhook> JsonParser { get; }
 
 		/// <summary>
 		/// Resolves a webhook signer for the given algorithm.
@@ -94,7 +79,8 @@ namespace Deveel.Webhooks {
 		/// given algorithm.
 		/// </returns>
 		protected virtual IWebhookSigner? GetSigner(string algorithm) {
-			return signerProvider?.GetSigner(algorithm);
+			return ReceiverOptions?.Signature?.Signers?
+				.FirstOrDefault(x => x.Algorithms.Any(y => String.Equals(y, algorithm, StringComparison.OrdinalIgnoreCase)));
 		}
 
 		/// <summary>
@@ -124,10 +110,10 @@ namespace Deveel.Webhooks {
 		/// Thrown if the parsing operation is not supported by the receiver.
 		/// </exception>
 		protected virtual async Task<TWebhook?> ParseJsonAsync(string? jsonBody, CancellationToken cancellationToken) {
-            if (JsonParser == null)
+            if (ReceiverOptions.JsonParser == null)
                 throw new NotSupportedException("The JSON parser was not provided");
 
-			return await JsonParser.ParseWebhookAsync(jsonBody, cancellationToken);
+			return await ReceiverOptions.JsonParser.ParseWebhookAsync(jsonBody, cancellationToken);
 		}
 
         /// <summary>
@@ -144,10 +130,40 @@ namespace Deveel.Webhooks {
         /// Thrown if the parsing operation is not supported by the receiver.
         /// </exception>
         protected virtual async Task<TWebhook?> ParseJsonAsync(Stream utf8Stream, CancellationToken cancellationToken) {
-			if (JsonParser == null)
+			if (ReceiverOptions.JsonParser == null)
 				throw new NotSupportedException("The JSON parser was not provided");
 
-			return await JsonParser.ParseWebhookAsync(utf8Stream, cancellationToken);
+			return await ReceiverOptions.JsonParser.ParseWebhookAsync(utf8Stream, cancellationToken);
+		}
+
+		/// <summary>
+		/// Parses the XML body of a webhook request.
+		/// </summary>
+		/// <param name="xmlBody">
+		/// The XML-formatted body of the webhook to be parsed
+		/// </param>
+		/// <param name="cancellationToken">
+		/// A token that can be used to cancel the parsing operation
+		/// </param>
+		/// <returns>
+		/// Returns an instance of <typeparamref name="TWebhook"/> that completes the
+		/// parsing operation to obtain the webhook.
+		/// </returns>
+		/// <exception cref="NotSupportedException">
+		/// Thrown if the parsing operation is not supported by the receiver.
+		/// </exception>
+		protected virtual async Task<TWebhook?> ParseXmlAsync(string? xmlBody, CancellationToken cancellationToken) {
+			if (ReceiverOptions.XmlParser == null)
+				throw new NotSupportedException("The XML parser was not provided");
+
+			return await ReceiverOptions.XmlParser.ParseWebhookAsync(xmlBody, cancellationToken);
+		}
+
+		protected virtual async Task<TWebhook?> ParseXmlAsync(Stream utf8Stream, CancellationToken cancellationToken) {
+			if (ReceiverOptions.XmlParser == null)
+				throw new NotSupportedException("The XML parser was not provided");
+
+			return await ReceiverOptions.XmlParser.ParseWebhookAsync(utf8Stream, cancellationToken);
 		}
 
 		private string? GetAlgorithm(HttpRequest request, string signature) {
@@ -291,11 +307,14 @@ namespace Deveel.Webhooks {
 
 		/// <inheritdoc/>
 		public virtual async Task<WebhookReceiveResult<TWebhook>> ReceiveAsync(HttpRequest request, CancellationToken cancellationToken) {
-			if (String.IsNullOrWhiteSpace(request.ContentType) ||
-				!request.ContentType.StartsWith("application/json"))
-				return new WebhookReceiveResult<TWebhook>(null, null);
-
 			try {
+				if (String.IsNullOrWhiteSpace(request.ContentType))
+					throw new NotSupportedException("Content type not provided in the request.");
+
+				var isJson = request.ContentType.StartsWith("application/json");
+				var isXml = request.ContentType.StartsWith("text/xml") ||
+					request.ContentType.StartsWith("application/xml");
+
 				if (ValidateSignature()) {
 					var result = await TryValidateWebhook(request);
 
@@ -304,13 +323,28 @@ namespace Deveel.Webhooks {
 					} else if ((result.SignatureValidated && (result.IsValid ?? false)) ||
 						!result.SignatureValidated) {
 						var signatureValid = result.SignatureValidated && (result.IsValid ?? false);
-						var webhook = await ParseJsonAsync(result.JsonBody, cancellationToken);
+
+						TWebhook? webhook;
+						if (isJson) {
+							webhook = await ParseJsonAsync(result.Body, cancellationToken);
+						} else if (isXml) {
+							webhook = await ParseXmlAsync(result.Body, cancellationToken);
+						} else {
+							throw new NotSupportedException($"Content type '{request.ContentType}' is not supported");
+						}
+
 						return new WebhookReceiveResult<TWebhook>(webhook, signatureValid);
 					} else {
 						throw new NotSupportedException();
 					}
 				} else {
-					return await ParseJsonAsync(request.Body, cancellationToken);
+					if (isJson) {
+						return await ParseJsonAsync(request.Body, cancellationToken);
+					} else if (isXml) {
+						return await ParseXmlAsync(request.Body, cancellationToken);
+					} else {
+						throw new NotSupportedException($"Content type '{request.ContentType}' is not supported");
+					}
 				}
 			} catch (WebhookReceiverException) {
 				throw;
@@ -335,19 +369,19 @@ namespace Deveel.Webhooks {
 			public bool? IsValid { get; }
 
 			/// <summary>
-			/// Gets the JSON body of the webhook, or <c>null</c> if it was
+			/// Gets the body of the webhook, or <c>null</c> if it was
 			/// not possible to read it from the request.
 			/// </summary>
-			public string? JsonBody { get; }
+			public string? Body { get; }
 
 			/// <summary>
 			/// Initializes a new instance of the <see cref="ValidateResult"/> struct.
 			/// </summary>
-			/// <param name="jsonBody">The JSON-formatted string that represents the webhook</param>
+			/// <param name="body">The string that represents the webhook</param>
 			/// <param name="validated">Indicates if the webhook signature was actually validated</param>
 			/// <param name="isValid">Indicates if the webhook signature was valid</param>
-			public ValidateResult(string? jsonBody, bool validated, bool? isValid) : this() {
-				JsonBody = jsonBody;
+			public ValidateResult(string? body, bool validated, bool? isValid) : this() {
+				Body = body;
 				SignatureValidated = validated;
 				IsValid = isValid;
 			}

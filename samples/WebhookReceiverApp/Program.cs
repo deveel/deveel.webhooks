@@ -22,8 +22,7 @@ namespace Deveel.Webhooks {
 			app.UseAuthorization();
 
 			app.UseWebhookReceiver<IdentityWebhook>("/webhooks/identity");
-			app.UseWebhookReceiver("/webhooks/identity/handled", (HttpContext context, IdentityWebhook webhook) => {
-				var logger = context.RequestServices.GetRequiredService<ILogger<Program>>();
+			app.UseWebhookReceiver("/webhooks/identity/handled", (IdentityWebhook webhook, ILogger<Program> logger) => {
 				logger.LogInformation("User {UserName} registered", webhook.User?.Name);
 			});
 

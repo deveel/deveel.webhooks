@@ -20,32 +20,31 @@ using Microsoft.Extensions.Logging.Abstractions;
 namespace Deveel.Webhooks {
     class WebhookDelegatedReceiverMiddleware<TWebhook> where TWebhook : class {
 		private readonly RequestDelegate next;
-		private readonly Func<HttpContext, TWebhook, CancellationToken, Task>? asyncHandler;
-		private readonly Action<HttpContext, TWebhook>? syncHandler;
+		private readonly IWebhookHandler<TWebhook> webhookHandler;
 		private readonly WebhookHandlingOptions options;
 		private readonly ILogger logger;
 
 		public WebhookDelegatedReceiverMiddleware(
 			RequestDelegate next,
             WebhookHandlingOptions options ,
-            Func<HttpContext, TWebhook, CancellationToken, Task> handler,
+            IWebhookHandler<TWebhook> webhookHandler,
 			ILogger<WebhookDelegatedReceiverMiddleware<TWebhook>>? logger = null) {
 			this.next = next;
 			this.options = options;
 			this.logger = logger ?? NullLogger<WebhookDelegatedReceiverMiddleware<TWebhook>>.Instance;
-			asyncHandler = handler;
+			this.webhookHandler = webhookHandler;
 		}
 
-		public WebhookDelegatedReceiverMiddleware(
-			RequestDelegate next,
-			WebhookHandlingOptions options,
-			Action<HttpContext, TWebhook> handler,
-			ILogger<WebhookDelegatedReceiverMiddleware<TWebhook>>? logger = null) {
-			this.next = next;
-			this.options = options;
-			this.logger = logger ?? NullLogger<WebhookDelegatedReceiverMiddleware<TWebhook>>.Instance;
-			syncHandler = handler;
-		}
+		//public WebhookDelegatedReceiverMiddleware(
+		//	RequestDelegate next,
+		//	WebhookHandlingOptions options,
+		//	Action<HttpContext, TWebhook> handler,
+		//	ILogger<WebhookDelegatedReceiverMiddleware<TWebhook>>? logger = null) {
+		//	this.next = next;
+		//	this.options = options;
+		//	this.logger = logger ?? NullLogger<WebhookDelegatedReceiverMiddleware<TWebhook>>.Instance;
+		//	syncHandler = handler;
+		//}
 
 		public async Task InvokeAsync(HttpContext context) {
             try {
@@ -66,15 +65,12 @@ namespace Deveel.Webhooks {
 						} else {
 							logger.TraceWebhookReceived();
 
-							if (asyncHandler != null) {
-								await asyncHandler(context, webhook, context.RequestAborted);
+							if (webhookHandler is IWebhookHandlerInitialize<TWebhook> init)
+								init.Initialize(context.RequestServices);
 
-								logger.TraceWebhookHandled(typeof(Func<TWebhook, CancellationToken, Task>));
-							} else if (syncHandler != null) {
-								syncHandler(context, webhook);
+							await webhookHandler.HandleAsync(webhook, context.RequestAborted);
 
-								logger.TraceWebhookHandled(typeof(Action<TWebhook>));
-							}
+							logger.TraceWebhookHandled(webhookHandler.GetType());
 						}
 					} else {
 						logger.WarnInvalidWebhook();

@@ -1097,7 +1097,7 @@
             a proper management of the <see cref="T:System.Net.Http.HttpClient"/> instances.
             </remarks>
         </member>
-        <member name="M:Deveel.Webhooks.WebhookSender`1.#ctor(Microsoft.Extensions.Options.IOptionsSnapshot{Deveel.Webhooks.WebhookSenderOptions},System.Net.Http.IHttpClientFactory,Deveel.Webhooks.IWebhookDestinationVerifier{`0},Deveel.Webhooks.IWebhookJsonSerializer{`0},Deveel.Webhooks.IWebhookXmlSerializer{`0},Deveel.Webhooks.IWebhookSignerProvider{`0})">
+        <member name="M:Deveel.Webhooks.WebhookSender`1.#ctor(Microsoft.Extensions.Options.IOptionsSnapshot{Deveel.Webhooks.WebhookSenderOptions},System.Net.Http.IHttpClientFactory,Deveel.Webhooks.IWebhookJsonSerializer{`0},Deveel.Webhooks.IWebhookXmlSerializer{`0},Deveel.Webhooks.IWebhookSignerProvider{`0})">
             <summary>
             Constructs a new instance of the <see cref="T:Deveel.Webhooks.WebhookSender`1"/>
             </summary>
@@ -1108,12 +1108,6 @@
             A factory used to create instances of <see cref="T:System.Net.Http.HttpClient"/>. When this
             is <c>null</c> the sender will create a new instance of <see cref="T:System.Net.Http.HttpClient"/>
             and dispose it when this services is disposed.
-            </param>
-            <param name="verifier">
-            A service that is used to verify the destination of the webhook before
-            attempting any delivery. This service does not follow the same configuration
-            and behhavior of the sender, being independently defined, and it is invoked 
-            before any attempt to send, if the receiver has opted-in for verification.
             </param>
             <param name="jsonSerializer">
             An optional service that is used to serialize the webhook to a JSON string.

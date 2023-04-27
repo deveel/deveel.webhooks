@@ -30,7 +30,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Deveel.Webhooks.Receiver.AspNetCore\Deveel.Webhooks.Receiver.AspNetCore.csproj" />
     <ProjectReference Include="..\Deveel.Webhooks.Receiver.TestApi\Deveel.Webhooks.Receiver.TestApi.csproj" />
   </ItemGroup>
 

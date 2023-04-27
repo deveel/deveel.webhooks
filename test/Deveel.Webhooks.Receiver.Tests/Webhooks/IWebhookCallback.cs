@@ -1,4 +1,4 @@
-﻿namespace Deveel.Webhooks.Handlers {
+﻿namespace Deveel.Webhooks {
 	public interface IWebhookCallback<TWebhook> {
 		void OnWebhookHandled(TWebhook? webhook);
 	}

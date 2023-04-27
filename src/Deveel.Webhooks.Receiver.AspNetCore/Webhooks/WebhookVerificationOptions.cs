@@ -19,7 +19,7 @@ namespace Deveel.Webhooks {
 	/// Provides the configuration options for the default verification 
 	/// of a webhook request.
 	/// </summary>
-	public class WebhookVerificationOptions {
+	public class WebhookVerificationOptions<TWebhook> where TWebhook : class {
 		/// <summary>
 		/// Gets or sets a token that is matched against the value
 		/// sent by the provider to verify the identity of the receiver.
@@ -43,5 +43,11 @@ namespace Deveel.Webhooks {
 		/// is not authenticated (<c>403</c> by default).
 		/// </summary>
 		public int? NotAuthenticatedStatusCode { get; set; } = 403;
+
+		/// <summary>
+		/// Gets or sets the HTTP status code to return when the request
+		/// is invalid (<c>400</c> by default).
+		/// </summary>
+		public int? BadRequestStatusCode { get; set; } = 400;
 	}
 }

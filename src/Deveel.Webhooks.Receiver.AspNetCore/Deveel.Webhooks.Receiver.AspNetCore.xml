@@ -4,6 +4,126 @@
         <name>Deveel.Webhooks.Receiver.AspNetCore</name>
     </assembly>
     <members>
+        <member name="T:Deveel.Json.JsonDiscriminatorAttribute">
+            <summary>
+            Indiates the property that is used as a discriminator
+            in a polymorphic class.
+            </summary>
+            <remarks>
+            The name of the discriminator property must be the same
+            as used by the JSON object, and it must be a string.
+            </remarks>
+        </member>
+        <member name="M:Deveel.Json.JsonDiscriminatorAttribute.#ctor(System.String)">
+            <summary>
+            Constructs the attribute with the given JSON property name.
+            </summary>
+            <param name="propertyName">
+            The name of the JSON property that is used as a discriminator.
+            </param>
+            <exception cref="T:System.ArgumentException">
+            Thrown when the given property name is null or whitespace.
+            </exception>
+        </member>
+        <member name="P:Deveel.Json.JsonDiscriminatorAttribute.PropertyName">
+            <summary>
+            Gets the name of the JSON property that is used as a discriminator
+            </summary>
+        </member>
+        <member name="T:Deveel.Json.JsonKnownTypeAttribute">
+            <summary>
+            Defines the type of object that is used by the
+            converter when deserializing a polymorphic class
+            from a JSON object.
+            </summary>
+        </member>
+        <member name="M:Deveel.Json.JsonKnownTypeAttribute.#ctor(System.Type,System.String)">
+            <summary>
+            Constructs the attribute with the given type
+            and discriminator value.
+            </summary>
+            <param name="type">
+            The type of the object that is used by the JSON converter
+            then the discriminator value is matched.
+            </param>
+            <param name="discriminatorValue">
+            The value of the discriminator property that is used
+            to match the type of the object that the converter
+            will deserialize.
+            </param>
+            <exception cref="T:System.ArgumentException"></exception>
+            <exception cref="T:System.ArgumentNullException"></exception>
+        </member>
+        <member name="P:Deveel.Json.JsonKnownTypeAttribute.Type">
+            <summary>
+            Gets the type of the object that is used by the JSON converter
+            to deserialize the object when the discriminator value is matched.
+            </summary>
+        </member>
+        <member name="P:Deveel.Json.JsonKnownTypeAttribute.DiscriminatorValue">
+            <summary>
+            Gets the value of the discriminator property that is used
+            to match the type of the object that the converter
+            will deserialize.
+            </summary>
+        </member>
+        <member name="T:Deveel.Json.PolymorphicJsonConverter`1">
+            <summary>
+            A simple JSON converter that can handle polymorphic types.
+            </summary>
+            <typeparam name="T">
+            The base type of the polymorphic hierarchy.
+            </typeparam>
+            <remarks>
+            The types of <typeparamref name="T"/> must be abstract classes
+            and must define at least one known sub-type using the <see cref="T:Deveel.Json.JsonKnownTypeAttribute"/>.
+            </remarks>
+        </member>
+        <member name="M:Deveel.Json.PolymorphicJsonConverter`1.#ctor(System.String)">
+            <summary>
+            Constructs an instance of the converter.
+            </summary>
+            <param name="discriminatorProperty">
+            The name of the property that contains the discriminator value
+            used to determine the concrete type of the object.
+            </param>
+            <exception cref="T:System.ArgumentException">
+            Thrown if the type <typeparamref name="T"/> is not abstract
+            or if the <paramref name="discriminatorProperty"/> is null or whitespace.
+            </exception>
+            <exception cref="T:System.Text.Json.JsonException">
+            Thrown if no known sub-types are defined for the abstract type <typeparamref name="T"/>.
+            </exception>
+        </member>
+        <member name="M:Deveel.Json.PolymorphicJsonConverter`1.#ctor">
+            <summary>
+            Constructs an instance of the converter, that discovers
+            the discriminator property name from the <see cref="T:Deveel.Json.JsonDiscriminatorAttribute"/>
+            </summary>
+        </member>
+        <member name="P:Deveel.Json.PolymorphicJsonConverter`1.DiscriminatorProperty">
+            <summary>
+            Gets the name of the property that contains the discriminator value
+            used to determine the concrete type of the object.
+            </summary>
+        </member>
+        <member name="M:Deveel.Json.PolymorphicJsonConverter`1.Read(System.Text.Json.Utf8JsonReader@,System.Type,System.Text.Json.JsonSerializerOptions)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Deveel.Json.PolymorphicJsonConverter`1.Write(System.Text.Json.Utf8JsonWriter,`0,System.Text.Json.JsonSerializerOptions)">
+            <inheritdoc/>
+        </member>
+        <member name="T:Deveel.Json.UnixTimeMillisConverter">
+            <summary>
+            Converts Unix epoch milliseconds to and from <see cref="T:System.DateTimeOffset"/>.
+            </summary>
+        </member>
+        <member name="M:Deveel.Json.UnixTimeMillisConverter.Read(System.Text.Json.Utf8JsonReader@,System.Type,System.Text.Json.JsonSerializerOptions)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Deveel.Json.UnixTimeMillisConverter.Write(System.Text.Json.Utf8JsonWriter,System.DateTimeOffset,System.Text.Json.JsonSerializerOptions)">
+            <inheritdoc/>
+        </member>
         <member name="T:Deveel.Webhooks.ApplicationBuilderExtensions">
             <summary>
             Extends the <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/> to provide methods
@@ -86,7 +206,7 @@
             the verification requests.
             </returns>
         </member>
-        <member name="M:Deveel.Webhooks.ApplicationBuilderExtensions.UseWebhookReceiver``1(Microsoft.AspNetCore.Builder.IApplicationBuilder,System.String,System.Func{Microsoft.AspNetCore.Http.HttpContext,``0,System.Threading.CancellationToken,System.Threading.Tasks.Task})">
+        <member name="M:Deveel.Webhooks.ApplicationBuilderExtensions.UseWebhookReceiver``1(Microsoft.AspNetCore.Builder.IApplicationBuilder,System.String,System.Func{``0,System.Threading.Tasks.Task})">
             <summary>
             Adds a middleware to the application pipeline that receives webhooks
             of that are posted to the given path.
@@ -112,12 +232,186 @@
             webhooks posted to the given path.
             </returns>
         </member>
-        <member name="M:Deveel.Webhooks.ApplicationBuilderExtensions.UseWebhookReceiver``1(Microsoft.AspNetCore.Builder.IApplicationBuilder,System.String,System.Action{Microsoft.AspNetCore.Http.HttpContext,``0})">
+        <member name="M:Deveel.Webhooks.ApplicationBuilderExtensions.UseWebhookReceiver``2(Microsoft.AspNetCore.Builder.IApplicationBuilder,System.String,System.Func{``0,``1,System.Threading.Tasks.Task})">
             <summary>
             Adds a middleware to the application pipeline that receives webhooks
-            of that are posted to the given path.
+            of that are posted to the given path, injecting the provided arguments
+            to the function.
             </summary>
             <typeparam name="TWebhook">The type of the webhook to be received</typeparam>
+            <typeparam name="T1">The type of the first parameter of the delegated function</typeparam>
+            <param name="app">The application builder instance</param>
+            <param name="path">The path to listen for webhook posts</param>
+            <param name="receiver">The delegated function that is invoked by the middleware
+            to handle the received webhook</param>
+            <remarks>
+            <para>
+            The middleware will listen only for POST requests to the given path using
+            the configurations registered at the application startup.
+            </para>
+            <para>
+            Any instance of the <see cref="T:Deveel.Webhooks.IWebhookReceiver`1"/> registered will
+            be ignored when using this middleware, and only the provided function will be
+            invoked by the middleware.
+            </para>
+            </remarks>
+            <returns>
+            Returns the instance of the <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/> that handles
+            webhooks posted to the given path.
+            </returns>
+        </member>
+        <member name="M:Deveel.Webhooks.ApplicationBuilderExtensions.UseWebhookReceiver``3(Microsoft.AspNetCore.Builder.IApplicationBuilder,System.String,System.Func{``0,``1,``2,System.Threading.Tasks.Task})">
+            <summary>
+            Adds a middleware to the application pipeline that receives webhooks
+            of that are posted to the given path, injecting the provided arguments
+            to the function.
+            </summary>
+            <typeparam name="TWebhook">The type of the webhook to be received</typeparam>
+            <typeparam name="T1">The type of the first parameter of the delegated function</typeparam>
+            <typeparam name="T2">The type of the second parameter of the delegated function</typeparam>
+            <param name="app">The application builder instance</param>
+            <param name="path">The path to listen for webhook posts</param>
+            <param name="receiver">The delegated function that is invoked by the middleware
+            to handle the received webhook</param>
+            <remarks>
+            <para>
+            The middleware will listen only for POST requests to the given path using
+            the configurations registered at the application startup.
+            </para>
+            <para>
+            Any instance of the <see cref="T:Deveel.Webhooks.IWebhookReceiver`1"/> registered will
+            be ignored when using this middleware, and only the provided function will be
+            invoked by the middleware.
+            </para>
+            </remarks>
+            <returns>
+            Returns the instance of the <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/> that handles
+            webhooks posted to the given path.
+            </returns>
+        </member>
+        <member name="M:Deveel.Webhooks.ApplicationBuilderExtensions.UseWebhookReceiver``4(Microsoft.AspNetCore.Builder.IApplicationBuilder,System.String,System.Func{``0,``1,``2,``3,System.Threading.Tasks.Task})">
+            <summary>
+            Adds a middleware to the application pipeline that receives webhooks
+            of that are posted to the given path, injecting the provided arguments
+            to the function.
+            </summary>
+            <typeparam name="TWebhook">The type of the webhook to be received</typeparam>
+            <typeparam name="T1">The type of the first parameter of the delegated function</typeparam>
+            <typeparam name="T2">The type of the second parameter of the delegated function</typeparam>
+            <typeparam name="T3">The type of the third parameter of the delegated function</typeparam>
+            <param name="app">The application builder instance</param>
+            <param name="path">The path to listen for webhook posts</param>
+            <param name="receiver">The delegated function that is invoked by the middleware
+            to handle the received webhook</param>
+            <remarks>
+            <para>
+            The middleware will listen only for POST requests to the given path using
+            the configurations registered at the application startup.
+            </para>
+            <para>
+            Any instance of the <see cref="T:Deveel.Webhooks.IWebhookReceiver`1"/> registered will
+            be ignored when using this middleware, and only the provided function will be
+            invoked by the middleware.
+            </para>
+            </remarks>
+            <returns>
+            Returns the instance of the <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/> that handles
+            webhooks posted to the given path.
+            </returns>
+        </member>
+        <member name="M:Deveel.Webhooks.ApplicationBuilderExtensions.UseWebhookReceiver``1(Microsoft.AspNetCore.Builder.IApplicationBuilder,System.String,System.Action{``0})">
+            <summary>
+            Adds a middleware to the application pipeline that receives webhooks
+            of that are posted to the given path
+            </summary>
+            <typeparam name="TWebhook">The type of the webhook to be received</typeparam>
+            <param name="app">The application builder instance</param>
+            <param name="path">The path to listen for webhook posts</param>
+            <param name="receiver">The delegated function that is invoked by the middleware
+            to handle the received webhook</param>
+            <remarks>
+            <para>
+            The middleware will listen only for POST requests to the given path using
+            the configurations registered at the application startup.
+            </para>
+            <para>
+            Any instance of the <see cref="T:Deveel.Webhooks.IWebhookReceiver`1"/> registered will
+            be ignored when using this middleware, and only the provided function will be
+            invoked by the middleware.
+            </para>
+            </remarks>
+            <returns>
+            Returns the instance of the <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/> that handles
+            webhooks posted to the given path.
+            </returns>
+        </member>
+        <member name="M:Deveel.Webhooks.ApplicationBuilderExtensions.UseWebhookReceiver``2(Microsoft.AspNetCore.Builder.IApplicationBuilder,System.String,System.Action{``0,``1})">
+            <summary>
+            Adds a middleware to the application pipeline that receives webhooks
+            of that are posted to the given path, injecting the provided arguments
+            to the function.
+            </summary>
+            <typeparam name="TWebhook">The type of the webhook to be received</typeparam>
+            <typeparam name="T1">The type of the first parameter of the delegated function</typeparam>
+            <param name="app">The application builder instance</param>
+            <param name="path">The path to listen for webhook posts</param>
+            <param name="receiver">The delegated function that is invoked by the middleware
+            to handle the received webhook</param>
+            <remarks>
+            <para>
+            The middleware will listen only for POST requests to the given path using
+            the configurations registered at the application startup.
+            </para>
+            <para>
+            Any instance of the <see cref="T:Deveel.Webhooks.IWebhookReceiver`1"/> registered will
+            be ignored when using this middleware, and only the provided function will be
+            invoked by the middleware.
+            </para>
+            </remarks>
+            <returns>
+            Returns the instance of the <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/> that handles
+            webhooks posted to the given path.
+            </returns>
+        </member>
+        <member name="M:Deveel.Webhooks.ApplicationBuilderExtensions.UseWebhookReceiver``3(Microsoft.AspNetCore.Builder.IApplicationBuilder,System.String,System.Action{``0,``1,``2})">
+            <summary>
+            Adds a middleware to the application pipeline that receives webhooks
+            of that are posted to the given path, injecting the provided arguments
+            to the function.
+            </summary>
+            <typeparam name="TWebhook">The type of the webhook to be received</typeparam>
+            <typeparam name="T1">The type of the first parameter of the delegated function</typeparam>
+            <typeparam name="T2">The type of the second parameter of the delegated function</typeparam>
+            <param name="app">The application builder instance</param>
+            <param name="path">The path to listen for webhook posts</param>
+            <param name="receiver">The delegated function that is invoked by the middleware
+            to handle the received webhook</param>
+            <remarks>
+            <para>
+            The middleware will listen only for POST requests to the given path using
+            the configurations registered at the application startup.
+            </para>
+            <para>
+            Any instance of the <see cref="T:Deveel.Webhooks.IWebhookReceiver`1"/> registered will
+            be ignored when using this middleware, and only the provided function will be
+            invoked by the middleware.
+            </para>
+            </remarks>
+            <returns>
+            Returns the instance of the <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/> that handles
+            webhooks posted to the given path.
+            </returns>
+        </member>
+        <member name="M:Deveel.Webhooks.ApplicationBuilderExtensions.UseWebhookReceiver``4(Microsoft.AspNetCore.Builder.IApplicationBuilder,System.String,System.Action{``0,``1,``2,``3})">
+            <summary>
+            Adds a middleware to the application pipeline that receives webhooks
+            of that are posted to the given path, injecting the provided arguments
+            to the function.
+            </summary>
+            <typeparam name="TWebhook">The type of the webhook to be received</typeparam>
+            <typeparam name="T1">The type of the first parameter of the delegated function</typeparam>
+            <typeparam name="T2">The type of the second parameter of the delegated function</typeparam>
+            <typeparam name="T3">The type of the third parameter of the delegated function</typeparam>
             <param name="app">The application builder instance</param>
             <param name="path">The path to listen for webhook posts</param>
             <param name="receiver">The delegated function that is invoked by the middleware
@@ -301,36 +595,10 @@
             Gets whether the request is verified or not.
             </summary>
         </member>
-        <member name="T:Deveel.Webhooks.OptionsSnapshotExtensions">
+        <member name="P:Deveel.Webhooks.IWebhookVerificationResult.IsValid">
             <summary>
-            Extends the <see cref="T:Microsoft.Extensions.Options.IOptionsSnapshot`1"/> interface
-            to provide standard methods to retrieve the options for a specific
-            webhook receiver.
+            Gets a value indicating whether the request is valid or not.
             </summary>
-        </member>
-        <member name="M:Deveel.Webhooks.OptionsSnapshotExtensions.GetReceiverOptions``1(Microsoft.Extensions.Options.IOptionsSnapshot{Deveel.Webhooks.WebhookReceiverOptions})">
-            <summary>
-            Gets the options for the webhook receiver of the given type.
-            </summary>
-            <typeparam name="TWebhook">The type of webhook handled by the receiver</typeparam>
-            <param name="options">The instance of the <see cref="T:Microsoft.Extensions.Options.IOptionsSnapshot`1"/> to extend</param>
-            <returns>
-            Returns the options for the receiver of the given type.
-            </returns>
-        </member>
-        <member name="M:Deveel.Webhooks.OptionsSnapshotExtensions.GetVerificationOptions``1(Microsoft.Extensions.Options.IOptionsSnapshot{Deveel.Webhooks.WebhookVerificationOptions})">
-            <summary>
-            Gets the options for the webhook verifier of the given type.
-            </summary>
-            <typeparam name="TWebhook">
-            The type of webhook handled by the verifier
-            </typeparam>
-            <param name="options">
-            The instance of the <see cref="T:Microsoft.Extensions.Options.IOptionsSnapshot`1"/> to extend
-            </param>
-            <returns>
-            Returns the options for the verifier of the given type.
-            </returns>
         </member>
         <member name="T:Deveel.Webhooks.ServiceCollectionExtensions">
             <summary>
@@ -369,7 +637,7 @@
             be used to further configure the receiver.
             </returns>
         </member>
-        <member name="M:Deveel.Webhooks.ServiceCollectionExtensions.AddWebhookReceiver``1(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Action{Deveel.Webhooks.WebhookReceiverOptions})">
+        <member name="M:Deveel.Webhooks.ServiceCollectionExtensions.AddWebhookReceiver``1(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Action{Deveel.Webhooks.WebhookReceiverOptions{``0}})">
             <summary>
             Adds a receiver of webhooks of a specific type to the service collection.
             </summary>
@@ -431,6 +699,55 @@
         </member>
         <member name="M:Deveel.Webhooks.SystemTextWebhookJsonParser`1.ParseWebhookAsync(System.IO.Stream,System.Threading.CancellationToken)">
             <inheritdoc/>
+        </member>
+        <member name="T:Deveel.Webhooks.WebhookHandler">
+            <summary>
+            Provides a static factory to create a <see cref="T:Deveel.Webhooks.IWebhookHandler`1"/> from a delegate.
+            </summary>
+        </member>
+        <member name="M:Deveel.Webhooks.WebhookHandler.Create``1(System.Delegate)">
+            <summary>
+            Creates a new instance of <see cref="T:Deveel.Webhooks.IWebhookHandler`1"/> from the given delegate.
+            </summary>
+            <typeparam name="TWebhook">
+            The type of webhook that is handled by the handler
+            </typeparam>
+            <param name="handler">
+            The delegate that is invoked when the handler is executed
+            </param>
+            <returns>
+            Returns an instance of <see cref="T:Deveel.Webhooks.IWebhookHandler`1"/> that wraps the given delegate.
+            </returns>
+            <exception cref="T:System.ArgumentNullException">
+            Thrown if the given delegate is <c>null</c>.
+            </exception>
+            <exception cref="T:System.ArgumentException">
+            Thrown if the first argument of the delegate is not of type <typeparamref name="TWebhook"/>.
+            </exception>
+        </member>
+        <member name="M:Deveel.Webhooks.WebhookHandler.Create``1(System.Delegate,System.IServiceProvider)">
+            <summary>
+            Creates a new instance of <see cref="T:Deveel.Webhooks.IWebhookHandler`1"/> from the given delegate,
+            initializing it with the given services.
+            </summary>
+            <typeparam name="TWebhook">
+            The type of webhook that is handled by the handler
+            </typeparam>
+            <param name="handler">
+            The delegate that is invoked when the handler is executed
+            </param>
+            <param name="services">
+            The service provider used to resolve the dependencies of the delegate.
+            </param>
+            <returns>
+            Returns an instance of <see cref="T:Deveel.Webhooks.IWebhookHandler`1"/> that wraps the given delegate.
+            </returns>
+            <exception cref="T:System.ArgumentNullException">
+            Thrown if the given delegate is <c>null</c>.
+            </exception>
+            <exception cref="T:System.ArgumentException">
+            Thrown if the first argument of the delegate is not of type <typeparamref name="TWebhook"/>.
+            </exception>
         </member>
         <member name="T:Deveel.Webhooks.WebhookHandlingOptions">
             <summary>
@@ -523,29 +840,19 @@
             </para>
             </remarks>
         </member>
-        <member name="M:Deveel.Webhooks.WebhookReceiver`1.#ctor(Microsoft.Extensions.Options.IOptionsSnapshot{Deveel.Webhooks.WebhookReceiverOptions},Deveel.Webhooks.IWebhookJsonParser{`0},Deveel.Webhooks.IWebhookSignerProvider{`0})">
+        <member name="M:Deveel.Webhooks.WebhookReceiver`1.#ctor(Microsoft.Extensions.Options.IOptions{Deveel.Webhooks.WebhookReceiverOptions{`0}})">
             <summary>
             Constructs a <see cref="T:Deveel.Webhooks.WebhookReceiver`1"/> instance.
             </summary>
             <param name="options">An instance of the <see cref="T:Microsoft.Extensions.Options.IOptionsSnapshot`1"/> that is
             used to resolve the configurations specific for this receiver.</param>
-            <param name="signerProvider">A provider of <see cref="T:Deveel.Webhooks.IWebhookSigner"/> services that
-            are used to verify the signature of webhooks</param>
-            <param name="jsonParser">A parser that is used to process the JSON
-            content of requests and obtain instances of webhooks. By default, if this
-            value is <c>null</c> a new instance of <see cref="T:Deveel.Webhooks.SystemTextWebhookJsonParser`1"/>
-            is created using the default options.</param>
         </member>
-        <member name="M:Deveel.Webhooks.WebhookReceiver`1.#ctor(Deveel.Webhooks.WebhookReceiverOptions,Deveel.Webhooks.IWebhookJsonParser{`0})">
+        <member name="M:Deveel.Webhooks.WebhookReceiver`1.#ctor(Deveel.Webhooks.WebhookReceiverOptions{`0})">
             <summary>
             Constructs a <see cref="T:Deveel.Webhooks.WebhookReceiver`1"/> instance.
             </summary>
             <param name="options">The configurations used by the receiver to
             process the requests</param>
-            <param name="jsonParser">A parser that is used to process the JSON
-            content of requests and obtain instances of webhooks. By default, if this
-            value is <c>null</c> a new instance of <see cref="T:Deveel.Webhooks.SystemTextWebhookJsonParser`1"/>
-            is created using the default options.</param>
             <exception cref="T:System.ArgumentNullException">
             Thrown if the given <paramref name="options"/> is <c>null</c>
             </exception>
@@ -553,11 +860,6 @@
         <member name="P:Deveel.Webhooks.WebhookReceiver`1.ReceiverOptions">
             <summary>
             Gets the options used by the receiver to process the requests.
-            </summary>
-        </member>
-        <member name="P:Deveel.Webhooks.WebhookReceiver`1.JsonParser">
-            <summary>
-            Gets the parser used to process the JSON content of requests
             </summary>
         </member>
         <member name="M:Deveel.Webhooks.WebhookReceiver`1.GetSigner(System.String)">
@@ -604,6 +906,24 @@
             <param name="utf8Stream">A stream that is UTF-8 encoded and that provides the
             body of the webhook to be parsed</param>
             <param name="cancellationToken"></param>
+            <returns>
+            Returns an instance of <typeparamref name="TWebhook"/> that completes the
+            parsing operation to obtain the webhook.
+            </returns>
+            <exception cref="T:System.NotSupportedException">
+            Thrown if the parsing operation is not supported by the receiver.
+            </exception>
+        </member>
+        <member name="M:Deveel.Webhooks.WebhookReceiver`1.ParseXmlAsync(System.String,System.Threading.CancellationToken)">
+            <summary>
+            Parses the XML body of a webhook request.
+            </summary>
+            <param name="xmlBody">
+            The XML-formatted body of the webhook to be parsed
+            </param>
+            <param name="cancellationToken">
+            A token that can be used to cancel the parsing operation
+            </param>
             <returns>
             Returns an instance of <typeparamref name="TWebhook"/> that completes the
             parsing operation to obtain the webhook.
@@ -682,9 +1002,9 @@
             signature was not validated.
             </summary>
         </member>
-        <member name="P:Deveel.Webhooks.WebhookReceiver`1.ValidateResult.JsonBody">
+        <member name="P:Deveel.Webhooks.WebhookReceiver`1.ValidateResult.Body">
             <summary>
-            Gets the JSON body of the webhook, or <c>null</c> if it was
+            Gets the body of the webhook, or <c>null</c> if it was
             not possible to read it from the request.
             </summary>
         </member>
@@ -692,7 +1012,7 @@
             <summary>
             Initializes a new instance of the <see cref="T:Deveel.Webhooks.WebhookReceiver`1.ValidateResult"/> struct.
             </summary>
-            <param name="jsonBody">The JSON-formatted string that represents the webhook</param>
+            <param name="body">The string that represents the webhook</param>
             <param name="validated">Indicates if the webhook signature was actually validated</param>
             <param name="isValid">Indicates if the webhook signature was valid</param>
         </member>
@@ -744,43 +1064,7 @@
             Returns the current builder instance with the receiver registered
             </returns>
         </member>
-        <member name="M:Deveel.Webhooks.WebhookReceiverBuilder`1.UseVerifier``1">
-            <summary>
-            Registers an implementation of the <see cref="T:Deveel.Webhooks.IWebhookRequestVerifier`1"/>
-            that is used to verify the webhooks verification requests from
-            senders
-            </summary>
-            <typeparam name="TVerifier">
-            The type of the verifier to use for the webhooks of type <typeparamref name="TWebhook"/>
-            </typeparam>
-            <returns>
-            Returns the current builder instance with the verifier registered
-            </returns>
-        </member>
-        <member name="M:Deveel.Webhooks.WebhookReceiverBuilder`1.UseVerifier(System.Action{Deveel.Webhooks.WebhookVerificationOptions})">
-            <summary>
-            Registers the default implementation of the <see cref="T:Deveel.Webhooks.IWebhookRequestVerifier`1"/>
-            </summary>
-            <param name="configure">
-            A delegate that can be used to configure the options for the verifier
-            </param>
-            <returns>
-            Returns the current builder instance with the verifier registered
-            </returns>
-            <seealso cref="T:Deveel.Webhooks.WebhookRequestVerifier`1"/>
-        </member>
-        <member name="M:Deveel.Webhooks.WebhookReceiverBuilder`1.UserVerifier(System.String)">
-            <summary>
-            Registers the default implementation of the <see cref="T:Deveel.Webhooks.IWebhookRequestVerifier`1"/>
-            </summary>
-            <param name="sectionPath">
-            The path to the section in the configuration that contains the options
-            </param>
-            <returns>
-            Return the current builder instance with the verifier registered
-            </returns>
-        </member>
-        <member name="M:Deveel.Webhooks.WebhookReceiverBuilder`1.AddHandler``1">
+        <member name="M:Deveel.Webhooks.WebhookReceiverBuilder`1.AddHandler``1(Microsoft.Extensions.DependencyInjection.ServiceLifetime)">
             <summary>
             Registers an handler for the webhooks of type <typeparamref name="TWebhook"/>
             that were received.
@@ -788,6 +1072,120 @@
             <typeparam name="THandler">
             The type of the handler to use for the webhooks of type <typeparamref name="TWebhook"/>
             </typeparam>
+            <returns>
+            Returns the current builder instance with the handler registered
+            </returns>
+        </member>
+        <member name="M:Deveel.Webhooks.WebhookReceiverBuilder`1.AddHandler``1(``0)">
+            <summary>
+            Registers an handler instance for the webhooks of type <typeparamref name="TWebhook"/>
+            </summary>
+            <typeparam name="THandler">
+            The type of the handler to use for the webhooks of type <typeparamref name="TWebhook"/>
+            </typeparam>
+            <param name="handler">
+            The instance of the handler to use for the webhooks of type <typeparamref name="TWebhook"/>
+            </param>
+            <returns>
+            Returns the current builder instance with the handler registered
+            </returns>
+        </member>
+        <member name="M:Deveel.Webhooks.WebhookReceiverBuilder`1.HandleAsync(System.Func{`0,System.Threading.Tasks.Task})">
+            <summary>
+            Registers the given delegate as handler for the webhooks of type <typeparamref name="TWebhook"/>
+            </summary>
+            <param name="handler">
+            The delegate that should be used as handler for the webhooks.
+            </param>
+            <returns>
+            Returns the current builder instance with the handler registered
+            </returns>
+        </member>
+        <member name="M:Deveel.Webhooks.WebhookReceiverBuilder`1.HandleAsync``1(System.Func{`0,``0,System.Threading.Tasks.Task})">
+            <summary>
+            Registers the given delegate as handler for the webhooks of type <typeparamref name="TWebhook"/>
+            </summary>
+            <typeparam name="T1">The type of the first argument of the handler</typeparam>
+            <param name="handler">
+            The delegate that should be used as handler for the webhooks.
+            </param>
+            <returns>
+            Returns the current builder instance with the handler registered
+            </returns>
+        </member>
+        <member name="M:Deveel.Webhooks.WebhookReceiverBuilder`1.HandleAsync``2(System.Func{`0,``0,``1,System.Threading.Tasks.Task})">
+            <summary>
+            Registers the given delegate as handler for the webhooks of type <typeparamref name="TWebhook"/>
+            </summary>
+            <typeparam name="T1">The type of the first argument of the handler</typeparam>
+            <typeparam name="T2">The type of the second argument of the handler</typeparam>
+            <param name="handler">
+            The delegate that should be used as handler for the webhooks.
+            </param>
+            <returns>
+            Returns the current builder instance with the handler registered
+            </returns>
+        </member>
+        <member name="M:Deveel.Webhooks.WebhookReceiverBuilder`1.HandleAsync``3(System.Func{`0,``0,``1,``2,System.Threading.Tasks.Task})">
+            <summary>
+            Registers the given delegate as handler for the webhooks of type <typeparamref name="TWebhook"/>
+            </summary>
+            <typeparam name="T1">The type of the first argument of the handler</typeparam>
+            <typeparam name="T2">The type of the second argument of the handler</typeparam>
+            <typeparam name="T3">The type of the third argument of the handler</typeparam>
+            <param name="handler">
+            The delegate that should be used as handler for the webhooks.
+            </param>
+            <returns>
+            Returns the current builder instance with the handler registered
+            </returns>
+        </member>
+        <member name="M:Deveel.Webhooks.WebhookReceiverBuilder`1.Handle(System.Action{`0})">
+            <summary>
+            Registers the given delegate as handler for the webhooks of type <typeparamref name="TWebhook"/>
+            </summary>
+            <param name="handler">
+            The delegate that should be used as handler for the webhooks.
+            </param>
+            <returns>
+            Returns the current builder instance with the handler registered
+            </returns>
+        </member>
+        <member name="M:Deveel.Webhooks.WebhookReceiverBuilder`1.Handle``1(System.Action{`0,``0})">
+            <summary>
+            Registers the given delegate as handler for the webhooks of type <typeparamref name="TWebhook"/>
+            </summary>
+            <typeparam name="T1">The type of the first argument of the handler</typeparam>
+            <param name="handler">
+            The delegate that should be used as handler for the webhooks.
+            </param>
+            <returns>
+            Returns the current builder instance with the handler registered
+            </returns>
+        </member>
+        <member name="M:Deveel.Webhooks.WebhookReceiverBuilder`1.Handle``2(System.Action{`0,``0,``1})">
+            <summary>
+            Registers the given delegate as handler for the webhooks of type <typeparamref name="TWebhook"/>
+            </summary>
+            <typeparam name="T1">The type of the first argument of the handler</typeparam>
+            <typeparam name="T2">The type of the second argument of the handler</typeparam>
+            <param name="handler">
+            The delegate that should be used as handler for the webhooks.
+            </param>
+            <returns>
+            Returns the current builder instance with the handler registered
+            </returns>
+        </member>
+        <member name="M:Deveel.Webhooks.WebhookReceiverBuilder`1.Handle``3(System.Action{`0,``0,``1,``2})">
+            <summary>
+            Registers the given delegate as handler for the webhooks of type <typeparamref name="TWebhook"/>
+            </summary>
+            <typeparam name="T1">The type of the first argument of the handler</typeparam>
+            <typeparam name="T2">The type of the second argument of the handler</typeparam>
+            <typeparam name="T3">The type of the third argument of the handler</typeparam>
+            <param name="handler">
+            The delegate that should be used as handler for the webhooks.
+            </param>
             <returns>
             Returns the current builder instance with the handler registered
             </returns>
@@ -805,7 +1203,7 @@
             Returns the current builder instance with the options configured
             </returns>
         </member>
-        <member name="M:Deveel.Webhooks.WebhookReceiverBuilder`1.Configure(System.Action{Deveel.Webhooks.WebhookReceiverOptions})">
+        <member name="M:Deveel.Webhooks.WebhookReceiverBuilder`1.Configure(System.Action{Deveel.Webhooks.WebhookReceiverOptions{`0}})">
             <summary>
             Configures the receiver with the given options
             </summary>
@@ -815,110 +1213,6 @@
             <returns>
             Returns the current builder instance with the options configured
             </returns>
-        </member>
-        <member name="M:Deveel.Webhooks.WebhookReceiverBuilder`1.UseJsonParser``1(Microsoft.Extensions.DependencyInjection.ServiceLifetime)">
-            <summary>
-            Registers a parser that is used to parse the JSON body of webhooks received
-            </summary>
-            <typeparam name="TParser">
-            The type of the parser to use for the webhooks of type <typeparamref name="TWebhook"/>
-            </typeparam>
-            <param name="lifetime">
-            A value that specifies the lifetime of the parser service (defaults to <see cref="F:Microsoft.Extensions.DependencyInjection.ServiceLifetime.Singleton"/>)
-            </param>
-            <returns>
-            Returns the current builder instance with the parser registered
-            </returns>
-        </member>
-        <member name="M:Deveel.Webhooks.WebhookReceiverBuilder`1.UseJsonParser``1(``0)">
-            <summary>
-            Registers a parser that is used to parse the JSON body of webhooks received
-            </summary>
-            <typeparam name="TParser">
-            The type of the parser to use for the webhooks of type <typeparamref name="TWebhook"/>
-            </typeparam>
-            <param name="parser">
-            An instance of the parser to use for the webhooks of type <typeparamref name="TWebhook"/>
-            </param>
-            <returns>
-            Returns the current builder instance with the parser registered
-            </returns>
-        </member>
-        <member name="M:Deveel.Webhooks.WebhookReceiverBuilder`1.UseJsonParser(System.Text.Json.JsonSerializerOptions)">
-            <summary>
-            Registers a default parser that is used to parse the JSON body of webhooks received
-            </summary>
-            <param name="options">
-            An optional set of options that are used to configure the JSON parser behavior
-            </param>
-            <returns>
-            Returns the current builder instance with the parser registered
-            </returns>
-        </member>
-        <member name="M:Deveel.Webhooks.WebhookReceiverBuilder`1.UseJsonParser(System.Func{System.IO.Stream,System.Threading.CancellationToken,System.Threading.Tasks.Task{`0}})">
-            <summary>
-            Registers a function as parser that is used to parse the JSON body of webhooks received
-            </summary>
-            <param name="parser">
-            The function that is used to parse the JSON body of webhooks received
-            </param>
-            <returns>
-            Returns the current builder instance with the parser registered
-            </returns>
-            <exception cref="T:System.ArgumentNullException">
-            Thrown when the given <paramref name="parser"/> is <c>null</c>
-            </exception>
-        </member>
-        <member name="M:Deveel.Webhooks.WebhookReceiverBuilder`1.UseJsonParser(System.Func{System.String,`0})">
-            <summary>
-            Registers a function as parser that is used to parse the JSON body of webhooks received
-            </summary>
-            <param name="parser">
-            The function that is used to parse the JSON body of webhooks received
-            </param>
-            <returns>
-            Returns the current builder instance with the parser registered
-            </returns>
-            <exception cref="T:System.ArgumentNullException">
-            Thrown when the given <paramref name="parser"/> is <c>null</c>
-            </exception>
-        </member>
-        <member name="M:Deveel.Webhooks.WebhookReceiverBuilder`1.UseSigner``1">
-            <summary>
-            Registers a service that is used to sign the payload of webhooks received
-            </summary>
-            <typeparam name="TSigner">
-            The type of the signer to use for the webhooks of type <typeparamref name="TWebhook"/>
-            </typeparam>
-            <returns>
-            Returns the current builder instance with the signer registered
-            </returns>
-        </member>
-        <member name="M:Deveel.Webhooks.WebhookReceiverBuilder`1.UseSha256Signer">
-            <summary>
-            Registers the default implementation of <see cref="T:Deveel.Webhooks.IWebhookSigner"/> that is used 
-            to sign the payload of webhooks received with a SHA256 hash
-            </summary>
-            <returns>
-            Returns the current builder instance with the signer registered
-            </returns>
-        </member>
-        <member name="M:Deveel.Webhooks.WebhookReceiverBuilder`1.UseSigner``1(``0)">
-            <summary>
-            Registers a service that is used to sign the payload of webhooks received
-            </summary>
-            <typeparam name="TSigner">
-            The type of the signer to use for the webhooks of type <typeparamref name="TWebhook"/>
-            </typeparam>
-            <param name="signer">
-            The instance of the signer to use for the webhooks of type <typeparamref name="TWebhook"/>
-            </param>
-            <returns>
-            Returns the current builder instance with the signer registered
-            </returns>
-            <exception cref="T:System.ArgumentNullException">
-            Thrown when the given <paramref name="signer"/> is <c>null</c>
-            </exception>
         </member>
         <member name="T:Deveel.Webhooks.WebhookReceiveResult`1">
             <summary>
@@ -1085,20 +1379,32 @@
             Returns a task that completes when the middleware has finished
             </returns>
         </member>
-        <member name="T:Deveel.Webhooks.WebhookReceiverOptions">
+        <member name="T:Deveel.Webhooks.WebhookReceiverOptions`1">
             <summary>
             Provides the configuration options for a webhook receiver.
             </summary>
         </member>
-        <member name="P:Deveel.Webhooks.WebhookReceiverOptions.VerifySignature">
+        <member name="P:Deveel.Webhooks.WebhookReceiverOptions`1.VerifySignature">
             <summary>
             Gets or sets whether the signature of the incoming webhook
             should be verified.
             </summary>
         </member>
-        <member name="P:Deveel.Webhooks.WebhookReceiverOptions.Signature">
+        <member name="P:Deveel.Webhooks.WebhookReceiverOptions`1.Signature">
             <summary>
             Gets or sets the options for the signature verification.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.WebhookReceiverOptions`1.JsonParser">
+            <summary>
+            Gets or sets the parser to use to parse the incoming webhook
+            of JSON content-type.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.WebhookReceiverOptions`1.XmlParser">
+            <summary>
+            Gets or sets the parser to use to parse the incoming webhook
+            that are of XML content-type.
             </summary>
         </member>
         <member name="T:Deveel.Webhooks.WebhookRequestVerifier`1">
@@ -1110,7 +1416,7 @@
             The type of webhook that is being verified
             </typeparam>
         </member>
-        <member name="M:Deveel.Webhooks.WebhookRequestVerifier`1.#ctor(Microsoft.Extensions.Options.IOptionsSnapshot{Deveel.Webhooks.WebhookVerificationOptions})">
+        <member name="M:Deveel.Webhooks.WebhookRequestVerifier`1.#ctor(Microsoft.Extensions.Options.IOptions{Deveel.Webhooks.WebhookVerificationOptions{`0}})">
             <summary>
             Constructs a <see cref="T:Deveel.Webhooks.WebhookRequestVerifier`1"/> instance with a
             selector that resolves the options for the given type of webhook.
@@ -1119,7 +1425,7 @@
             The provider of the options for the verification of the webhook request
             </param>
         </member>
-        <member name="M:Deveel.Webhooks.WebhookRequestVerifier`1.#ctor(Deveel.Webhooks.WebhookVerificationOptions)">
+        <member name="M:Deveel.Webhooks.WebhookRequestVerifier`1.#ctor(Deveel.Webhooks.WebhookVerificationOptions{`0})">
             <summary>
             Constructs a <see cref="T:Deveel.Webhooks.WebhookRequestVerifier`1"/> instance with the given options
             </summary>
@@ -1154,6 +1460,23 @@
             </summary>
             <param name="result">
             The failed result of the verification of the request
+            </param>
+            <param name="httpResponse">
+            The HTTP response object used to respond to the sender
+            </param>
+            <param name="cancellationToken">
+            A token that can be used to cancel the operation
+            </param>
+            <returns>
+            Returns a <see cref="T:System.Threading.Tasks.Task"/> that completes when the response is sent
+            </returns>
+        </member>
+        <member name="M:Deveel.Webhooks.WebhookRequestVerifier`1.OnInvalidAsync(Deveel.Webhooks.IWebhookVerificationResult,Microsoft.AspNetCore.Http.HttpResponse,System.Threading.CancellationToken)">
+            <summary>
+            Responds to the sender with an invalid verification of the request.
+            </summary>
+            <param name="result">
+            The invalid result of the verification of the request
             </param>
             <param name="httpResponse">
             The HTTP response object used to respond to the sender
@@ -1229,34 +1552,52 @@
             signature is invalid (<c>400</c> by default).
             </summary>
         </member>
-        <member name="T:Deveel.Webhooks.WebhookVerificationOptions">
+        <member name="P:Deveel.Webhooks.WebhookSignatureOptions.Signer">
+            <summary>
+            Gets or sets the <see cref="T:Deveel.Webhooks.IWebhookSigner"/> to use
+            for verifying the signature of the webhooks.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.WebhookSignatureOptions.Signers">
+            <summary>
+            Gets or sets a list of <see cref="T:Deveel.Webhooks.IWebhookSigner"/> that are supported
+            by the receiver for validating the signature of the webhooks.
+            </summary>
+        </member>
+        <member name="T:Deveel.Webhooks.WebhookVerificationOptions`1">
             <summary>
             Provides the configuration options for the default verification 
             of a webhook request.
             </summary>
         </member>
-        <member name="P:Deveel.Webhooks.WebhookVerificationOptions.VerificationToken">
+        <member name="P:Deveel.Webhooks.WebhookVerificationOptions`1.VerificationToken">
             <summary>
             Gets or sets a token that is matched against the value
             sent by the provider to verify the identity of the receiver.
             </summary>
         </member>
-        <member name="P:Deveel.Webhooks.WebhookVerificationOptions.VerificationTokenQueryName">
+        <member name="P:Deveel.Webhooks.WebhookVerificationOptions`1.VerificationTokenQueryName">
             <summary>
             Gets or sets the name of the query parameter that contains
             the verification token.
             </summary>
         </member>
-        <member name="P:Deveel.Webhooks.WebhookVerificationOptions.SuccessStatusCode">
+        <member name="P:Deveel.Webhooks.WebhookVerificationOptions`1.SuccessStatusCode">
             <summary>
             Gets or sets the HTTP status code to return when the request
             is successfully verified (<c>204</c> by default).
             </summary>
         </member>
-        <member name="P:Deveel.Webhooks.WebhookVerificationOptions.NotAuthenticatedStatusCode">
+        <member name="P:Deveel.Webhooks.WebhookVerificationOptions`1.NotAuthenticatedStatusCode">
             <summary>
             Gets or sets the HTTP status code to return when the request
             is not authenticated (<c>403</c> by default).
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.WebhookVerificationOptions`1.BadRequestStatusCode">
+            <summary>
+            Gets or sets the HTTP status code to return when the request
+            is invalid (<c>400</c> by default).
             </summary>
         </member>
         <member name="T:Deveel.Webhooks.WebhookVerificationResult">
@@ -1265,10 +1606,13 @@
             of the verification of a webhook request.
             </summary>
         </member>
-        <member name="M:Deveel.Webhooks.WebhookVerificationResult.#ctor(System.Boolean)">
+        <member name="M:Deveel.Webhooks.WebhookVerificationResult.#ctor(System.Boolean,System.Boolean)">
             <summary>
             Constructs the result of a verification of a webhook request.
             </summary>
+            <param name="valid">
+            Indicates if the request is valid or not
+            </param>
             <param name="isVerified">
             Whether the request is verified or not
             </param>
@@ -1278,22 +1622,37 @@
             Gets whether the request is verified or not.
             </summary>
         </member>
+        <member name="P:Deveel.Webhooks.WebhookVerificationResult.IsValid">
+            <summary>
+            Gets whether the request is valid or not.
+            </summary>
+        </member>
         <member name="P:Deveel.Webhooks.WebhookVerificationResult.Verified">
             <summary>
-            Creates a new result of a successful verification of a webhook request
+            A result of a successful verification of a webhook request
             </summary>
-            <returns>
-            Returns an instance of <see cref="T:Deveel.Webhooks.WebhookVerificationResult"/> that
-            represents a successful verification of a webhook request.
-            </returns>
         </member>
-        <member name="P:Deveel.Webhooks.WebhookVerificationResult.Failed">
+        <member name="P:Deveel.Webhooks.WebhookVerificationResult.NotVerified">
             <summary>
-            Creates a new result of a failed verification of a webhook request
+            A result that indicates a failed verification of a webhook request
             </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.WebhookVerificationResult.Invalid">
+            <summary>
+            A result that indicated  an invalid verification request (eg. missing parameters)
+            </summary>
+        </member>
+        <member name="M:Deveel.Webhooks.WebhookVerifierBuilder`1.UseVerifier``1(Microsoft.Extensions.DependencyInjection.ServiceLifetime)">
+            <summary>
+            Registers an implementation of the <see cref="T:Deveel.Webhooks.IWebhookRequestVerifier`1"/>
+            that is used to verify the webhooks verification requests from
+            senders
+            </summary>
+            <typeparam name="TVerifier">
+            The type of the verifier to use for the webhooks of type <typeparamref name="TWebhook"/>
+            </typeparam>
             <returns>
-            Returns a new instance of <see cref="T:Deveel.Webhooks.WebhookVerificationResult"/> that
-            represents a failed verification of a webhook request.
+            Returns the current builder instance with the verifier registered
             </returns>
         </member>
     </members>

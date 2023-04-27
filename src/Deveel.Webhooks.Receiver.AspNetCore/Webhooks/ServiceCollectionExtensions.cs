@@ -81,7 +81,7 @@ namespace Deveel.Webhooks {
 		/// Returns an instance of <see cref="WebhookReceiverBuilder{TWebhook}"/> that can
 		/// be used to further configure the receiver.
 		/// </returns>
-		public static WebhookReceiverBuilder<TWebhook> AddWebhookReceiver<TWebhook>(this IServiceCollection services, Action<WebhookReceiverOptions> configure)
+		public static WebhookReceiverBuilder<TWebhook> AddWebhookReceiver<TWebhook>(this IServiceCollection services, Action<WebhookReceiverOptions<TWebhook>> configure)
 			where TWebhook : class
 			=> services.AddWebhookReceiver<TWebhook>().Configure(configure);
 
@@ -104,6 +104,24 @@ namespace Deveel.Webhooks {
 		public static IServiceCollection AddWebhookReceiver<TWebhook>(this IServiceCollection services, Action<WebhookReceiverBuilder<TWebhook>> configure) 
 			where TWebhook : class {
 			var builder = services.AddWebhookReceiver<TWebhook>();
+			configure?.Invoke(builder);
+
+			return services;
+		}
+
+		public static WebhookVerifierBuilder<TWebhook> AddWebhookVerifier<TWebhook>(this IServiceCollection services) 
+			where TWebhook : class {
+			var builder = new WebhookVerifierBuilder<TWebhook>(services);
+
+			services.TryAddSingleton(builder);
+
+			return builder;
+		}
+
+		public static IServiceCollection AddWebhookVerifier<TWebhook>(this IServiceCollection services, Action<WebhookVerifierBuilder<TWebhook>> configure)
+			where TWebhook : class {
+			var builder = services.AddWebhookVerifier<TWebhook>();
+
 			configure?.Invoke(builder);
 
 			return services;

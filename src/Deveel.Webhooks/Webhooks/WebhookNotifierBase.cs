@@ -34,19 +34,19 @@ namespace Deveel.Webhooks {
 		private readonly IWebhookDeliveryResultLogger<TWebhook> deliveryResultLogger;
 		private readonly IWebhookSender<TWebhook> sender;
 		private readonly IWebhookFactory<TWebhook> webhookFactory;
-		private readonly IEnumerable<IWebhookDataFactory>? dataFactories;
+		private readonly IEventTransformerPipeline? eventTransformer;
 		private readonly IDictionary<string, IWebhookFilterEvaluator<TWebhook>> filterEvaluators;
 
 		internal WebhookNotifierBase(
 			IWebhookSender<TWebhook> sender,
 			IWebhookFactory<TWebhook> webhookFactory,
-			IEnumerable<IWebhookDataFactory>? dataFactories = null,
+			IEventTransformerPipeline? eventTransformer = null,
 			IEnumerable<IWebhookFilterEvaluator<TWebhook>>? filterEvaluators = null,
 			IWebhookDeliveryResultLogger<TWebhook>? deliveryResultLogger = null,
 			ILogger<TenantWebhookNotifier<TWebhook>>? logger = null) {
 			this.sender = sender;
 			this.webhookFactory = webhookFactory;
-			this.dataFactories = dataFactories;
+			this.eventTransformer = eventTransformer;
 			this.filterEvaluators = GetFilterEvaluators(filterEvaluators);
 			this.deliveryResultLogger = deliveryResultLogger ?? NullWebhookDeliveryResultLogger<TWebhook>.Instance;
 			Logger = logger ?? NullLogger<TenantWebhookNotifier<TWebhook>>.Instance;
@@ -103,18 +103,12 @@ namespace Deveel.Webhooks {
 		/// </returns>
 		/// <seealso cref="IWebhookFactory{TWebhook}"/>
 		protected virtual async Task<object> GetWebhookDataAsync(EventInfo eventInfo, CancellationToken cancellationToken) {
-			Logger.LogDebug("GetWebhookDataAsync: getting data for an event");
-
 			var data = eventInfo.Data;
 
-			var factory = dataFactories?.FirstOrDefault(x => x.Handles(eventInfo));
-			if (factory != null) {
-				Logger.LogDebug("GetWebhookDataAsync: using a factory for the event of type {EventType} to generate the webhook data",
-					eventInfo.EventType);
+			if (eventTransformer != null) {
+				var result = await eventTransformer.TransformAsync(eventInfo, cancellationToken);
 
-				data = await factory.CreateDataAsync(eventInfo, cancellationToken);
-			} else {
-				Logger.LogDebug("GetWebhookDataAsync: using the data of the event");
+				data = result.Data;
 			}
 
 			return data;

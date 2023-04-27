@@ -42,9 +42,8 @@ namespace Deveel.Webhooks {
 		/// <param name="webhookFactory">
 		/// A service used to create the webhook to send.
 		/// </param>
-		/// <param name="dataFactories">
-		/// A collection of services used to create the data to send,
-		/// using the original data of the event.
+		/// <param name="eventTransformer">
+		/// A service used to transform the event data
 		/// </param>
 		/// <param name="filterEvaluators">
 		/// A collection of services used to filter the webhooks to
@@ -60,10 +59,10 @@ namespace Deveel.Webhooks {
 			IWebhookSender<TWebhook> sender,
 			IWebhookFactory<TWebhook> webhookFactory,
 			ITenantWebhookSubscriptionResolver<TWebhook>? subscriptionResolver = null,
-			IEnumerable<IWebhookDataFactory>? dataFactories = null,
+			IEventTransformerPipeline? eventTransformer = null,
 			IEnumerable<IWebhookFilterEvaluator<TWebhook>>? filterEvaluators = null,
 			IWebhookDeliveryResultLogger<TWebhook>? deliveryResultLogger = null,
-			ILogger<TenantWebhookNotifier<TWebhook>>? logger = null) : base(sender, webhookFactory, dataFactories, filterEvaluators, deliveryResultLogger, logger) {
+			ILogger<TenantWebhookNotifier<TWebhook>>? logger = null) : base(sender, webhookFactory, eventTransformer, filterEvaluators, deliveryResultLogger, logger) {
 			this.subscriptionResolver = subscriptionResolver;
 		}
 

@@ -18,10 +18,10 @@ using System.Threading.Tasks;
 
 namespace Deveel.Webhooks {
 	/// <summary>
-	/// A service that handles a specific event
-	/// and transforms its data
+	/// A service that handles a specific event and 
+	/// transforms its data
 	/// </summary>
-	public interface IWebhookDataFactory {
+	public interface IEventDataTransformer {
 		/// <summary>
 		/// Determines if the instance can handle
 		/// the event given and transforms it.

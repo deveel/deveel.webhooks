@@ -57,6 +57,7 @@ namespace Deveel.Webhooks {
 
 			Services.TryAddScoped<IWebhookSender<TWebhook>, WebhookSender<TWebhook>>();
 
+			Services.TryAddScoped<IEventTransformerPipeline, DefaultEventTransformerPipeline>();
 			// TODO: register the default filter evaluator
 		}
 
@@ -337,9 +338,9 @@ namespace Deveel.Webhooks {
 		/// </param>
 		/// <returns></returns>
 		public WebhookNotifierBuilder<TWebhook> AddDataTranformer<TTransformer>(ServiceLifetime lifetime = ServiceLifetime.Scoped)
-			where TTransformer : class, IWebhookDataFactory {
+			where TTransformer : class, IEventDataTransformer {
 
-			Services.Add(new ServiceDescriptor(typeof(IWebhookDataFactory), typeof(TTransformer), lifetime));
+			Services.Add(new ServiceDescriptor(typeof(IEventDataTransformer), typeof(TTransformer), lifetime));
 			Services.TryAdd(new ServiceDescriptor(typeof(TTransformer), typeof(TTransformer), lifetime));
 			return this;
 		}

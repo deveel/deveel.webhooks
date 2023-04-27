@@ -45,6 +45,21 @@
             Returns a list of subscriptions that are listening for the given event type
             </returns>
         </member>
+        <member name="M:Deveel.Webhooks.Caching.IWebhookSubscriptionCache.GetByEventTypeAsync(System.String,System.Threading.CancellationToken)">
+            <summary>
+            Attempts to get a list of subscriptions that are
+            listening for the given event type
+            </summary>
+            <param name="eventType">
+            The event type that the subscriptions are listening for
+            </param>
+            <param name="cancellationToken">
+            A cancellation token used to cancel the operation
+            </param>
+            <returns>
+            Returns a list of subscriptions that are listening for the given event type
+            </returns>
+        </member>
         <member name="M:Deveel.Webhooks.Caching.IWebhookSubscriptionCache.EvictByEventTypeAsync(System.String,System.String,System.Threading.CancellationToken)">
             <summary>
             Evicts from the cache all the subscriptions that are 
@@ -53,6 +68,21 @@
             <param name="tenantId">
             The identifier of the tenant that owns the subscriptions
             </param>
+            <param name="eventType">
+            The event type that the subscriptions are listening for
+            </param>
+            <param name="cancellationToken">
+            A cancellation token used to cancel the operation
+            </param>
+            <returns>
+            Returns a task that completes when the operation is done
+            </returns>
+        </member>
+        <member name="M:Deveel.Webhooks.Caching.IWebhookSubscriptionCache.EvictByEventTypeAsync(System.String,System.Threading.CancellationToken)">
+            <summary>
+            Evicts from the cache all the subscriptions that are 
+            listening for the given event type
+            </summary>
             <param name="eventType">
             The event type that the subscriptions are listening for
             </param>
@@ -953,6 +983,31 @@
         </member>
         <member name="M:Deveel.Webhooks.WebhookSubscriptionManager`1.CountAllAsync">
             <inheritdoc/>
+        </member>
+        <member name="T:Deveel.Webhooks.WebhookSubscriptionResolver`1">
+            <summary>
+            A default implementation of <see cref="T:Deveel.Webhooks.IWebhookSubscriptionResolver"/> that
+            uses a registered store to retrieve the subscriptions.
+            </summary>
+            <typeparam name="TSubscription">
+            The type of the subscription to be resolved.
+            </typeparam>
+        </member>
+        <member name="M:Deveel.Webhooks.WebhookSubscriptionResolver`1.#ctor(Deveel.Webhooks.IWebhookSubscriptionStore{`0},Deveel.Webhooks.Caching.IWebhookSubscriptionCache,Microsoft.Extensions.Logging.ILogger{Deveel.Webhooks.TenantWebhookSubscriptionResolver{`0}})">
+            <summary>
+            Constructs a <see cref="T:Deveel.Webhooks.WebhookSubscriptionResolver`1"/>
+            backed by a given store.
+            </summary>
+            <param name="store">
+            The store to be used to retrieve the subscriptions.
+            </param>
+            <param name="cache">
+            An optional cache of the subscriptions to be used to speed up the
+            resolution process.
+            </param>
+            <param name="logger">
+            An optional logger to be used to log the operations.
+            </param>
         </member>
         <member name="M:Deveel.Webhooks.WebhookSubscriptionResolver`1.ResolveSubscriptionsAsync(System.String,System.Boolean,System.Threading.CancellationToken)">
             <inheritdoc/>

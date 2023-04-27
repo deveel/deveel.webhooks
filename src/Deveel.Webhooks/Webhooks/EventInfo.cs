@@ -31,16 +31,19 @@ namespace Deveel.Webhooks {
 		/// The type of event that was triggered
 		/// </param>
 		/// <param name="data">
-		/// The data provided by the event
+		/// The data carried by the event
 		/// </param>
 		/// <param name="id">
 		/// An optional unique identifier of the event
 		/// </param>
 		/// <param name="timeStamp">
-		/// An optional time-stamp of the time the event occurred
+		/// An optional time-stamp of the time the event occurred. When not
+		/// provided the event is assumed to be occurred at the time of the
+		/// initialization of this instance.
 		/// </param>
 		/// <exception cref="ArgumentException">
-		/// If the <paramref name="eventType"/> is null or an empty string
+		/// If either the <paramref name="eventType"/> or <paramref name="subject"/> are 
+		/// <c>null</c> or an empty string
 		/// </exception>
 		/// <exception cref="ArgumentNullException">
 		/// If the data provided are null

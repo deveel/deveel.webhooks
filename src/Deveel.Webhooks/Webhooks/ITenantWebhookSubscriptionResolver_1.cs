@@ -24,7 +24,8 @@ namespace Deveel.Webhooks {
 	/// Implementations of this version of the interface are 
 	/// segregated to the scope of the webhook type.
 	/// </remarks>
-	/// <seealso cref="IWebhookSubscriptionResolver"/>
-	public interface IWebhookSubscriptionResolver<TWebhook> : IWebhookSubscriptionResolver where TWebhook : class {
+	/// <seealso cref="ITenantWebhookSubscriptionResolver"/>
+	public interface ITenantWebhookSubscriptionResolver<TWebhook> : ITenantWebhookSubscriptionResolver 
+		where TWebhook : class {
 	}
 }

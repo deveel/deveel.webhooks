@@ -54,6 +54,21 @@ namespace Deveel.Webhooks.Caching {
 		Task<IList<IWebhookSubscription>> GetByEventTypeAsync(string tenantId, string eventType, CancellationToken cancellationToken);
 
 		/// <summary>
+		/// Attempts to get a list of subscriptions that are
+		/// listening for the given event type
+		/// </summary>
+		/// <param name="eventType">
+		/// The event type that the subscriptions are listening for
+		/// </param>
+		/// <param name="cancellationToken">
+		/// A cancellation token used to cancel the operation
+		/// </param>
+		/// <returns>
+		/// Returns a list of subscriptions that are listening for the given event type
+		/// </returns>
+		Task<IList<IWebhookSubscription>> GetByEventTypeAsync(string eventType, CancellationToken cancellationToken);
+
+		/// <summary>
 		/// Evicts from the cache all the subscriptions that are 
 		/// listening for the given event type
 		/// </summary>
@@ -70,6 +85,21 @@ namespace Deveel.Webhooks.Caching {
 		/// Returns a task that completes when the operation is done
 		/// </returns>
 		Task EvictByEventTypeAsync(string tenantId, string eventType, CancellationToken cancellationToken);
+
+		/// <summary>
+		/// Evicts from the cache all the subscriptions that are 
+		/// listening for the given event type
+		/// </summary>
+		/// <param name="eventType">
+		/// The event type that the subscriptions are listening for
+		/// </param>
+		/// <param name="cancellationToken">
+		/// A cancellation token used to cancel the operation
+		/// </param>
+		/// <returns>
+		/// Returns a task that completes when the operation is done
+		/// </returns>
+		Task EvictByEventTypeAsync(string eventType, CancellationToken cancellationToken);
 
 		/// <summary>
 		/// Sets the given subscription in the cache

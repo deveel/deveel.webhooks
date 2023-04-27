@@ -54,6 +54,7 @@ namespace Deveel.Webhooks {
 			Services.TryAddSingleton<IWebhookSubscriptionValidator<TSubscription>, WebhookSubscriptionValidator<TSubscription>>();
 
 			Services.TryAddScoped<IWebhookSubscriptionResolver, WebhookSubscriptionResolver<TSubscription>>();
+			// Services.TryAddScoped<ITenantWebhookSubscriptionResolver, TenantWebhookSubscriptionResolver<TSubscription>>();
 		}
 
 		/// <summary>
@@ -68,7 +69,7 @@ namespace Deveel.Webhooks {
 		/// <returns>
 		/// Returns this instance of the <see cref="WebhookSubscriptionBuilder{TSubscription}"/>.
 		/// </returns>
-		/// <seealso cref="IWebhookNotifier{TWebhook}"/>
+		/// <seealso cref="ITenantWebhookNotifier{TWebhook}"/>
 		public WebhookSubscriptionBuilder<TSubscription> UseNotifier<TWebhook>(Action<WebhookNotifierBuilder<TWebhook>> configure)
 			where TWebhook : class, IWebhook {
 			Services.AddWebhookNotifier(configure);

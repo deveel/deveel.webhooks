@@ -28,17 +28,6 @@ namespace Deveel.Webhooks {
 				});
 			});
 
-			builder.Services.AddMultiTenant<TenantInfo>()
-				.WithClaimStrategy("tenant")
-				.WithRouteStrategy("tenant")
-				.WithInMemoryStore(options => {
-					options.Tenants.Add(new TenantInfo {
-						Id = "339191991",
-						Identifier = "tenant1",
-						Name = "Tenant 1",
-						ConnectionString = builder.Configuration.GetConnectionString("WebhookSubscriptions")
-					});
-				});
 
 			builder.Services.AddWebhooks<IdentityWebhook>()
 				.AddNotifier(notifier => notifier
@@ -46,11 +35,9 @@ namespace Deveel.Webhooks {
 					.UseMongoSubscriptionResolver());
 
 			builder.Services.AddWebhookSubscriptions<MongoWebhookSubscription>()
-				.UseMongoDb(mongo => mongo.UseMultiTenant());
+				.UseMongoDb("WebhookSubscriptions");
 
 			var app = builder.Build();
-
-			app.UseMultiTenant();
 
 			// Configure the HTTP request pipeline.
 

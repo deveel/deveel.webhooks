@@ -45,6 +45,21 @@
             Returns a list of subscriptions that are listening for the given event type
             </returns>
         </member>
+        <member name="M:Deveel.Webhooks.Caching.IWebhookSubscriptionCache.GetByEventTypeAsync(System.String,System.Threading.CancellationToken)">
+            <summary>
+            Attempts to get a list of subscriptions that are
+            listening for the given event type
+            </summary>
+            <param name="eventType">
+            The event type that the subscriptions are listening for
+            </param>
+            <param name="cancellationToken">
+            A cancellation token used to cancel the operation
+            </param>
+            <returns>
+            Returns a list of subscriptions that are listening for the given event type
+            </returns>
+        </member>
         <member name="M:Deveel.Webhooks.Caching.IWebhookSubscriptionCache.EvictByEventTypeAsync(System.String,System.String,System.Threading.CancellationToken)">
             <summary>
             Evicts from the cache all the subscriptions that are 
@@ -53,6 +68,21 @@
             <param name="tenantId">
             The identifier of the tenant that owns the subscriptions
             </param>
+            <param name="eventType">
+            The event type that the subscriptions are listening for
+            </param>
+            <param name="cancellationToken">
+            A cancellation token used to cancel the operation
+            </param>
+            <returns>
+            Returns a task that completes when the operation is done
+            </returns>
+        </member>
+        <member name="M:Deveel.Webhooks.Caching.IWebhookSubscriptionCache.EvictByEventTypeAsync(System.String,System.Threading.CancellationToken)">
+            <summary>
+            Evicts from the cache all the subscriptions that are 
+            listening for the given event type
+            </summary>
             <param name="eventType">
             The event type that the subscriptions are listening for
             </param>
@@ -90,34 +120,6 @@
             <returns>
             Returns a task that completes when the operation is done
             </returns>
-        </member>
-        <member name="T:Deveel.Webhooks.WebhookSubscriptionResolver`1">
-            <summary>
-            A default implementation of <see cref="T:Deveel.Webhooks.IWebhookSubscriptionResolver"/> that
-            uses a registered store provider to retrieve the subscriptions.
-            </summary>
-            <typeparam name="TSubscription">
-            The type of the subscription to be resolved.
-            </typeparam>
-        </member>
-        <member name="M:Deveel.Webhooks.WebhookSubscriptionResolver`1.#ctor(Deveel.Webhooks.IWebhookSubscriptionStoreProvider{`0},Deveel.Webhooks.Caching.IWebhookSubscriptionCache,Microsoft.Extensions.Logging.ILogger{Deveel.Webhooks.WebhookSubscriptionResolver{`0}})">
-            <summary>
-            Constructs a <see cref="T:Deveel.Webhooks.WebhookSubscriptionResolver`1"/>
-            backed by a given store provider.
-            </summary>
-            <param name="storeProvider">
-            The provider of the store to be used to retrieve the subscriptions.
-            </param>
-            <param name="cache">
-            An optional cache of the subscriptions to be used to speed up the
-            resolution process.
-            </param>
-            <param name="logger">
-            An optional logger to be used to log the operations.
-            </param>
-        </member>
-        <member name="M:Deveel.Webhooks.WebhookSubscriptionResolver`1.ResolveSubscriptionsAsync(System.String,System.String,System.Boolean,System.Threading.CancellationToken)">
-            <inheritdoc/>
         </member>
         <member name="T:Deveel.Webhooks.IWebhookDeliveryResultPagedStore`1">
             <summary>
@@ -610,11 +612,51 @@
             Returns the builder used to configure the service.
             </returns>
         </member>
+        <member name="T:Deveel.Webhooks.TenantWebhookSubscriptionResolver`1">
+            <summary>
+            A default implementation of <see cref="T:Deveel.Webhooks.ITenantWebhookSubscriptionResolver"/> that
+            uses a registered store provider to retrieve the subscriptions.
+            </summary>
+            <typeparam name="TSubscription">
+            The type of the subscription to be resolved.
+            </typeparam>
+        </member>
+        <member name="M:Deveel.Webhooks.TenantWebhookSubscriptionResolver`1.#ctor(Deveel.Webhooks.IWebhookSubscriptionStoreProvider{`0},Deveel.Webhooks.Caching.IWebhookSubscriptionCache,Microsoft.Extensions.Logging.ILogger{Deveel.Webhooks.TenantWebhookSubscriptionResolver{`0}})">
+            <summary>
+            Constructs a <see cref="T:Deveel.Webhooks.TenantWebhookSubscriptionResolver`1"/>
+            backed by a given store provider.
+            </summary>
+            <param name="storeProvider">
+            The provider of the store to be used to retrieve the subscriptions.
+            </param>
+            <param name="cache">
+            An optional cache of the subscriptions to be used to speed up the
+            resolution process.
+            </param>
+            <param name="logger">
+            An optional logger to be used to log the operations.
+            </param>
+        </member>
+        <member name="M:Deveel.Webhooks.TenantWebhookSubscriptionResolver`1.ResolveSubscriptionsAsync(System.String,System.String,System.Boolean,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
         <member name="T:Deveel.Webhooks.WebhookNotifierBuilderExtensions">
             <summary>
             Extends the <see cref="T:Deveel.Webhooks.WebhookNotifierBuilder`1"/> class
             to register the default subscription resolver
             </summary>
+        </member>
+        <member name="M:Deveel.Webhooks.WebhookNotifierBuilderExtensions.UseDefaultTenantSubscriptionResolver``1(Deveel.Webhooks.WebhookNotifierBuilder{``0},System.Type,Microsoft.Extensions.DependencyInjection.ServiceLifetime)">
+            <summary>
+            Registers the default subscription resolver for the given webhook type
+            and that is based on the given subscription type.
+            </summary>
+            <typeparam name="TWebhook"></typeparam>
+            <param name="builder"></param>
+            <param name="subscriptionType"></param>
+            <param name="lifetime"></param>
+            <returns></returns>
+            <exception cref="T:System.ArgumentException"></exception>
         </member>
         <member name="M:Deveel.Webhooks.WebhookNotifierBuilderExtensions.UseDefaultSubscriptionResolver``1(Deveel.Webhooks.WebhookNotifierBuilder{``0},System.Type,Microsoft.Extensions.DependencyInjection.ServiceLifetime)">
             <summary>
@@ -684,7 +726,7 @@
             <returns>
             Returns this instance of the <see cref="T:Deveel.Webhooks.WebhookSubscriptionBuilder`1"/>.
             </returns>
-            <seealso cref="T:Deveel.Webhooks.IWebhookNotifier`1"/>
+            <seealso cref="T:Deveel.Webhooks.ITenantWebhookNotifier`1"/>
         </member>
         <member name="M:Deveel.Webhooks.WebhookSubscriptionBuilder`1.UseSubscriptionManager``1(Microsoft.Extensions.DependencyInjection.ServiceLifetime)">
             <summary>
@@ -940,6 +982,34 @@
             <inheritdoc/>
         </member>
         <member name="M:Deveel.Webhooks.WebhookSubscriptionManager`1.CountAllAsync">
+            <inheritdoc/>
+        </member>
+        <member name="T:Deveel.Webhooks.WebhookSubscriptionResolver`1">
+            <summary>
+            A default implementation of <see cref="T:Deveel.Webhooks.IWebhookSubscriptionResolver"/> that
+            uses a registered store to retrieve the subscriptions.
+            </summary>
+            <typeparam name="TSubscription">
+            The type of the subscription to be resolved.
+            </typeparam>
+        </member>
+        <member name="M:Deveel.Webhooks.WebhookSubscriptionResolver`1.#ctor(Deveel.Webhooks.IWebhookSubscriptionStore{`0},Deveel.Webhooks.Caching.IWebhookSubscriptionCache,Microsoft.Extensions.Logging.ILogger{Deveel.Webhooks.TenantWebhookSubscriptionResolver{`0}})">
+            <summary>
+            Constructs a <see cref="T:Deveel.Webhooks.WebhookSubscriptionResolver`1"/>
+            backed by a given store.
+            </summary>
+            <param name="store">
+            The store to be used to retrieve the subscriptions.
+            </param>
+            <param name="cache">
+            An optional cache of the subscriptions to be used to speed up the
+            resolution process.
+            </param>
+            <param name="logger">
+            An optional logger to be used to log the operations.
+            </param>
+        </member>
+        <member name="M:Deveel.Webhooks.WebhookSubscriptionResolver`1.ResolveSubscriptionsAsync(System.String,System.Boolean,System.Threading.CancellationToken)">
             <inheritdoc/>
         </member>
         <member name="T:Deveel.Webhooks.WebhookSubscriptionValidationException">

@@ -926,6 +926,22 @@
             Returns the builder to continue the configuration.
             </returns>
         </member>
+        <member name="M:Deveel.Webhooks.WebhookNotifierBuilderExtensions.UseMongoTenantSubscriptionResolver``1(Deveel.Webhooks.WebhookNotifierBuilder{``0})">
+            <summary>
+            Registers the MongoDB storage for resolving
+            webhook subscriptions to the notifier.
+            </summary>
+            <typeparam name="TWebhook">
+            The type of the webhook to be notified.
+            </typeparam>
+            <param name="builder">
+            The builder of the notifier service where to register
+            the resolver.
+            </param>
+            <returns>
+            Returns the builder to continue the configuration.
+            </returns>
+        </member>
         <member name="T:Deveel.Webhooks.WebhookSubscriptionBuilderExtensions">
             <summary>
             Provides extensions to the <see cref="T:Deveel.Webhooks.WebhookSubscriptionBuilder`1"/>

@@ -8,7 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Xunit.Abstractions;
 
 namespace Deveel.Webhooks {
-	public class WebhookDeliveryResultLoggingTests : MongoDbWebhookTestBase {
+	public class MultiTenantWebhookDeliveryResultLoggingTests : MongoDbWebhookTestBase {
 		private const int TimeOutSeconds = 2;
 		private bool testTimeout = false;
 
@@ -16,16 +16,16 @@ namespace Deveel.Webhooks {
 
 		private IWebhookSubscriptionStoreProvider<MongoWebhookSubscription> webhookStoreProvider;
 		private IWebhookDeliveryResultStoreProvider<MongoWebhookDeliveryResult> deliveryResultStoreProvider;
-		private IWebhookNotifier<Webhook> notifier;
+		private ITenantWebhookNotifier<Webhook> notifier;
 
 		private Webhook? lastWebhook;
 		private HttpResponseMessage? testResponse;
 
-		public WebhookDeliveryResultLoggingTests(MongoTestCluster mongo, ITestOutputHelper outputHelper) 
+		public MultiTenantWebhookDeliveryResultLoggingTests(MongoTestCluster mongo, ITestOutputHelper outputHelper) 
 			: base(mongo, outputHelper) {
 			webhookStoreProvider = Services.GetRequiredService<IWebhookSubscriptionStoreProvider<MongoWebhookSubscription>>();
 			deliveryResultStoreProvider = Services.GetRequiredService<IWebhookDeliveryResultStoreProvider<MongoWebhookDeliveryResult>>();
-			notifier = Services.GetRequiredService<IWebhookNotifier<Webhook>>();
+			notifier = Services.GetRequiredService<ITenantWebhookNotifier<Webhook>>();
 		}
 
 		protected override void ConfigureWebhookService(WebhookSubscriptionBuilder<MongoWebhookSubscription> builder) {
@@ -42,13 +42,14 @@ namespace Deveel.Webhooks {
 			builder
 			.UseSubscriptionManager()
 			.UseNotifier<Webhook>(notifier => notifier
+				.UseTenantNotifier()
 				.UseSender(options => {
 					options.Timeout = TimeSpan.FromSeconds(TimeOutSeconds);
 					options.Retry.MaxRetries = 2;
 				})
 				.UseLinqFilter()
 				.UseWebhookFactory<DefaultWebhookFactory>()
-				.UseMongoSubscriptionResolver())
+				.UseMongoTenantSubscriptionResolver())
 			.UseMongoDb(options => options
 				.UseMultiTenant()
 				.UseDeliveryResultLogger<Webhook>());
@@ -101,7 +102,7 @@ namespace Deveel.Webhooks {
 		[Fact]
 		public async Task DeliverWebhookFromEvent() {
 			var subscriptionId = await CreateSubscriptionAsync("Data Created", "data.created");
-			var notification = new EventInfo("test", "data.created", new {
+			var notification = new EventInfo("test", "data.created", data: new {
 				creationTime = DateTimeOffset.UtcNow,
 				type = "test"
 			});

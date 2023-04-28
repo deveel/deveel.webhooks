@@ -4,48 +4,311 @@
         <name>Deveel.Webhooks.Receiver.Facebook</name>
     </assembly>
     <members>
-        <member name="T:Deveel.Facebook.Address">
+        <member name="T:Deveel.Webhooks.ApplicationBuilderExtensions">
             <summary>
-            Describes a postal address.
+            Extends the <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/> to provide methods
+            to map a Facebook Webhook endpoint.
             </summary>
         </member>
-        <member name="P:Deveel.Facebook.Address.StreetLine1">
+        <member name="M:Deveel.Webhooks.ApplicationBuilderExtensions.MapFacebookWebhook(Microsoft.AspNetCore.Builder.IApplicationBuilder,System.String,Deveel.Webhooks.FacebookWebhookHandlingOptions)">
             <summary>
-            The first line of the address.
+            Maps a Facebook Webhook endpoint to the specified <paramref name="path"/>.
+            </summary>
+            <param name="app">
+            The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/> to use to map the endpoint.
+            </param>
+            <param name="path">
+            The relative path where the Facebook Webhook is delivered.
+            </param>
+            <param name="options">
+            A set of options to configure the handling of the Webhook by
+            the middleware.
+            </param>
+            <remarks>
+            The underlying middleware will attempt to receive a Facebook Webhook
+            at the relative path within the application, and then invoke all
+            the registered handlers to process the incoming webhook.
+            </remarks>
+            <returns>
+            Returns the <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/> to continue the
+            building of the application.
+            </returns>
+        </member>
+        <member name="M:Deveel.Webhooks.ApplicationBuilderExtensions.MapFacebookWebhook(Microsoft.AspNetCore.Builder.IApplicationBuilder,System.String,System.Func{Deveel.Webhooks.Facebook.FacebookWebhook,System.Threading.Tasks.Task})">
+            <summary>
+            Maps a Facebook Webhook endpoint to the specified <paramref name="path"/>,
+            using the provided delegate to handle the incoming webhooks.
+            </summary>
+            <param name="app">
+            The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/> to use to map the endpoint.
+            </param>
+            <param name="path">
+            The relative path where the Facebook Webhook is delivered.
+            </param>
+            <param name="handler">
+            The asynchronous delegate that is invoked to handle the incoming webhook.
+            </param>
+            <remarks>
+            The underlying middleware will attempt to receive a Facebook Webhook
+            at the relative path within the application, and then invoke the
+            provided <paramref name="handler"/> to process the incoming webhook.
+            </remarks>
+            <returns>
+            Returns the <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/> to continue the
+            building of the application.
+            </returns>
+        </member>
+        <member name="M:Deveel.Webhooks.ApplicationBuilderExtensions.MapFacebookWebhook``1(Microsoft.AspNetCore.Builder.IApplicationBuilder,System.String,System.Func{Deveel.Webhooks.Facebook.FacebookWebhook,``0,System.Threading.Tasks.Task})">
+            <summary>
+            Maps a Facebook Webhook endpoint to the specified <paramref name="path"/>,
+            using the provided delegate to handle the incoming webhooks.
+            </summary>
+            <typeparam name="T1">The type of the first parameter, after the webhook, of the handler</typeparam>
+            <param name="app">
+            The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/> to use to map the endpoint.
+            </param>
+            <param name="path">
+            The relative path where the Facebook Webhook is delivered.
+            </param>
+            <param name="handler">
+            The asynchronous delegate that is invoked to handle the incoming webhook.
+            </param>
+            <remarks>
+            The underlying middleware will attempt to receive a Facebook Webhook
+            at the relative path within the application, and then invoke the
+            provided <paramref name="handler"/> to process the incoming webhook.
+            </remarks>
+            <returns>
+            Returns the <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/> to continue the
+            building of the application.
+            </returns>
+        </member>
+        <member name="M:Deveel.Webhooks.ApplicationBuilderExtensions.MapFacebookWebhook``2(Microsoft.AspNetCore.Builder.IApplicationBuilder,System.String,System.Func{Deveel.Webhooks.Facebook.FacebookWebhook,``0,``1,System.Threading.Tasks.Task})">
+            <summary>
+            Maps a Facebook Webhook endpoint to the specified <paramref name="path"/>,
+            using the provided delegate to handle the incoming webhooks.
+            </summary>
+            <typeparam name="T1">The type of the first parameter, after the webhook, of the handler</typeparam>
+            <typeparam name="T2">The type of the second parameter, after the webhook, of the handler</typeparam>
+            <param name="app">
+            The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/> to use to map the endpoint.
+            </param>
+            <param name="path">
+            The relative path where the Facebook Webhook is delivered.
+            </param>
+            <param name="handler">
+            The asynchronous delegate that is invoked to handle the incoming webhook.
+            </param>
+            <remarks>
+            The underlying middleware will attempt to receive a Facebook Webhook
+            at the relative path within the application, and then invoke the
+            provided <paramref name="handler"/> to process the incoming webhook.
+            </remarks>
+            <returns>
+            Returns the <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/> to continue the
+            building of the application.
+            </returns>
+        </member>
+        <member name="M:Deveel.Webhooks.ApplicationBuilderExtensions.MapFacebookWebhook``3(Microsoft.AspNetCore.Builder.IApplicationBuilder,System.String,System.Func{Deveel.Webhooks.Facebook.FacebookWebhook,``0,``1,``2,System.Threading.Tasks.Task})">
+            <summary>
+            Maps a Facebook Webhook endpoint to the specified <paramref name="path"/>,
+            using the provided delegate to handle the incoming webhooks.
+            </summary>
+            <typeparam name="T1">The type of the first parameter, after the webhook, of the handler</typeparam>
+            <typeparam name="T2">The type of the second parameter, after the webhook, of the handler</typeparam>
+            <typeparam name="T3">The type of the third parameter, after the webhook, of the handler</typeparam>
+            <param name="app">
+            The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/> to use to map the endpoint.
+            </param>
+            <param name="path">
+            The relative path where the Facebook Webhook is delivered.
+            </param>
+            <param name="handler">
+            The asynchronous delegate that is invoked to handle the incoming webhook.
+            </param>
+            <remarks>
+            The underlying middleware will attempt to receive a Facebook Webhook
+            at the relative path within the application, and then invoke the
+            provided <paramref name="handler"/> to process the incoming webhook.
+            </remarks>
+            <returns>
+            Returns the <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/> to continue the
+            building of the application.
+            </returns>
+        </member>
+        <member name="M:Deveel.Webhooks.ApplicationBuilderExtensions.MapFacebookWebhook(Microsoft.AspNetCore.Builder.IApplicationBuilder,System.String,System.Action{Deveel.Webhooks.Facebook.FacebookWebhook})">
+            <summary>
+            Maps a Facebook Webhook endpoint to the specified <paramref name="path"/>,
+            using the provided delegate to handle the incoming webhooks.
+            </summary>
+            <param name="app">
+            The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/> to use to map the endpoint.
+            </param>
+            <param name="path">
+            The relative path where the Facebook Webhook is delivered.
+            </param>
+            <param name="handler">
+            The delegate that is invoked to handle the incoming webhook.
+            </param>
+            <remarks>
+            The underlying middleware will attempt to receive a Facebook Webhook
+            at the relative path within the application, and then invoke the
+            provided <paramref name="handler"/> to process the incoming webhook.
+            </remarks>
+            <returns>
+            Returns the <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/> to continue the
+            building of the application.
+            </returns>
+        </member>
+        <member name="M:Deveel.Webhooks.ApplicationBuilderExtensions.MapFacebookWebhook``1(Microsoft.AspNetCore.Builder.IApplicationBuilder,System.String,System.Action{Deveel.Webhooks.Facebook.FacebookWebhook,``0})">
+            <summary>
+            Maps a Facebook Webhook endpoint to the specified <paramref name="path"/>,
+            using the provided delegate to handle the incoming webhooks.
+            </summary>
+            <typeparam name="T1">The type of the first parameter, after the webhook, of the handler</typeparam>
+            <param name="app">
+            The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/> to use to map the endpoint.
+            </param>
+            <param name="path">
+            The relative path where the Facebook Webhook is delivered.
+            </param>
+            <param name="handler">
+            The delegate that is invoked to handle the incoming webhook.
+            </param>
+            <remarks>
+            The underlying middleware will attempt to receive a Facebook Webhook
+            at the relative path within the application, and then invoke the
+            provided <paramref name="handler"/> to process the incoming webhook.
+            </remarks>
+            <returns>
+            Returns the <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/> to continue the
+            building of the application.
+            </returns>
+        </member>
+        <member name="M:Deveel.Webhooks.ApplicationBuilderExtensions.MapFacebookWebhook``2(Microsoft.AspNetCore.Builder.IApplicationBuilder,System.String,System.Action{Deveel.Webhooks.Facebook.FacebookWebhook,``0,``1})">
+            <summary>
+            Maps a Facebook Webhook endpoint to the specified <paramref name="path"/>,
+            using the provided delegate to handle the incoming webhooks.
+            </summary>
+            <typeparam name="T1">The type of the first parameter, after the webhook, of the handler</typeparam>
+            <typeparam name="T2">The type of the second parameter, after the webhook, of the handler</typeparam>
+            <param name="app">
+            The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/> to use to map the endpoint.
+            </param>
+            <param name="path">
+            The relative path where the Facebook Webhook is delivered.
+            </param>
+            <param name="handler">
+            The delegate that is invoked to handle the incoming webhook.
+            </param>
+            <remarks>
+            The underlying middleware will attempt to receive a Facebook Webhook
+            at the relative path within the application, and then invoke the
+            provided <paramref name="handler"/> to process the incoming webhook.
+            </remarks>
+            <returns>
+            Returns the <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/> to continue the
+            building of the application.
+            </returns>
+        </member>
+        <member name="M:Deveel.Webhooks.ApplicationBuilderExtensions.MapFacebookWebhook``3(Microsoft.AspNetCore.Builder.IApplicationBuilder,System.String,System.Action{Deveel.Webhooks.Facebook.FacebookWebhook,``0,``1,``2})">
+            <summary>
+            Maps a Facebook Webhook endpoint to the specified <paramref name="path"/>,
+            using the provided delegate to handle the incoming webhooks.
+            </summary>
+            <typeparam name="T1">The type of the first parameter, after the webhook, of the handler</typeparam>
+            <typeparam name="T2">The type of the second parameter, after the webhook, of the handler</typeparam>
+            <typeparam name="T3">The type of the third parameter, after the webhook, of the handler</typeparam>
+            <param name="app">
+            The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/> to use to map the endpoint.
+            </param>
+            <param name="path">
+            The relative path where the Facebook Webhook is delivered.
+            </param>
+            <param name="handler">
+            The delegate that is invoked to handle the incoming webhook.
+            </param>
+            <remarks>
+            The underlying middleware will attempt to receive a Facebook Webhook
+            at the relative path within the application, and then invoke the
+            provided <paramref name="handler"/> to process the incoming webhook.
+            </remarks>
+            <returns>
+            Returns the <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/> to continue the
+            building of the application.
+            </returns>
+        </member>
+        <member name="M:Deveel.Webhooks.ApplicationBuilderExtensions.MapFacebookVerify(Microsoft.AspNetCore.Builder.IApplicationBuilder,System.String)">
+            <summary>
+            Maps the verification endpoint that Facebook uses to verify
+            the receiver of the webhooks.
+            </summary>
+            <param name="app">
+            The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/> to use to map the endpoint.
+            </param>
+            <param name="path">
+            The relative path where the Facebook platform will issue a
+            request of verification
+            </param>
+            <returns>
+            Returns the <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/> to continue the
+            building of the application.
+            </returns>
+        </member>
+        <member name="T:Deveel.Webhooks.FacebookReceiverOptions">
+            <summary>
+            Defines a set of options for a Facebook Webhook receiver.
             </summary>
         </member>
-        <member name="P:Deveel.Facebook.Address.StreetLine2">
+        <member name="P:Deveel.Webhooks.FacebookReceiverOptions.AppSecret">
             <summary>
-            An optional second line of the address.
+            Gets or sets the application secret that is
+            provided by Facebook to verify the signature
+            of the incoming webhooks.
             </summary>
         </member>
-        <member name="P:Deveel.Facebook.Address.City">
+        <member name="P:Deveel.Webhooks.FacebookReceiverOptions.VerifySignature">
             <summary>
-            The postal city of the address.
+            Gets or sets whether the signature of the incoming webhook
+            should be verified by the receiver.
             </summary>
         </member>
-        <member name="P:Deveel.Facebook.Address.PostalCode">
+        <member name="P:Deveel.Webhooks.FacebookReceiverOptions.VerifyToken">
             <summary>
-            The postal code of the address.
+            Gets or sets a token that was provided by Facebook
+            to verify the receiving endpoint, before any
+            webhook is delivered.
             </summary>
         </member>
-        <member name="P:Deveel.Facebook.Address.State">
+        <member name="T:Deveel.Webhooks.FacebookWebhookHandlingOptions">
             <summary>
-            The state abbreviation for U.S. addresses, or the 
-            region/province for non-U.S. addresses.
+            Provides the options for handling a Facebook webhook.
             </summary>
         </member>
-        <member name="P:Deveel.Facebook.Address.Country">
+        <member name="P:Deveel.Webhooks.FacebookWebhookHandlingOptions.MaxParallelThreads">
             <summary>
-            The two-letter ISO 3166-1 country code of the address.
+            Gets or sets the maximum number of parallel threads to use
+            while receiving and handling webhooks (defaults to the number
+            processors available in the system, minus one).
             </summary>
         </member>
-        <member name="T:Deveel.Facebook.AssetAttachment">
+        <member name="P:Deveel.Webhooks.FacebookWebhookHandlingOptions.ExecutionMode">
+            <summary>
+            Gets or sets the execution mode of the handlers
+            (defaults to <see cref="F:Deveel.Webhooks.HandlerExecutionMode.Parallel"/>).
+            </summary>
+        </member>
+        <member name="T:Deveel.Webhooks.Facebook.AssetAttachment">
             <summary>
             Represents an attachment to a message that carries an asset.
             </summary>
+            <remarks>
+            An asset attachment can be of type <see cref="F:Deveel.Webhooks.Facebook.AttachmentType.File"/>,
+            <see cref="F:Deveel.Webhooks.Facebook.AttachmentType.Audio"/>, <see cref="F:Deveel.Webhooks.Facebook.AttachmentType.Video"/> or
+            <see cref="F:Deveel.Webhooks.Facebook.AttachmentType.Image"/>.
+            </remarks>
         </member>
-        <member name="M:Deveel.Facebook.AssetAttachment.#ctor(Deveel.Facebook.AttachmentType,Deveel.Facebook.UrlPayload)">
+        <member name="M:Deveel.Webhooks.Facebook.AssetAttachment.#ctor(Deveel.Webhooks.Facebook.AttachmentType,Deveel.Webhooks.Facebook.UrlPayload)">
             <summary>
             Initializes the attachment with the given type and payload.
             </summary>
@@ -53,308 +316,222 @@
             <param name="payload">The payload describing the references to
             the file asset</param>
             <exception cref="T:System.ArgumentException">
-            Thrown if the given <paramref name="type"/> is a <see cref="F:Deveel.Facebook.AttachmentType.Template"/>,
-            that is not a valid type for this type of attachment (see <see cref="T:Deveel.Facebook.TemplateAttachment"/>).
+            Thrown if the given <paramref name="type"/> is a <see cref="F:Deveel.Webhooks.Facebook.AttachmentType.Template"/>,
+            that is not a valid type for this type of attachment (see <see cref="T:Deveel.Webhooks.Facebook.TemplateAttachment"/>).
             </exception>
             <exception cref="T:System.ArgumentNullException">
             Thrown if the payload is <c>null</c>.
             </exception>
+            <exception cref="T:System.ArgumentException">
+            Thrown if the given <paramref name="type"/> is a <see cref="F:Deveel.Webhooks.Facebook.AttachmentType.Template"/>
+            or <see cref="F:Deveel.Webhooks.Facebook.AttachmentType.Fallback"/>
+            </exception>
         </member>
-        <member name="P:Deveel.Facebook.AssetAttachment.Payload">
+        <member name="P:Deveel.Webhooks.Facebook.AssetAttachment.Payload">
             <summary>
             Gets the payload describing the references to the file asset.
             </summary>
         </member>
-        <member name="T:Deveel.Facebook.Attachment">
+        <member name="T:Deveel.Webhooks.Facebook.Attachment">
             <summary>
             Describes an attachment to a message.
             </summary>
         </member>
-        <member name="M:Deveel.Facebook.Attachment.#ctor(Deveel.Facebook.AttachmentType)">
+        <member name="M:Deveel.Webhooks.Facebook.Attachment.#ctor(Deveel.Webhooks.Facebook.AttachmentType)">
             <summary>
-            Initializes a new instance of the <see cref="T:Deveel.Facebook.Attachment"/> class
+            Initializes a new instance of the <see cref="T:Deveel.Webhooks.Facebook.Attachment"/> class
             </summary>
             <param name="type"></param>
         </member>
-        <member name="P:Deveel.Facebook.Attachment.Type">
+        <member name="P:Deveel.Webhooks.Facebook.Attachment.Type">
             <summary>
             Gets the type of the attachment.
             </summary>
         </member>
-        <member name="T:Deveel.Facebook.AttachmentType">
+        <member name="T:Deveel.Webhooks.Facebook.AttachmentType">
             <summary>
             Enumerates the types of attachments that can be sent
             </summary>
         </member>
-        <member name="F:Deveel.Facebook.AttachmentType.Image">
+        <member name="F:Deveel.Webhooks.Facebook.AttachmentType.Image">
             <summary>
             The attachment is an image
             </summary>
         </member>
-        <member name="F:Deveel.Facebook.AttachmentType.Audio">
+        <member name="F:Deveel.Webhooks.Facebook.AttachmentType.Audio">
             <summary>
             The attachment is an audio file
             </summary>
         </member>
-        <member name="F:Deveel.Facebook.AttachmentType.Video">
+        <member name="F:Deveel.Webhooks.Facebook.AttachmentType.Video">
             <summary>
             The attachment is a video file
             </summary>
         </member>
-        <member name="F:Deveel.Facebook.AttachmentType.File">
+        <member name="F:Deveel.Webhooks.Facebook.AttachmentType.File">
             <summary>
             The attachment is a generic file
             </summary>
         </member>
-        <member name="F:Deveel.Facebook.AttachmentType.Template">
+        <member name="F:Deveel.Webhooks.Facebook.AttachmentType.Template">
             <summary>
             The attachment is a templated message
             </summary>
         </member>
-        <member name="T:Deveel.Facebook.AudioAttachment">
+        <member name="F:Deveel.Webhooks.Facebook.AttachmentType.Fallback">
+            <summary>
+            The attachment is a fallback
+            </summary>
+        </member>
+        <member name="T:Deveel.Webhooks.Facebook.AudioAttachment">
             <summary>
             Represents an audio file attachment.
             </summary>
         </member>
-        <member name="M:Deveel.Facebook.AudioAttachment.#ctor(Deveel.Facebook.UrlPayload)">
+        <member name="M:Deveel.Webhooks.Facebook.AudioAttachment.#ctor(Deveel.Webhooks.Facebook.UrlPayload)">
             <summary>
-            Initializes a new instance of the <see cref="T:Deveel.Facebook.AudioAttachment"/> class.
+            Initializes a new instance of the <see cref="T:Deveel.Webhooks.Facebook.AudioAttachment"/> class.
             </summary>
             <param name="payload">The payload that describes the file references</param>
         </member>
-        <member name="T:Deveel.Facebook.Button">
-            <summary>
-            Represents a button that can be added to a message.
-            </summary>
-        </member>
-        <member name="M:Deveel.Facebook.Button.#ctor(Deveel.Facebook.ButtonType)">
-            <summary>
-            Initializes a new instance of the <see cref="T:Deveel.Facebook.Button"/> class.
-            </summary>
-            <param name="type">The type of button</param>
-        </member>
-        <member name="P:Deveel.Facebook.Button.Type">
-            <summary>
-            Gets the type of button.
-            </summary>
-        </member>
-        <member name="T:Deveel.Facebook.ButtonType">
-            <summary>
-            Enumerates the types of buttons that can be added to a message.
-            </summary>
-        </member>
-        <member name="F:Deveel.Facebook.ButtonType.WebUrl">
-            <summary>
-            The button is a link to an URL available on the web.
-            </summary>
-        </member>
-        <member name="F:Deveel.Facebook.ButtonType.Postback">
-            <summary>
-            The button is a postback that can be used to
-            send a data back to the application.
-            </summary>
-        </member>
-        <member name="F:Deveel.Facebook.ButtonType.PhoneNumber">
-            <summary>
-            The button triggers a phone call (from within the device of the user)
-            to a given number.
-            </summary>
-        </member>
-        <member name="F:Deveel.Facebook.ButtonType.AccountLink">
-            <summary>
-            The button starts a login flow to an external application's
-            identity manager
-            </summary>
-        </member>
-        <member name="F:Deveel.Facebook.ButtonType.AccountUnlink">
-            <summary>
-            The button starts a logout flow to an external application's
-            identity management system.
-            </summary>
-        </member>
-        <member name="F:Deveel.Facebook.ButtonType.GamePlay">
-            <summary>
-            The button triggers the launch of an Instant Game associated to
-            a page.
-            </summary>
-        </member>
-        <member name="T:Deveel.Facebook.CallButton">
-            <summary>
-            Represents a button that triggers a call to a phone number.
-            </summary>
-        </member>
-        <member name="M:Deveel.Facebook.CallButton.#ctor(System.String,System.String)">
-            <summary>
-            Initializes a new instance of the <see cref="T:Deveel.Facebook.CallButton"/> class
-            with the given phone number and label.
-            </summary>
-            <param name="phoneNumber">The phone number to be called, that
-            must be in the international form <c>+[COUNTRY_CODE][PHONE_NUMBER]</c> (eg. +15105559999)</param>
-            <param name="title">A label that is used to mask the phone number</param>
-            <exception cref="T:System.ArgumentException">
-            Thrown if the given <paramref name="phoneNumber"/> or <paramref name="title"/> is <c>null</c> or empty.
-            </exception>
-        </member>
-        <member name="P:Deveel.Facebook.CallButton.PhoneNumber">
-            <summary>
-            Gets the phone number to be called.
-            </summary>
-        </member>
-        <member name="P:Deveel.Facebook.CallButton.Title">
-            <summary>
-            Gets the label that is used to mask the phone number.
-            </summary>
-        </member>
-        <member name="T:Deveel.Facebook.ClientRetryOptions">
-            <summary>
-            Provides options to configure the retry policy of the client.
-            </summary>
-        </member>
-        <member name="P:Deveel.Facebook.ClientRetryOptions.MaxRetries">
-            <summary>
-            Gets or sets the maximum number of retries to perform
-            (by default set to <c>3</c>).
-            </summary>
-        </member>
-        <member name="P:Deveel.Facebook.ClientRetryOptions.MaxDelay">
-            <summary>
-            The maximum amount in milliseconds to wait before 
-            retrying a request (by default <c>500</c>).
-            </summary>
-        </member>
-        <member name="T:Deveel.Facebook.Error">
-            <summary>
-            Describes an error returned by the
-            Facebook Messenger Platform
-            </summary>
-        </member>
-        <member name="M:Deveel.Facebook.Error.#ctor(System.String,System.String)">
-            <summary>
-            Constructs a new error with the given code and message
-            </summary>
-            <param name="code">The error code</param>
-            <param name="message">The message describing the error</param>
-        </member>
-        <member name="P:Deveel.Facebook.Error.Message">
-            <summary>
-            Gets a human-readable description of the error.
-            </summary>
-        </member>
-        <member name="P:Deveel.Facebook.Error.Code">
-            <summary>
-            Gets the code of the error
-            </summary>
-        </member>
-        <member name="P:Deveel.Facebook.Error.Type">
-            <summary>
-            Gets the type of error
-            </summary>
-        </member>
-        <member name="P:Deveel.Facebook.Error.ErrorSubCode">
-            <summary>
-            Gets or sets an optional sub-code identifying the error
-            </summary>
-        </member>
-        <member name="P:Deveel.Facebook.Error.UserMessage">
-            <summary>
-            Gets or sets a message to be displayed to the user for
-            descriving the error
-            </summary>
-        </member>
-        <member name="P:Deveel.Facebook.Error.UserTitle">
-            <summary>
-            Gets or sets the title of the dialog to be displayed
-            to the user.
-            </summary>
-        </member>
-        <member name="P:Deveel.Facebook.Error.TraceId">
-            <summary>
-            Gets or sets the session identifier used to
-            trace the context of the error
-            </summary>
-        </member>
-        <member name="T:Deveel.Facebook.ErrorResponse">
-            <summary>
-            A response object that indicates an error has 
-            occurred while trying to send a message
-            </summary>
-        </member>
-        <member name="M:Deveel.Facebook.ErrorResponse.#ctor(Deveel.Facebook.Error)">
-            <summary>
-            Constructs the response with the given error
-            </summary>
-            <param name="error">The instance of the error.</param>
-        </member>
-        <member name="P:Deveel.Facebook.ErrorResponse.Error">
-            <summary>
-            Gets the instance of the error that has occurred.
-            </summary>
-        </member>
-        <member name="T:Deveel.Facebook.FacebookJsonSerializer">
+        <member name="T:Deveel.Webhooks.Facebook.FacebookJsonSerializer">
             <summary>
             A utility class that can be used to serialize and deserialize
             Facebook entities to and from JSON
             </summary>
         </member>
-        <member name="P:Deveel.Facebook.FacebookJsonSerializer.Options">
+        <member name="P:Deveel.Webhooks.Facebook.FacebookJsonSerializer.Options">
             <summary>
             Gets the serialization options
             </summary>
         </member>
-        <member name="M:Deveel.Facebook.FacebookJsonSerializer.DeserializeWebhook(System.IO.Stream)">
+        <member name="M:Deveel.Webhooks.Facebook.FacebookJsonSerializer.DeserializeWebhook(System.IO.Stream)">
             <summary>
             Deserializes a given UTF-8 stream to a Facebook Messenger webhook
             </summary>
             <param name="utf8Stream">The UTF-8 to be read for deserialization</param>
             <returns>
-            Returns an instance of <see cref="T:Deveel.Facebook.FacebookWebhook"/> that is the result
+            Returns an instance of <see cref="T:Deveel.Webhooks.Facebook.FacebookWebhook"/> that is the result
             of the deserialization.
             </returns>
         </member>
-        <member name="M:Deveel.Facebook.FacebookJsonSerializer.DeserializeWebhookAsync(System.IO.Stream,System.Threading.CancellationToken)">
+        <member name="M:Deveel.Webhooks.Facebook.FacebookJsonSerializer.DeserializeWebhookAsync(System.IO.Stream,System.Threading.CancellationToken)">
             <summary>
             Deserializes a given UTF-8 stream to a Facebook webhook
             </summary>
             <param name="utf8Stream">The UTF-8 to be read for deserialization</param>
             <param name="cancellationToken"></param>
             <returns>
-            Returns an instance of <see cref="T:Deveel.Facebook.FacebookWebhook"/> that is the result
+            Returns an instance of <see cref="T:Deveel.Webhooks.Facebook.FacebookWebhook"/> that is the result
             of the deserialization.
             </returns>
         </member>
-        <member name="M:Deveel.Facebook.FacebookJsonSerializer.DeserializeWebhook(System.String)">
+        <member name="M:Deveel.Webhooks.Facebook.FacebookJsonSerializer.DeserializeWebhook(System.String)">
             <summary>
             Deserializes a given JSON-formatted string to a Facebook webhook
             </summary>
             <param name="json">The JSON-formatted string to read for deserialization</param>
             <returns>
-            Returns an instance of <see cref="T:Deveel.Facebook.FacebookWebhook"/> that is the result
+            Returns an instance of <see cref="T:Deveel.Webhooks.Facebook.FacebookWebhook"/> that is the result
             of the deserialization.
             </returns>
         </member>
-        <member name="T:Deveel.Facebook.FacebookWebhook">
+        <member name="T:Deveel.Webhooks.Facebook.FacebookMessagingEntry">
+            <summary>
+            Represents a single entry in a Facebook Messenger Webhook
+            </summary>
+        </member>
+        <member name="M:Deveel.Webhooks.Facebook.FacebookMessagingEntry.#ctor(Deveel.Webhooks.Facebook.SenderPart,Deveel.Webhooks.Facebook.MessagingPart)">
+            <summary>
+            Constructs a new instance of the entry with the given
+            parts that identify the sender and the recipient of the entry
+            </summary>
+            <param name="sender">
+            The unique identifier in the scope of the Facebook Page (PSID)
+            of the sender of the entry
+            </param>
+            <param name="recipient">
+            The unique identifier of the Facebook Page (PAGE_ID) that
+            received the entry.
+            </param>
+        </member>
+        <member name="P:Deveel.Webhooks.Facebook.FacebookMessagingEntry.Sender">
+            <summary>
+            Gets the unique identifier of the sender of the entry
+            in the scope of the Facebook Page (PSID).
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.Facebook.FacebookMessagingEntry.Recipient">
+            <summary>
+            Gets the identifier of the Facebook Page that received
+            the entry.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.Facebook.FacebookMessagingEntry.Delivery">
+            <summary>
+            Gets or sets an object that indicates the delivery status
+            of messages sent from the page.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.Facebook.FacebookMessagingEntry.Read">
+            <summary>
+            Gets or sets an object that indicates the read status
+            of the messages sent from the page.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.Facebook.FacebookMessagingEntry.Message">
+            <summary>
+            Gets or sets an object that describes a message received
+            by a page by the given sender.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.Facebook.FacebookMessagingEntry.OptIn">
+            <summary>
+            Gets or sets an object that indicates the webhook 
+            is an opt-in/opt-out for messaging events.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.Facebook.FacebookMessagingEntry.GamePlay">
+            <summary>
+            Gets or sets an object that indicates that a
+            user played a round of an instant game.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.Facebook.FacebookMessagingEntry.Reaction">
+            <summary>
+            Gets or sets an object that indicates the webhook
+            is a reaction to a message.
+            </summary>
+        </member>
+        <member name="T:Deveel.Webhooks.Facebook.FacebookWebhook">
             <summary>
             A webhook sent from the Facebook Messenger Platform
             </summary>
         </member>
-        <member name="M:Deveel.Facebook.FacebookWebhook.#ctor(System.String)">
+        <member name="M:Deveel.Webhooks.Facebook.FacebookWebhook.#ctor(System.String)">
             <summary>
             Constructs a new instance of the webhook object
             </summary>
             <param name="object">The type of object the webhook
             relates to.</param>
         </member>
-        <member name="P:Deveel.Facebook.FacebookWebhook.Object">
+        <member name="P:Deveel.Webhooks.Facebook.FacebookWebhook.Object">
             <summary>
             Gets the type of object this webhook relates to.
             </summary>
         </member>
-        <member name="P:Deveel.Facebook.FacebookWebhook.Entries">
+        <member name="P:Deveel.Webhooks.Facebook.FacebookWebhook.Entries">
             <summary>
             Gets an array of entries
             </summary>
         </member>
-        <member name="M:Deveel.Facebook.FacebookWebhookEntry.#ctor(System.String,System.DateTimeOffset)">
+        <member name="T:Deveel.Webhooks.Facebook.FacebookWebhookEntry">
+            <summary>
+            A single entry in a Facebook Webhook that
+            provides information about a specific event
+            </summary>
+        </member>
+        <member name="M:Deveel.Webhooks.Facebook.FacebookWebhookEntry.#ctor(System.String,System.DateTimeOffset)">
             <summary>
             Constructs a new instance of the entry
             </summary>
@@ -365,191 +542,755 @@
             Thrown if the given <paramref name="id"/> is <c>null</c> or empty.
             </exception>
         </member>
-        <member name="P:Deveel.Facebook.FacebookWebhookEntry.Id">
+        <member name="P:Deveel.Webhooks.Facebook.FacebookWebhookEntry.Id">
             <summary>
             Gets the unique identifier of the object associated 
             to the entry.
             </summary>
         </member>
-        <member name="P:Deveel.Facebook.FacebookWebhookEntry.TimeStamp">
+        <member name="P:Deveel.Webhooks.Facebook.FacebookWebhookEntry.TimeStamp">
             <summary>
             Gets the time-stamp of the entry.
             </summary>
         </member>
-        <member name="P:Deveel.Facebook.FacebookWebhookEntry.Messaging">
+        <member name="P:Deveel.Webhooks.Facebook.FacebookWebhookEntry.Messaging">
             <summary>
             Gets a list of messaging entries
             </summary>
         </member>
-        <member name="T:Deveel.Facebook.FileAttachment">
+        <member name="T:Deveel.Webhooks.Facebook.FallbackAttachment">
+            <summary>
+            Represents a fallback attachment that might include
+            shared content from a person.
+            </summary>
+        </member>
+        <member name="M:Deveel.Webhooks.Facebook.FallbackAttachment.#ctor(Deveel.Webhooks.Facebook.FallbackPayload)">
+            <summary>
+            Constructs the attachment with the given payload.
+            </summary>
+            <param name="payload">
+            The fallback payload that describes the content
+            </param>
+        </member>
+        <member name="P:Deveel.Webhooks.Facebook.FallbackAttachment.Payload">
+            <summary>
+            Gets the payload of the attachment.
+            </summary>
+        </member>
+        <member name="T:Deveel.Webhooks.Facebook.FallbackPayload">
+            <summary>
+            Describes the payload of a fallback attachment.
+            </summary>
+        </member>
+        <member name="M:Deveel.Webhooks.Facebook.FallbackPayload.#ctor(System.String)">
+            <summary>
+            Initializes the payload with the given URL.
+            </summary>
+            <param name="url">
+            The URL of the item attached to the fallback.
+            </param>
+        </member>
+        <member name="P:Deveel.Webhooks.Facebook.FallbackPayload.Url">
+            <summary>
+            Gets the URL of the item attached to the fallback.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.Facebook.FallbackPayload.Title">
+            <summary>
+            Gets or sets the title of the item attached to the fallback.
+            </summary>
+        </member>
+        <member name="T:Deveel.Webhooks.Facebook.FileAttachment">
             <summary>
             Represents a generic file attachment.
             </summary>
         </member>
-        <member name="M:Deveel.Facebook.FileAttachment.#ctor(Deveel.Facebook.UrlPayload)">
+        <member name="M:Deveel.Webhooks.Facebook.FileAttachment.#ctor(Deveel.Webhooks.Facebook.UrlPayload)">
             <summary>
             Initializes the attachment with the given payload.
             </summary>
             <param name="payload"></param>
         </member>
-        <member name="T:Deveel.Facebook.GameMetadata">
+        <member name="T:Deveel.Webhooks.Facebook.GameContextType">
             <summary>
-            Describes the metadata of an instance game play.
+            The type of the context in which a game was played.
             </summary>
         </member>
-        <member name="P:Deveel.Facebook.GameMetadata.PlayerId">
+        <member name="F:Deveel.Webhooks.Facebook.GameContextType.Group">
             <summary>
-            Gets or sets the identifier of the player.
+            The user played the game in a group.
             </summary>
         </member>
-        <member name="P:Deveel.Facebook.GameMetadata.ContextId">
+        <member name="F:Deveel.Webhooks.Facebook.GameContextType.Solo">
             <summary>
-            Gets or sets the identifier of the game context.
+            The user played the game in a solo context.
             </summary>
         </member>
-        <member name="T:Deveel.Facebook.GamePlayButton">
+        <member name="F:Deveel.Webhooks.Facebook.GameContextType.Thread">
             <summary>
-            Represents a button that launches an Instant Game that is associated
-            with a Facebook Page.
+            The user played the game in a thread.
             </summary>
         </member>
-        <member name="M:Deveel.Facebook.GamePlayButton.#ctor(System.String)">
+        <member name="T:Deveel.Webhooks.Facebook.GamePlay">
             <summary>
-            Initializes a new instance of the <see cref="T:Deveel.Facebook.GamePlayButton"/> class with the
-            given title for the button.
-            </summary>
-            <param name="title">The title that masks the button</param>
-        </member>
-        <member name="P:Deveel.Facebook.GamePlayButton.Title">
-            <summary>
-            Gets the title that masks the button.
+            Represents a round of a game played by a user.
             </summary>
         </member>
-        <member name="P:Deveel.Facebook.GamePlayButton.Payload">
+        <member name="M:Deveel.Webhooks.Facebook.GamePlay.#ctor(System.String,System.String,Deveel.Webhooks.Facebook.GameContextType)">
             <summary>
-            Gets or sets the payload to be sent to the game.
+            Constructs the game play information.
+            </summary>
+            <param name="gameId">
+            The identifier of the game that was played (the Meta App ID).
+            </param>
+            <param name="playerId">
+            The identifier of the player that played the game.
+            </param>
+            <param name="contextType">
+            The type of the context in which the game was played.
+            </param>
+        </member>
+        <member name="P:Deveel.Webhooks.Facebook.GamePlay.GameId">
+            <summary>
+            Gets the identifier of the game that was played.
             </summary>
         </member>
-        <member name="P:Deveel.Facebook.GamePlayButton.GameMetadata">
+        <member name="P:Deveel.Webhooks.Facebook.GamePlay.PlayerId">
             <summary>
-            Gets or sets an optional set of metadata that defines
-            the start if the game.
+            Gets the identifier of the player that played the game.
             </summary>
         </member>
-        <member name="T:Deveel.Facebook.GraphVersions">
+        <member name="P:Deveel.Webhooks.Facebook.GamePlay.ContextType">
             <summary>
-            Enumerates the available versions of the
-            Facebook Gaph API that can used.
+            Gets the type of the context in which the game was played.
             </summary>
         </member>
-        <member name="F:Deveel.Facebook.GraphVersions.V12_0">
+        <member name="P:Deveel.Webhooks.Facebook.GamePlay.ContextId">
             <summary>
-            The verion v12.0 of the Facebook Graph API
+            Gets or sets the identifier for the social context type if the type 
+            is not <see cref="F:Deveel.Webhooks.Facebook.GameContextType.Solo"/>.
             </summary>
         </member>
-        <member name="F:Deveel.Facebook.GraphVersions.V16_0">
+        <member name="P:Deveel.Webhooks.Facebook.GamePlay.Locale">
             <summary>
-            The version v16.0 of the Facebook Graph API
+            Gets or sets the locale of the player that played the game.
             </summary>
         </member>
-        <member name="F:Deveel.Facebook.GraphVersions.Latest">
+        <member name="P:Deveel.Webhooks.Facebook.GamePlay.Payload">
             <summary>
-            The latest version of the Facebook Graph API 
-            (currently <c>v16.0</c>)
+            Gets or sets the JSON encoded object that represents the session
+            data of the game (only available for Rich Games)
             </summary>
         </member>
-        <member name="T:Deveel.Facebook.MessageActionType">
+        <member name="P:Deveel.Webhooks.Facebook.GamePlay.Score">
             <summary>
-            Enumerates the type of actions performed on a message
-            by a user.
+            Gets or sets the best score achieved by this playing during 
+            this round of game play (only available to Classic score 
+            based games).
             </summary>
         </member>
-        <member name="F:Deveel.Facebook.MessageActionType.React">
+        <member name="T:Deveel.Webhooks.Facebook.ImageAttachment">
+            <summary>
+            Represents a message attachment that is an image.
+            </summary>
+        </member>
+        <member name="M:Deveel.Webhooks.Facebook.ImageAttachment.#ctor(Deveel.Webhooks.Facebook.UrlPayload)">
+            <summary>
+            Constructs the attachment with the given payload.
+            </summary>
+            <param name="payload"></param>
+        </member>
+        <member name="T:Deveel.Webhooks.Facebook.MessageDelivery">
+            <summary>
+            Informs that messages sent from a page have been delivered.
+            </summary>
+        </member>
+        <member name="M:Deveel.Webhooks.Facebook.MessageDelivery.#ctor(System.DateTimeOffset)">
+            <summary>
+            Initializes the delivery with the given <paramref name="watermark"/>
+            timestamp.
+            </summary>
+            <param name="watermark"></param>
+        </member>
+        <member name="P:Deveel.Webhooks.Facebook.MessageDelivery.MessageIds">
+            <summary>
+            Gets an optional array of message IDs that were delivered.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.Facebook.MessageDelivery.Watermark">
+            <summary>
+            Gets the timestamp that indicates that all messages
+            before this watermark were delivered.
+            </summary>
+        </member>
+        <member name="T:Deveel.Webhooks.Facebook.MessageRead">
+            <summary>
+            Represents a marker that indicates that 
+            messages sent has been read.
+            </summary>
+        </member>
+        <member name="M:Deveel.Webhooks.Facebook.MessageRead.#ctor(System.DateTimeOffset)">
+            <summary>
+            Constructs the message read marker with
+            the given <paramref name="watermark"/>.
+            </summary>
+            <param name="watermark">
+            The timestamp that marks all messages as read
+            </param>
+        </member>
+        <member name="P:Deveel.Webhooks.Facebook.MessageRead.Watermark">
+            <summary>
+            Gets the timestamp that marks all messages
+            sent before this time has been read by the
+            recipient.
+            </summary>
+        </member>
+        <member name="T:Deveel.Webhooks.Facebook.MessageRef">
+            <summary>
+            A reference to another message in the same conversation.
+            </summary>
+        </member>
+        <member name="M:Deveel.Webhooks.Facebook.MessageRef.#ctor(System.String)">
+            <summary>
+            Constructs the reference to a message with the 
+            given identifier.
+            </summary>
+            <param name="id">
+            The identifier of the message to reference.
+            </param>
+            <exception cref="T:System.ArgumentException">
+            Thrown when the given <paramref name="id"/> is <c>null</c> or empty.
+            </exception>
+        </member>
+        <member name="P:Deveel.Webhooks.Facebook.MessageRef.Id">
+            <summary>
+            Gets the identifier of the message to reference.
+            </summary>
+        </member>
+        <member name="M:Deveel.Webhooks.Facebook.MessageRef.op_Implicit(System.String)~Deveel.Webhooks.Facebook.MessageRef">
+            <summary>
+            Implicitly converts the given <paramref name="id"/> to a
+            <see cref="T:Deveel.Webhooks.Facebook.MessageRef"/> instance
+            </summary>
+            <param name="id"></param>
+        </member>
+        <member name="T:Deveel.Webhooks.Facebook.MessagingOptIn">
+            <summary>
+            Describes an event of a user opting-in or opting-out to 
+            receive messages from a page.
+            </summary>
+        </member>
+        <member name="M:Deveel.Webhooks.Facebook.MessagingOptIn.#ctor(System.String)">
+            <summary>
+            Constructs the messaging opt-in event of the
+            given type.
+            </summary>
+            <param name="type">
+            The type of the opt-in event (it should always
+            be <c>notification_messages</c>)
+            </param>
+        </member>
+        <member name="P:Deveel.Webhooks.Facebook.MessagingOptIn.Type">
+            <summary>
+            Gets the type of the opt-in event.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.Facebook.MessagingOptIn.Reference">
+            <summary>
+            Gets or sets an external reference that the developer can use
+            to correlate the opt-in event with a user action
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.Facebook.MessagingOptIn.NotificationToken">
+            <summary>
+            Gets or sets the token that represents the person who opted-in, 
+            with the specific topic and message frequency, that is used to 
+            send recurring notifications
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.Facebook.MessagingOptIn.Fequency">
+            <summary>
+            Gets or sets the frequency of the notifications to send to the user.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.Facebook.MessagingOptIn.Status">
+            <summary>
+            Gets or sets the status of the notification subscription.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.Facebook.MessagingOptIn.TokenExpiresAt">
+            <summary>
+            Gets or sets the date when the the notification message token expires
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.Facebook.MessagingOptIn.Timezone">
+            <summary>
+            Gets or sets the timezone of the user
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.Facebook.MessagingOptIn.Topic">
+            <summary>
+            Gets or sets the topic for the recurring notification message
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.Facebook.MessagingOptIn.UserTokenStatus">
+            <summary>
+            Gets or sets the status of the user token.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.Facebook.MessagingOptIn.Payload">
+            <summary>
+            Gets or sets additional information that the developers includes 
+            in the webhooks notification
+            </summary>
+        </member>
+        <member name="T:Deveel.Webhooks.Facebook.MessagingPart">
+            <summary>
+            Represents the reference to a part in a messaging event.
+            </summary>
+        </member>
+        <member name="M:Deveel.Webhooks.Facebook.MessagingPart.#ctor(System.String)">
+            <summary>
+            Initializes the part with the given identifier.
+            </summary>
+            <param name="id"></param>
+            <exception cref="T:System.ArgumentException">
+            Thrown when the given <paramref name="id"/> is <c>null</c> or whitespace.
+            </exception>
+        </member>
+        <member name="P:Deveel.Webhooks.Facebook.MessagingPart.Id">
+            <summary>
+            Gets the identifier of the part.
+            </summary>
+        </member>
+        <member name="M:Deveel.Webhooks.Facebook.MessagingPart.op_Implicit(Deveel.Webhooks.Facebook.MessagingPart)~System.String">
+            <summary>
+            Implicitly converts the part to its identifier.
+            </summary>
+            <param name="part"></param>
+        </member>
+        <member name="M:Deveel.Webhooks.Facebook.MessagingPart.op_Implicit(System.String)~Deveel.Webhooks.Facebook.MessagingPart">
+            <summary>
+            Implicitly converts the given identifier to a part.
+            </summary>
+            <param name="id"></param>
+        </member>
+        <member name="T:Deveel.Webhooks.Facebook.NotificationFequency">
+            <summary>
+            Defines the notification frequency of a subscription.
+            </summary>
+        </member>
+        <member name="F:Deveel.Webhooks.Facebook.NotificationFequency.Daily">
+            <summary>
+            Events should be notified daily 
+            (send 1 notification per 24 hour period 
+            for 6 months from opt in date)
+            </summary>
+        </member>
+        <member name="F:Deveel.Webhooks.Facebook.NotificationFequency.Weekly">
+            <summary>
+            Events should be notified weekly
+            send 1 notification per week for 9 months 
+            from the opt in date
+            </summary>
+        </member>
+        <member name="F:Deveel.Webhooks.Facebook.NotificationFequency.Monthly">
+            <summary>
+            Events should be notified monthly
+            (send 1 notification per month for 12 months 
+            from the opt in date)
+            </summary>
+        </member>
+        <member name="T:Deveel.Webhooks.Facebook.NotificationStatus">
+            <summary>
+            Enumerates the possible values for the status of a notification
+            from an opt-in/opt-out
+            </summary>
+        </member>
+        <member name="F:Deveel.Webhooks.Facebook.NotificationStatus.Stop">
+            <summary>
+            The notifications are stopped.
+            </summary>
+        </member>
+        <member name="F:Deveel.Webhooks.Facebook.NotificationStatus.Resume">
+            <summary>
+            The notifications are resumed.
+            </summary>
+        </member>
+        <member name="T:Deveel.Webhooks.Facebook.Product">
+            <summary>
+            Represents a product that was shared as a message
+            attachement by a sender.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.Facebook.Product.Elements">
+            <summary>
+            Gets or sets the array of elements that are
+            describing the product.
+            </summary>
+        </member>
+        <member name="T:Deveel.Webhooks.Facebook.ProductElement">
+            <summary>
+            A single generic element of a product template.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.Facebook.ProductElement.Id">
+            <summary>
+            The identifier of the element
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.Facebook.ProductElement.Title">
+            <summary>
+            Gets or sets the title of the element.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.Facebook.ProductElement.Subtitle">
+            <summary>
+            Gets or sets the subtitle of the element.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.Facebook.ProductElement.ImageUrl">
+            <summary>
+            Gets or sets the URL to an image that is displayed 
+            as part of the element.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.Facebook.ProductElement.RetailerId">
+            <summary>
+            Gets or sets a reference to the retailer of 
+            the product.
+            </summary>
+        </member>
+        <member name="T:Deveel.Webhooks.Facebook.QuickReply">
+            <summary>
+            Represents a quick reply to a message.
+            </summary>
+        </member>
+        <member name="M:Deveel.Webhooks.Facebook.QuickReply.#ctor(System.String)">
+            <summary>
+            Initializes the quick reply with the given message.
+            </summary>
+            <param name="message"></param>
+        </member>
+        <member name="P:Deveel.Webhooks.Facebook.QuickReply.Message">
+            <summary>
+            Gets the message payload of the quick reply.
+            </summary>
+        </member>
+        <member name="T:Deveel.Webhooks.Facebook.Reaction">
+            <summary>
+            Represents a reaction by a user to a message.
+            </summary>
+        </member>
+        <member name="M:Deveel.Webhooks.Facebook.Reaction.#ctor(System.String,Deveel.Webhooks.Facebook.ReactionActionType,Deveel.Webhooks.Facebook.ReactionType)">
+            <summary>
+            Constructs the reaction with the given message id, action and type.
+            </summary>
+            <param name="messageId">
+            The identifier of the message that the reaction is related to.
+            </param>
+            <param name="action">
+            The action that the user has performed on the message.
+            </param>
+            <param name="type">
+            The type of reaction that the user has performed.
+            </param>
+            <exception cref="T:System.ArgumentException"></exception>
+        </member>
+        <member name="P:Deveel.Webhooks.Facebook.Reaction.Type">
+            <summary>
+            Gets the type of reaction that the user has performed.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.Facebook.Reaction.Emoji">
+            <summary>
+            Gets or sets the code of the emoji that the user has used to
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.Facebook.Reaction.Action">
+            <summary>
+            Gets the action that the user has performed on the message.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.Facebook.Reaction.MessageId">
+            <summary>
+            Gets the identifier of the message that the reaction is related to.
+            </summary>
+        </member>
+        <member name="T:Deveel.Webhooks.Facebook.ReactionActionType">
+            <summary>
+            Enumerates the type of actions performed on
+            a message by a user.
+            </summary>
+        </member>
+        <member name="F:Deveel.Webhooks.Facebook.ReactionActionType.React">
             <summary>
             The user reacted to the message.
             </summary>
         </member>
-        <member name="F:Deveel.Facebook.MessageActionType.Unreact">
+        <member name="F:Deveel.Webhooks.Facebook.ReactionActionType.Unreact">
             <summary>
             The user changed the reaction to the message.
             </summary>
         </member>
-        <member name="T:Deveel.Facebook.ReactionType">
+        <member name="T:Deveel.Webhooks.Facebook.ReactionType">
             <summary>
             Enumerates the kind of reactions that can be sent
             by a user.
             </summary>
         </member>
-        <member name="F:Deveel.Facebook.ReactionType.Like">
+        <member name="F:Deveel.Webhooks.Facebook.ReactionType.Like">
             <summary>
             The user has liked the message.
             </summary>
         </member>
-        <member name="F:Deveel.Facebook.ReactionType.Dislike">
+        <member name="F:Deveel.Webhooks.Facebook.ReactionType.Dislike">
             <summary>
             The user has disliked the message.
             </summary>
         </member>
-        <member name="F:Deveel.Facebook.ReactionType.Love">
+        <member name="F:Deveel.Webhooks.Facebook.ReactionType.Love">
             <summary>
             The user has reacted with a heart to the message.
             </summary>
         </member>
-        <member name="F:Deveel.Facebook.ReactionType.Wow">
+        <member name="F:Deveel.Webhooks.Facebook.ReactionType.Wow">
             <summary>
             The user has reacted with a 'wow' to the message.
             </summary>
         </member>
-        <member name="F:Deveel.Facebook.ReactionType.Sad">
+        <member name="F:Deveel.Webhooks.Facebook.ReactionType.Sad">
             <summary>
             The user has reacted with sadness to the message.
             </summary>
         </member>
-        <member name="F:Deveel.Facebook.ReactionType.Angry">
+        <member name="F:Deveel.Webhooks.Facebook.ReactionType.Angry">
             <summary>
             The user was angry about the message.
             </summary>
         </member>
-        <member name="F:Deveel.Facebook.ReactionType.Smile">
+        <member name="F:Deveel.Webhooks.Facebook.ReactionType.Smile">
             <summary>
             The user has reacted with a smile to the message.
             </summary>
         </member>
-        <member name="F:Deveel.Facebook.ReactionType.Other">
+        <member name="F:Deveel.Webhooks.Facebook.ReactionType.Other">
             <summary>
             The user had another reaction to the message.
             </summary>
         </member>
-        <member name="T:Deveel.Facebook.TemplateAttachmentPayload">
+        <member name="T:Deveel.Webhooks.Facebook.ReceivedMessage">
+            <summary>
+            Represents a message received from a user
+            to a Facebook Messenger application.
+            </summary>
+        </member>
+        <member name="M:Deveel.Webhooks.Facebook.ReceivedMessage.#ctor(System.String)">
+            <summary>
+            Constructs the message with the given identifier.
+            </summary>
+            <param name="id"></param>
+        </member>
+        <member name="P:Deveel.Webhooks.Facebook.ReceivedMessage.Id">
+            <summary>
+            Gets the unique identifier of the message.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.Facebook.ReceivedMessage.ReplyTo">
+            <summary>
+            Gets the reference to a message that this
+            was a reply to.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.Facebook.ReceivedMessage.Text">
+            <summary>
+            Gets the content of a text message.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.Facebook.ReceivedMessage.Attachments">
+            <summary>
+            Gets a set of attachments to the message,
+            that can be images, videos, audio or files
+            or templates.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.Facebook.ReceivedMessage.QuickReply">
+            <summary>
+            Gets a quick reply to the message.
+            </summary>
+        </member>
+        <member name="T:Deveel.Webhooks.Facebook.SenderPart">
+            <summary>
+            References a person that sent a message to a business.
+            </summary>
+        </member>
+        <member name="M:Deveel.Webhooks.Facebook.SenderPart.#ctor(System.String,System.String)">
+            <summary>
+            Constructs the sender reference with the given identifier.
+            </summary>
+            <param name="id">
+            The Page-scoped ID for the person who sent a message to your business
+            </param>
+            <param name="userRef"></param>
+        </member>
+        <member name="P:Deveel.Webhooks.Facebook.SenderPart.Id">
+            <summary>
+            Gets the page-scoped ID for the person who sent a message to your business
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.Facebook.SenderPart.UserRef">
+            <summary>
+            The reference for a person who used the <c>Chat Plugin</c> to 
+            messsage your business.
+            </summary>
+        </member>
+        <member name="M:Deveel.Webhooks.Facebook.SenderPart.op_Implicit(System.String)~Deveel.Webhooks.Facebook.SenderPart">
+            <summary>
+            Implicitly converts the given <paramref name="id"/> to a
+            <see name="SenderPart"/> instance.
+            </summary>
+            <param name="id">
+            The unique identifier of the sender.
+            </param>
+        </member>
+        <member name="T:Deveel.Webhooks.Facebook.TemplateAttachment">
+            <summary>
+            Represents a templated attachment to a message.
+            </summary>
+        </member>
+        <member name="M:Deveel.Webhooks.Facebook.TemplateAttachment.#ctor(Deveel.Webhooks.Facebook.TemplateAttachmentPayload)">
+            <summary>
+            Constructs the attachment with the given payload.
+            </summary>
+            <param name="payload">
+            The payload of the attachment.
+            </param>
+            <exception cref="T:System.ArgumentNullException">
+            Thrown when the given <paramref name="payload"/> is <c>null</c>.
+            </exception>
+        </member>
+        <member name="P:Deveel.Webhooks.Facebook.TemplateAttachment.Payload">
+            <summary>
+            Gets the payload of the attachment.
+            </summary>
+        </member>
+        <member name="T:Deveel.Webhooks.Facebook.TemplateAttachmentPayload">
             <summary>
             Describes the payload of a templated attachment.
             </summary>
         </member>
-        <member name="T:Deveel.Facebook.WebUrlButton">
+        <member name="P:Deveel.Webhooks.Facebook.TemplateAttachmentPayload.Product">
             <summary>
-            Represents a button that launches the navigation to a given URL.
+            Gets or sets the specifications of
+            a product that was sent.
             </summary>
         </member>
-        <member name="M:Deveel.Facebook.WebUrlButton.#ctor(System.String,System.String)">
+        <member name="T:Deveel.Webhooks.Facebook.UrlPayload">
             <summary>
-            Initializes a new instance of the <see cref="T:Deveel.Facebook.WebUrlButton"/> class with the
-            given URL and title for the button.
+            The payload of an attachment that contains an URL.
             </summary>
-            <param name="url">The web URL for the navigation</param>
-            <param name="title">The title of the button used to mask the navigation URL</param>
+        </member>
+        <member name="M:Deveel.Webhooks.Facebook.UrlPayload.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Deveel.Webhooks.Facebook.UrlPayload"/> class.
+            </summary>
+            <param name="url">
+            The URL of the attachment that was sent.
+            </param>
             <exception cref="T:System.ArgumentException">
-            Thrown if the <paramref name="url"/> or <paramref name="title"/> is <c>null</c> or empty.
+            Thrown when the given <paramref name="url"/> is <c>null</c> or empty
             </exception>
         </member>
-        <member name="P:Deveel.Facebook.WebUrlButton.Title">
+        <member name="P:Deveel.Webhooks.Facebook.UrlPayload.Url">
             <summary>
-            Gets the title of the button used to mask the navigation URL.
+            Gets the URL of the attachment that was sent.
             </summary>
         </member>
-        <member name="P:Deveel.Facebook.WebUrlButton.Url">
+        <member name="T:Deveel.Webhooks.Facebook.UserTokenStatus">
             <summary>
-            Gets the web URL for the navigation.
+            Lists the statuses of a user token provided
+            in an opt-in request.
             </summary>
+        </member>
+        <member name="F:Deveel.Webhooks.Facebook.UserTokenStatus.Refreshed">
+            <summary>
+            The user chooses to re opt-in to receiving Recurring Notifications 
+            after the token has expired
+            </summary>
+        </member>
+        <member name="F:Deveel.Webhooks.Facebook.UserTokenStatus.NotRefreshed">
+            <summary>
+            The user does not re opt-in to receiving Recurring Notifications 
+            after the token has expired (this is the default value).
+            </summary>
+        </member>
+        <member name="T:Deveel.Webhooks.Facebook.VideoAttachment">
+            <summary>
+            Represents an attachment that contains a video.
+            </summary>
+        </member>
+        <member name="M:Deveel.Webhooks.Facebook.VideoAttachment.#ctor(Deveel.Webhooks.Facebook.UrlPayload)">
+            <summary>
+            Constructs the attachment with the given payload.
+            </summary>
+            <param name="payload"></param>
+        </member>
+        <member name="T:Deveel.Webhooks.ServiceCollectionExtensions">
+            <summary>
+            Extends the <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/> to add the Facebook Webhook receiver
+            </summary>
+        </member>
+        <member name="M:Deveel.Webhooks.ServiceCollectionExtensions.AddFacebookReceiver(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            Adds the default configuration for the Facebook Webhook receiver
+            </summary>
+            <param name="services">
+            The collection of services to which the receiver is added
+            </param>
+            <remarks>
+            This meth adds the default configuration for the Facebook Webhook receiver
+            and registers a default instance of the end-point verifier for the Facebook
+            webhooks.
+            </remarks>
+            <returns>
+            Returns an instance of <see cref="T:Deveel.Webhooks.WebhookReceiverBuilder`1"/> that can
+            be used to further configure the receiver.
+            </returns>
+        </member>
+        <member name="M:Deveel.Webhooks.ServiceCollectionExtensions.AddFacebookReceiver(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.String)">
+            <summary>
+            Adds a Facebook Webhook receiver to the service collection that is
+            configured using the specified configuration section.
+            </summary>
+            <param name="services">
+            The collection of services to which the receiver is added
+            </param>
+            <param name="sectionPath">
+            The path to the configuration section that contains the Facebook-specific options 
+            for the webhook receiver
+            </param>
+            <returns>
+            Returns an instance of <see cref="T:Deveel.Webhooks.WebhookReceiverBuilder`1"/> that can
+            be used to further configure the receiver.
+            </returns>
+            <seealso cref="M:Deveel.Webhooks.ServiceCollectionExtensions.AddFacebookReceiver(Microsoft.Extensions.DependencyInjection.IServiceCollection)"/>
+        </member>
+        <member name="M:Deveel.Webhooks.ServiceCollectionExtensions.AddFacebookReceiver(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Action{Deveel.Webhooks.FacebookReceiverOptions})">
+            <summary>
+            Adds a Facebook Webhook receiver to the service collection that is
+            configured manually.
+            </summary>
+            <param name="services">
+            The collection of services to which the receiver is added
+            </param>
+            <param name="configure">
+            The delegate that is used to configure the Facebook-specific options
+            </param>
+            <returns>
+            Returns an instance of <see cref="T:Deveel.Webhooks.WebhookReceiverBuilder`1"/> that can
+            be used to further configure the receiver.
+            </returns>
+            <seealso cref="M:Deveel.Webhooks.ServiceCollectionExtensions.AddFacebookReceiver(Microsoft.Extensions.DependencyInjection.IServiceCollection)"/>
         </member>
     </members>
 </doc>

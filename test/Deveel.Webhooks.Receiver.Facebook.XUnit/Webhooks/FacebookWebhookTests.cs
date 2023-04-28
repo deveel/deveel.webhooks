@@ -1,9 +1,12 @@
-﻿using System.Net;
+﻿#pragma warning disable CS8604 // Possible null reference argument.
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
+
+
+using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
-using System.Text;
 
-using Deveel.Facebook;
+using Deveel.Webhooks.Facebook;
 
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -15,7 +18,7 @@ using Microsoft.Extensions.Logging;
 using Xunit.Abstractions;
 
 namespace Deveel.Webhooks {
-	public class FacebookWebhookTests : IDisposable {
+    public class FacebookWebhookTests : IDisposable {
 		private readonly WebApplicationFactory<Program> appFactory;
 		private FacebookWebhook? lastWebhook;
 
@@ -45,8 +48,6 @@ namespace Deveel.Webhooks {
 
 		[Fact]
 		public async Task ReceiveDelivered() {
-			var client = CreateClient();
-
 			var response = await SendWebbookAsync(new {
 				@object = "page",
 				entry = new[] {
@@ -84,18 +85,16 @@ namespace Deveel.Webhooks {
 			Assert.Equal("123456789", lastWebhook.Entries[0].Id);
 			Assert.Equal(1458692752478, lastWebhook.Entries[0].TimeStamp.ToUnixTimeMilliseconds());
 			Assert.NotNull(lastWebhook.Entries[0].Messaging);
-			Assert.NotEmpty(lastWebhook.Entries[0].Messaging);
-			Assert.NotNull(lastWebhook.Entries[0].Messaging[0].Delivery);
-			Assert.NotNull(lastWebhook.Entries[0].Messaging[0].Delivery.MessageIds);
-			Assert.NotEmpty(lastWebhook.Entries[0].Messaging[0].Delivery.MessageIds);
+            Assert.NotEmpty(lastWebhook.Entries[0].Messaging);
+            Assert.NotNull(lastWebhook.Entries[0].Messaging[0].Delivery);
+            Assert.NotNull(lastWebhook.Entries[0].Messaging[0].Delivery.MessageIds);
+            Assert.NotEmpty(lastWebhook.Entries[0].Messaging[0].Delivery.MessageIds);
 			Assert.Equal("mid.1458668856218:ed81099e15d3f4f233", lastWebhook.Entries[0].Messaging[0].Delivery.MessageIds[0]);
 			Assert.Equal(1458668856253, lastWebhook.Entries[0].Messaging[0].Delivery.Watermark.ToUnixTimeMilliseconds());
 		}
 
 		[Fact]
 		public async Task ReceiveRead() {
-			var client = CreateClient();
-
 			var response = await SendWebbookAsync(new {
 				@object = "page",
 				entry = new[] {
@@ -137,8 +136,6 @@ namespace Deveel.Webhooks {
 
 		[Fact]
 		public async Task ReceiveTextMessage() {
-			var client = CreateClient();
-
 			var response = await SendWebbookAsync(new {
 				@object = "page",
 				entry = new[] {
@@ -174,10 +171,8 @@ namespace Deveel.Webhooks {
 			Assert.NotEmpty(lastWebhook.Entries);
 			Assert.NotNull(lastWebhook.Entries[0].Messaging);
 			Assert.NotEmpty(lastWebhook.Entries[0].Messaging);
-			Assert.NotNull(lastWebhook.Entries[0].Messaging[0].Sender);
 			Assert.NotNull(lastWebhook.Entries[0].Messaging[0].Sender.Id);
 			Assert.Equal("123456789", lastWebhook.Entries[0].Messaging[0].Sender.Id);
-			Assert.NotNull(lastWebhook.Entries[0].Messaging[0].Recipient);
 			Assert.NotNull(lastWebhook.Entries[0].Messaging[0].Recipient.Id);
 			Assert.Equal("987654321", lastWebhook.Entries[0].Messaging[0].Recipient.Id);
 			Assert.NotNull(lastWebhook.Entries[0].Messaging[0].Message);
@@ -188,8 +183,6 @@ namespace Deveel.Webhooks {
 
 		[Fact]
 		public async Task ReceiveMessageWithReplyTo() {
-			var client = CreateClient();
-
 			var response = await SendWebbookAsync(new {
 				@object = "page",
 				entry = new[] {
@@ -239,8 +232,6 @@ namespace Deveel.Webhooks {
 
 		[Fact]
 		public async Task ReceiveFileAttachment() {
-			var client = CreateClient();
-
 			var response = await SendWebbookAsync(new {
 				@object = "page",
 				entry = new[] {
@@ -295,9 +286,7 @@ namespace Deveel.Webhooks {
 		}
 
 		[Fact]
-		public async Task ReceiveAudioAttachment() {
-			var client = CreateClient();
-						
+		public async Task ReceiveAudioAttachment() {						
 			var response = await SendWebbookAsync(new {
 				@object = "page",
 				entry = new[] {
@@ -333,6 +322,7 @@ namespace Deveel.Webhooks {
 
 			Assert.True(response.IsSuccessStatusCode);
 			Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
+
 			Assert.NotNull(lastWebhook);
 			Assert.Equal("page", lastWebhook.Object);
 			Assert.NotNull(lastWebhook.Entries);
@@ -352,8 +342,6 @@ namespace Deveel.Webhooks {
 
 		[Fact]
 		public async Task ReceiveProductTemplateWebhook() {
-			var client = CreateClient();
-
 			var response = await SendWebbookAsync(new {
 				@object = "page",
 				entry = new[] {
@@ -378,7 +366,13 @@ namespace Deveel.Webhooks {
 											payload = new {
 												product = new {
 													elements = new object[] {
-
+														new {
+															id = "123456789",
+															title = "Product title",
+															subtitle = "Product subtitle",
+															image_url = "https://www.facebook.com/images/fb_icon_325x325.png",
+															retailer_id = "abc123456789",
+														}
 													}
 												}
 											}
@@ -390,6 +384,335 @@ namespace Deveel.Webhooks {
 					}
 				}
 			});
+
+			Assert.True(response.IsSuccessStatusCode);
+			Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
+
+			Assert.NotNull(lastWebhook);
+			Assert.Equal("page", lastWebhook.Object);
+			Assert.NotNull(lastWebhook.Entries);
+			Assert.NotEmpty(lastWebhook.Entries);
+			Assert.NotNull(lastWebhook.Entries[0].Messaging);
+			Assert.NotEmpty(lastWebhook.Entries[0].Messaging);
+			Assert.NotNull(lastWebhook.Entries[0].Messaging[0].Message);
+			Assert.NotNull(lastWebhook.Entries[0].Messaging[0].Message.Id);
+			Assert.NotNull(lastWebhook.Entries[0].Messaging[0].Message.Attachments);
+			Assert.NotEmpty(lastWebhook.Entries[0].Messaging[0].Message.Attachments);
+			Assert.Equal(AttachmentType.Template, lastWebhook.Entries[0].Messaging[0].Message.Attachments[0].Type);
+
+			var template = Assert.IsType<TemplateAttachment>(lastWebhook.Entries[0].Messaging[0].Message.Attachments[0]);
+			Assert.NotNull(template.Payload);
+			Assert.NotNull(template.Payload.Product);
+			Assert.NotNull(template.Payload.Product.Elements);
+			Assert.NotEmpty(template.Payload.Product.Elements);
+			Assert.Equal("123456789", template.Payload.Product.Elements[0].Id);
+			Assert.Equal("Product title", template.Payload.Product.Elements[0].Title);
+			Assert.Equal("Product subtitle", template.Payload.Product.Elements[0].Subtitle);
+			Assert.Equal("https://www.facebook.com/images/fb_icon_325x325.png", template.Payload.Product.Elements[0].ImageUrl);
+			Assert.Equal("abc123456789", template.Payload.Product.Elements[0].RetailerId);
+		}
+
+		[Fact]
+		public async Task ReceiveFallbackAttachment() {
+			var response = await SendWebbookAsync(new {
+                @object = "page",
+                entry = new[] {
+                    new {
+                        id = "123456789",
+                        time = 1458692752478,
+                        messaging = new[] {
+                            new {
+                                sender = new {
+                                    id = "123456789"
+                                },
+                                recipient = new {
+                                    id = "987654321"
+                                },
+                                timestamp = 1458692752478,
+                                message = new {
+                                    mid = "mid.1457764197618:41d102a3e1ae206a38",
+                                    seq = 73,
+                                    attachments = new[] {
+                                        new {
+                                            type = "fallback",
+                                            payload = new {
+												title = "Callback",
+                                                url = "https://www.facebook.com/images/fb_icon_325x325.png"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+			Assert.True(response.IsSuccessStatusCode);
+			Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
+
+			Assert.NotNull(lastWebhook);
+			Assert.Equal("page", lastWebhook.Object);
+			Assert.NotNull(lastWebhook.Entries);
+			Assert.NotEmpty(lastWebhook.Entries);
+			Assert.NotNull(lastWebhook.Entries[0].Messaging);
+			Assert.NotEmpty(lastWebhook.Entries[0].Messaging);
+			Assert.NotNull(lastWebhook.Entries[0].Messaging[0].Message);
+			Assert.NotNull(lastWebhook.Entries[0].Messaging[0].Message.Id);
+			Assert.NotNull(lastWebhook.Entries[0].Messaging[0].Message.Attachments);
+			Assert.NotEmpty(lastWebhook.Entries[0].Messaging[0].Message.Attachments);
+			Assert.Equal(AttachmentType.Fallback, lastWebhook.Entries[0].Messaging[0].Message.Attachments[0].Type);
+
+			var fallback = Assert.IsType<FallbackAttachment>(lastWebhook.Entries[0].Messaging[0].Message.Attachments[0]);
+			Assert.NotNull(fallback.Payload);
+			Assert.Equal("Callback", fallback.Payload.Title);
+			Assert.Equal("https://www.facebook.com/images/fb_icon_325x325.png", fallback.Payload.Url);
+		}
+
+		[Fact]
+		public async Task ReceiveOptInWebhook() {
+			var response = await SendWebbookAsync(new {
+                @object = "page",
+                entry = new[] {
+                    new {
+                        id = "123456789",
+                        time = 1458692752478,
+                        messaging = new[] {
+                            new {
+                                sender = new {
+                                    id = "123456789"
+                                },
+                                recipient = new {
+                                    id = "987654321"
+                                },
+                                timestamp = 1458692752478,
+                                optin = new {
+                                    type = "notification_messages",
+									payload = "USER_DEFINED_PAYLOAD",
+									notification_messages_token = "NOTIFICATION_MESSAGES_TOKEN",
+									notification_messages_frequency = "DAILY",
+									notification_messages_timezone = "America/Los_Angeles",
+									token_expiry_timestamp = 1458779227000,
+									user_token_status = "REFRESHED"
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+			Assert.True(response.IsSuccessStatusCode);
+			Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
+
+			Assert.NotNull(lastWebhook);
+			Assert.Equal("page", lastWebhook.Object);
+			Assert.NotNull(lastWebhook.Entries);
+			Assert.NotEmpty(lastWebhook.Entries);
+			Assert.NotNull(lastWebhook.Entries[0].Messaging);
+			Assert.NotEmpty(lastWebhook.Entries[0].Messaging);
+			Assert.NotNull(lastWebhook.Entries[0].Messaging[0].OptIn);
+			Assert.NotNull(lastWebhook.Entries[0].Messaging[0].OptIn.Type);
+			Assert.Equal("notification_messages", lastWebhook.Entries[0].Messaging[0].OptIn.Type);
+			Assert.NotNull(lastWebhook.Entries[0].Messaging[0].OptIn.Payload);
+			Assert.NotNull(lastWebhook.Entries[0].Messaging[0].OptIn.NotificationToken);
+			Assert.Equal(NotificationFequency.Daily, lastWebhook.Entries[0].Messaging[0].OptIn.Fequency);
+			Assert.Equal("America/Los_Angeles", lastWebhook.Entries[0].Messaging[0].OptIn.Timezone);
+			Assert.Equal(1458779227000, lastWebhook.Entries[0].Messaging[0].OptIn.TokenExpiresAt?.ToUnixTimeMilliseconds());
+			Assert.Equal(UserTokenStatus.Refreshed, lastWebhook.Entries[0].Messaging[0].OptIn.UserTokenStatus);
+		}
+
+		[Fact]
+		public async Task ReceiveOptOutWebhook() {
+			var response = await SendWebbookAsync(new {
+                @object = "page",
+                entry = new[] {
+                    new {
+                        id = "123456789",
+                        time = 1458692752478,
+                        messaging = new[] {
+                            new {
+                                sender = new {
+                                    id = "123456789"
+                                },
+                                recipient = new {
+                                    id = "987654321"
+                                },
+                                timestamp = 1458692752478,
+                                optin = new {
+									type = "notification_messages",
+									notification_messages_token = "NOTIFICATION_MESSAGES_TOKEN",
+									notification_messages_status = "STOP NOTIFICATIONS"
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+			Assert.True(response.IsSuccessStatusCode);
+			Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
+
+			Assert.NotNull(lastWebhook);
+			Assert.Equal("page", lastWebhook.Object);
+			Assert.NotNull(lastWebhook.Entries);
+			Assert.NotEmpty(lastWebhook.Entries);
+			Assert.NotNull(lastWebhook.Entries[0].Messaging);
+			Assert.NotEmpty(lastWebhook.Entries[0].Messaging);
+			Assert.NotNull(lastWebhook.Entries[0].Messaging[0].OptIn);
+			Assert.NotNull(lastWebhook.Entries[0].Messaging[0].OptIn.Type);
+			Assert.Equal("notification_messages", lastWebhook.Entries[0].Messaging[0].OptIn.Type);
+			Assert.NotNull(lastWebhook.Entries[0].Messaging[0].OptIn.NotificationToken);
+			Assert.Equal(NotificationStatus.Stop, lastWebhook.Entries[0].Messaging[0].OptIn.Status);
+		}
+
+		[Fact]
+		public async Task ReceiveGamePlayWebhook() {
+			var response = await SendWebbookAsync(new {
+                @object = "page",
+                entry = new[] {
+                    new {
+                        id = "123456789",
+                        time = 1458692752478,
+                        messaging = new[] {
+                            new {
+                                sender = new {
+                                    id = "123456789"
+                                },
+                                recipient = new {
+                                    id = "987654321"
+                                },
+                                timestamp = 1458692752478,
+                                game_play = new {
+                                    game_id = "123456789",
+                                    player_id = "987654321",
+                                    context_type = "THREAD",
+                                    context_id = "123456789",
+                                    score = 12,
+                                    payload = new {
+										my_thing = 22,
+										their = "Thing"
+									}
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+			Assert.True(response.IsSuccessStatusCode);
+			Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
+
+			Assert.NotNull(lastWebhook);
+			Assert.Equal("page", lastWebhook.Object);
+			Assert.NotNull(lastWebhook.Entries);
+			Assert.NotEmpty(lastWebhook.Entries);
+			Assert.NotNull(lastWebhook.Entries[0].Messaging);
+			Assert.NotEmpty(lastWebhook.Entries[0].Messaging);
+			Assert.NotNull(lastWebhook.Entries[0].Messaging[0].GamePlay);
+			Assert.NotNull(lastWebhook.Entries[0].Messaging[0].GamePlay.GameId);
+			Assert.Equal("123456789", lastWebhook.Entries[0].Messaging[0].GamePlay.GameId);
+			Assert.NotNull(lastWebhook.Entries[0].Messaging[0].GamePlay.PlayerId);
+			Assert.Equal("987654321", lastWebhook.Entries[0].Messaging[0].GamePlay.PlayerId);
+			Assert.Equal(GameContextType.Thread, lastWebhook.Entries[0].Messaging[0].GamePlay.ContextType);
+			Assert.NotNull(lastWebhook.Entries[0].Messaging[0].GamePlay.ContextId);
+			Assert.Equal("123456789", lastWebhook.Entries[0].Messaging[0].GamePlay.ContextId);
+			Assert.NotNull(lastWebhook.Entries[0].Messaging[0].GamePlay.Score);
+			Assert.Equal(12, lastWebhook.Entries[0].Messaging[0].GamePlay.Score);
+			Assert.NotNull(lastWebhook.Entries[0].Messaging[0].GamePlay.Payload);
+		}
+
+		[Fact]
+		public async Task ReceiveLikeReaction() {
+			var response = await SendWebbookAsync(new {
+                @object = "page",
+                entry = new[] {
+                    new {
+                        id = "123456789",
+                        time = 1458692752478,
+                        messaging = new[] {
+                            new {
+                                sender = new {
+                                    id = "123456789"
+                                },
+                                recipient = new {
+                                    id = "987654321"
+                                },
+                                timestamp = 1458692752478,
+                                reaction = new {
+                                    reaction = "like",
+									action = "react",
+									mid = "mid.1457764197618:41d102a3e1ae206a38",
+                                    emoji = "😍"
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+			Assert.True(response.IsSuccessStatusCode);
+			Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
+
+			Assert.NotNull(lastWebhook);
+			Assert.Equal("page", lastWebhook.Object);
+			Assert.NotNull(lastWebhook.Entries);
+			Assert.NotEmpty(lastWebhook.Entries);
+			Assert.NotNull(lastWebhook.Entries[0].Messaging);
+			Assert.NotEmpty(lastWebhook.Entries[0].Messaging);
+			Assert.NotNull(lastWebhook.Entries[0].Messaging[0].Reaction);
+			Assert.Equal(ReactionType.Like, lastWebhook.Entries[0].Messaging[0].Reaction.Type);
+			Assert.Equal(ReactionActionType.React, lastWebhook.Entries[0].Messaging[0].Reaction.Action);
+			Assert.NotNull(lastWebhook.Entries[0].Messaging[0].Reaction.MessageId);
+			Assert.Equal("mid.1457764197618:41d102a3e1ae206a38", lastWebhook.Entries[0].Messaging[0].Reaction.MessageId);
+			Assert.NotNull(lastWebhook.Entries[0].Messaging[0].Reaction.Emoji);
+			Assert.Equal("😍", lastWebhook.Entries[0].Messaging[0].Reaction.Emoji);
+		}
+
+		[Fact]
+		public async Task ReceiveUnreactToLike() {
+			var response = await SendWebbookAsync(new {
+                @object = "page",
+                entry = new[] {
+                    new {
+                        id = "123456789",
+                        time = 1458692752478,
+                        messaging = new[] {
+                            new {
+                                sender = new {
+                                    id = "123456789"
+                                },
+                                recipient = new {
+                                    id = "987654321"
+                                },
+                                timestamp = 1458692752478,
+                                reaction = new {
+                                    reaction = "like",
+                                    action = "unreact",
+                                    mid = "mid.1457764197618:41d102a3e1ae206a38",
+                                    emoji = "😍"
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+			Assert.True(response.IsSuccessStatusCode);
+			Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
+
+			Assert.NotNull(lastWebhook);
+			Assert.Equal("page", lastWebhook.Object);
+			Assert.NotNull(lastWebhook.Entries);
+			Assert.NotEmpty(lastWebhook.Entries);
+			Assert.NotNull(lastWebhook.Entries[0].Messaging);
+			Assert.NotEmpty(lastWebhook.Entries[0].Messaging);
+			Assert.NotNull(lastWebhook.Entries[0].Messaging[0].Reaction);
+			Assert.Equal(ReactionType.Like, lastWebhook.Entries[0].Messaging[0].Reaction.Type);
+			Assert.Equal(ReactionActionType.Unreact, lastWebhook.Entries[0].Messaging[0].Reaction.Action);
+			Assert.NotNull(lastWebhook.Entries[0].Messaging[0].Reaction.MessageId);
+			Assert.Equal("mid.1457764197618:41d102a3e1ae206a38", lastWebhook.Entries[0].Messaging[0].Reaction.MessageId);
+			Assert.NotNull(lastWebhook.Entries[0].Messaging[0].Reaction.Emoji);
+			Assert.Equal("😍", lastWebhook.Entries[0].Messaging[0].Reaction.Emoji);
 		}
 
 		[Fact]

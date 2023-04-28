@@ -44,23 +44,23 @@ namespace Deveel.Webhooks.Receiver.TestApi {
 
 			app.UseAuthorization();
 
-			app.UseWebhookReceiver<TestWebhook>("/webhook");
-            app.UseWebhookReceiver<TestWebhook>("/webhook/seq", new WebhookHandlingOptions {
+			app.MapWebhook<TestWebhook>("/webhook");
+            app.MapWebhook<TestWebhook>("/webhook/seq", new WebhookHandlingOptions {
 				ExecutionMode = HandlerExecutionMode.Sequential
 			});
 
-            app.UseWebhookReceiver("/webhook/handled", (TestWebhook webhook, IWebhookCallback<TestWebhook> callback) => {
+            app.MapWebhook("/webhook/handled", (TestWebhook webhook, IWebhookCallback<TestWebhook> callback) => {
 				callback.OnWebhookHandled(webhook);
 			});
 
-			app.UseWebhookReceiver("/webhook/handled/async", async (TestWebhook webhook, IWebhookCallback<TestWebhook> callback) => {
+			app.MapWebhook("/webhook/handled/async", async (TestWebhook webhook, IWebhookCallback<TestWebhook> callback) => {
 				await Task.CompletedTask;
 
 				callback.OnWebhookHandled(webhook);
 			});
 
-			app.UseWebhookVerfier<TestSignedWebhook>("/webhook/signed");
-			app.UseWebhookReceiver<TestSignedWebhook>("/webhook/signed");
+			app.MapWebhookVerify<TestSignedWebhook>("/webhook/signed");
+			app.MapWebhook<TestSignedWebhook>("/webhook/signed");
 
 			app.Run();
 		}

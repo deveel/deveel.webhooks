@@ -18,13 +18,17 @@ namespace Deveel.Webhooks {
 	/// of the verification of a webhook request.
     /// </summary>
     public readonly struct WebhookVerificationResult : IWebhookVerificationResult {
-        /// <summary>
-        /// Constructs the result of a verification of a webhook request.
-        /// </summary>
-        /// <param name="isVerified">
-        /// Whether the request is verified or not
-        /// </param>
-        private WebhookVerificationResult(bool isVerified) {
+		/// <summary>
+		/// Constructs the result of a verification of a webhook request.
+		/// </summary>
+		/// <param name="valid">
+		/// Indicates if the request is valid or not
+		/// </param>
+		/// <param name="isVerified">
+		/// Whether the request is verified or not
+		/// </param>
+		private WebhookVerificationResult(bool valid, bool isVerified) {
+			IsValid = valid;
             IsVerified = isVerified;
         }
 
@@ -33,22 +37,24 @@ namespace Deveel.Webhooks {
         /// </summary>
         public bool IsVerified { get; }
 
-        /// <summary>
-        /// Creates a new result of a successful verification of a webhook request
-        /// </summary>
-        /// <returns>
-        /// Returns an instance of <see cref="WebhookVerificationResult"/> that
-        /// represents a successful verification of a webhook request.
-        /// </returns>
-        public static WebhookVerificationResult Verified { get; } = new WebhookVerificationResult(true);
+		/// <summary>
+		/// Gets whether the request is valid or not.
+		/// </summary>
+		public bool IsValid { get; }
 
         /// <summary>
-        /// Creates a new result of a failed verification of a webhook request
+        /// A result of a successful verification of a webhook request
         /// </summary>
-        /// <returns>
-        /// Returns a new instance of <see cref="WebhookVerificationResult"/> that
-        /// represents a failed verification of a webhook request.
-        /// </returns>
-        public static WebhookVerificationResult Failed { get; } = new WebhookVerificationResult(false);
+        public static WebhookVerificationResult Verified { get; } = new WebhookVerificationResult(true, true);
+
+        /// <summary>
+        /// A result that indicates a failed verification of a webhook request
+        /// </summary>
+        public static WebhookVerificationResult NotVerified { get; } = new WebhookVerificationResult(true, false);
+
+		/// <summary>
+		/// A result that indicated  an invalid verification request (eg. missing parameters)
+		/// </summary>
+		public static WebhookVerificationResult Invalid { get; } = new WebhookVerificationResult(false, false);
     }
 }

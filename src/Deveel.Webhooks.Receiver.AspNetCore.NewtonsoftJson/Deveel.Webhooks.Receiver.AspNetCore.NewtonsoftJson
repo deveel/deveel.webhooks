@@ -28,23 +28,5 @@
         <member name="M:Deveel.Webhooks.NewtonsoftWebhookJsonParser`1.ParseWebhookAsync(System.IO.Stream,System.Threading.CancellationToken)">
             <inheritdoc/>
         </member>
-        <member name="T:Deveel.Webhooks.WebhookReceiverBuilderExtensions">
-            <summary>
-            Extends the <see cref="T:Deveel.Webhooks.WebhookReceiverBuilder`1"/> to registering
-            the parser for the webhook payload using the Newtonsoft.Json library.
-            </summary>
-        </member>
-        <member name="M:Deveel.Webhooks.WebhookReceiverBuilderExtensions.UseNewtonsoftJsonParser``1(Deveel.Webhooks.WebhookReceiverBuilder{``0},Newtonsoft.Json.JsonSerializerSettings)">
-            <summary>
-            Registers the <see cref="T:Deveel.Webhooks.NewtonsoftWebhookJsonParser`1"/> as
-            a parser for webhook payloads.
-            </summary>
-            <typeparam name="TWebhook">The type of webhook to parse</typeparam>
-            <param name="builder">The builder object used to configure a webhook receiver</param>
-            <param name="settings">A set of settings to configure the JSON serialization process</param>
-            <returns>
-            Returns the <paramref name="builder"/> instance with the parser registered
-            </returns>
-        </member>
     </members>
 </doc>

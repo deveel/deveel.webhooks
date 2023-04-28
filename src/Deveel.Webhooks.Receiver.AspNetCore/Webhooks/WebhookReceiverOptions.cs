@@ -18,7 +18,7 @@ namespace Deveel.Webhooks {
 	/// <summary>
 	/// Provides the configuration options for a webhook receiver.
 	/// </summary>
-	public class WebhookReceiverOptions {
+	public class WebhookReceiverOptions<TWebhook> where TWebhook : class {
 		/// <summary>
 		/// Gets or sets whether the signature of the incoming webhook
 		/// should be verified.
@@ -28,38 +28,18 @@ namespace Deveel.Webhooks {
 		/// <summary>
 		/// Gets or sets the options for the signature verification.
 		/// </summary>
-		public WebhookSignatureOptions? Signature { get; set; } = new WebhookSignatureOptions();
+		public WebhookSignatureOptions Signature { get; set; } = new WebhookSignatureOptions();
 
 		/// <summary>
-		/// Gets or sets the HTTP status code to return when the webhook
-		/// processing is successful (<c>201</c> by default).
+		/// Gets or sets the parser to use to parse the incoming webhook
+		/// of JSON content-type.
 		/// </summary>
-		public int? ResponseStatusCode { get; set; } = 204;
+		public IWebhookJsonParser<TWebhook> JsonParser { get; set; } = new SystemTextWebhookJsonParser<TWebhook>();
 
 		/// <summary>
-		/// Gets or sets the HTTP status code to return when the webhook
-		/// processing failed for an internal error (<c>500</c> by default).
+		/// Gets or sets the parser to use to parse the incoming webhook
+		/// that are of XML content-type.
 		/// </summary>
-		public int? ErrorStatusCode { get; set; } = 500;
-
-		/// <summary>
-		/// Gets or sets the HTTP status code to return when the webhook
-		/// from the sender is invalid (<c>400</c> by default).
-		/// </summary>
-		public int? InvalidStatusCode { get; set; } = 400;
-
-		/// <summary>
-		/// Gets or sets the execution mode for the handlers
-		/// during the processing of a received webhook 
-		/// (default: <see cref="HandlerExecutionMode.Parallel"/>).
-		/// </summary>
-		public HandlerExecutionMode? ExecutionMode { get; set; } = HandlerExecutionMode.Parallel;
-
-		/// <summary>
-		/// Gets or sets the maximum number of threads to use when
-		/// executing the handlers in parallel. By default the number
-		/// of processors in the machine is used.
-		/// </summary>
-		public int? MaxParallelThreads { get; set; }
+		public IWebhookXmlParser<TWebhook> XmlParser { get; set; } = new SystemWebhookXmlParser<TWebhook>();
 	}
 }

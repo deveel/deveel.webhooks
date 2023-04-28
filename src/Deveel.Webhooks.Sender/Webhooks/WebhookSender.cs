@@ -38,7 +38,6 @@ namespace Deveel.Webhooks {
 		private readonly IWebhookSignerProvider<TWebhook>? signerProvider;
 		private readonly IWebhookJsonSerializer<TWebhook>? jsonSerializer;
 		private readonly IWebhookXmlSerializer<TWebhook>? xmlSerializer;
-		private readonly IWebhookDestinationVerifier<TWebhook>? verifier;
 
 		/// <summary>
 		/// Constructs a new instance of the <see cref="WebhookSender{TWebhook}"/>
@@ -50,12 +49,6 @@ namespace Deveel.Webhooks {
 		/// A factory used to create instances of <see cref="HttpClient"/>. When this
 		/// is <c>null</c> the sender will create a new instance of <see cref="HttpClient"/>
 		/// and dispose it when this services is disposed.
-		/// </param>
-		/// <param name="verifier">
-		/// A service that is used to verify the destination of the webhook before
-		/// attempting any delivery. This service does not follow the same configuration
-		/// and behhavior of the sender, being independently defined, and it is invoked 
-		/// before any attempt to send, if the receiver has opted-in for verification.
 		/// </param>
 		/// <param name="jsonSerializer">
 		/// An optional service that is used to serialize the webhook to a JSON string.
@@ -72,13 +65,11 @@ namespace Deveel.Webhooks {
 		/// for a configured algorithm.
 		/// </param>
 		public WebhookSender(IOptionsSnapshot<WebhookSenderOptions> options,
-			IHttpClientFactory httpClientFactory,
-			IWebhookDestinationVerifier<TWebhook>? verifier = null,
+			IHttpClientFactory? httpClientFactory = null,
 			IWebhookJsonSerializer<TWebhook>? jsonSerializer = null,
 			IWebhookXmlSerializer<TWebhook>? xmlSerializer = null,
 			IWebhookSignerProvider<TWebhook>? signerProvider = null)
 			: this(options.Get(typeof(TWebhook).Name), httpClientFactory) {
-            this.verifier = verifier;
             this.jsonSerializer = jsonSerializer ?? new SystemTextWebhookJsonSerializer<TWebhook>();
 			this.xmlSerializer = xmlSerializer ?? new SystemWebhookXmlSerializer<TWebhook>();
 			this.signerProvider = signerProvider;
@@ -98,7 +89,7 @@ namespace Deveel.Webhooks {
 		/// Thrown when the <paramref name="options"/> or the <paramref name="httpClientFactory"/>
 		/// are <c>null</c>
 		/// </exception>
-		protected WebhookSender(WebhookSenderOptions options, IHttpClientFactory httpClientFactory) 
+		protected WebhookSender(WebhookSenderOptions options, IHttpClientFactory? httpClientFactory = null) 
 			: base(httpClientFactory) {
 			if (options is null) throw new ArgumentNullException(nameof(options));
 

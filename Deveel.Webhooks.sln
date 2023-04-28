@@ -37,7 +37,23 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Deveel.Webhooks.Signers", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Deveel.Webhooks.MongoDb.XUnit", "test\Deveel.Webhooks.MongoDb.XUnit\Deveel.Webhooks.MongoDb.XUnit.csproj", "{D61BAD7A-7B8A-4413-A0D0-8F52EE81A0B0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Deveel.Webhooks.DynamicLinq.XUnit", "test\Deveel.Webhooks.DynamicLinq.XUnit\Deveel.Webhooks.DynamicLinq.XUnit.csproj", "{A220DFA9-28DA-434F-AF49-7E237B1DEF30}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Deveel.Webhooks.DynamicLinq.XUnit", "test\Deveel.Webhooks.DynamicLinq.XUnit\Deveel.Webhooks.DynamicLinq.XUnit.csproj", "{A220DFA9-28DA-434F-AF49-7E237B1DEF30}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{65A317B9-C8E2-4055-96A0-E6195881BD95}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebhookReceiverApp", "samples\WebhookReceiverApp\WebhookReceiverApp.csproj", "{DFAEC929-860E-4DE1-86C7-C91F3CAD0FA6}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebhookReceiverApp.MinimalApi", "samples\WebhookReceiverApp.MinimalApi\WebhookReceiverApp.MinimalApi.csproj", "{7813C673-82F7-496D-9671-B2654E1A1C9E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebhookNotifierApp", "samples\WebhookNotifierApp\WebhookNotifierApp.csproj", "{7F2D88F5-10C8-4523-A629-2187F511C2AF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Deveel.Webhooks.Receiver.Facebook.XUnit", "test\Deveel.Webhooks.Receiver.Facebook.XUnit\Deveel.Webhooks.Receiver.Facebook.XUnit.csproj", "{E6C7729D-6E82-410F-B16E-B6E384A97E0D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Deveel.Webhooks.Receiver.Facebook", "src\Deveel.Webhooks.Receiver.Facebook\Deveel.Webhooks.Receiver.Facebook.csproj", "{4873EAA6-19AC-4DD2-BA37-DEF99E2FB4AE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Deveel.Webhooks.Receiver.Facebook.TestApi", "test\Deveel.Webhooks.Receiver.Facebook.TestApi\Deveel.Webhooks.Receiver.Facebook.TestApi.csproj", "{DEAE71EF-503D-4BAB-861E-511F9D22F2D7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Deveel.Webhooks.Receiver.Tests", "test\Deveel.Webhooks.Receiver.Tests\Deveel.Webhooks.Receiver.Tests.csproj", "{77C65E02-B3B4-4665-B31C-83DAB437BAC7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -109,6 +125,34 @@ Global
 		{A220DFA9-28DA-434F-AF49-7E237B1DEF30}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A220DFA9-28DA-434F-AF49-7E237B1DEF30}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A220DFA9-28DA-434F-AF49-7E237B1DEF30}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DFAEC929-860E-4DE1-86C7-C91F3CAD0FA6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DFAEC929-860E-4DE1-86C7-C91F3CAD0FA6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DFAEC929-860E-4DE1-86C7-C91F3CAD0FA6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DFAEC929-860E-4DE1-86C7-C91F3CAD0FA6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7813C673-82F7-496D-9671-B2654E1A1C9E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7813C673-82F7-496D-9671-B2654E1A1C9E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7813C673-82F7-496D-9671-B2654E1A1C9E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7813C673-82F7-496D-9671-B2654E1A1C9E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7F2D88F5-10C8-4523-A629-2187F511C2AF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7F2D88F5-10C8-4523-A629-2187F511C2AF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7F2D88F5-10C8-4523-A629-2187F511C2AF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7F2D88F5-10C8-4523-A629-2187F511C2AF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E6C7729D-6E82-410F-B16E-B6E384A97E0D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E6C7729D-6E82-410F-B16E-B6E384A97E0D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E6C7729D-6E82-410F-B16E-B6E384A97E0D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E6C7729D-6E82-410F-B16E-B6E384A97E0D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4873EAA6-19AC-4DD2-BA37-DEF99E2FB4AE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4873EAA6-19AC-4DD2-BA37-DEF99E2FB4AE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4873EAA6-19AC-4DD2-BA37-DEF99E2FB4AE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4873EAA6-19AC-4DD2-BA37-DEF99E2FB4AE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DEAE71EF-503D-4BAB-861E-511F9D22F2D7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DEAE71EF-503D-4BAB-861E-511F9D22F2D7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DEAE71EF-503D-4BAB-861E-511F9D22F2D7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DEAE71EF-503D-4BAB-861E-511F9D22F2D7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{77C65E02-B3B4-4665-B31C-83DAB437BAC7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{77C65E02-B3B4-4665-B31C-83DAB437BAC7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{77C65E02-B3B4-4665-B31C-83DAB437BAC7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{77C65E02-B3B4-4665-B31C-83DAB437BAC7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -130,6 +174,13 @@ Global
 		{6D6057E9-117F-4B13-80E7-4C18B3905AEB} = {57F6404B-1FCC-473F-A189-ABC9D640CC0E}
 		{D61BAD7A-7B8A-4413-A0D0-8F52EE81A0B0} = {07F23FF6-2FE1-4072-BF37-9238E3750AA1}
 		{A220DFA9-28DA-434F-AF49-7E237B1DEF30} = {07F23FF6-2FE1-4072-BF37-9238E3750AA1}
+		{DFAEC929-860E-4DE1-86C7-C91F3CAD0FA6} = {65A317B9-C8E2-4055-96A0-E6195881BD95}
+		{7813C673-82F7-496D-9671-B2654E1A1C9E} = {65A317B9-C8E2-4055-96A0-E6195881BD95}
+		{7F2D88F5-10C8-4523-A629-2187F511C2AF} = {65A317B9-C8E2-4055-96A0-E6195881BD95}
+		{E6C7729D-6E82-410F-B16E-B6E384A97E0D} = {07F23FF6-2FE1-4072-BF37-9238E3750AA1}
+		{4873EAA6-19AC-4DD2-BA37-DEF99E2FB4AE} = {57F6404B-1FCC-473F-A189-ABC9D640CC0E}
+		{DEAE71EF-503D-4BAB-861E-511F9D22F2D7} = {07F23FF6-2FE1-4072-BF37-9238E3750AA1}
+		{77C65E02-B3B4-4665-B31C-83DAB437BAC7} = {07F23FF6-2FE1-4072-BF37-9238E3750AA1}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {E682A9F5-43D7-4D4C-82EA-953545B8F4DE}

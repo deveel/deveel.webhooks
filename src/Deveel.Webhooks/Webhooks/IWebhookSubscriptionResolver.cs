@@ -12,29 +12,30 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-
 namespace Deveel.Webhooks {
 	/// <summary>
 	/// Provides a contract for the resolution of subscriptions to events.
 	/// </summary>
+	/// <remarks>
+	/// This service is primarily used by the <see cref="WebhookNotifier{TWebhook}"/>
+	/// implementation, to delegate the resolution of subscriptions to a specific
+	/// type of event types.
+	/// </remarks>
 	public interface IWebhookSubscriptionResolver {
 		/// <summary>
 		/// Resolves all the subscriptions to an event in the scope
 		/// of a given tenant.
 		/// </summary>
-		/// <param name="tenantId">The identifier of the tenant owning
-		/// the subscriptions.</param>
-		/// <param name="eventType">The type of event that occurred.</param>
+		/// <param name="eventType">The type of event that has occurred.</param>
 		/// <param name="activeOnly">A flag indicating whether only active
 		/// subscriptions should be returned.</param>
-		/// <param name="cancellationToken"></param>
+		/// <param name="cancellationToken">
+		/// A token used to cancel the operation.
+		/// </param>
 		/// <returns>
 		/// Returns a list of <see cref="IWebhookSubscription"/> instances
 		/// that are matching the given basic conditions.
 		/// </returns>
-		Task<IList<IWebhookSubscription>> ResolveSubscriptionsAsync(string tenantId, string eventType, bool activeOnly, CancellationToken cancellationToken);
+		Task<IList<IWebhookSubscription>> ResolveSubscriptionsAsync(string eventType, bool activeOnly, CancellationToken cancellationToken);
 	}
 }

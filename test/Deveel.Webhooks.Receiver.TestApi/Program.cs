@@ -11,25 +11,28 @@ namespace Deveel.Webhooks.Receiver.TestApi {
 			// Add services to the container.
 			builder.Services.AddAuthorization();
 			builder.Services
-				.AddWebhooks<TestWebhook>()
+				.AddWebhookReceiver<TestWebhook>()
 				.AddHandler<TestWebhookHandler>();
 
 			var secret = builder.Configuration["Webhook:Receiver:Signature:Secret"];
 
-			builder.Services.AddWebhooks<TestSignedWebhook>()
+			builder.Services.AddWebhookReceiver<TestSignedWebhook>()
 				.Configure(options => {
 					options.VerifySignature = true;
-					options.Signature!.Secret = secret;
+					options.Signature.Secret = secret;
+					options.Signature.Algorithm = "sha256";
 					options.Signature.ParameterName = "X-Webhook-Signature-256";
 					options.Signature.Location = WebhookSignatureLocation.Header;
+					options.Signature.Signer = new Sha256WebhookSigner();
+					options.JsonParser = new NewtonsoftWebhookJsonParser<TestSignedWebhook>();
 				})
-				.UseVerifier(options => {
+				.AddHandler<TestSignedWebhookHandler>();
+
+			builder.Services.AddWebhookVerifier<TestSignedWebhook>()
+				.Configure(options => {
 					options.VerificationToken = builder.Configuration["Webhook:Receiver:VerificationToken"];
 					options.VerificationTokenQueryName = "token";
-				})
-				.UseNewtonsoftJsonParser()
-				.UseSha256Signer()
-				.AddHandler<TestSignedWebhookHandler>();
+				});
 
 			var app = builder.Build();
 
@@ -42,16 +45,17 @@ namespace Deveel.Webhooks.Receiver.TestApi {
 			app.UseAuthorization();
 
 			app.UseWebhookReceiver<TestWebhook>("/webhook");
-			app.UseWebhookReceiver<TestWebhook>("/webhook/handled", (context, webhook) => {
-				var callback = context.RequestServices.GetRequiredService<IWebhookCallback<TestWebhook>>();
+            app.UseWebhookReceiver<TestWebhook>("/webhook/seq", new WebhookHandlingOptions {
+				ExecutionMode = HandlerExecutionMode.Sequential
+			});
 
+            app.UseWebhookReceiver("/webhook/handled", (TestWebhook webhook, IWebhookCallback<TestWebhook> callback) => {
 				callback.OnWebhookHandled(webhook);
 			});
 
-			app.UseWebhookReceiver<TestWebhook>("/webhook/handled/async", async (context, webhook, token) => {
+			app.UseWebhookReceiver("/webhook/handled/async", async (TestWebhook webhook, IWebhookCallback<TestWebhook> callback) => {
 				await Task.CompletedTask;
 
-				var callback = context.RequestServices.GetRequiredService<IWebhookCallback<TestWebhook>>();
 				callback.OnWebhookHandled(webhook);
 			});
 

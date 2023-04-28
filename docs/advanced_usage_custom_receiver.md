@@ -136,8 +136,28 @@ This allows separating the behaviors in configuring and handling the webhooks, w
 
 ## Webhook Handling
 
-When a webhook is received and the handlers are resolved, their execution is performed in sequence, and the middleware will wait for the completion of all the handlers before returning a response to the sender.
+When a webhook is received and the handlers are resolved, their execution is performed in parallel by default, and the middleware will wait for the completion of all the handlers before returning a response to the sender.
 
 It is recommended that implementations of the handlers are designed to be executed in a non-blocking form, to avoid blocking the middleware and the sender of the webhook: currently no background process is executed to handle the webhooks, and the middleware will wait for the completion of all the handlers before returning a response to the sender.
 
-_**Note**: This design might change in the future, to allow the execution of the handlers in parallel, or in background in a non-blocking form._
+## Execution Modes
+
+By default, the middleware will execute all the registered the handlers (fo the type of webhook) in parallel.
+
+This behavior can be changed by specifying an execution mode when registering the webhook receiver, using the `ExecutionMode` configuration property of the `WebhookHandlingOptions` class, when calling the `UseWebhookReceiver` method.
+
+```csharp
+namespace Example {
+	public class Startup {
+		public void ConfigureServices(IServiceCollection services) {
+			services.AddWebhookReceiver<IdentityWebhook>()
+				.AddHandler<UserCreatedHandler>();
+		}
+	}
+	public void Configure(IApplicationBuilder app, IWebHostEnvironment env) {
+		app.UseWebhookReceiver<IdentityWebhook>("/ids/webhooks/", new WebhookHandlingOptions {
+			ExecutionMode = WebhookExecutionMode.Sequential;
+		});
+	}
+}
+```

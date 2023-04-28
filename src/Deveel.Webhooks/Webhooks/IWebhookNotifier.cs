@@ -13,7 +13,9 @@
 // limitations under the License.
 
 using System;
-using System.Threading;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace Deveel.Webhooks {
@@ -21,19 +23,27 @@ namespace Deveel.Webhooks {
 	/// A service that resolves subscriptions to events, prepares
 	/// and delivers webhooks to the subscribers.
 	/// </summary>
+	/// <typeparam name="TWebhook">The type of the webhook that is delivered</typeparam>
+	/// <remarks>
+	/// Implementations of this interface resolve subscriptions to events
+	/// without any tenant scope explicitly set: despite of this condition,
+	/// the service might still resolve subscriptions to events that are
+	/// owned by tenants, if the discovery is performed by a service that
+	/// this resolver invokes.
+	/// </remarks>
 	public interface IWebhookNotifier<TWebhook> where TWebhook : class {
 		/// <summary>
 		/// Notifies to the subscribers the occurrence of the
 		/// given event.
 		/// </summary>
-		/// <param name="tenantId">The scope of the tenant holding the subscriptions
-		/// to the given event.</param>
 		/// <param name="eventInfo">The ifnormation of the event that occurred.</param>
-		/// <param name="cancellationToken"></param>
+		/// <param name="cancellationToken">
+		/// A token that can be used to cancel the notification process.
+		/// </param>
 		/// <returns>
 		/// Returns an object that describes the aggregated final result of 
 		/// the notification process executed.
 		/// </returns>
-		Task<WebhookNotificationResult<TWebhook>> NotifyAsync(string tenantId, EventInfo eventInfo, CancellationToken cancellationToken);
+		Task<WebhookNotificationResult<TWebhook>> NotifyAsync(EventInfo eventInfo, CancellationToken cancellationToken);
 	}
 }

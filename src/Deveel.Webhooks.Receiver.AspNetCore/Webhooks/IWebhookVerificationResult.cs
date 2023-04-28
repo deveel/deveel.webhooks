@@ -25,5 +25,10 @@ namespace Deveel.Webhooks {
 		/// Gets whether the request is verified or not.
 		/// </summary>
 		public bool IsVerified { get; }
+
+		/// <summary>
+		/// Gets a value indicating whether the request is valid or not.
+		/// </summary>
+		public bool IsValid { get; }
 	}
 }

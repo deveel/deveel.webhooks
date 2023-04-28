@@ -34,8 +34,8 @@ namespace Deveel.Webhooks {
 		/// <param name="options">
 		/// The provider of the options for the verification of the webhook request
 		/// </param>
-		public WebhookRequestVerifier(IOptionsSnapshot<WebhookVerificationOptions> options)
-			: this(options.GetVerificationOptions<TWebhook>()) {
+		public WebhookRequestVerifier(IOptions<WebhookVerificationOptions<TWebhook>> options)
+			: this(options.Value) {
 		}
 
 		/// <summary>
@@ -43,14 +43,14 @@ namespace Deveel.Webhooks {
 		/// </summary>
 		/// <param name="options"></param>
 		/// <exception cref="ArgumentNullException"></exception>
-		protected WebhookRequestVerifier(WebhookVerificationOptions options) {
+		protected WebhookRequestVerifier(WebhookVerificationOptions<TWebhook> options) {
 			VerificationOptions = options ?? throw new ArgumentNullException(nameof(options));
 		}
 
 		/// <summary>
 		/// Gets the options for the verification of the webhook request
 		/// </summary>
-		protected WebhookVerificationOptions VerificationOptions { get; }
+		protected WebhookVerificationOptions<TWebhook> VerificationOptions { get; }
 
 		/// <summary>
 		/// Responds to the sender with a successful verification of the request.
@@ -67,7 +67,7 @@ namespace Deveel.Webhooks {
 		/// <returns>
 		/// Returns a <see cref="Task"/> that completes when the response is sent
 		/// </returns>
-		protected async Task OnSuccessAsync(IWebhookVerificationResult result, HttpResponse httpResponse, CancellationToken cancellationToken) {
+		protected virtual async Task OnSuccessAsync(IWebhookVerificationResult result, HttpResponse httpResponse, CancellationToken cancellationToken) {
 			httpResponse.StatusCode = VerificationOptions.SuccessStatusCode ?? 200;
 
 			// TODO: Should we emit anything here?
@@ -89,8 +89,30 @@ namespace Deveel.Webhooks {
 		/// <returns>
 		/// Returns a <see cref="Task"/> that completes when the response is sent
 		/// </returns>
-		protected async Task OnNotAuthenticatedAsync(IWebhookVerificationResult result, HttpResponse httpResponse, CancellationToken cancellationToken) {
+		protected virtual async Task OnNotAuthenticatedAsync(IWebhookVerificationResult result, HttpResponse httpResponse, CancellationToken cancellationToken) {
 			httpResponse.StatusCode = VerificationOptions.NotAuthenticatedStatusCode ?? 403;
+
+			// TODO: Should we emit anything here?
+			await httpResponse.WriteAsync("");
+		}
+
+		/// <summary>
+		/// Responds to the sender with an invalid verification of the request.
+		/// </summary>
+		/// <param name="result">
+		/// The invalid result of the verification of the request
+		/// </param>
+		/// <param name="httpResponse">
+		/// The HTTP response object used to respond to the sender
+		/// </param>
+		/// <param name="cancellationToken">
+		/// A token that can be used to cancel the operation
+		/// </param>
+		/// <returns>
+		/// Returns a <see cref="Task"/> that completes when the response is sent
+		/// </returns>
+		protected virtual async Task OnInvalidAsync(IWebhookVerificationResult result, HttpResponse httpResponse, CancellationToken cancellationToken) {
+			httpResponse.StatusCode = VerificationOptions.BadRequestStatusCode ?? 400;
 
 			// TODO: Should we emit anything here?
 			await httpResponse.WriteAsync("");
@@ -100,7 +122,9 @@ namespace Deveel.Webhooks {
 		public virtual async Task HandleResultAsync(IWebhookVerificationResult result, HttpResponse httpResponse, CancellationToken cancellationToken) {
 			if (result.IsVerified) {
 				await OnSuccessAsync(result, httpResponse, cancellationToken);
-			} else {
+			} else if (!result.IsValid) {
+				await OnInvalidAsync(result, httpResponse, cancellationToken);
+			} else if (!result.IsVerified) {
 				await OnNotAuthenticatedAsync(result, httpResponse, cancellationToken);
 			}
 		}
@@ -141,7 +165,7 @@ namespace Deveel.Webhooks {
 			if (!TryGetVerificationToken(httpRequest, out var token) ||
 				String.IsNullOrWhiteSpace(verificationToken) ||
 				!String.Equals(token, verificationToken, StringComparison.Ordinal))
-				return Task.FromResult<IWebhookVerificationResult>(WebhookVerificationResult.Failed);
+				return Task.FromResult<IWebhookVerificationResult>(WebhookVerificationResult.NotVerified);
 
 			return Task.FromResult<IWebhookVerificationResult>(WebhookVerificationResult.Verified);
 		}

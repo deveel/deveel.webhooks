@@ -20,8 +20,11 @@ namespace Deveel.Webhooks {
 	/// <typeparam name="TWebhook">
 	/// The type of the webhook that is scoped for the resolver.
 	/// </typeparam>
+	/// <remarks>
+	/// Implementations of this version of the interface are 
+	/// segregated to the scope of the webhook type.
+	/// </remarks>
 	/// <seealso cref="IWebhookSubscriptionResolver"/>
-	public interface IWebhookSubscriptionResolver<TWebhook> : IWebhookSubscriptionResolver 
-		where TWebhook : class {
+	public interface IWebhookSubscriptionResolver<TWebhook> : IWebhookSubscriptionResolver where TWebhook : class {
 	}
 }

@@ -1,4 +1,18 @@
-﻿using System;
+﻿// Copyright 2022-2023 Deveel
+// 
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+// 
+//     http://www.apache.org/licenses/LICENSE-2.0
+// 
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+using System;
 
 using Microsoft.Extensions.DependencyInjection;
 
@@ -13,7 +27,7 @@ namespace Deveel.Webhooks {
     /// <remarks>
     /// <para>
     /// The main goal of this class is to provide a fluent API to configure
-    /// other services, such as the <see cref="IWebhookNotifier{TWebhook}"/>,
+    /// other services, such as the <see cref="ITenantWebhookNotifier{TWebhook}"/>,
     /// the <see cref="IWebhookSender{TWebhook}"/>, aligning them in the
     /// bounded context of the given <typeparamref name="TWebhook"/>.
     /// </para>
@@ -42,15 +56,17 @@ namespace Deveel.Webhooks {
         /// </summary>
         public IServiceCollection Services { get; }
 
-        /// <summary>
-        /// Adds the notifier service to the webhooks service.
-        /// </summary>
-        /// <returns>
-        /// Returns a <see cref="WebhookNotifierBuilder{TWebhook}"/> instance that
-        /// can be used to configure the notifier service.
-        /// </returns>
-        public WebhookNotifierBuilder<TWebhook> AddNotifier()
-            => Services.AddWebhookNotifier<TWebhook>();
+		/// <summary>
+		/// Adds the notifier service to the webhooks service.
+		/// </summary>
+		/// <returns>
+		/// Returns a <see cref="WebhookNotifierBuilder{TWebhook}"/> instance that
+		/// can be used to configure the notifier service.
+		/// </returns>
+		public WebhooksBuilder<TWebhook> AddNotifier() { 
+			Services.AddWebhookNotifier<TWebhook>();
+			return this;
+		}
 
         /// <summary>
         /// Adds the notifier service to the webhooks service.
@@ -67,15 +83,17 @@ namespace Deveel.Webhooks {
             return this;
         }
 
-        /// <summary>
-        /// Adds the sender service to the webhooks service.
-        /// </summary>
-        /// <returns>
-        /// Returns a <see cref="WebhookSenderBuilder{TWebhook}"/> instance that
-        /// can be used to configure the sender service.
-        /// </returns>
-        public WebhookSenderBuilder<TWebhook> AddSender()
-            => Services.AddWebhookSender<TWebhook>();
+		/// <summary>
+		/// Adds the sender service to the webhooks service.
+		/// </summary>
+		/// <returns>
+		/// Returns a <see cref="WebhookSenderBuilder{TWebhook}"/> instance that
+		/// can be used to configure the sender service.
+		/// </returns>
+		public WebhooksBuilder<TWebhook> AddSender() { 
+			Services.AddWebhookSender<TWebhook>();
+			return this;
+		}
 
         /// <summary>
         /// Adds the sender service to the webhooks service.

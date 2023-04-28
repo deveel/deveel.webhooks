@@ -50,7 +50,7 @@ namespace Deveel.Webhooks {
 		/// Returns a byte array representing the secret key.
 		/// </returns>
         protected virtual byte[] GetKeyBytes(string secret) {
-            return Encoding.UTF8.GetBytes(secret);
+            return Encoding.ASCII.GetBytes(secret);
         }
 
 		/// <summary>
@@ -96,7 +96,7 @@ namespace Deveel.Webhooks {
         /// </returns>
         protected virtual string FormatSignature(byte[] hash) {
 			// TODO: should we prepend the algorithm name here?
-            return $"{Algorithms[0]}={Convert.ToHexString(hash)}";
+            return Convert.ToHexString(hash);
         }
 
 		/// <inheritdoc />

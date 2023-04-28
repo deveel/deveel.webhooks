@@ -34,6 +34,18 @@ namespace Deveel.Webhooks {
 		public string? Algorithm { get; set; }
 
 		/// <summary>
+		/// Gets or sets the name of the query parameter that contains the algorithm,
+		/// when the signature is sent in a query string.
+		/// </summary>
+		public string? AlgorithmQueryParameter { get; set; } = "sig_alg";
+
+		/// <summary>
+		/// Gets or sets the name of the header that contains the algorithm,
+		/// when the signature is sent in a header.
+		/// </summary>
+		public string? AlgorithmHeaderName { get; set; } = "X-Signature-Algorithm";
+
+		/// <summary>
 		/// Gets or sets the secret used to compute the signature.
 		/// </summary>
 		public string? Secret { get; set; }
@@ -43,5 +55,20 @@ namespace Deveel.Webhooks {
 		/// signature is invalid (<c>400</c> by default).
 		/// </summary>
 		public int? InvalidStatusCode { get; set; } = 400;
+
+		/// <summary>
+		/// Gets or sets the <see cref="IWebhookSigner"/> to use
+		/// for verifying the signature of the webhooks.
+		/// </summary>
+		public IWebhookSigner? Signer {
+			get => Signers.Count > 0 ? Signers[0] : null;
+			set => Signers = (value != null ? new List<IWebhookSigner> { value } : new List<IWebhookSigner>());
+		}
+
+		/// <summary>
+		/// Gets or sets a list of <see cref="IWebhookSigner"/> that are supported
+		/// by the receiver for validating the signature of the webhooks.
+		/// </summary>
+		public IList<IWebhookSigner> Signers { get; set; } = new List<IWebhookSigner>();
 	}
 }

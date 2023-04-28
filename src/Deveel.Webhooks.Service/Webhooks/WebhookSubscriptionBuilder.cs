@@ -21,7 +21,9 @@ namespace Deveel.Webhooks {
 	/// <summary>
 	/// An object that is used to configure the webhook services.
 	/// </summary>
-	/// <typeparam name="TSubscription"></typeparam>
+	/// <typeparam name="TSubscription">
+	/// The type of the subscription that is used to notify webhooks.
+	/// </typeparam>
 	public sealed class WebhookSubscriptionBuilder<TSubscription> where TSubscription : class, IWebhookSubscription {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="WebhookSubscriptionBuilder{TSubscription}"/> class.
@@ -52,6 +54,7 @@ namespace Deveel.Webhooks {
 			Services.TryAddSingleton<IWebhookSubscriptionValidator<TSubscription>, WebhookSubscriptionValidator<TSubscription>>();
 
 			Services.TryAddScoped<IWebhookSubscriptionResolver, WebhookSubscriptionResolver<TSubscription>>();
+			// Services.TryAddScoped<ITenantWebhookSubscriptionResolver, TenantWebhookSubscriptionResolver<TSubscription>>();
 		}
 
 		/// <summary>
@@ -66,7 +69,7 @@ namespace Deveel.Webhooks {
 		/// <returns>
 		/// Returns this instance of the <see cref="WebhookSubscriptionBuilder{TSubscription}"/>.
 		/// </returns>
-		/// <seealso cref="IWebhookNotifier{TWebhook}"/>
+		/// <seealso cref="ITenantWebhookNotifier{TWebhook}"/>
 		public WebhookSubscriptionBuilder<TSubscription> UseNotifier<TWebhook>(Action<WebhookNotifierBuilder<TWebhook>> configure)
 			where TWebhook : class, IWebhook {
 			Services.AddWebhookNotifier(configure);

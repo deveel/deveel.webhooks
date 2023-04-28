@@ -34,10 +34,10 @@ namespace Deveel.Webhooks {
 		}
 
 		private void ConfigureServices(IServiceCollection services) {
-			services.AddWebhooks<TestWebhook>()
+			services.AddWebhookReceiver<TestWebhook>()
 				.UseCallback(webhook => lastWebhook = webhook);
 
-			services.AddWebhooks<TestSignedWebhook>()
+			services.AddWebhookReceiver<TestSignedWebhook>()
 				.UseCallback(webhook => lastWebhook = webhook);
 		}
 
@@ -64,7 +64,27 @@ namespace Deveel.Webhooks {
 			Assert.Equal("test", lastWebhook.Event);
 		}
 
-		[Fact]
+        [Fact]
+        public async Task ReceiveTestWebhook_SequentialHandling() {
+            var client = CreateClient();
+
+            var response = await client.SendAsync(new HttpRequestMessage(HttpMethod.Post, "/webhook/seq") {
+                Content = new StringContent(System.Text.Json.JsonSerializer.Serialize(new TestWebhook {
+                    Id = Guid.NewGuid().ToString("N"),
+                    Event = "test",
+                    TimeStamp = DateTimeOffset.Now,
+                }), Encoding.UTF8, "application/json")
+            });
+
+            Assert.True(response.IsSuccessStatusCode);
+            Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
+
+            Assert.NotNull(lastWebhook);
+            Assert.Equal("test", lastWebhook.Event);
+        }
+
+
+        [Fact]
 		public async Task ReceiveHandledTestWebhook() {
 			var client = CreateClient();
 
@@ -105,8 +125,7 @@ namespace Deveel.Webhooks {
 
 			var secret = config["Webhook:Receiver:Signature:Secret"];
 
-			var sha256Signer = new Sha256WebhookSigner();
-			return sha256Signer.SignWebhook(json, secret);
+			return WebhookSignature.Create("sha256", json, secret);
 		}
 
 		[Fact]
@@ -119,7 +138,7 @@ namespace Deveel.Webhooks {
 				TimeStamp = DateTimeOffset.Now,
 			});
 
-			var sha256Sig = GetSha256Signature(json);
+			var sha256Sig = $"sha256={GetSha256Signature(json)}";
 
 			var request = new HttpRequestMessage(HttpMethod.Post, "/webhook/signed") {
 				Content = new StringContent(json, Encoding.UTF8, "application/json")
@@ -143,7 +162,7 @@ namespace Deveel.Webhooks {
 				TimeStamp = DateTimeOffset.Now,
 			});
 
-			var sha256Sig = GetSha256Signature(json + "...");
+			var sha256Sig = $"sha256={GetSha256Signature(json + "...")}";
 
 			var request = new HttpRequestMessage(HttpMethod.Post, "/webhook/signed") {
 				Content = new StringContent(json, Encoding.UTF8, "application/json")

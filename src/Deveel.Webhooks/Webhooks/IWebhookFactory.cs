@@ -18,8 +18,8 @@ using System.Threading.Tasks;
 
 namespace Deveel.Webhooks {
 	/// <summary>
-	/// Defines a factory that can create <see cref="IWebhook"/> instances
-	/// given the subscription and the event information.
+	/// Defines a factory that can create <typeparamref name="TWebhook"/> 
+	/// instances given the subscription and the event information.
 	/// </summary>
 	/// <typeparam name="TWebhook">
 	/// The type of the webhook instance to create.

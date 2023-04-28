@@ -4,11 +4,10 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Json;
+using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-
-using Deveel.Webhooks;
 
 using Microsoft.Extensions.DependencyInjection;
 
@@ -16,13 +15,9 @@ using Xunit;
 using Xunit.Abstractions;
 
 namespace Deveel.Webhooks {
-	[Trait("Category", "Webhooks")]
-	[Trait("Category", "Notification")]
 	public class WebhookNotificationTests : WebhookServiceTestBase {
 		private const int TimeOutSeconds = 2;
 		private bool testTimeout = false;
-
-		private readonly string tenantId = Guid.NewGuid().ToString();
 
 		private TestSubscriptionResolver subscriptionResolver;
 		private IWebhookNotifier<Webhook> notifier;
@@ -68,8 +63,8 @@ namespace Deveel.Webhooks {
 		}
 
 		private string CreateSubscription(string name, string eventType, params WebhookFilter[] filters) {
-			return CreateSubscription(new TestWebhookSubscription { 
-				EventTypes = new[] { eventType }, 
+			return CreateSubscription(new TestWebhookSubscription {
+				EventTypes = new[] { eventType },
 				DestinationUrl = "https://callback.example.com/webhook",
 				Name = name,
 				RetryCount = 3,
@@ -83,7 +78,6 @@ namespace Deveel.Webhooks {
 			var id = Guid.NewGuid().ToString();
 
 			subscription.SubscriptionId = id;
-			subscription.TenantId = tenantId;
 
 			subscriptionResolver.AddSubscription(subscription);
 
@@ -93,12 +87,12 @@ namespace Deveel.Webhooks {
 		[Fact]
 		public async Task DeliverWebhookFromEvent() {
 			var subscriptionId = CreateSubscription("Data Created", "data.created", new WebhookFilter("hook.data.data_type == \"test-data\"", "linq"));
-			var notification = new EventInfo("test", "data.created", new {
+			var notification = new EventInfo("test", "data.created", data: new {
 				creationTime = DateTimeOffset.UtcNow,
 				type = "test"
 			});
 
-			var result = await notifier.NotifyAsync(tenantId, notification, CancellationToken.None);
+			var result = await notifier.NotifyAsync(notification, CancellationToken.None);
 
 			Assert.NotNull(result);
 			Assert.NotEmpty(result);
@@ -132,12 +126,12 @@ namespace Deveel.Webhooks {
 		[Fact]
 		public async Task DeliverWebhookFromEvent_NoTransformations() {
 			var subscriptionId = CreateSubscription("Data Modified", "data.modified");
-			var notification = new EventInfo("test", "data.modified", new {
+			var notification = new EventInfo("test", "data.modified", data: new {
 				creationTime = DateTimeOffset.UtcNow,
 				type = "test"
 			});
 
-			var result = await notifier.NotifyAsync(tenantId, notification, CancellationToken.None);
+			var result = await notifier.NotifyAsync(notification, CancellationToken.None);
 
 			Assert.NotNull(result);
 			Assert.NotEmpty(result);
@@ -171,15 +165,15 @@ namespace Deveel.Webhooks {
 
 		[Fact]
 		public async Task DeliverWebhookWithMultipleFiltersFromEvent() {
-			var subscriptionId = CreateSubscription("Data Created", "data.created", 
-				new WebhookFilter( "hook.data.data_type == \"test-data\"", "linq"), 
+			var subscriptionId = CreateSubscription("Data Created", "data.created",
+				new WebhookFilter("hook.data.data_type == \"test-data\"", "linq"),
 				new WebhookFilter("hook.data.creator.user_name == \"antonello\"", "linq"));
-			var notification = new EventInfo("test", "data.created", new {
+			var notification = new EventInfo("test", "data.created", data: new {
 				creationTime = DateTimeOffset.UtcNow,
 				type = "test"
 			});
 
-			var result = await notifier.NotifyAsync(tenantId, notification, CancellationToken.None);
+			var result = await notifier.NotifyAsync(notification, CancellationToken.None);
 
 			Assert.NotNull(result);
 			Assert.NotEmpty(result);
@@ -204,12 +198,12 @@ namespace Deveel.Webhooks {
 		[Fact]
 		public async Task DeliverWebhookWithoutFilter() {
 			var subscriptionId = CreateSubscription("Data Created", "data.created");
-			var notification = new EventInfo("test", "data.created", new {
+			var notification = new EventInfo("test", "data.created", data: new {
 				creationTime = DateTimeOffset.UtcNow,
 				type = "test"
 			});
 
-			var result = await notifier.NotifyAsync(tenantId, notification, CancellationToken.None);
+			var result = await notifier.NotifyAsync(notification, CancellationToken.None);
 
 			Assert.NotNull(result);
 			Assert.NotEmpty(result);
@@ -232,7 +226,7 @@ namespace Deveel.Webhooks {
 
 		[Fact]
 		public async Task DeliverSignedWebhookFromEvent() {
-			var subscriptionId = CreateSubscription(new TestWebhookSubscription { 
+			var subscriptionId = CreateSubscription(new TestWebhookSubscription {
 				EventTypes = new[] { "data.created" },
 				DestinationUrl = "https://callback.example.com",
 				Filters = new[] { new WebhookFilter("hook.data.data_type == \"test-data\"", "linq") },
@@ -242,12 +236,12 @@ namespace Deveel.Webhooks {
 				Status = WebhookSubscriptionStatus.Active
 			});
 
-			var notification = new EventInfo("test", "data.created", new {
+			var notification = new EventInfo("test", "data.created", data: new {
 				creationTime = DateTimeOffset.UtcNow,
 				type = "test"
 			});
 
-			var result = await notifier.NotifyAsync(tenantId, notification, CancellationToken.None);
+			var result = await notifier.NotifyAsync(notification, CancellationToken.None);
 
 			Assert.NotNull(result);
 			Assert.NotEmpty(result);
@@ -270,15 +264,15 @@ namespace Deveel.Webhooks {
 
 		[Fact]
 		public async Task FailToDeliver() {
-			var subscriptionId = CreateSubscription("Data Created", "data.created", new WebhookFilter ("hook.data.data_type == \"test-data\"", "linq"));
-			var notification = new EventInfo("test", "data.created", new { 
-				creationTime = DateTimeOffset.UtcNow, 
+			var subscriptionId = CreateSubscription("Data Created", "data.created", new WebhookFilter("hook.data.data_type == \"test-data\"", "linq"));
+			var notification = new EventInfo("test", "data.created", data: new {
+				creationTime = DateTimeOffset.UtcNow,
 				type = "test"
 			});
 
 			testResponse = new HttpResponseMessage(HttpStatusCode.InternalServerError);
 
-			var result = await notifier.NotifyAsync(tenantId, notification, CancellationToken.None);
+			var result = await notifier.NotifyAsync(notification, CancellationToken.None);
 
 			Assert.NotNull(result);
 			Assert.NotEmpty(result);
@@ -300,14 +294,14 @@ namespace Deveel.Webhooks {
 		[Fact]
 		public async Task TimeOutWhileDelivering() {
 			var subscriptionId = CreateSubscription("Data Created", "data.created", new WebhookFilter("hook.data.data_type == \"test-data\"", "linq"));
-			var notification = new EventInfo("test", "data.created", new { 
-				creationTime = DateTimeOffset.UtcNow, 
-				type = "test" 
+			var notification = new EventInfo("test", "data.created", data: new {
+				creationTime = DateTimeOffset.UtcNow,
+				type = "test"
 			});
 
 			testTimeout = true;
 
-			var result = await notifier.NotifyAsync(tenantId, notification, CancellationToken.None);
+			var result = await notifier.NotifyAsync(notification, CancellationToken.None);
 
 			Assert.NotNull(result);
 			Assert.NotEmpty(result);
@@ -328,45 +322,20 @@ namespace Deveel.Webhooks {
 
 		[Fact]
 		public async Task NoSubscriptionMatches() {
-			CreateSubscription("Data Created", "data.created",  new WebhookFilter("hook.data.data_type == \"test-data2\"", "linq"));
-			var notification = new EventInfo("test", "data.created", new { 
-				creationTime = DateTimeOffset.UtcNow, 
-				type = "test" 
+			CreateSubscription("Data Created", "data.created", new WebhookFilter("hook.data.data_type == \"test-data2\"", "linq"));
+			var notification = new EventInfo("test", "data.created", data: new {
+				creationTime = DateTimeOffset.UtcNow,
+				type = "test"
 			});
 
-			var result = await notifier.NotifyAsync(tenantId, notification, CancellationToken.None);
+			var result = await notifier.NotifyAsync(notification, CancellationToken.None);
 
 			Assert.NotNull(result);
 			Assert.Empty(result);
 		}
 
-		[Fact]
-		public async Task NoTenantMatches() {
-			CreateSubscription("Data Created", "data.created", new WebhookFilter("hook.data.data_type == \"test-data\"", "linq"));
-			var notification = new EventInfo("test", "data.created", new { 
-				creationTime = DateTimeOffset.UtcNow, 
-				type = "test" 
-			});
 
-			var result = await notifier.NotifyAsync(Guid.NewGuid().ToString("N"), notification, CancellationToken.None);
-
-			Assert.NotNull(result);
-			Assert.Empty(result);
-		}
-
-		[Fact]
-		public async Task NoTenantSet() {
-			var subscriptionId = CreateSubscription("Data Created", "data.created", new WebhookFilter("hook.data.data_type == \"test-data\"", "linq"));
-			var notification = new EventInfo("test", "data.created", new { 
-				creationTime = DateTimeOffset.UtcNow, 
-				type = "test" 
-			});
-
-			await Assert.ThrowsAsync<WebhookException>(() => notifier.NotifyAsync(null, notification, CancellationToken.None));
-		}
-
-
-		private class TestDataFactory : IWebhookDataFactory {
+		private class TestDataFactory : IEventDataTransformer {
 			public bool Handles(EventInfo eventInfo) => eventInfo.EventType == "data.created";
 
 			public Task<object> CreateDataAsync(EventInfo eventInfo, CancellationToken cancellationToken)

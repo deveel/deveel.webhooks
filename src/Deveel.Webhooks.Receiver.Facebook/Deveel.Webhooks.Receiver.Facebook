@@ -1,0 +1,555 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Deveel.Webhooks.Receiver.Facebook</name>
+    </assembly>
+    <members>
+        <member name="T:Deveel.Facebook.Address">
+            <summary>
+            Describes a postal address.
+            </summary>
+        </member>
+        <member name="P:Deveel.Facebook.Address.StreetLine1">
+            <summary>
+            The first line of the address.
+            </summary>
+        </member>
+        <member name="P:Deveel.Facebook.Address.StreetLine2">
+            <summary>
+            An optional second line of the address.
+            </summary>
+        </member>
+        <member name="P:Deveel.Facebook.Address.City">
+            <summary>
+            The postal city of the address.
+            </summary>
+        </member>
+        <member name="P:Deveel.Facebook.Address.PostalCode">
+            <summary>
+            The postal code of the address.
+            </summary>
+        </member>
+        <member name="P:Deveel.Facebook.Address.State">
+            <summary>
+            The state abbreviation for U.S. addresses, or the 
+            region/province for non-U.S. addresses.
+            </summary>
+        </member>
+        <member name="P:Deveel.Facebook.Address.Country">
+            <summary>
+            The two-letter ISO 3166-1 country code of the address.
+            </summary>
+        </member>
+        <member name="T:Deveel.Facebook.AssetAttachment">
+            <summary>
+            Represents an attachment to a message that carries an asset.
+            </summary>
+        </member>
+        <member name="M:Deveel.Facebook.AssetAttachment.#ctor(Deveel.Facebook.AttachmentType,Deveel.Facebook.UrlPayload)">
+            <summary>
+            Initializes the attachment with the given type and payload.
+            </summary>
+            <param name="type">The type of asset (either file, video, audio, video)</param>
+            <param name="payload">The payload describing the references to
+            the file asset</param>
+            <exception cref="T:System.ArgumentException">
+            Thrown if the given <paramref name="type"/> is a <see cref="F:Deveel.Facebook.AttachmentType.Template"/>,
+            that is not a valid type for this type of attachment (see <see cref="T:Deveel.Facebook.TemplateAttachment"/>).
+            </exception>
+            <exception cref="T:System.ArgumentNullException">
+            Thrown if the payload is <c>null</c>.
+            </exception>
+        </member>
+        <member name="P:Deveel.Facebook.AssetAttachment.Payload">
+            <summary>
+            Gets the payload describing the references to the file asset.
+            </summary>
+        </member>
+        <member name="T:Deveel.Facebook.Attachment">
+            <summary>
+            Describes an attachment to a message.
+            </summary>
+        </member>
+        <member name="M:Deveel.Facebook.Attachment.#ctor(Deveel.Facebook.AttachmentType)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Deveel.Facebook.Attachment"/> class
+            </summary>
+            <param name="type"></param>
+        </member>
+        <member name="P:Deveel.Facebook.Attachment.Type">
+            <summary>
+            Gets the type of the attachment.
+            </summary>
+        </member>
+        <member name="T:Deveel.Facebook.AttachmentType">
+            <summary>
+            Enumerates the types of attachments that can be sent
+            </summary>
+        </member>
+        <member name="F:Deveel.Facebook.AttachmentType.Image">
+            <summary>
+            The attachment is an image
+            </summary>
+        </member>
+        <member name="F:Deveel.Facebook.AttachmentType.Audio">
+            <summary>
+            The attachment is an audio file
+            </summary>
+        </member>
+        <member name="F:Deveel.Facebook.AttachmentType.Video">
+            <summary>
+            The attachment is a video file
+            </summary>
+        </member>
+        <member name="F:Deveel.Facebook.AttachmentType.File">
+            <summary>
+            The attachment is a generic file
+            </summary>
+        </member>
+        <member name="F:Deveel.Facebook.AttachmentType.Template">
+            <summary>
+            The attachment is a templated message
+            </summary>
+        </member>
+        <member name="T:Deveel.Facebook.AudioAttachment">
+            <summary>
+            Represents an audio file attachment.
+            </summary>
+        </member>
+        <member name="M:Deveel.Facebook.AudioAttachment.#ctor(Deveel.Facebook.UrlPayload)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Deveel.Facebook.AudioAttachment"/> class.
+            </summary>
+            <param name="payload">The payload that describes the file references</param>
+        </member>
+        <member name="T:Deveel.Facebook.Button">
+            <summary>
+            Represents a button that can be added to a message.
+            </summary>
+        </member>
+        <member name="M:Deveel.Facebook.Button.#ctor(Deveel.Facebook.ButtonType)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Deveel.Facebook.Button"/> class.
+            </summary>
+            <param name="type">The type of button</param>
+        </member>
+        <member name="P:Deveel.Facebook.Button.Type">
+            <summary>
+            Gets the type of button.
+            </summary>
+        </member>
+        <member name="T:Deveel.Facebook.ButtonType">
+            <summary>
+            Enumerates the types of buttons that can be added to a message.
+            </summary>
+        </member>
+        <member name="F:Deveel.Facebook.ButtonType.WebUrl">
+            <summary>
+            The button is a link to an URL available on the web.
+            </summary>
+        </member>
+        <member name="F:Deveel.Facebook.ButtonType.Postback">
+            <summary>
+            The button is a postback that can be used to
+            send a data back to the application.
+            </summary>
+        </member>
+        <member name="F:Deveel.Facebook.ButtonType.PhoneNumber">
+            <summary>
+            The button triggers a phone call (from within the device of the user)
+            to a given number.
+            </summary>
+        </member>
+        <member name="F:Deveel.Facebook.ButtonType.AccountLink">
+            <summary>
+            The button starts a login flow to an external application's
+            identity manager
+            </summary>
+        </member>
+        <member name="F:Deveel.Facebook.ButtonType.AccountUnlink">
+            <summary>
+            The button starts a logout flow to an external application's
+            identity management system.
+            </summary>
+        </member>
+        <member name="F:Deveel.Facebook.ButtonType.GamePlay">
+            <summary>
+            The button triggers the launch of an Instant Game associated to
+            a page.
+            </summary>
+        </member>
+        <member name="T:Deveel.Facebook.CallButton">
+            <summary>
+            Represents a button that triggers a call to a phone number.
+            </summary>
+        </member>
+        <member name="M:Deveel.Facebook.CallButton.#ctor(System.String,System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Deveel.Facebook.CallButton"/> class
+            with the given phone number and label.
+            </summary>
+            <param name="phoneNumber">The phone number to be called, that
+            must be in the international form <c>+[COUNTRY_CODE][PHONE_NUMBER]</c> (eg. +15105559999)</param>
+            <param name="title">A label that is used to mask the phone number</param>
+            <exception cref="T:System.ArgumentException">
+            Thrown if the given <paramref name="phoneNumber"/> or <paramref name="title"/> is <c>null</c> or empty.
+            </exception>
+        </member>
+        <member name="P:Deveel.Facebook.CallButton.PhoneNumber">
+            <summary>
+            Gets the phone number to be called.
+            </summary>
+        </member>
+        <member name="P:Deveel.Facebook.CallButton.Title">
+            <summary>
+            Gets the label that is used to mask the phone number.
+            </summary>
+        </member>
+        <member name="T:Deveel.Facebook.ClientRetryOptions">
+            <summary>
+            Provides options to configure the retry policy of the client.
+            </summary>
+        </member>
+        <member name="P:Deveel.Facebook.ClientRetryOptions.MaxRetries">
+            <summary>
+            Gets or sets the maximum number of retries to perform
+            (by default set to <c>3</c>).
+            </summary>
+        </member>
+        <member name="P:Deveel.Facebook.ClientRetryOptions.MaxDelay">
+            <summary>
+            The maximum amount in milliseconds to wait before 
+            retrying a request (by default <c>500</c>).
+            </summary>
+        </member>
+        <member name="T:Deveel.Facebook.Error">
+            <summary>
+            Describes an error returned by the
+            Facebook Messenger Platform
+            </summary>
+        </member>
+        <member name="M:Deveel.Facebook.Error.#ctor(System.String,System.String)">
+            <summary>
+            Constructs a new error with the given code and message
+            </summary>
+            <param name="code">The error code</param>
+            <param name="message">The message describing the error</param>
+        </member>
+        <member name="P:Deveel.Facebook.Error.Message">
+            <summary>
+            Gets a human-readable description of the error.
+            </summary>
+        </member>
+        <member name="P:Deveel.Facebook.Error.Code">
+            <summary>
+            Gets the code of the error
+            </summary>
+        </member>
+        <member name="P:Deveel.Facebook.Error.Type">
+            <summary>
+            Gets the type of error
+            </summary>
+        </member>
+        <member name="P:Deveel.Facebook.Error.ErrorSubCode">
+            <summary>
+            Gets or sets an optional sub-code identifying the error
+            </summary>
+        </member>
+        <member name="P:Deveel.Facebook.Error.UserMessage">
+            <summary>
+            Gets or sets a message to be displayed to the user for
+            descriving the error
+            </summary>
+        </member>
+        <member name="P:Deveel.Facebook.Error.UserTitle">
+            <summary>
+            Gets or sets the title of the dialog to be displayed
+            to the user.
+            </summary>
+        </member>
+        <member name="P:Deveel.Facebook.Error.TraceId">
+            <summary>
+            Gets or sets the session identifier used to
+            trace the context of the error
+            </summary>
+        </member>
+        <member name="T:Deveel.Facebook.ErrorResponse">
+            <summary>
+            A response object that indicates an error has 
+            occurred while trying to send a message
+            </summary>
+        </member>
+        <member name="M:Deveel.Facebook.ErrorResponse.#ctor(Deveel.Facebook.Error)">
+            <summary>
+            Constructs the response with the given error
+            </summary>
+            <param name="error">The instance of the error.</param>
+        </member>
+        <member name="P:Deveel.Facebook.ErrorResponse.Error">
+            <summary>
+            Gets the instance of the error that has occurred.
+            </summary>
+        </member>
+        <member name="T:Deveel.Facebook.FacebookJsonSerializer">
+            <summary>
+            A utility class that can be used to serialize and deserialize
+            Facebook entities to and from JSON
+            </summary>
+        </member>
+        <member name="P:Deveel.Facebook.FacebookJsonSerializer.Options">
+            <summary>
+            Gets the serialization options
+            </summary>
+        </member>
+        <member name="M:Deveel.Facebook.FacebookJsonSerializer.DeserializeWebhook(System.IO.Stream)">
+            <summary>
+            Deserializes a given UTF-8 stream to a Facebook Messenger webhook
+            </summary>
+            <param name="utf8Stream">The UTF-8 to be read for deserialization</param>
+            <returns>
+            Returns an instance of <see cref="T:Deveel.Facebook.FacebookWebhook"/> that is the result
+            of the deserialization.
+            </returns>
+        </member>
+        <member name="M:Deveel.Facebook.FacebookJsonSerializer.DeserializeWebhookAsync(System.IO.Stream,System.Threading.CancellationToken)">
+            <summary>
+            Deserializes a given UTF-8 stream to a Facebook webhook
+            </summary>
+            <param name="utf8Stream">The UTF-8 to be read for deserialization</param>
+            <param name="cancellationToken"></param>
+            <returns>
+            Returns an instance of <see cref="T:Deveel.Facebook.FacebookWebhook"/> that is the result
+            of the deserialization.
+            </returns>
+        </member>
+        <member name="M:Deveel.Facebook.FacebookJsonSerializer.DeserializeWebhook(System.String)">
+            <summary>
+            Deserializes a given JSON-formatted string to a Facebook webhook
+            </summary>
+            <param name="json">The JSON-formatted string to read for deserialization</param>
+            <returns>
+            Returns an instance of <see cref="T:Deveel.Facebook.FacebookWebhook"/> that is the result
+            of the deserialization.
+            </returns>
+        </member>
+        <member name="T:Deveel.Facebook.FacebookWebhook">
+            <summary>
+            A webhook sent from the Facebook Messenger Platform
+            </summary>
+        </member>
+        <member name="M:Deveel.Facebook.FacebookWebhook.#ctor(System.String)">
+            <summary>
+            Constructs a new instance of the webhook object
+            </summary>
+            <param name="object">The type of object the webhook
+            relates to.</param>
+        </member>
+        <member name="P:Deveel.Facebook.FacebookWebhook.Object">
+            <summary>
+            Gets the type of object this webhook relates to.
+            </summary>
+        </member>
+        <member name="P:Deveel.Facebook.FacebookWebhook.Entries">
+            <summary>
+            Gets an array of entries
+            </summary>
+        </member>
+        <member name="M:Deveel.Facebook.FacebookWebhookEntry.#ctor(System.String,System.DateTimeOffset)">
+            <summary>
+            Constructs a new instance of the entry
+            </summary>
+            <param name="id">The unique identifier of the
+            object associated to the entry</param>
+            <param name="timeStamp">The time-stamp of the entry</param>
+            <exception cref="T:System.ArgumentException">
+            Thrown if the given <paramref name="id"/> is <c>null</c> or empty.
+            </exception>
+        </member>
+        <member name="P:Deveel.Facebook.FacebookWebhookEntry.Id">
+            <summary>
+            Gets the unique identifier of the object associated 
+            to the entry.
+            </summary>
+        </member>
+        <member name="P:Deveel.Facebook.FacebookWebhookEntry.TimeStamp">
+            <summary>
+            Gets the time-stamp of the entry.
+            </summary>
+        </member>
+        <member name="P:Deveel.Facebook.FacebookWebhookEntry.Messaging">
+            <summary>
+            Gets a list of messaging entries
+            </summary>
+        </member>
+        <member name="T:Deveel.Facebook.FileAttachment">
+            <summary>
+            Represents a generic file attachment.
+            </summary>
+        </member>
+        <member name="M:Deveel.Facebook.FileAttachment.#ctor(Deveel.Facebook.UrlPayload)">
+            <summary>
+            Initializes the attachment with the given payload.
+            </summary>
+            <param name="payload"></param>
+        </member>
+        <member name="T:Deveel.Facebook.GameMetadata">
+            <summary>
+            Describes the metadata of an instance game play.
+            </summary>
+        </member>
+        <member name="P:Deveel.Facebook.GameMetadata.PlayerId">
+            <summary>
+            Gets or sets the identifier of the player.
+            </summary>
+        </member>
+        <member name="P:Deveel.Facebook.GameMetadata.ContextId">
+            <summary>
+            Gets or sets the identifier of the game context.
+            </summary>
+        </member>
+        <member name="T:Deveel.Facebook.GamePlayButton">
+            <summary>
+            Represents a button that launches an Instant Game that is associated
+            with a Facebook Page.
+            </summary>
+        </member>
+        <member name="M:Deveel.Facebook.GamePlayButton.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Deveel.Facebook.GamePlayButton"/> class with the
+            given title for the button.
+            </summary>
+            <param name="title">The title that masks the button</param>
+        </member>
+        <member name="P:Deveel.Facebook.GamePlayButton.Title">
+            <summary>
+            Gets the title that masks the button.
+            </summary>
+        </member>
+        <member name="P:Deveel.Facebook.GamePlayButton.Payload">
+            <summary>
+            Gets or sets the payload to be sent to the game.
+            </summary>
+        </member>
+        <member name="P:Deveel.Facebook.GamePlayButton.GameMetadata">
+            <summary>
+            Gets or sets an optional set of metadata that defines
+            the start if the game.
+            </summary>
+        </member>
+        <member name="T:Deveel.Facebook.GraphVersions">
+            <summary>
+            Enumerates the available versions of the
+            Facebook Gaph API that can used.
+            </summary>
+        </member>
+        <member name="F:Deveel.Facebook.GraphVersions.V12_0">
+            <summary>
+            The verion v12.0 of the Facebook Graph API
+            </summary>
+        </member>
+        <member name="F:Deveel.Facebook.GraphVersions.V16_0">
+            <summary>
+            The version v16.0 of the Facebook Graph API
+            </summary>
+        </member>
+        <member name="F:Deveel.Facebook.GraphVersions.Latest">
+            <summary>
+            The latest version of the Facebook Graph API 
+            (currently <c>v16.0</c>)
+            </summary>
+        </member>
+        <member name="T:Deveel.Facebook.MessageActionType">
+            <summary>
+            Enumerates the type of actions performed on a message
+            by a user.
+            </summary>
+        </member>
+        <member name="F:Deveel.Facebook.MessageActionType.React">
+            <summary>
+            The user reacted to the message.
+            </summary>
+        </member>
+        <member name="F:Deveel.Facebook.MessageActionType.Unreact">
+            <summary>
+            The user changed the reaction to the message.
+            </summary>
+        </member>
+        <member name="T:Deveel.Facebook.ReactionType">
+            <summary>
+            Enumerates the kind of reactions that can be sent
+            by a user.
+            </summary>
+        </member>
+        <member name="F:Deveel.Facebook.ReactionType.Like">
+            <summary>
+            The user has liked the message.
+            </summary>
+        </member>
+        <member name="F:Deveel.Facebook.ReactionType.Dislike">
+            <summary>
+            The user has disliked the message.
+            </summary>
+        </member>
+        <member name="F:Deveel.Facebook.ReactionType.Love">
+            <summary>
+            The user has reacted with a heart to the message.
+            </summary>
+        </member>
+        <member name="F:Deveel.Facebook.ReactionType.Wow">
+            <summary>
+            The user has reacted with a 'wow' to the message.
+            </summary>
+        </member>
+        <member name="F:Deveel.Facebook.ReactionType.Sad">
+            <summary>
+            The user has reacted with sadness to the message.
+            </summary>
+        </member>
+        <member name="F:Deveel.Facebook.ReactionType.Angry">
+            <summary>
+            The user was angry about the message.
+            </summary>
+        </member>
+        <member name="F:Deveel.Facebook.ReactionType.Smile">
+            <summary>
+            The user has reacted with a smile to the message.
+            </summary>
+        </member>
+        <member name="F:Deveel.Facebook.ReactionType.Other">
+            <summary>
+            The user had another reaction to the message.
+            </summary>
+        </member>
+        <member name="T:Deveel.Facebook.TemplateAttachmentPayload">
+            <summary>
+            Describes the payload of a templated attachment.
+            </summary>
+        </member>
+        <member name="T:Deveel.Facebook.WebUrlButton">
+            <summary>
+            Represents a button that launches the navigation to a given URL.
+            </summary>
+        </member>
+        <member name="M:Deveel.Facebook.WebUrlButton.#ctor(System.String,System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Deveel.Facebook.WebUrlButton"/> class with the
+            given URL and title for the button.
+            </summary>
+            <param name="url">The web URL for the navigation</param>
+            <param name="title">The title of the button used to mask the navigation URL</param>
+            <exception cref="T:System.ArgumentException">
+            Thrown if the <paramref name="url"/> or <paramref name="title"/> is <c>null</c> or empty.
+            </exception>
+        </member>
+        <member name="P:Deveel.Facebook.WebUrlButton.Title">
+            <summary>
+            Gets the title of the button used to mask the navigation URL.
+            </summary>
+        </member>
+        <member name="P:Deveel.Facebook.WebUrlButton.Url">
+            <summary>
+            Gets the web URL for the navigation.
+            </summary>
+        </member>
+    </members>
+</doc>

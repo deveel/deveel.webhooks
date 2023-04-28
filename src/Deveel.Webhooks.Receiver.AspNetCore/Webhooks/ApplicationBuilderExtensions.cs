@@ -13,14 +13,13 @@
 // limitations under the License.
 
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
 
 namespace Deveel.Webhooks {
 	/// <summary>
 	/// Extends the <see cref="IApplicationBuilder"/> to provide methods
 	/// for receiving webhooks within an ASP.NET Core application request pipeline.
 	/// </summary>
-    public static class ApplicationBuilderExtensions {
+	public static class ApplicationBuilderExtensions {
 		/// <summary>
 		/// Adds a middleware to the application pipeline that receives webhooks
 		/// of that are posted to the given path.
@@ -43,11 +42,11 @@ namespace Deveel.Webhooks {
 		/// Returns the instance of the <see cref="IApplicationBuilder"/> that handles
 		/// webhooks posted to the given path.
 		/// </returns>
-		public static IApplicationBuilder UseWebhookReceiver<TWebhook>(this IApplicationBuilder app, string path)
+		public static IApplicationBuilder UseWebhookReceiver<TWebhook>(this IApplicationBuilder app, string path, WebhookHandlingOptions? options = null)
 			where TWebhook : class {
 			return app.MapWhen(
 				context => context.Request.Method == "POST" && context.Request.Path.Equals(path),
-				builder => builder.UseMiddleware<WebhookReceiverMiddleware<TWebhook>>()
+				builder => builder.UseMiddleware<WebhookReceiverMiddleware<TWebhook>>(options ?? new WebhookHandlingOptions())
 			);
 		}
 
@@ -110,14 +109,23 @@ namespace Deveel.Webhooks {
 			where TWebhook : class
 			=> app.UseWebhookVerifier<TWebhook>("GET", path);
 
-        /// <summary>
-        /// Adds a middleware to the application pipeline that receives webhooks
-        /// of that are posted to the given path.
-        /// </summary>
-        /// <typeparam name="TWebhook">The type of the webhook to be received</typeparam>
-        /// <param name="app">The application builder instance</param>
-        /// <param name="path">The path to listen for webhook posts</param>
-        /// <param name="receiver">The delegated function that is invoked by the middleware
+		private static IApplicationBuilder UseWebhookReceiverWithDelegate<TWebhook>(this IApplicationBuilder app, string path, Delegate handler)
+			where TWebhook : class {
+			return app.MapWhen(
+				context => context.Request.Method == "POST" && context.Request.Path.Equals(path),
+				builder => builder.UseMiddleware<WebhookDelegatedReceiverMiddleware<TWebhook>>(new WebhookHandlingOptions(), new DelegatedWebhookHandler<TWebhook>(handler))
+			);
+		}
+
+
+		/// <summary>
+		/// Adds a middleware to the application pipeline that receives webhooks
+		/// of that are posted to the given path.
+		/// </summary>
+		/// <typeparam name="TWebhook">The type of the webhook to be received</typeparam>
+		/// <param name="app">The application builder instance</param>
+		/// <param name="path">The path to listen for webhook posts</param>
+		/// <param name="receiver">The delegated function that is invoked by the middleware
 		/// to handle the received webhook</param>
 		/// <remarks>
 		/// <para>
@@ -134,45 +142,222 @@ namespace Deveel.Webhooks {
 		/// Returns the instance of the <see cref="IApplicationBuilder"/> that handles
 		/// webhooks posted to the given path.
 		/// </returns>
-        public static IApplicationBuilder UseWebhookReceiver<TWebhook>(this IApplicationBuilder app, string path, Func<HttpContext, TWebhook, CancellationToken, Task> receiver)
-			where TWebhook : class {
-			return app.MapWhen(
-				context => context.Request.Method == "POST" && context.Request.Path.Equals(path),
-				builder => builder.UseMiddleware<WebhookDelegatedReceiverMiddleware<TWebhook>>(receiver)
-			);
-		}
+		public static IApplicationBuilder UseWebhookReceiver<TWebhook>(this IApplicationBuilder app, string path, Func<TWebhook, Task> receiver)
+			where TWebhook : class
+			=> app.UseWebhookReceiverWithDelegate<TWebhook>(path, receiver);
 
-        /// <summary>
-        /// Adds a middleware to the application pipeline that receives webhooks
-        /// of that are posted to the given path.
-        /// </summary>
-        /// <typeparam name="TWebhook">The type of the webhook to be received</typeparam>
-        /// <param name="app">The application builder instance</param>
-        /// <param name="path">The path to listen for webhook posts</param>
-        /// <param name="receiver">The delegated function that is invoked by the middleware
-        /// to handle the received webhook</param>
-        /// <remarks>
-        /// <para>
-        /// The middleware will listen only for POST requests to the given path using
-        /// the configurations registered at the application startup.
-        /// </para>
-        /// <para>
-        /// Any instance of the <see cref="IWebhookReceiver{TWebhook}"/> registered will
-        /// be ignored when using this middleware, and only the provided function will be
-        /// invoked by the middleware.
-        /// </para>
-        /// </remarks>
-        /// <returns>
-        /// Returns the instance of the <see cref="IApplicationBuilder"/> that handles
-        /// webhooks posted to the given path.
-        /// </returns>
-        public static IApplicationBuilder UseWebhookReceiver<TWebhook>(this IApplicationBuilder app, string path, Action<HttpContext, TWebhook> receiver)
-			where TWebhook : class {
-			return app.MapWhen(
-				context => context.Request.Method == "POST" && context.Request.Path.Equals(path),
-				builder => builder.UseMiddleware<WebhookDelegatedReceiverMiddleware<TWebhook>>(receiver)
-			);
-		}
+		/// <summary>
+		/// Adds a middleware to the application pipeline that receives webhooks
+		/// of that are posted to the given path, injecting the provided arguments
+		/// to the function.
+		/// </summary>
+		/// <typeparam name="TWebhook">The type of the webhook to be received</typeparam>
+		/// <typeparam name="T1">The type of the first parameter of the delegated function</typeparam>
+		/// <param name="app">The application builder instance</param>
+		/// <param name="path">The path to listen for webhook posts</param>
+		/// <param name="receiver">The delegated function that is invoked by the middleware
+		/// to handle the received webhook</param>
+		/// <remarks>
+		/// <para>
+		/// The middleware will listen only for POST requests to the given path using
+		/// the configurations registered at the application startup.
+		/// </para>
+		/// <para>
+		/// Any instance of the <see cref="IWebhookReceiver{TWebhook}"/> registered will
+		/// be ignored when using this middleware, and only the provided function will be
+		/// invoked by the middleware.
+		/// </para>
+		/// </remarks>
+		/// <returns>
+		/// Returns the instance of the <see cref="IApplicationBuilder"/> that handles
+		/// webhooks posted to the given path.
+		/// </returns>
+		public static IApplicationBuilder UseWebhookReceiver<TWebhook, T1>(this IApplicationBuilder app, string path, Func<TWebhook, T1, Task> receiver)
+			where TWebhook : class
+			=> app.UseWebhookReceiverWithDelegate<TWebhook>(path, receiver);
 
+		/// <summary>
+		/// Adds a middleware to the application pipeline that receives webhooks
+		/// of that are posted to the given path, injecting the provided arguments
+		/// to the function.
+		/// </summary>
+		/// <typeparam name="TWebhook">The type of the webhook to be received</typeparam>
+		/// <typeparam name="T1">The type of the first parameter of the delegated function</typeparam>
+		/// <typeparam name="T2">The type of the second parameter of the delegated function</typeparam>
+		/// <param name="app">The application builder instance</param>
+		/// <param name="path">The path to listen for webhook posts</param>
+		/// <param name="receiver">The delegated function that is invoked by the middleware
+		/// to handle the received webhook</param>
+		/// <remarks>
+		/// <para>
+		/// The middleware will listen only for POST requests to the given path using
+		/// the configurations registered at the application startup.
+		/// </para>
+		/// <para>
+		/// Any instance of the <see cref="IWebhookReceiver{TWebhook}"/> registered will
+		/// be ignored when using this middleware, and only the provided function will be
+		/// invoked by the middleware.
+		/// </para>
+		/// </remarks>
+		/// <returns>
+		/// Returns the instance of the <see cref="IApplicationBuilder"/> that handles
+		/// webhooks posted to the given path.
+		/// </returns>
+		public static IApplicationBuilder UseWebhookReceiver<TWebhook, T1, T2>(this IApplicationBuilder app, string path, Func<TWebhook, T1, T2, Task> receiver)
+			where TWebhook : class
+			=> app.UseWebhookReceiverWithDelegate<TWebhook>(path, receiver);
+
+		/// <summary>
+		/// Adds a middleware to the application pipeline that receives webhooks
+		/// of that are posted to the given path, injecting the provided arguments
+		/// to the function.
+		/// </summary>
+		/// <typeparam name="TWebhook">The type of the webhook to be received</typeparam>
+		/// <typeparam name="T1">The type of the first parameter of the delegated function</typeparam>
+		/// <typeparam name="T2">The type of the second parameter of the delegated function</typeparam>
+		/// <typeparam name="T3">The type of the third parameter of the delegated function</typeparam>
+		/// <param name="app">The application builder instance</param>
+		/// <param name="path">The path to listen for webhook posts</param>
+		/// <param name="receiver">The delegated function that is invoked by the middleware
+		/// to handle the received webhook</param>
+		/// <remarks>
+		/// <para>
+		/// The middleware will listen only for POST requests to the given path using
+		/// the configurations registered at the application startup.
+		/// </para>
+		/// <para>
+		/// Any instance of the <see cref="IWebhookReceiver{TWebhook}"/> registered will
+		/// be ignored when using this middleware, and only the provided function will be
+		/// invoked by the middleware.
+		/// </para>
+		/// </remarks>
+		/// <returns>
+		/// Returns the instance of the <see cref="IApplicationBuilder"/> that handles
+		/// webhooks posted to the given path.
+		/// </returns>
+		public static IApplicationBuilder UseWebhookReceiver<TWebhook, T1, T2, T3>(this IApplicationBuilder app, string path, Func<TWebhook, T1, T2, T3, Task> receiver)
+			where TWebhook : class
+			=> app.UseWebhookReceiverWithDelegate<TWebhook>(path, receiver);
+
+		/// <summary>
+		/// Adds a middleware to the application pipeline that receives webhooks
+		/// of that are posted to the given path
+		/// </summary>
+		/// <typeparam name="TWebhook">The type of the webhook to be received</typeparam>
+		/// <param name="app">The application builder instance</param>
+		/// <param name="path">The path to listen for webhook posts</param>
+		/// <param name="receiver">The delegated function that is invoked by the middleware
+		/// to handle the received webhook</param>
+		/// <remarks>
+		/// <para>
+		/// The middleware will listen only for POST requests to the given path using
+		/// the configurations registered at the application startup.
+		/// </para>
+		/// <para>
+		/// Any instance of the <see cref="IWebhookReceiver{TWebhook}"/> registered will
+		/// be ignored when using this middleware, and only the provided function will be
+		/// invoked by the middleware.
+		/// </para>
+		/// </remarks>
+		/// <returns>
+		/// Returns the instance of the <see cref="IApplicationBuilder"/> that handles
+		/// webhooks posted to the given path.
+		/// </returns>
+		public static IApplicationBuilder UseWebhookReceiver<TWebhook>(this IApplicationBuilder app, string path, Action<TWebhook> receiver)
+			where TWebhook : class
+			=> app.UseWebhookReceiverWithDelegate<TWebhook>(path, receiver);
+
+		/// <summary>
+		/// Adds a middleware to the application pipeline that receives webhooks
+		/// of that are posted to the given path, injecting the provided arguments
+		/// to the function.
+		/// </summary>
+		/// <typeparam name="TWebhook">The type of the webhook to be received</typeparam>
+		/// <typeparam name="T1">The type of the first parameter of the delegated function</typeparam>
+		/// <param name="app">The application builder instance</param>
+		/// <param name="path">The path to listen for webhook posts</param>
+		/// <param name="receiver">The delegated function that is invoked by the middleware
+		/// to handle the received webhook</param>
+		/// <remarks>
+		/// <para>
+		/// The middleware will listen only for POST requests to the given path using
+		/// the configurations registered at the application startup.
+		/// </para>
+		/// <para>
+		/// Any instance of the <see cref="IWebhookReceiver{TWebhook}"/> registered will
+		/// be ignored when using this middleware, and only the provided function will be
+		/// invoked by the middleware.
+		/// </para>
+		/// </remarks>
+		/// <returns>
+		/// Returns the instance of the <see cref="IApplicationBuilder"/> that handles
+		/// webhooks posted to the given path.
+		/// </returns>
+		public static IApplicationBuilder UseWebhookReceiver<TWebhook, T1>(this IApplicationBuilder app, string path, Action<TWebhook, T1> receiver)
+			where TWebhook : class
+			=> app.UseWebhookReceiverWithDelegate<TWebhook>(path, receiver);
+
+		/// <summary>
+		/// Adds a middleware to the application pipeline that receives webhooks
+		/// of that are posted to the given path, injecting the provided arguments
+		/// to the function.
+		/// </summary>
+		/// <typeparam name="TWebhook">The type of the webhook to be received</typeparam>
+		/// <typeparam name="T1">The type of the first parameter of the delegated function</typeparam>
+		/// <typeparam name="T2">The type of the second parameter of the delegated function</typeparam>
+		/// <param name="app">The application builder instance</param>
+		/// <param name="path">The path to listen for webhook posts</param>
+		/// <param name="receiver">The delegated function that is invoked by the middleware
+		/// to handle the received webhook</param>
+		/// <remarks>
+		/// <para>
+		/// The middleware will listen only for POST requests to the given path using
+		/// the configurations registered at the application startup.
+		/// </para>
+		/// <para>
+		/// Any instance of the <see cref="IWebhookReceiver{TWebhook}"/> registered will
+		/// be ignored when using this middleware, and only the provided function will be
+		/// invoked by the middleware.
+		/// </para>
+		/// </remarks>
+		/// <returns>
+		/// Returns the instance of the <see cref="IApplicationBuilder"/> that handles
+		/// webhooks posted to the given path.
+		/// </returns>
+		public static IApplicationBuilder UseWebhookReceiver<TWebhook, T1, T2>(this IApplicationBuilder app, string path, Action<TWebhook, T1, T2> receiver)
+			where TWebhook : class
+			=> app.UseWebhookReceiverWithDelegate<TWebhook>(path, receiver);
+
+		/// <summary>
+		/// Adds a middleware to the application pipeline that receives webhooks
+		/// of that are posted to the given path, injecting the provided arguments
+		/// to the function.
+		/// </summary>
+		/// <typeparam name="TWebhook">The type of the webhook to be received</typeparam>
+		/// <typeparam name="T1">The type of the first parameter of the delegated function</typeparam>
+		/// <typeparam name="T2">The type of the second parameter of the delegated function</typeparam>
+		/// <typeparam name="T3">The type of the third parameter of the delegated function</typeparam>
+		/// <param name="app">The application builder instance</param>
+		/// <param name="path">The path to listen for webhook posts</param>
+		/// <param name="receiver">The delegated function that is invoked by the middleware
+		/// to handle the received webhook</param>
+		/// <remarks>
+		/// <para>
+		/// The middleware will listen only for POST requests to the given path using
+		/// the configurations registered at the application startup.
+		/// </para>
+		/// <para>
+		/// Any instance of the <see cref="IWebhookReceiver{TWebhook}"/> registered will
+		/// be ignored when using this middleware, and only the provided function will be
+		/// invoked by the middleware.
+		/// </para>
+		/// </remarks>
+		/// <returns>
+		/// Returns the instance of the <see cref="IApplicationBuilder"/> that handles
+		/// webhooks posted to the given path.
+		/// </returns>
+		public static IApplicationBuilder UseWebhookReceiver<TWebhook, T1, T2, T3>(this IApplicationBuilder app, string path, Action<TWebhook, T1, T2, T3> receiver)
+			where TWebhook : class
+			=> app.UseWebhookReceiverWithDelegate<TWebhook>(path, receiver);
 	}
 }

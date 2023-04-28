@@ -7,8 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Deveel.Webhooks.Receiver.Facebook\Deveel.Webhooks.Receiver.Facebook.csproj" />
-    <ProjectReference Include="..\Deveel.Webhooks.Receiver.Tests\Deveel.Webhooks.Receiver.Tests.csproj" />
+    <ProjectReference Include="..\..\src\Deveel.Webhooks.Receiver.Twilio\Deveel.Webhooks.Receiver.Twilio.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,13 +1,14 @@
 ﻿using Microsoft.AspNetCore.Http;
 
 namespace Deveel.Webhooks.Twilio {
-    public static class TwilioWebhookParser {
-        public static TwilioWebhook FromForm(IFormCollection form) {
+    static class TwilioWebhookParser {
+        public static TwilioWebhook Parse(IFormCollection form) {
 
             try {
                 var data = new TwilioWebhook();
 
                 int? numMedia = null;
+				int? numSegments = null;
 
                 foreach (var kvp in form) {
                     switch (kvp.Key) {
@@ -16,9 +17,6 @@ namespace Deveel.Webhooks.Twilio {
                             break;
                         case "ToState":
                             data.To.State = kvp.Value;
-                            break;
-                        case "SmsMessageSid":
-                            data.SmsMessageSid = kvp.Value;
                             break;
                         case "NumMedia":
                             numMedia = int.Parse(kvp.Value);
@@ -30,13 +28,14 @@ namespace Deveel.Webhooks.Twilio {
                             data.From.Zip = kvp.Value;
                             break;
                         case "SmsSid":
-                            data.SmsSid = kvp.Value;
+                            data.SmsId = kvp.Value;
                             break;
                         case "FromState":
                             data.From.State = kvp.Value;
                             break;
                         case "SmsStatus":
-                            data.SmsStatus = ParseSmsStatus(kvp.Value);
+						case "MessageStatus":
+                            data.MessageStatus = ParseMessageStatus(kvp.Value);
                             break;
                         case "FromCity":
                             data.From.City = kvp.Value;
@@ -54,13 +53,17 @@ namespace Deveel.Webhooks.Twilio {
                             data.To.Zip = kvp.Value;
                             break;
                         case "NumSegments":
-                            data.NumSegments = int.Parse(kvp.Value);
+							if (int.TryParse(kvp.Value, out var ns))
+								numSegments = ns;
+
+							data.SegmentCount = numSegments;
                             break;
                         case "MessageSid":
-                            data.MessageSid = kvp.Value;
+						case "SmsMessageSid":
+							data.MessageId = kvp.Value;
                             break;
                         case "AccountSid":
-                            data.AccountSid = kvp.Value;
+                            data.AccountId = kvp.Value;
                             break;
                         case "From":
                             data.From.PhoneNumber = kvp.Value;
@@ -68,11 +71,53 @@ namespace Deveel.Webhooks.Twilio {
                         case "ApiVersion":
                             data.ApiVersion = kvp.Value;
                             break;
+						case "ErrorCode":
+							data.ErrorCode = kvp.Value;
+							break;
+						case "ErrorMessage":
+							data.ErrorMessage = kvp.Value;
+							break;
                         default:
                             // Ignore unknown form items
                             break;
                     }
                 }
+
+				if (numSegments.HasValue && numSegments.Value > 0) {
+					data.Segments = new Segment[numSegments.Value];
+
+					for (var i = 0; i < numSegments.Value; i++) {
+						var segment = new Segment {
+							Index = i
+						};
+
+						if (form.TryGetValue($"Body{i}", out var body))
+							segment.Text = body;
+						if (form.TryGetValue($"MessageSid{i}", out var messageSid))
+							segment.MessageId = messageSid;
+
+						data.Segments[i] = segment;
+					}
+				}
+
+				if (numMedia.HasValue && numMedia.Value > 0) {
+					data.Media = new MediaElement[numMedia.Value];
+					for (var i = 0; i < numMedia.Value; i++) {
+						var mediaElement = new MediaElement();
+
+						if (form.TryGetValue($"MediaContentType{i}", out var mediaContentType))
+							mediaElement.ContentType = mediaContentType;
+
+						if (form.TryGetValue($"MediaUrl{i}", out var mediaUrl))
+							mediaElement.Url = mediaUrl;
+
+						if (form.TryGetValue($"MediaContentLength{i}", out var mediaContentLength) &&
+							long.TryParse(mediaContentLength, out var cl))
+							mediaElement.ContentLength = cl;
+
+						data.Media[i] = mediaElement;
+					}
+				}
 
                 return data;
             } catch (Exception ex) {
@@ -81,9 +126,9 @@ namespace Deveel.Webhooks.Twilio {
             }
         }
 
-        private static SmsStatus ParseSmsStatus(string value) {
-            if (!Enum.TryParse<SmsStatus>(value, true, out var status))
-                return SmsStatus.Unknown;
+        private static MessageStatus ParseMessageStatus(string value) {
+            if (!Enum.TryParse<MessageStatus>(value, true, out var status))
+                return MessageStatus.Unknown;
 
             return status;
         }

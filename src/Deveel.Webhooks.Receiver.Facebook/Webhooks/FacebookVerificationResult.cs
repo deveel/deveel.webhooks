@@ -19,17 +19,26 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Deveel.Webhooks {
-	readonly struct FacebookVerificationResult : IWebhookVerificationResult {
-		public FacebookVerificationResult(bool valid, bool isVerified, string? challenge = null) {
+	/// <summary>
+	/// Represents a result of the verification of the receiver
+	/// made by the Facebook.
+	/// </summary>
+	public readonly struct FacebookVerificationResult : IWebhookVerificationResult {
+		internal FacebookVerificationResult(bool valid, bool isVerified, string? challenge = null) {
 			IsValid = valid;
 			IsVerified = isVerified;
 			Challenge = challenge;
 		}
 
+		/// <inheritdoc/>
 		public bool IsVerified { get; }
 
+		/// <summary>
+		/// Gets the challenge string to be sent back to Facebook
+		/// </summary>
 		public string? Challenge { get; }
 
+		/// <inheritdoc/>
 		public bool IsValid { get; }
 	}
 }

@@ -1077,6 +1077,24 @@
             Thrown if the parsing operation is not supported by the receiver.
             </exception>
         </member>
+        <member name="M:Deveel.Webhooks.WebhookReceiver`1.ParseFormAsync(Microsoft.AspNetCore.Http.IFormCollection,System.Threading.CancellationToken)">
+            <summary>
+            Parses the form body of a webhook request.
+            </summary>
+            <param name="form">
+            The form collection that contains the webhook data to be parsed
+            </param>
+            <param name="cancellationToken">
+            A token that can be used to cancel the parsing operation
+            </param>
+            <returns>
+            Returns an instance of <typeparamref name="TWebhook"/> that is
+            the result of the parsing operation.
+            </returns>
+            <exception cref="T:System.NotSupportedException">
+            Thrown if the parsing operation is not supported by the receiver.
+            </exception>
+        </member>
         <member name="M:Deveel.Webhooks.WebhookReceiver`1.TryGetSignature(Microsoft.AspNetCore.Http.HttpRequest,System.String@)">
             <summary>
             Attempts to get the signature from the given request.
@@ -1102,7 +1120,7 @@
             </summary>
             <param name="signature">The signature sent alongside the webhook</param>
             <param name="algorithm">The signing hash algorithm used to compute the signature</param>
-            <param name="jsonBody">The JSON-formatted body of the webhook</param>
+            <param name="webhookBody">The body of the webhook</param>
             <remarks>
             <para>
             The default behavior of this method is to return <c>true</c> if the verification 
@@ -1723,6 +1741,12 @@
             <summary>
             Gets or sets a list of <see cref="T:Deveel.Webhooks.IWebhookSigner"/> that are supported
             by the receiver for validating the signature of the webhooks.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.WebhookSignatureOptions.OnCreate">
+            <summary>
+            Gets or sets a function that creates a signature from the given
+            request
             </summary>
         </member>
         <member name="T:Deveel.Webhooks.WebhookVerificationOptions`1">

@@ -6,7 +6,7 @@ namespace Deveel.Webhooks {
     class TwilioWebhookFormParser : IWebhookFormParser<TwilioWebhook> {
         public Task<TwilioWebhook> ParseWebhookAsync(IFormCollection form, CancellationToken cancellationToken) {
 			try {
-                var result = TwilioWebhookParser.FromForm(form);
+                var result = TwilioWebhookParser.Parse(form);
                 return Task.FromResult(result);
 			} catch (WebhookParseException) {
 				throw;

@@ -69,7 +69,8 @@ namespace Deveel.Webhooks {
 				format = null;
 				return false;
 			}
-			if (request.ContentType.StartsWith("application/json")) {
+			if (request.ContentType.StartsWith("application/json") ||
+				request.ContentType.StartsWith("text/json")) {
 				format = WebhookContentFormats.Json;
 				return true;
 			}
@@ -78,7 +79,8 @@ namespace Deveel.Webhooks {
 				format = WebhookContentFormats.Xml;
 				return true;
 			}
-			if (request.ContentType.StartsWith("application/x-www-form-urlencoded")) {
+			if (request.ContentType.StartsWith("application/x-www-form-urlencoded") ||
+				request.ContentType.StartsWith("application/www-form-urlencoded")) {
 				format = WebhookContentFormats.Form;
 				return true;
 			}
@@ -305,7 +307,7 @@ namespace Deveel.Webhooks {
 		/// </summary>
 		/// <param name="signature">The signature sent alongside the webhook</param>
 		/// <param name="algorithm">The signing hash algorithm used to compute the signature</param>
-		/// <param name="jsonBody">The JSON-formatted body of the webhook</param>
+		/// <param name="webhookBody">The body of the webhook</param>
 		/// <remarks>
 		/// <para>
 		/// The default behavior of this method is to return <c>true</c> if the verification 
@@ -321,7 +323,7 @@ namespace Deveel.Webhooks {
 		/// Returns <c>true</c> if the signature is valid for the given webhook, 
 		/// or <c>false</c> otherwise.
 		/// </returns>
-		protected virtual bool IsSignatureValid(string signature, string algorithm, string jsonBody) {
+		protected virtual bool IsSignatureValid(string signature, string algorithm, string webhookBody) {
 			if (!ValidateSignature())
 				return true;
 
@@ -337,7 +339,7 @@ namespace Deveel.Webhooks {
 				signature = signature.Substring(index + 1);
 			}
 
-			var computedSignature = SignWebhook(jsonBody, algorithm, ReceiverOptions.Signature.Secret);
+			var computedSignature = SignWebhook(webhookBody, algorithm, ReceiverOptions.Signature.Secret);
 			if (String.IsNullOrWhiteSpace(computedSignature))
 				return false;
 
@@ -352,29 +354,39 @@ namespace Deveel.Webhooks {
 		/// Returns a <see cref="ValidateResult"/> that describes the result of the validation.
 		/// </returns>
 		protected async Task<ValidateResult> TryValidateWebhook(HttpRequest request) {
-			using var reader = new StreamReader(request.Body, Encoding.UTF8);
-			var jsonBody = await reader.ReadToEndAsync();
-
 			if (!ValidateSignature() ||
 				!TryGetSignature(request, out var signature) ||
 				String.IsNullOrWhiteSpace(signature))
-				return new ValidateResult(jsonBody, false, null);
+				return new ValidateResult(null, false, null);
 
-			var algorithm = GetAlgorithm(request, signature);
+			bool isValid = false;
 
-			if (String.IsNullOrWhiteSpace(algorithm))
-				return new ValidateResult(jsonBody, true, false);
+			using var reader = new StreamReader(request.Body, Encoding.UTF8);
+			var webhookBody = await reader.ReadToEndAsync();
 
-			var isValid = IsSignatureValid(signature, algorithm, jsonBody);
+			if (ReceiverOptions.Signature.OnCreate != null) {
+				var createdSignature = await ReceiverOptions.Signature.OnCreate(request);
+				if (String.IsNullOrWhiteSpace(createdSignature))
+					throw new WebhookReceiverException("The signature could not be created.");
 
-			return new ValidateResult(jsonBody, true, isValid);
+				isValid = String.Equals(createdSignature, signature, StringComparison.OrdinalIgnoreCase);
+			} else {
+				var algorithm = GetAlgorithm(request, signature);
+
+				if (String.IsNullOrWhiteSpace(algorithm))
+					return new ValidateResult(webhookBody, true, false);
+
+				isValid = IsSignatureValid(signature, algorithm, webhookBody);
+			}
+
+			return new ValidateResult(webhookBody, true, isValid);
 		}
 
 		/// <inheritdoc/>
 		public virtual async Task<WebhookReceiveResult<TWebhook>> ReceiveAsync(HttpRequest request, CancellationToken cancellationToken) {
 			try {
 				if (!IsValidContentFormat(request, out var contentFormat))
-					throw new NotSupportedException($"Content type '{request.ContentType}' not provided in the request.");
+					throw new NotSupportedException($"Content type '{request.ContentType}' not supported by the receiver.");
 
 				if (ValidateSignature()) {
 					var result = await TryValidateWebhook(request);

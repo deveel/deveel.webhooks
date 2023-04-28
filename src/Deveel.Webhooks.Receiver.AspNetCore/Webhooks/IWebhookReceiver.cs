@@ -42,6 +42,6 @@ namespace Deveel.Webhooks {
         /// <returns>
         /// Returns a <see cref="Task"/> that completes when the webhook is received
         /// </returns>
-        Task<WebhookReceiveResult<TWebhook>> ReceiveAsync(HttpRequest request, CancellationToken cancellationToken);
+        Task<WebhookReceiveResult<TWebhook>> ReceiveAsync(HttpRequest request, CancellationToken cancellationToken = default);
 	}
 }

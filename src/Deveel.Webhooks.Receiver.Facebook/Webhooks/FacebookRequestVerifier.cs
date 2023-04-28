@@ -42,7 +42,7 @@ namespace Deveel.Webhooks
 				return new FacebookVerificationResult(false, false);
 
 			if (!String.Equals(verifyTyoken, VerificationOptions.VerificationToken))
-				return new FacebookVerificationResult(true, false);
+				return new FacebookVerificationResult(false, true);
 
 			return new FacebookVerificationResult(true, true, challenge);
 		}

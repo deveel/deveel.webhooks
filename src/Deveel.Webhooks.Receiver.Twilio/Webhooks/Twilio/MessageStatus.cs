@@ -1,8 +1,8 @@
 ﻿namespace Deveel.Webhooks.Twilio {
     /// <summary>
-    /// Enumerates the possible values for the status of an SMS message
+    /// Enumerates the possible values for the status of a Twilio message
     /// </summary>
-    public enum SmsStatus {
+    public enum MessageStatus {
         /// <summary>
         /// The status of the message is unknown
         /// </summary>

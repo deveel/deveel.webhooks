@@ -1,0 +1,64 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Deveel.Webhooks.Receiver.Twilio</name>
+    </assembly>
+    <members>
+        <member name="T:Deveel.Webhooks.Twilio.SmsStatus">
+            <summary>
+            Enumerates the possible values for the status of an SMS message
+            </summary>
+        </member>
+        <member name="F:Deveel.Webhooks.Twilio.SmsStatus.Unknown">
+            <summary>
+            The status of the message is unknown
+            </summary>
+        </member>
+        <member name="F:Deveel.Webhooks.Twilio.SmsStatus.Accepted">
+            <summary>
+            Twilio has received the message and is attempting to send it
+            </summary>
+        </member>
+        <member name="F:Deveel.Webhooks.Twilio.SmsStatus.Queued">
+            <summary>
+            Twilio has queued the message for delivery, but has not yet sent it
+            </summary>
+        </member>
+        <member name="F:Deveel.Webhooks.Twilio.SmsStatus.Sending">
+            <summary>
+            Twilio is currently sending the message
+            </summary>
+        </member>
+        <member name="F:Deveel.Webhooks.Twilio.SmsStatus.Sent">
+            <summary>
+            Twilio has successfully sent the message to the destination phone number
+            </summary>
+        </member>
+        <member name="F:Deveel.Webhooks.Twilio.SmsStatus.Failed">
+            <summary>
+            Twilio was unable to send the message to the destination phone number (e.g. due 
+            to an invalid number).
+            </summary>
+        </member>
+        <member name="F:Deveel.Webhooks.Twilio.SmsStatus.Delivered">
+            <summary>
+            The message was successfully delivered to the destination phone number
+            </summary>
+        </member>
+        <member name="F:Deveel.Webhooks.Twilio.SmsStatus.Undelivered">
+            <summary>
+            Twilio was unable to deliver the message to the destination phone number
+            </summary>
+        </member>
+        <member name="F:Deveel.Webhooks.Twilio.SmsStatus.Receiving">
+            <summary>
+            Twilio is currently receiving a reply to the original message
+            </summary>
+        </member>
+        <member name="F:Deveel.Webhooks.Twilio.SmsStatus.Received">
+            <summary>
+            Twilio has successfully received a reply to the original message
+            </summary>
+        </member>
+    </members>
+</doc>

@@ -64,6 +64,36 @@ namespace Deveel.Webhooks {
 		/// </summary>
 		protected virtual WebhookReceiverOptions<TWebhook> ReceiverOptions { get; }
 
+		private static bool TryGetContentFormat(HttpRequest request, [MaybeNullWhen(false)] out WebhookContentFormats? format) {
+			if (request.ContentType == null) {
+				format = null;
+				return false;
+			}
+			if (request.ContentType.StartsWith("application/json")) {
+				format = WebhookContentFormats.Json;
+				return true;
+			}
+			if (request.ContentType.StartsWith("application/xml") ||
+				request.ContentType.StartsWith("text/xml")) {
+				format = WebhookContentFormats.Xml;
+				return true;
+			}
+			if (request.ContentType.StartsWith("application/x-www-form-urlencoded")) {
+				format = WebhookContentFormats.Form;
+				return true;
+			}
+
+			format = null;
+			return false;
+		}
+
+		private bool IsValidContentFormat(HttpRequest request, [MaybeNullWhen(false)] out WebhookContentFormats? format) {
+			if (!TryGetContentFormat(request, out format))
+				return false;
+
+			return ReceiverOptions.ContentFormats.HasFlag(format!.Value);
+		}
+
 		/// <summary>
 		/// Resolves a webhook signer for the given algorithm.
 		/// </summary>
@@ -176,6 +206,29 @@ namespace Deveel.Webhooks {
 				throw new NotSupportedException("The XML parser was not provided");
 
 			return await ReceiverOptions.XmlParser.ParseWebhookAsync(utf8Stream, cancellationToken);
+		}
+
+		/// <summary>
+		/// Parses the form body of a webhook request.
+		/// </summary>
+		/// <param name="form">
+		/// The form collection that contains the webhook data to be parsed
+		/// </param>
+		/// <param name="cancellationToken">
+		/// A token that can be used to cancel the parsing operation
+		/// </param>
+		/// <returns>
+		/// Returns an instance of <typeparamref name="TWebhook"/> that is
+		/// the result of the parsing operation.
+		/// </returns>
+		/// <exception cref="NotSupportedException">
+		/// Thrown if the parsing operation is not supported by the receiver.
+		/// </exception>
+		protected virtual async Task<TWebhook> ParseFormAsync(IFormCollection form, CancellationToken cancellationToken) {
+			if (ReceiverOptions.FormParser == null)
+                throw new NotSupportedException("The form parser was not provided");
+
+            return await ReceiverOptions.FormParser.ParseWebhookAsync(form, cancellationToken);
 		}
 
 		private string? GetAlgorithm(HttpRequest request, string signature) {
@@ -320,12 +373,8 @@ namespace Deveel.Webhooks {
 		/// <inheritdoc/>
 		public virtual async Task<WebhookReceiveResult<TWebhook>> ReceiveAsync(HttpRequest request, CancellationToken cancellationToken) {
 			try {
-				if (String.IsNullOrWhiteSpace(request.ContentType))
-					throw new NotSupportedException("Content type not provided in the request.");
-
-				var isJson = request.ContentType.StartsWith("application/json");
-				var isXml = request.ContentType.StartsWith("text/xml") ||
-					request.ContentType.StartsWith("application/xml");
+				if (!IsValidContentFormat(request, out var contentFormat))
+					throw new NotSupportedException($"Content type '{request.ContentType}' not provided in the request.");
 
 				if (ValidateSignature()) {
 					var result = await TryValidateWebhook(request);
@@ -337,10 +386,12 @@ namespace Deveel.Webhooks {
 						var signatureValid = result.SignatureValidated && (result.IsValid ?? false);
 
 						TWebhook? webhook;
-						if (isJson) {
+						if (contentFormat == WebhookContentFormats.Json) {
 							webhook = await ParseJsonAsync(result.Body, cancellationToken);
-						} else if (isXml) {
+						} else if (contentFormat == WebhookContentFormats.Xml) {
 							webhook = await ParseXmlAsync(result.Body, cancellationToken);
+						} else if (contentFormat == WebhookContentFormats.Form) {
+							webhook = await ParseFormAsync(request.Form, cancellationToken);
 						} else {
 							throw new NotSupportedException($"Content type '{request.ContentType}' is not supported");
 						}
@@ -350,10 +401,12 @@ namespace Deveel.Webhooks {
 						throw new NotSupportedException();
 					}
 				} else {
-					if (isJson) {
+					if (contentFormat == WebhookContentFormats.Json) {
 						return await ParseJsonAsync(request.Body, cancellationToken);
-					} else if (isXml) {
+					} else if (contentFormat == WebhookContentFormats.Xml) {
 						return await ParseXmlAsync(request.Body, cancellationToken);
+					} else if (contentFormat == WebhookContentFormats.Form) {
+						return await ParseFormAsync(request.Form, cancellationToken);
 					} else {
 						throw new NotSupportedException($"Content type '{request.ContentType}' is not supported");
 					}

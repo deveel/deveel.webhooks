@@ -448,6 +448,27 @@
             The handlers are executed in parallel, all at the same time.
             </summary>
         </member>
+        <member name="T:Deveel.Webhooks.IWebhookFormParser`1">
+            <summary>
+            A service that can parse a form request into a webhook object.
+            </summary>
+            <typeparam name="TWebhook">
+            The type of webhook object that is parsed from the form request.
+            </typeparam>
+        </member>
+        <member name="M:Deveel.Webhooks.IWebhookFormParser`1.ParseWebhookAsync(Microsoft.AspNetCore.Http.IFormCollection,System.Threading.CancellationToken)">
+            <summary>
+            Parses the given form request into a webhook object.
+            </summary>
+            <param name="form">
+            The collection of items in the form request.
+            </param>
+            <param name="cancellationToken"></param>
+            <returns>
+            Returns an instance of <typeparamref name="TWebhook"/> that is
+            the result of parsing the given form request.
+            </returns>
+        </member>
         <member name="T:Deveel.Webhooks.IWebhookHandler`1">
             <summary>
             Provides functions for handling webhooks of a specific type.
@@ -773,6 +794,37 @@
         </member>
         <member name="M:Deveel.Webhooks.SystemWebhookXmlParser`1.ParseWebhookAsync(System.IO.Stream,System.Threading.CancellationToken)">
             <inheritdoc/>
+        </member>
+        <member name="T:Deveel.Webhooks.WebhookContentFormats">
+            <summary>
+            Lists all the possible content formats that a webhook 
+            can be read by a receiver.
+            </summary>
+        </member>
+        <member name="F:Deveel.Webhooks.WebhookContentFormats.None">
+            <summary>
+            The receiver cannot support any content format.
+            </summary>
+        </member>
+        <member name="F:Deveel.Webhooks.WebhookContentFormats.Json">
+            <summary>
+            The receiver can support JSON content format.
+            </summary>
+        </member>
+        <member name="F:Deveel.Webhooks.WebhookContentFormats.Xml">
+            <summary>
+            The receiver can support XML content format.
+            </summary>
+        </member>
+        <member name="F:Deveel.Webhooks.WebhookContentFormats.Form">
+            <summary>
+            The receiver can support form content format.
+            </summary>
+        </member>
+        <member name="F:Deveel.Webhooks.WebhookContentFormats.All">
+            <summary>
+            The receiver can support all the content formats.
+            </summary>
         </member>
         <member name="T:Deveel.Webhooks.WebhookHandler">
             <summary>
@@ -1488,16 +1540,32 @@
             Gets or sets the options for the signature verification.
             </summary>
         </member>
+        <member name="P:Deveel.Webhooks.WebhookReceiverOptions`1.ContentFormats">
+            <summary>
+            Gets or sets the supported content formats for the incoming
+            webhooks that are supported by the receiver.
+            </summary>
+        </member>
         <member name="P:Deveel.Webhooks.WebhookReceiverOptions`1.JsonParser">
             <summary>
             Gets or sets the parser to use to parse the incoming webhook
-            of JSON content-type.
+            of JSON content-type, used if the <see cref="P:Deveel.Webhooks.WebhookReceiverOptions`1.ContentFormats"/>
+            supports <see cref="F:Deveel.Webhooks.WebhookContentFormats.Json"/>.
             </summary>
         </member>
         <member name="P:Deveel.Webhooks.WebhookReceiverOptions`1.XmlParser">
             <summary>
             Gets or sets the parser to use to parse the incoming webhook
-            that are of XML content-type.
+            that are of XML content-type, used if the <see cref="P:Deveel.Webhooks.WebhookReceiverOptions`1.ContentFormats"/>
+            supports <see cref="F:Deveel.Webhooks.WebhookContentFormats.Xml"/>.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.WebhookReceiverOptions`1.FormParser">
+            <summary>
+            Gets or sets the parser to use to parse the incoming webhook
+            from the form of the request (when requests are of
+            content type <c>application/x-www-form-urlencoded</c>), used
+            when the <see cref="P:Deveel.Webhooks.WebhookReceiverOptions`1.ContentFormats"/> supports <see cref="F:Deveel.Webhooks.WebhookContentFormats.Form"/>.
             </summary>
         </member>
         <member name="T:Deveel.Webhooks.WebhookRequestVerifier`1">

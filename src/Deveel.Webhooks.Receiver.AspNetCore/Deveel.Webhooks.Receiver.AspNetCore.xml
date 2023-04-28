@@ -130,7 +130,7 @@
             for receiving webhooks within an ASP.NET Core application request pipeline.
             </summary>
         </member>
-        <member name="M:Deveel.Webhooks.ApplicationBuilderExtensions.UseWebhookReceiver``1(Microsoft.AspNetCore.Builder.IApplicationBuilder,System.String,Deveel.Webhooks.WebhookHandlingOptions)">
+        <member name="M:Deveel.Webhooks.ApplicationBuilderExtensions.MapWebhook``1(Microsoft.AspNetCore.Builder.IApplicationBuilder,System.String,Deveel.Webhooks.WebhookHandlingOptions)">
             <summary>
             Adds a middleware to the application pipeline that receives webhooks
             of that are posted to the given path.
@@ -154,7 +154,7 @@
             webhooks posted to the given path.
             </returns>
         </member>
-        <member name="M:Deveel.Webhooks.ApplicationBuilderExtensions.UseWebhookVerifier``1(Microsoft.AspNetCore.Builder.IApplicationBuilder,System.String,System.String)">
+        <member name="M:Deveel.Webhooks.ApplicationBuilderExtensions.MapWebhookVerify``1(Microsoft.AspNetCore.Builder.IApplicationBuilder,System.String,System.String)">
             <summary>
             Adds a middleware to the application pipeline that provides a verification
             mechanism for the webhook requests.
@@ -179,7 +179,7 @@
             the verification requests.
             </returns>
         </member>
-        <member name="M:Deveel.Webhooks.ApplicationBuilderExtensions.UseWebhookVerfier``1(Microsoft.AspNetCore.Builder.IApplicationBuilder,System.String)">
+        <member name="M:Deveel.Webhooks.ApplicationBuilderExtensions.MapWebhookVerify``1(Microsoft.AspNetCore.Builder.IApplicationBuilder,System.String)">
             <summary>
             Adds a middleware to the application pipeline that provides a verification
             mechanism for the webhook requests.
@@ -206,7 +206,7 @@
             the verification requests.
             </returns>
         </member>
-        <member name="M:Deveel.Webhooks.ApplicationBuilderExtensions.UseWebhookReceiver``1(Microsoft.AspNetCore.Builder.IApplicationBuilder,System.String,System.Func{``0,System.Threading.Tasks.Task})">
+        <member name="M:Deveel.Webhooks.ApplicationBuilderExtensions.MapWebhook``1(Microsoft.AspNetCore.Builder.IApplicationBuilder,System.String,System.Func{``0,System.Threading.Tasks.Task})">
             <summary>
             Adds a middleware to the application pipeline that receives webhooks
             of that are posted to the given path.
@@ -232,7 +232,7 @@
             webhooks posted to the given path.
             </returns>
         </member>
-        <member name="M:Deveel.Webhooks.ApplicationBuilderExtensions.UseWebhookReceiver``2(Microsoft.AspNetCore.Builder.IApplicationBuilder,System.String,System.Func{``0,``1,System.Threading.Tasks.Task})">
+        <member name="M:Deveel.Webhooks.ApplicationBuilderExtensions.MapWebhook``2(Microsoft.AspNetCore.Builder.IApplicationBuilder,System.String,System.Func{``0,``1,System.Threading.Tasks.Task})">
             <summary>
             Adds a middleware to the application pipeline that receives webhooks
             of that are posted to the given path, injecting the provided arguments
@@ -260,7 +260,7 @@
             webhooks posted to the given path.
             </returns>
         </member>
-        <member name="M:Deveel.Webhooks.ApplicationBuilderExtensions.UseWebhookReceiver``3(Microsoft.AspNetCore.Builder.IApplicationBuilder,System.String,System.Func{``0,``1,``2,System.Threading.Tasks.Task})">
+        <member name="M:Deveel.Webhooks.ApplicationBuilderExtensions.MapWebhook``3(Microsoft.AspNetCore.Builder.IApplicationBuilder,System.String,System.Func{``0,``1,``2,System.Threading.Tasks.Task})">
             <summary>
             Adds a middleware to the application pipeline that receives webhooks
             of that are posted to the given path, injecting the provided arguments
@@ -289,7 +289,7 @@
             webhooks posted to the given path.
             </returns>
         </member>
-        <member name="M:Deveel.Webhooks.ApplicationBuilderExtensions.UseWebhookReceiver``4(Microsoft.AspNetCore.Builder.IApplicationBuilder,System.String,System.Func{``0,``1,``2,``3,System.Threading.Tasks.Task})">
+        <member name="M:Deveel.Webhooks.ApplicationBuilderExtensions.MapWebhook``4(Microsoft.AspNetCore.Builder.IApplicationBuilder,System.String,System.Func{``0,``1,``2,``3,System.Threading.Tasks.Task})">
             <summary>
             Adds a middleware to the application pipeline that receives webhooks
             of that are posted to the given path, injecting the provided arguments
@@ -319,7 +319,7 @@
             webhooks posted to the given path.
             </returns>
         </member>
-        <member name="M:Deveel.Webhooks.ApplicationBuilderExtensions.UseWebhookReceiver``1(Microsoft.AspNetCore.Builder.IApplicationBuilder,System.String,System.Action{``0})">
+        <member name="M:Deveel.Webhooks.ApplicationBuilderExtensions.MapWebhook``1(Microsoft.AspNetCore.Builder.IApplicationBuilder,System.String,System.Action{``0})">
             <summary>
             Adds a middleware to the application pipeline that receives webhooks
             of that are posted to the given path
@@ -345,7 +345,7 @@
             webhooks posted to the given path.
             </returns>
         </member>
-        <member name="M:Deveel.Webhooks.ApplicationBuilderExtensions.UseWebhookReceiver``2(Microsoft.AspNetCore.Builder.IApplicationBuilder,System.String,System.Action{``0,``1})">
+        <member name="M:Deveel.Webhooks.ApplicationBuilderExtensions.MapWebhook``2(Microsoft.AspNetCore.Builder.IApplicationBuilder,System.String,System.Action{``0,``1})">
             <summary>
             Adds a middleware to the application pipeline that receives webhooks
             of that are posted to the given path, injecting the provided arguments
@@ -373,7 +373,7 @@
             webhooks posted to the given path.
             </returns>
         </member>
-        <member name="M:Deveel.Webhooks.ApplicationBuilderExtensions.UseWebhookReceiver``3(Microsoft.AspNetCore.Builder.IApplicationBuilder,System.String,System.Action{``0,``1,``2})">
+        <member name="M:Deveel.Webhooks.ApplicationBuilderExtensions.MapWebhook``3(Microsoft.AspNetCore.Builder.IApplicationBuilder,System.String,System.Action{``0,``1,``2})">
             <summary>
             Adds a middleware to the application pipeline that receives webhooks
             of that are posted to the given path, injecting the provided arguments
@@ -402,7 +402,7 @@
             webhooks posted to the given path.
             </returns>
         </member>
-        <member name="M:Deveel.Webhooks.ApplicationBuilderExtensions.UseWebhookReceiver``4(Microsoft.AspNetCore.Builder.IApplicationBuilder,System.String,System.Action{``0,``1,``2,``3})">
+        <member name="M:Deveel.Webhooks.ApplicationBuilderExtensions.MapWebhook``4(Microsoft.AspNetCore.Builder.IApplicationBuilder,System.String,System.Action{``0,``1,``2,``3})">
             <summary>
             Adds a middleware to the application pipeline that receives webhooks
             of that are posted to the given path, injecting the provided arguments
@@ -600,6 +600,33 @@
             Gets a value indicating whether the request is valid or not.
             </summary>
         </member>
+        <member name="T:Deveel.Webhooks.IWebhookXmlParser`1">
+            <summary>
+            An interface that defines the contract of a service
+            that is capable of reading XML streams of data and return
+            a webhook object of type <typeparamref name="TWebhook"/>.
+            </summary>
+            <typeparam name="TWebhook">
+            The type of webhook that is parsed from the XML stream.
+            </typeparam>
+        </member>
+        <member name="M:Deveel.Webhooks.IWebhookXmlParser`1.ParseWebhookAsync(System.IO.Stream,System.Threading.CancellationToken)">
+            <summary>
+            Parses the given <paramref name="utf8Stream"/> and returns
+            a webhook object of type <typeparamref name="TWebhook"/>.
+            </summary>
+            <param name="utf8Stream">
+            The binary stream of data to parse.
+            </param>
+            <param name="cancellationToken">
+            A cancellation token that can be used to cancel the operation.
+            </param>
+            <returns>
+            Returns an instance of <typeparamref name="TWebhook"/> that
+            is obtained by the reading of the given <paramref name="utf8Stream"/>,
+            or <c>null</c> if the stream is empty.
+            </returns>
+        </member>
         <member name="T:Deveel.Webhooks.ServiceCollectionExtensions">
             <summary>
             Extends a <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/> object to register
@@ -673,6 +700,41 @@
             other services and configurations.
             </returns>
         </member>
+        <member name="M:Deveel.Webhooks.ServiceCollectionExtensions.AddWebhookVerifier``1(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            Registers the service that is handling the receiver verification
+            requests made by the webhook sender.
+            </summary>
+            <typeparam name="TWebhook">
+            The type of webhooks to receive
+            </typeparam>
+            <param name="services">
+            The collection of services to which the verification service is added
+            </param>
+            <returns>
+            Returns an instance of <see cref="T:Deveel.Webhooks.WebhookVerifierBuilder`1"/> that can
+            be used to further configure the verification service.
+            </returns>
+        </member>
+        <member name="M:Deveel.Webhooks.ServiceCollectionExtensions.AddWebhookVerifier``1(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Action{Deveel.Webhooks.WebhookVerifierBuilder{``0}})">
+            <summary>
+            Registers the service that is handling the receiver verification
+            requests made by the webhook sender.
+            </summary>
+            <typeparam name="TWebhook">
+            The type of webhooks to receive
+            </typeparam>
+            <param name="services">
+            The collection of services to which the verification service is added
+            </param>
+            <param name="configure">
+            A configuration action that can be used to further configure the verification service
+            </param>
+            <returns>
+            Returns the collection of services with the registered
+            verification service.
+            </returns>
+        </member>
         <member name="T:Deveel.Webhooks.SystemTextWebhookJsonParser`1">
             <summary>
             Provides a default implementation of the <see cref="T:Deveel.Webhooks.IWebhookJsonParser`1"/>
@@ -698,6 +760,18 @@
             </summary>
         </member>
         <member name="M:Deveel.Webhooks.SystemTextWebhookJsonParser`1.ParseWebhookAsync(System.IO.Stream,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="T:Deveel.Webhooks.SystemWebhookXmlParser`1">
+            <summary>
+            The default implementation of <see cref="T:Deveel.Webhooks.IWebhookXmlParser`1"/> that
+            uses the <c>System.Xml</c> components to parse incoming webhooks.
+            </summary>
+            <typeparam name="TWebhook">
+            The type of webhook that is parsed by the parser.
+            </typeparam>
+        </member>
+        <member name="M:Deveel.Webhooks.SystemWebhookXmlParser`1.ParseWebhookAsync(System.IO.Stream,System.Threading.CancellationToken)">
             <inheritdoc/>
         </member>
         <member name="T:Deveel.Webhooks.WebhookHandler">
@@ -927,6 +1001,25 @@
             <returns>
             Returns an instance of <typeparamref name="TWebhook"/> that completes the
             parsing operation to obtain the webhook.
+            </returns>
+            <exception cref="T:System.NotSupportedException">
+            Thrown if the parsing operation is not supported by the receiver.
+            </exception>
+        </member>
+        <member name="M:Deveel.Webhooks.WebhookReceiver`1.ParseXmlAsync(System.IO.Stream,System.Threading.CancellationToken)">
+            <summary>
+            Parses the XML body of a webhook request.
+            </summary>
+            <param name="utf8Stream">
+            The binary stream that is UTF-8 encoded and that provides the body of the
+            XML webhook to be parsed
+            </param>
+            <param name="cancellationToken">
+            A token that can be used to cancel the parsing operation
+            </param>
+            <returns>
+            Returns an instance of <typeparamref name="TWebhook"/> that is
+            the result of the parsing operation.
             </returns>
             <exception cref="T:System.NotSupportedException">
             Thrown if the parsing operation is not supported by the receiver.
@@ -1642,6 +1735,56 @@
             A result that indicated  an invalid verification request (eg. missing parameters)
             </summary>
         </member>
+        <member name="T:Deveel.Webhooks.WebhookVerifierBuilder`1">
+            <summary>
+            A builder for configuring the services used to verify
+            the webhook receiver application from the senders.
+            </summary>
+            <typeparam name="TWebhook"></typeparam>
+        </member>
+        <member name="M:Deveel.Webhooks.WebhookVerifierBuilder`1.#ctor(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            Constructs the builder with the given services collection
+            that will be used to register the services.
+            </summary>
+            <param name="services">
+            The services collection to use to register the services
+            for the verification of the receiver.
+            </param>
+            <exception cref="T:System.ArgumentNullException">
+            Thrown when the given <paramref name="services"/> is <c>null</c>.
+            </exception>
+        </member>
+        <member name="P:Deveel.Webhooks.WebhookVerifierBuilder`1.Services">
+            <summary>
+            Gets the services collection used to register the services
+            </summary>
+        </member>
+        <member name="M:Deveel.Webhooks.WebhookVerifierBuilder`1.Configure(System.Action{Deveel.Webhooks.WebhookVerificationOptions{`0}})">
+            <summary>
+            Configures the options for the verification of the webhooks receivers
+            </summary>
+            <param name="configure">
+            A function that configures the options for the verification of the
+            receivers of the webhooks.
+            </param>
+            <returns>
+            Returns the current builder instance with the options configured.
+            </returns>
+        </member>
+        <member name="M:Deveel.Webhooks.WebhookVerifierBuilder`1.Configure(System.String)">
+            <summary>
+            Configures the options for the verification of the webhooks receivers
+            using the given configuration section.
+            </summary>
+            <param name="sectionPath">
+            The path to the configuration section that contains the options
+            to be configured.
+            </param>
+            <returns>
+            Returns the current builder instance with the options configured.
+            </returns>
+        </member>
         <member name="M:Deveel.Webhooks.WebhookVerifierBuilder`1.UseVerifier``1(Microsoft.Extensions.DependencyInjection.ServiceLifetime)">
             <summary>
             Registers an implementation of the <see cref="T:Deveel.Webhooks.IWebhookRequestVerifier`1"/>
@@ -1654,6 +1797,36 @@
             <returns>
             Returns the current builder instance with the verifier registered
             </returns>
+        </member>
+        <member name="T:Deveel.Webhooks.WebhookXmlParserExtensions">
+            <summary>
+            Extends the <see cref="T:Deveel.Webhooks.IWebhookXmlParser`1"/> interface to provide
+            methods for the deserialization of a webhook from a XML string.
+            </summary>
+        </member>
+        <member name="M:Deveel.Webhooks.WebhookXmlParserExtensions.ParseWebhookAsync``1(Deveel.Webhooks.IWebhookXmlParser{``0},System.String,System.Threading.CancellationToken)">
+            <summary>
+            Parses the given XML string into a webhook object.
+            </summary>
+            <typeparam name="TWebhook">
+            The type of the webhook to be parsed.
+            </typeparam>
+            <param name="parser">
+            The instance of the parser to be used to parse the XML string.
+            </param>
+            <param name="xmlBody">
+            The string that contains the XML to be parsed.
+            </param>
+            <param name="cancellationToken">
+            A cancellation token that can be used to cancel the operation.
+            </param>
+            <returns>
+            Returns an instance of the webhook object parsed from the XML string,
+            or <c>null</c> if the string is <c>null</c> or empty.
+            </returns>
+            <exception cref="T:Deveel.Webhooks.WebhookParseException">
+            Thrown when the XML string cannot be parsed into a webhook object.
+            </exception>
         </member>
     </members>
 </doc>

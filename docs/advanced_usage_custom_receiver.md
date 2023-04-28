@@ -24,7 +24,35 @@ or use the .NET CLI:
 dotnet add package Webhook.Receiver.AspNetCore
 ```
 
-## Factory Handlers
+## Instrumenting the Application
+
+To start receiving webhooks in your ASP.NET Core application, you need to register the webhook receiver in the service collection, and add the webhook receiver middleware to the application pipeline.
+
+The following code shows how to register the webhook receiver in the service collection, and how to add the webhook receiver middleware to the application pipeline:
+
+```csharp
+namespace Example {
+	public class Startup {
+		public void ConfigureServices(IServiceCollection services) {
+			services.AddWebhookReceiver<IdentityWebhook>()
+			    .AddHandler<UserRegisteredHandler>();
+		}
+	}
+
+	public void Configure(IApplicationBuilder app, IWebHostEnvironment env) {
+	    // Use the registered factory handlers ...
+		app.MapWebhook<IdentityWebhook>("/ids/webhooks/");
+
+		// ... or use a middleware to handle the webhook
+		app.MapWebhook<IdentityWebhook>("/ids/webhooks/handled", async(IdentityWebhook webhook, ILogger<IdentityWebhook> logger) => {
+			// Handle the webhook
+			logger.LogInformation("Webhook received: {Webhook}", webhook);
+		});
+	}
+}
+```
+
+## Factory-Based Handlers
 
 The framework provides two alternative methods to handle webhooks, depending on the design of your application or the complexity of the webhook handling logic.
 
@@ -69,7 +97,7 @@ namespace Example {
 	}
 
 	public void Configure(IApplicationBuilder app, IWebHostEnvironment env) {
-		app.UseWebhookReceiver<IdentityWebhook>("/ids/webhooks/");
+		app.MapWebhook<IdentityWebhook>("/ids/webhooks/");
 	}
 }
 ```
@@ -78,14 +106,42 @@ The above code works as follow:
 
 1. The `AddWebhookReceiver` method registers the webhook receiver in the service collection, isolating any behavior to the webhook type `IdentityWebhook`
 2. The `AddHandler` method registers the handler in the service collection as a scoped service
-3. The `UseWebhookReceiver` method adds the webhook receiver middleware to the application pipeline, using the specified path as the endpoint to receive webhooks of type `IdentityWebhook`
+3. The `MapWebhook` method maps the specific path (for a `POST` request) to the webhook receiver middleware, that receives webhooks of type `IdentityWebhook`
 4. When a webhook is received, the middleware will create a scope and resolve any handlers associated to the webhook of type `IdentityWebhook`, passing them the webhook to handle
 
-## Middlewares Receivers
+### Webhook Handling
 
-Another method to handle webhooks is to use middlewares to handle webhooks, and it's the most suitable for scenarios where the handling of the webhook is simple and doesn't require to depend on several external services.
+When a webhook is received and the handlers are resolved, their execution is performed in parallel by default, and the middleware will wait for the completion of all the handlers before returning a response to the sender.
 
-This is done by passing a delegate to the `UseWebhookReceiver` method, that will be directly invoked by the middleware when a webhook is received, without attempting to resolve any further handler for the same type of webhook.
+It is recommended that implementations of the handlers are designed to be executed in a non-blocking form, to avoid blocking the middleware and the sender of the webhook: currently no background process is executed to handle the webhooks, and the middleware will wait for the completion of all the handlers before returning a response to the sender.
+
+### Execution Modes
+
+By default, the middleware will execute all the registered the handlers (fo the type of webhook) in parallel.
+
+This behavior can be changed by specifying an execution mode when registering the webhook receiver, using the `ExecutionMode` configuration property of the `WebhookHandlingOptions` class, when calling the `MapWebhook` method.
+
+```csharp
+namespace Example {
+	public class Startup {
+		public void ConfigureServices(IServiceCollection services) {
+			services.AddWebhookReceiver<IdentityWebhook>()
+				.AddHandler<UserCreatedHandler>();
+		}
+	}
+	public void Configure(IApplicationBuilder app, IWebHostEnvironment env) {
+		app.MapWebhook<IdentityWebhook>("/ids/webhooks/", new WebhookHandlingOptions {
+			ExecutionMode = WebhookExecutionMode.Sequential;
+		});
+	}
+}
+```
+
+## Convention-Based Receivers
+
+Another method to handle webhooks is to use middlewares to handle webhooks, and it's the most suitable for scenarios where the handling of the webhook is simple and doesn't require to depend on several external services (for example, when using a mediator to handle the webhook).
+
+This is done by passing a delegate to the `MapWebhook` method, that will be directly invoked by the middleware when a webhook is received, without attempting to resolve any further handler for the same type of webhook.
 
 ```csharp
 namespace Example {
@@ -95,7 +151,7 @@ namespace Example {
 		}
 	}
 	public void Configure(IApplicationBuilder app, IWebHostEnvironment env) {
-		app.UseWebhookReceiver<IdentityWebhook>("/ids/webhooks/", async (context, webhook, cancellationToken) => {
+		app.MapWebhook<IdentityWebhook>("/ids/webhooks/", async (IdentityWebhook webhook, CancellationToken  cancellationToken) => {
 			var mediator = context.RequestServices.GetRequiredService<IMediator>();
 			await mediator.Send(new CreateUserCommand(webhook.Data.UserInfo), cancellationToken);
 		});
@@ -103,9 +159,35 @@ namespace Example {
 }
 ```
 
-As you can see the above code is simpler than the previous one, but it's also less flexible: you can't use a factory to create the handler, and you can resolve external services only from the `HttpContext` instance.
+As you can see the above code is simpler than the previous one, but it comes with a limitation: the first argument must always be the webhook of the type handled by the middleware. 
+
+One of the arguments (in no particular position) can be a cancellation token, that can be used to cancel the execution of the middleware: this will be the same cancellation token used by the middleware to cancel the execution of the handlers.
 
 This method provides few alternative signatures to the delegate, depending on the design of your application, that can be executed synchronously or asynchronously.
+
+The following code shows the alternative signatures of the delegate:
+
+```csharp
+// Async
+MapWebhook<TWebhook>(string path, Func<TWebhook, Task> handler);
+MapWebhook<TWebhook, T1>(string path, Func<TWebhook, T1, Task> handler);
+MapWebhook<TWebhook, T1, T2>(string path, Func<TWebhook, T1, T2, Task> handler);
+MapWebhook<TWebhook, T1, T2, T3>(string path, Func<TWebhook, T1, T2, T3, Task> handler);
+
+// Sync
+MapWebhook<TWebhook>(string path, Action<TWebhook> handler);
+MapWebhook<TWebhook, T1>(string path, Action<TWebhook, T1> handler);
+MapWebhook<TWebhook, T1, T2>(string path, Action<TWebhook, T1, T2> handler);
+MapWebhook<TWebhook, T1, T2, T3>(string path, Action<TWebhook, T1, T2, T3> handler);
+```
+
+Any additional parameter than the webhook will be resolved in the request scope, and passed to the delegate when invoked.
+
+### Webhook Handling
+
+When using the delegate-based method to handle webhooks, the middleware will invoke the given delegate when a webhook is received, and will wait for the completion of the delegate before returning a response to the sender.
+
+It is recommended that implementations of the delegate are designed to be executed in a non-blocking form, to avoid blocking the middleware and the sender of the webhook: currently no background process is executed to handle the webhooks, and the middleware will wait for the completion of the delegate before returning a response to the sender.
 
 ## Webhook Types
 
@@ -123,9 +205,10 @@ namespace Example {
 				.AddHandler<PaymentCreatedHandler>();
 		}
 	}
+
 	public void Configure(IApplicationBuilder app, IWebHostEnvironment env) {
-		app.UseWebhookReceiver<IdentityWebhook>("/ids/webhooks/");
-		app.UseWebhookReceiver<PaymentWebhook>("/payments/webhooks/");
+		app.MapWebhook<IdentityWebhook>("/ids/webhooks/");
+		app.MapWebhook<PaymentWebhook>("/payments/webhooks/");
 	}
 }
 ```
@@ -133,31 +216,3 @@ namespace Example {
 The above code registers two webhook receivers, one for the `IdentityWebhook` type and one for the `PaymentWebhook` type, and it registers a handler for each webhook type.
 
 This allows separating the behaviors in configuring and handling the webhooks, which might come from different sources and have different payloads.
-
-## Webhook Handling
-
-When a webhook is received and the handlers are resolved, their execution is performed in parallel by default, and the middleware will wait for the completion of all the handlers before returning a response to the sender.
-
-It is recommended that implementations of the handlers are designed to be executed in a non-blocking form, to avoid blocking the middleware and the sender of the webhook: currently no background process is executed to handle the webhooks, and the middleware will wait for the completion of all the handlers before returning a response to the sender.
-
-## Execution Modes
-
-By default, the middleware will execute all the registered the handlers (fo the type of webhook) in parallel.
-
-This behavior can be changed by specifying an execution mode when registering the webhook receiver, using the `ExecutionMode` configuration property of the `WebhookHandlingOptions` class, when calling the `UseWebhookReceiver` method.
-
-```csharp
-namespace Example {
-	public class Startup {
-		public void ConfigureServices(IServiceCollection services) {
-			services.AddWebhookReceiver<IdentityWebhook>()
-				.AddHandler<UserCreatedHandler>();
-		}
-	}
-	public void Configure(IApplicationBuilder app, IWebHostEnvironment env) {
-		app.UseWebhookReceiver<IdentityWebhook>("/ids/webhooks/", new WebhookHandlingOptions {
-			ExecutionMode = WebhookExecutionMode.Sequential;
-		});
-	}
-}
-```

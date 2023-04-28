@@ -42,7 +42,7 @@ namespace Deveel.Webhooks {
 		/// Returns the instance of the <see cref="IApplicationBuilder"/> that handles
 		/// webhooks posted to the given path.
 		/// </returns>
-		public static IApplicationBuilder UseWebhookReceiver<TWebhook>(this IApplicationBuilder app, string path, WebhookHandlingOptions? options = null)
+		public static IApplicationBuilder MapWebhook<TWebhook>(this IApplicationBuilder app, string path, WebhookHandlingOptions? options = null)
 			where TWebhook : class {
 			return app.MapWhen(
 				context => context.Request.Method == "POST" && context.Request.Path.Equals(path),
@@ -73,7 +73,7 @@ namespace Deveel.Webhooks {
 		/// Returns an instance of the <see cref="IApplicationBuilder"/> that handles
 		/// the verification requests.
 		/// </returns>
-        public static IApplicationBuilder UseWebhookVerifier<TWebhook>(this IApplicationBuilder app, string method, string path)
+        public static IApplicationBuilder MapWebhookVerify<TWebhook>(this IApplicationBuilder app, string method, string path)
 			where TWebhook : class
 			=> app.MapWhen(
 				context => context.Request.Method == method && context.Request.Path.Equals(path),
@@ -105,11 +105,11 @@ namespace Deveel.Webhooks {
         /// Returns an instance of the <see cref="IApplicationBuilder"/> that handles
         /// the verification requests.
         /// </returns>
-        public static IApplicationBuilder UseWebhookVerfier<TWebhook>(this IApplicationBuilder app, string path)
+        public static IApplicationBuilder MapWebhookVerify<TWebhook>(this IApplicationBuilder app, string path)
 			where TWebhook : class
-			=> app.UseWebhookVerifier<TWebhook>("GET", path);
+			=> app.MapWebhookVerify<TWebhook>("GET", path);
 
-		private static IApplicationBuilder UseWebhookReceiverWithDelegate<TWebhook>(this IApplicationBuilder app, string path, Delegate handler)
+		private static IApplicationBuilder MapWebhookWithDelegate<TWebhook>(this IApplicationBuilder app, string path, Delegate handler)
 			where TWebhook : class {
 			return app.MapWhen(
 				context => context.Request.Method == "POST" && context.Request.Path.Equals(path),
@@ -142,9 +142,9 @@ namespace Deveel.Webhooks {
 		/// Returns the instance of the <see cref="IApplicationBuilder"/> that handles
 		/// webhooks posted to the given path.
 		/// </returns>
-		public static IApplicationBuilder UseWebhookReceiver<TWebhook>(this IApplicationBuilder app, string path, Func<TWebhook, Task> receiver)
+		public static IApplicationBuilder MapWebhook<TWebhook>(this IApplicationBuilder app, string path, Func<TWebhook, Task> receiver)
 			where TWebhook : class
-			=> app.UseWebhookReceiverWithDelegate<TWebhook>(path, receiver);
+			=> app.MapWebhookWithDelegate<TWebhook>(path, receiver);
 
 		/// <summary>
 		/// Adds a middleware to the application pipeline that receives webhooks
@@ -172,9 +172,9 @@ namespace Deveel.Webhooks {
 		/// Returns the instance of the <see cref="IApplicationBuilder"/> that handles
 		/// webhooks posted to the given path.
 		/// </returns>
-		public static IApplicationBuilder UseWebhookReceiver<TWebhook, T1>(this IApplicationBuilder app, string path, Func<TWebhook, T1, Task> receiver)
+		public static IApplicationBuilder MapWebhook<TWebhook, T1>(this IApplicationBuilder app, string path, Func<TWebhook, T1, Task> receiver)
 			where TWebhook : class
-			=> app.UseWebhookReceiverWithDelegate<TWebhook>(path, receiver);
+			=> app.MapWebhookWithDelegate<TWebhook>(path, receiver);
 
 		/// <summary>
 		/// Adds a middleware to the application pipeline that receives webhooks
@@ -203,9 +203,9 @@ namespace Deveel.Webhooks {
 		/// Returns the instance of the <see cref="IApplicationBuilder"/> that handles
 		/// webhooks posted to the given path.
 		/// </returns>
-		public static IApplicationBuilder UseWebhookReceiver<TWebhook, T1, T2>(this IApplicationBuilder app, string path, Func<TWebhook, T1, T2, Task> receiver)
+		public static IApplicationBuilder MapWebhook<TWebhook, T1, T2>(this IApplicationBuilder app, string path, Func<TWebhook, T1, T2, Task> receiver)
 			where TWebhook : class
-			=> app.UseWebhookReceiverWithDelegate<TWebhook>(path, receiver);
+			=> app.MapWebhookWithDelegate<TWebhook>(path, receiver);
 
 		/// <summary>
 		/// Adds a middleware to the application pipeline that receives webhooks
@@ -235,9 +235,9 @@ namespace Deveel.Webhooks {
 		/// Returns the instance of the <see cref="IApplicationBuilder"/> that handles
 		/// webhooks posted to the given path.
 		/// </returns>
-		public static IApplicationBuilder UseWebhookReceiver<TWebhook, T1, T2, T3>(this IApplicationBuilder app, string path, Func<TWebhook, T1, T2, T3, Task> receiver)
+		public static IApplicationBuilder MapWebhook<TWebhook, T1, T2, T3>(this IApplicationBuilder app, string path, Func<TWebhook, T1, T2, T3, Task> receiver)
 			where TWebhook : class
-			=> app.UseWebhookReceiverWithDelegate<TWebhook>(path, receiver);
+			=> app.MapWebhookWithDelegate<TWebhook>(path, receiver);
 
 		/// <summary>
 		/// Adds a middleware to the application pipeline that receives webhooks
@@ -263,9 +263,9 @@ namespace Deveel.Webhooks {
 		/// Returns the instance of the <see cref="IApplicationBuilder"/> that handles
 		/// webhooks posted to the given path.
 		/// </returns>
-		public static IApplicationBuilder UseWebhookReceiver<TWebhook>(this IApplicationBuilder app, string path, Action<TWebhook> receiver)
+		public static IApplicationBuilder MapWebhook<TWebhook>(this IApplicationBuilder app, string path, Action<TWebhook> receiver)
 			where TWebhook : class
-			=> app.UseWebhookReceiverWithDelegate<TWebhook>(path, receiver);
+			=> app.MapWebhookWithDelegate<TWebhook>(path, receiver);
 
 		/// <summary>
 		/// Adds a middleware to the application pipeline that receives webhooks
@@ -293,9 +293,9 @@ namespace Deveel.Webhooks {
 		/// Returns the instance of the <see cref="IApplicationBuilder"/> that handles
 		/// webhooks posted to the given path.
 		/// </returns>
-		public static IApplicationBuilder UseWebhookReceiver<TWebhook, T1>(this IApplicationBuilder app, string path, Action<TWebhook, T1> receiver)
+		public static IApplicationBuilder MapWebhook<TWebhook, T1>(this IApplicationBuilder app, string path, Action<TWebhook, T1> receiver)
 			where TWebhook : class
-			=> app.UseWebhookReceiverWithDelegate<TWebhook>(path, receiver);
+			=> app.MapWebhookWithDelegate<TWebhook>(path, receiver);
 
 		/// <summary>
 		/// Adds a middleware to the application pipeline that receives webhooks
@@ -324,9 +324,9 @@ namespace Deveel.Webhooks {
 		/// Returns the instance of the <see cref="IApplicationBuilder"/> that handles
 		/// webhooks posted to the given path.
 		/// </returns>
-		public static IApplicationBuilder UseWebhookReceiver<TWebhook, T1, T2>(this IApplicationBuilder app, string path, Action<TWebhook, T1, T2> receiver)
+		public static IApplicationBuilder MapWebhook<TWebhook, T1, T2>(this IApplicationBuilder app, string path, Action<TWebhook, T1, T2> receiver)
 			where TWebhook : class
-			=> app.UseWebhookReceiverWithDelegate<TWebhook>(path, receiver);
+			=> app.MapWebhookWithDelegate<TWebhook>(path, receiver);
 
 		/// <summary>
 		/// Adds a middleware to the application pipeline that receives webhooks
@@ -356,8 +356,8 @@ namespace Deveel.Webhooks {
 		/// Returns the instance of the <see cref="IApplicationBuilder"/> that handles
 		/// webhooks posted to the given path.
 		/// </returns>
-		public static IApplicationBuilder UseWebhookReceiver<TWebhook, T1, T2, T3>(this IApplicationBuilder app, string path, Action<TWebhook, T1, T2, T3> receiver)
+		public static IApplicationBuilder MapWebhook<TWebhook, T1, T2, T3>(this IApplicationBuilder app, string path, Action<TWebhook, T1, T2, T3> receiver)
 			where TWebhook : class
-			=> app.UseWebhookReceiverWithDelegate<TWebhook>(path, receiver);
+			=> app.MapWebhookWithDelegate<TWebhook>(path, receiver);
 	}
 }

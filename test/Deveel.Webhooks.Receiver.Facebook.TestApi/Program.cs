@@ -1,7 +1,7 @@
-using Deveel.Facebook;
+using Deveel.Webhooks.Facebook;
 
 namespace Deveel.Webhooks {
-	public class Program {
+    public class Program {
 		public static void Main(string[] args) {
 			var builder = WebApplication.CreateBuilder(args);
 
@@ -18,10 +18,10 @@ namespace Deveel.Webhooks {
 
 			app.UseAuthorization();
 
-			app.UseFacebookReceiver("/webhooks/facebook", (FacebookWebhook webhook, IWebhookCallback<FacebookWebhook> callback) => {
+			app.MapFacebookWebhook("/webhooks/facebook", (FacebookWebhook webhook, IWebhookCallback<FacebookWebhook> callback) => {
 				callback.OnWebhookHandled(webhook);
 			})
-				.UseFacebookVerifier();
+				.MapFacebookVerify();
 
 			app.Run();
 		}

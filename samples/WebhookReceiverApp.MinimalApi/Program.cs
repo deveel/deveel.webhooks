@@ -24,6 +24,6 @@ var app = builder.Build();
 if (!app.Environment.IsDevelopment())
 	app.UseHttpsRedirection();
 
-app.UseWebhookReceiver<IdentityWebhook>("/webhooks/identity");
+app.MapWebhook<IdentityWebhook>("/webhooks/identity");
 
 app.Run();

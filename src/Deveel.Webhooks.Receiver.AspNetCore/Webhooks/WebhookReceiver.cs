@@ -64,11 +64,6 @@ namespace Deveel.Webhooks {
 		/// </summary>
 		protected virtual WebhookReceiverOptions<TWebhook> ReceiverOptions { get; }
 
-		///// <summary>
-		///// Gets the parser used to process the JSON content of requests
-		///// </summary>
-		//protected virtual IWebhookJsonParser<TWebhook> JsonParser { get; }
-
 		/// <summary>
 		/// Resolves a webhook signer for the given algorithm.
 		/// </summary>
@@ -159,6 +154,23 @@ namespace Deveel.Webhooks {
 			return await ReceiverOptions.XmlParser.ParseWebhookAsync(xmlBody, cancellationToken);
 		}
 
+		/// <summary>
+		/// Parses the XML body of a webhook request.
+		/// </summary>
+		/// <param name="utf8Stream">
+		/// The binary stream that is UTF-8 encoded and that provides the body of the
+		/// XML webhook to be parsed
+		/// </param>
+		/// <param name="cancellationToken">
+		/// A token that can be used to cancel the parsing operation
+		/// </param>
+		/// <returns>
+		/// Returns an instance of <typeparamref name="TWebhook"/> that is
+		/// the result of the parsing operation.
+		/// </returns>
+		/// <exception cref="NotSupportedException">
+		/// Thrown if the parsing operation is not supported by the receiver.
+		/// </exception>
 		protected virtual async Task<TWebhook?> ParseXmlAsync(Stream utf8Stream, CancellationToken cancellationToken) {
 			if (ReceiverOptions.XmlParser == null)
 				throw new NotSupportedException("The XML parser was not provided");

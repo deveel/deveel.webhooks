@@ -12,19 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-
-using Deveel.Webhooks;
-
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Deveel.Webhooks {
-	/// <summary>
-	/// Extends a <see cref="IServiceCollection"/> object to register
-	/// a receiver of a specific type of webhooks.
-	/// </summary>
-	public static class ServiceCollectionExtensions {
+    /// <summary>
+    /// Extends a <see cref="IServiceCollection"/> object to register
+    /// a receiver of a specific type of webhooks.
+    /// </summary>
+    public static class ServiceCollectionExtensions {
 		/// <summary>
 		/// Adds a receiver of webhooks of a specific type to the service collection.
 		/// </summary>
@@ -109,6 +105,20 @@ namespace Deveel.Webhooks {
 			return services;
 		}
 
+		/// <summary>
+		/// Registers the service that is handling the receiver verification
+		/// requests made by the webhook sender.
+		/// </summary>
+		/// <typeparam name="TWebhook">
+		/// The type of webhooks to receive
+		/// </typeparam>
+		/// <param name="services">
+		/// The collection of services to which the verification service is added
+		/// </param>
+		/// <returns>
+		/// Returns an instance of <see cref="WebhookVerifierBuilder{TWebhook}"/> that can
+		/// be used to further configure the verification service.
+		/// </returns>
 		public static WebhookVerifierBuilder<TWebhook> AddWebhookVerifier<TWebhook>(this IServiceCollection services) 
 			where TWebhook : class {
 			var builder = new WebhookVerifierBuilder<TWebhook>(services);
@@ -118,7 +128,24 @@ namespace Deveel.Webhooks {
 			return builder;
 		}
 
-		public static IServiceCollection AddWebhookVerifier<TWebhook>(this IServiceCollection services, Action<WebhookVerifierBuilder<TWebhook>> configure)
+        /// <summary>
+        /// Registers the service that is handling the receiver verification
+        /// requests made by the webhook sender.
+        /// </summary>
+        /// <typeparam name="TWebhook">
+        /// The type of webhooks to receive
+        /// </typeparam>
+        /// <param name="services">
+        /// The collection of services to which the verification service is added
+        /// </param>
+		/// <param name="configure">
+		/// A configuration action that can be used to further configure the verification service
+		/// </param>
+		/// <returns>
+		/// Returns the collection of services with the registered
+		/// verification service.
+		/// </returns>
+        public static IServiceCollection AddWebhookVerifier<TWebhook>(this IServiceCollection services, Action<WebhookVerifierBuilder<TWebhook>> configure)
 			where TWebhook : class {
 			var builder = services.AddWebhookVerifier<TWebhook>();
 

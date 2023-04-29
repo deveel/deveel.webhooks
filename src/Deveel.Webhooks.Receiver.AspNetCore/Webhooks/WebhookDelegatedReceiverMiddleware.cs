@@ -58,9 +58,9 @@ namespace Deveel.Webhooks {
 					result = await receiver.ReceiveAsync(context.Request, context.RequestAborted);
 
 					if (result?.Successful ?? false) {
-						var webhook = result?.Webhook;
+						var webhooks = result?.Webhooks;
 
-						if (webhook == null) {
+						if (webhooks == null || webhooks.Count == 0) {
 							logger.WarnInvalidWebhook();
 						} else {
 							logger.TraceWebhookReceived();
@@ -68,7 +68,9 @@ namespace Deveel.Webhooks {
 							if (webhookHandler is IWebhookHandlerInitialize<TWebhook> init)
 								init.Initialize(context.RequestServices);
 
-							await webhookHandler.HandleAsync(webhook, context.RequestAborted);
+							foreach (var webhook in webhooks) {
+								await webhookHandler.HandleAsync(webhook, context.RequestAborted);
+							}
 
 							logger.TraceWebhookHandled(webhookHandler.GetType());
 						}

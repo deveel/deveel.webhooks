@@ -17,17 +17,21 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Deveel.Webhooks.Facebook;
+
+using Deveel.Webhooks.SendGrid;
+
 using Microsoft.Extensions.Options;
 
-namespace Deveel.Webhooks
-{
-    class ConfigureWebhookHandlingOptions : IPostConfigureOptions<WebhookHandlingOptions> {
-		public void PostConfigure(string name, WebhookHandlingOptions options) {
-			if (String.Equals(name, nameof(FacebookWebhook))) {
-				options.ResponseStatusCode = 200;
-				options.InvalidStatusCode = 400;
-			}
+namespace Deveel.Webhooks {
+	class ConfigureWebhookVerificationOptions : IPostConfigureOptions<WebhookVerificationOptions<SendGridWebhook>> {
+		private readonly SendGridReceiverOptions receiverOptions;
+
+		public ConfigureWebhookVerificationOptions(IOptions<SendGridReceiverOptions> receiverOptions) {
+			this.receiverOptions = receiverOptions.Value;
+		}
+
+		public void PostConfigure(string name, WebhookVerificationOptions<SendGridWebhook> options) {
+			// TODO: configure the verifier
 		}
 	}
 }

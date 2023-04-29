@@ -29,8 +29,6 @@ namespace Deveel.Webhooks
 			options.NotAuthenticatedStatusCode = 403;
 			options.VerificationToken = receiverOptions.VerifyToken;
 			options.VerificationTokenQueryName = "hub.verify_token";
-			// TODO: options.ChallengeSender = true;
-			// TODO: options.ChallengeQueryName = "hub.challenge";
 		}
 	}
 }

@@ -1,0 +1,485 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Deveel.Webhooks.Receiver.Twilio</name>
+    </assembly>
+    <members>
+        <member name="T:Deveel.Webhooks.ApplicationBuilderExtensions">
+            <summary>
+            Extends the <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/> to provide methods
+            to map a Twilio webhook endpoint.
+            </summary>
+        </member>
+        <member name="M:Deveel.Webhooks.ApplicationBuilderExtensions.MapTwilioWebhook(Microsoft.AspNetCore.Builder.IApplicationBuilder,System.String)">
+            <summary>
+            Maps a Twilio webhook endpoint to the specified <paramref name="path"/>.
+            </summary>
+            <param name="builder">
+            The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/> to use to map the endpoint.
+            </param>
+            <param name="path">
+            The relative path to map the endpoint to.
+            </param>
+            <returns>
+            Returns the <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/> to continue the configuration.
+            </returns>
+        </member>
+        <member name="M:Deveel.Webhooks.ApplicationBuilderExtensions.MapTwilioWebhook(Microsoft.AspNetCore.Builder.IApplicationBuilder,System.String,System.Action{Deveel.Webhooks.Twilio.TwilioWebhook})">
+            <summary>
+            Maps a Twilio webhook endpoint to the specified <paramref name="path"/>
+            </summary>
+            <param name="builder">
+            The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/> to use to map the endpoint.
+            </param>
+            <param name="path">
+            The relative path to map the endpoint to.
+            </param>
+            <param name="handler">
+            The delegate that is invoked when the webhook is received.
+            </param>
+            <returns>
+            Returns the <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/> to continue the configuration.
+            </returns>
+        </member>
+        <member name="M:Deveel.Webhooks.ApplicationBuilderExtensions.MapTwilioWebhook``1(Microsoft.AspNetCore.Builder.IApplicationBuilder,System.String,System.Action{Deveel.Webhooks.Twilio.TwilioWebhook,``0})">
+            <summary>
+            Maps a Twilio webhook endpoint to the specified <paramref name="path"/>
+            </summary>
+            <typeparam name="T1">The type of the first argument, after the webhook, to be bound
+            to the handler function</typeparam>
+            <param name="builder">
+            The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/> to use to map the endpoint.
+            </param>
+            <param name="path">
+            The relative path to map the endpoint to.
+            </param>
+            <param name="handler">
+            The delegate that is invoked when the webhook is received.
+            </param>
+            <returns>
+            Returns the <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/> to continue the configuration.
+            </returns>
+        </member>
+        <member name="M:Deveel.Webhooks.ApplicationBuilderExtensions.MapTwilioWebhook``2(Microsoft.AspNetCore.Builder.IApplicationBuilder,System.String,System.Action{Deveel.Webhooks.Twilio.TwilioWebhook,``0,``1})">
+            <summary>
+            Maps a Twilio webhook endpoint to the specified <paramref name="path"/>
+            </summary>
+            <typeparam name="T1">The type of the first argument, after the webhook, to be bound
+            to the handler function</typeparam>
+            <typeparam name="T2">The type of the second argument, after the webhook, to be bound
+            to the handler function</typeparam>
+            <param name="builder">
+            The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/> to use to map the endpoint.
+            </param>
+            <param name="path">
+            The relative path to map the endpoint to.
+            </param>
+            <param name="handler">
+            The delegate that is invoked when the webhook is received.
+            </param>
+            <returns>
+            Returns the <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/> to continue the configuration.
+            </returns>
+        </member>
+        <member name="M:Deveel.Webhooks.ApplicationBuilderExtensions.MapTwilioWebhook``3(Microsoft.AspNetCore.Builder.IApplicationBuilder,System.String,System.Action{Deveel.Webhooks.Twilio.TwilioWebhook,``0,``1,``2})">
+            <summary>
+            Maps a Twilio webhook endpoint to the specified <paramref name="path"/>
+            </summary>
+            <typeparam name="T1">The type of the first argument, after the webhook, to be bound
+            to the handler function</typeparam>
+            <typeparam name="T2">The type of the second argument, after the webhook, to be bound
+            to the handler function</typeparam>
+            <typeparam name="T3">The type of the third argument, after the webhook, to be bound
+            to the handler function</typeparam>
+            <param name="builder">
+            The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/> to use to map the endpoint.
+            </param>
+            <param name="path">
+            The relative path to map the endpoint to.
+            </param>
+            <param name="handler">
+            The delegate that is invoked when the webhook is received.
+            </param>
+            <returns>
+            Returns the <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/> to continue the configuration.
+            </returns>
+        </member>
+        <member name="M:Deveel.Webhooks.ApplicationBuilderExtensions.MapTwilioWebhook(Microsoft.AspNetCore.Builder.IApplicationBuilder,System.String,System.Func{Deveel.Webhooks.Twilio.TwilioWebhook,System.Threading.Tasks.Task})">
+            <summary>
+            Maps a Twilio webhook endpoint to the specified <paramref name="path"/>
+            </summary>
+            <param name="builder">
+            The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/> to use to map the endpoint.
+            </param>
+            <param name="path">
+            The relative path to map the endpoint to.
+            </param>
+            <param name="handler">
+            The delegate that is invoked when the webhook is received.
+            </param>
+            <returns>
+            Returns the <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/> to continue the configuration.
+            </returns>
+        </member>
+        <member name="M:Deveel.Webhooks.ApplicationBuilderExtensions.MapTwilioWebhook``1(Microsoft.AspNetCore.Builder.IApplicationBuilder,System.String,System.Func{Deveel.Webhooks.Twilio.TwilioWebhook,``0,System.Threading.Tasks.Task})">
+            <summary>
+            Maps a Twilio webhook endpoint to the specified <paramref name="path"/>
+            </summary>
+            <typeparam name="T1">The type of the first argument, after the webhook, to be bound
+            to the handler function</typeparam>
+            <param name="builder">
+            The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/> to use to map the endpoint.
+            </param>
+            <param name="path">
+            The relative path to map the endpoint to.
+            </param>
+            <param name="handler">
+            The delegate that is invoked when the webhook is received.
+            </param>
+            <returns>
+            Returns the <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/> to continue the configuration.
+            </returns>
+        </member>
+        <member name="M:Deveel.Webhooks.ApplicationBuilderExtensions.MapTwilioWebhook``2(Microsoft.AspNetCore.Builder.IApplicationBuilder,System.String,System.Func{Deveel.Webhooks.Twilio.TwilioWebhook,``0,``1,System.Threading.Tasks.Task})">
+            <summary>
+            Maps a Twilio webhook endpoint to the specified <paramref name="path"/>
+            </summary>
+            <typeparam name="T1">The type of the first argument, after the webhook, to be bound
+            to the handler function</typeparam>
+            <typeparam name="T2">The type of the second argument, after the webhook, to be bound
+            to the handler function</typeparam>
+            <param name="builder">
+            The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/> to use to map the endpoint.
+            </param>
+            <param name="path">
+            The relative path to map the endpoint to.
+            </param>
+            <param name="handler">
+            The delegate that is invoked when the webhook is received.
+            </param>
+            <returns>
+            Returns the <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/> to continue the configuration.
+            </returns>
+        </member>
+        <member name="M:Deveel.Webhooks.ApplicationBuilderExtensions.MapTwilioWebhook``3(Microsoft.AspNetCore.Builder.IApplicationBuilder,System.String,System.Func{Deveel.Webhooks.Twilio.TwilioWebhook,``0,``1,``2,System.Threading.Tasks.Task})">
+            <summary>
+            Maps a Twilio webhook endpoint to the specified <paramref name="path"/>
+            </summary>
+            <typeparam name="T1">The type of the first argument, after the webhook, to be bound
+            to the handler function</typeparam>
+            <typeparam name="T2">The type of the second argument, after the webhook, to be bound
+            to the handler function</typeparam>
+            <typeparam name="T3">The type of the third argument, after the webhook, to be bound
+            to the handler function</typeparam>
+            <param name="builder">
+            The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/> to use to map the endpoint.
+            </param>
+            <param name="path">
+            The relative path to map the endpoint to.
+            </param>
+            <param name="handler">
+            The delegate that is invoked when the webhook is received.
+            </param>
+            <returns>
+            Returns the <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/> to continue the configuration.
+            </returns>
+        </member>
+        <member name="T:Deveel.Webhooks.ServiceCollectionExtensions">
+            <summary>
+            Extends the <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/> to provide methods
+            to register a Twilio webhook receiver.
+            </summary>
+        </member>
+        <member name="M:Deveel.Webhooks.ServiceCollectionExtensions.AddTwilioReceiver(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            Registers a Twilio webhook receiver in the application.
+            </summary>
+            <param name="services">
+            The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/> to register the receiver.
+            </param>
+            <returns>
+            Returns the <see cref="T:Deveel.Webhooks.WebhookReceiverBuilder`1"/> to continue the configuration.
+            </returns>
+        </member>
+        <member name="M:Deveel.Webhooks.ServiceCollectionExtensions.AddTwilioReceiver(Microsoft.Extensions.DependencyInjection.IServiceCollection,Deveel.Webhooks.TwilioReceiverOptions)">
+            <summary>
+            Registers a Twilio webhook receiver in the application,
+            providing a set of configuration options.
+            </summary>
+            <param name="services">
+            The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/> to register the receiver.
+            </param>
+            <param name="options">
+            The configuration options to use to configure the receiver.
+            </param>
+            <returns></returns>
+        </member>
+        <member name="M:Deveel.Webhooks.ServiceCollectionExtensions.AddTwilioReceiver(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Action{Deveel.Webhooks.TwilioReceiverOptions})">
+            <summary>
+            Registers a Twilio webhook receiver in the application,
+            configuring the options.
+            </summary>
+            <param name="services">
+            The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/> to register the receiver.
+            </param>
+            <param name="configure">
+            The delegate to use to configure the options.
+            </param>
+            <returns>
+            Returns the <see cref="T:Deveel.Webhooks.WebhookReceiverBuilder`1"/> to continue the configuration.
+            </returns>
+        </member>
+        <member name="M:Deveel.Webhooks.ServiceCollectionExtensions.AddTwilioReceiver(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.String)">
+            <summary>
+            Registers a Twilio webhook receiver in the application,
+            configuring the options from the given configuration section.
+            </summary>
+            <param name="services">
+            The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/> to register the receiver.
+            </param>
+            <param name="sectionPath">
+            The path to the configuration section to use to configure the receiver.
+            </param>
+            <returns>
+            Returns the <see cref="T:Deveel.Webhooks.WebhookReceiverBuilder`1"/> to continue the configuration.
+            </returns>
+        </member>
+        <member name="T:Deveel.Webhooks.TwilioReceiverOptions">
+            <summary>
+            Provides a set of options for configuring a 
+            Twilio webhook receiver.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.TwilioReceiverOptions.AuthToken">
+            <summary>
+            Gets or sets the authentication token to use
+            for the signature verification.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.TwilioReceiverOptions.VerifySignature">
+            <summary>
+            Gets or sets the flag indicating if the signature
+            of the webhook must be verified.
+            </summary>
+        </member>
+        <member name="T:Deveel.Webhooks.TwilioSignature">
+            <summary>
+            A utility class to create a Twilio signature for a request.
+            </summary>
+        </member>
+        <member name="M:Deveel.Webhooks.TwilioSignature.Create(Microsoft.AspNetCore.Http.HttpRequest,System.String)">
+            <summary>
+            Creates a Twilio signature for the specified <paramref name="request"/>
+            </summary>
+            <param name="request">
+            The <see cref="T:Microsoft.AspNetCore.Http.HttpRequest"/> to create the signature for.
+            </param>
+            <param name="authToken">
+            A string containing the Twilio auth token, used as a key to create the signature.
+            </param>
+            <returns></returns>
+        </member>
+        <member name="T:Deveel.Webhooks.Twilio.MediaElement">
+            <summary>
+            Represents the reference to a media element in a Twilio webhook.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.Twilio.MediaElement.Url">
+            <summary>
+            Gets the URL of the media element.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.Twilio.MediaElement.ContentType">
+            <summary>
+            Gets the content type of the media element.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.Twilio.MediaElement.ContentLength">
+            <summary>
+            Gets the size of the media element.
+            </summary>
+        </member>
+        <member name="T:Deveel.Webhooks.Twilio.MessagePart">
+            <summary>
+            Represents a part of a messaging conversation.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.Twilio.MessagePart.PhoneNumber">
+            <summary>
+            Gets the phone number of the messaging part
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.Twilio.MessagePart.Country">
+            <summary>
+            Gets the country code of the messaging part
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.Twilio.MessagePart.State">
+            <summary>
+            Gets the state of the messaging part
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.Twilio.MessagePart.City">
+            <summary>
+            Gets the city name of the messaging part
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.Twilio.MessagePart.Zip">
+            <summary>
+            Gets the postal code of the messaging part
+            </summary>
+        </member>
+        <member name="T:Deveel.Webhooks.Twilio.MessageStatus">
+            <summary>
+            Enumerates the possible values for the status of a Twilio message
+            </summary>
+        </member>
+        <member name="F:Deveel.Webhooks.Twilio.MessageStatus.Unknown">
+            <summary>
+            The status of the message is unknown
+            </summary>
+        </member>
+        <member name="F:Deveel.Webhooks.Twilio.MessageStatus.Accepted">
+            <summary>
+            Twilio has received the message and is attempting to send it
+            </summary>
+        </member>
+        <member name="F:Deveel.Webhooks.Twilio.MessageStatus.Queued">
+            <summary>
+            Twilio has queued the message for delivery, but has not yet sent it
+            </summary>
+        </member>
+        <member name="F:Deveel.Webhooks.Twilio.MessageStatus.Sending">
+            <summary>
+            Twilio is currently sending the message
+            </summary>
+        </member>
+        <member name="F:Deveel.Webhooks.Twilio.MessageStatus.Sent">
+            <summary>
+            Twilio has successfully sent the message to the destination phone number
+            </summary>
+        </member>
+        <member name="F:Deveel.Webhooks.Twilio.MessageStatus.Failed">
+            <summary>
+            Twilio was unable to send the message to the destination phone number (e.g. due 
+            to an invalid number).
+            </summary>
+        </member>
+        <member name="F:Deveel.Webhooks.Twilio.MessageStatus.Delivered">
+            <summary>
+            The message was successfully delivered to the destination phone number
+            </summary>
+        </member>
+        <member name="F:Deveel.Webhooks.Twilio.MessageStatus.Undelivered">
+            <summary>
+            Twilio was unable to deliver the message to the destination phone number
+            </summary>
+        </member>
+        <member name="F:Deveel.Webhooks.Twilio.MessageStatus.Receiving">
+            <summary>
+            Twilio is currently receiving a reply to the original message
+            </summary>
+        </member>
+        <member name="F:Deveel.Webhooks.Twilio.MessageStatus.Received">
+            <summary>
+            Twilio has successfully received a reply to the original message
+            </summary>
+        </member>
+        <member name="T:Deveel.Webhooks.Twilio.Segment">
+            <summary>
+            Represents a segment of a message received from Twilio.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.Twilio.Segment.Index">
+            <summary>
+            Gets the zero-based offset of the segment in the message.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.Twilio.Segment.Text">
+            <summary>
+            Gets the body text of the segment.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.Twilio.Segment.MessageId">
+            <summary>
+            Gets the unique identifier of the message part for 
+            the segment.
+            </summary>
+        </member>
+        <member name="T:Deveel.Webhooks.Twilio.TwilioWebhook">
+            <summary>
+            Represents a message webhook from Twilio
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.Twilio.TwilioWebhook.From">
+            <summary>
+            Gets the <see cref="T:Deveel.Webhooks.Twilio.MessagePart"/> that represents the sender 
+            of the message.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.Twilio.TwilioWebhook.To">
+            <summary>
+            Gets the <see cref="T:Deveel.Webhooks.Twilio.MessagePart"/> that represents the receiver
+            of the message.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.Twilio.TwilioWebhook.SmsId">
+            <summary>
+            Gets the unique ID of the SMS message sent to the recipient's phone
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.Twilio.TwilioWebhook.MessageStatus">
+            <summary>
+            Gets the status of the message
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.Twilio.TwilioWebhook.Body">
+            <summary>
+            Gets the body of the message
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.Twilio.TwilioWebhook.SegmentCount">
+            <summary>
+            Gets the number of segments used to send the message
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.Twilio.TwilioWebhook.MessageId">
+            <summary>
+            Gets the unique identifier of the message
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.Twilio.TwilioWebhook.AccountId">
+            <summary>
+            Gets the unique identifier of the Account that 
+            initiated the message
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.Twilio.TwilioWebhook.ApiVersion">
+            <summary>
+            Gets the version of the Twilio API used to handle the message
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.Twilio.TwilioWebhook.Media">
+            <summary>
+            Gets an optional array of media elements that are attached to 
+            the message, referencing external resources.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.Twilio.TwilioWebhook.Segments">
+            <summary>
+            Gets an optional array of segments that compose the message,
+            when the message is longer than 160 characters.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.Twilio.TwilioWebhook.ErrorCode">
+            <summary>
+            Gets the error code, if the message was not delivered
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.Twilio.TwilioWebhook.ErrorMessage">
+            <summary>
+            Gets the error message, if the message was not delivered
+            </summary>
+        </member>
+    </members>
+</doc>

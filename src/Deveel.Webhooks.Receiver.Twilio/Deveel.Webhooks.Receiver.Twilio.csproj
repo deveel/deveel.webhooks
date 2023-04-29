@@ -18,7 +18,7 @@
 		<PackageTags>webhooks receiver receivers aspnet core aspnetcore httpcontext httprequest twilio sms voice</PackageTags>
 		<Description>An implementation of the Deveel Webhooks ASP.NET Core Receiver that is able to receive webhooks from Twilio</Description>
 		<PackageProjectUrl>https://deveel.com</PackageProjectUrl>
-		<DocumentationFile>.\Deveel.Webhooks.Receiver.Facebook</DocumentationFile>
+		<DocumentationFile>.\Deveel.Webhooks.Receiver.Twilio.xml</DocumentationFile>
 	</PropertyGroup>
 	<ItemGroup>
 		<None Include="..\..\deveel-logo.png">

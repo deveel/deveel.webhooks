@@ -5,7 +5,8 @@ namespace Deveel.Webhooks.Handlers {
 		public async Task<WebhookReceiveResult<TestWebhook>> ReceiveAsync(HttpRequest request, CancellationToken cancellationToken) {
 			// TODO: test the signature as well ...
 
-			return await request.ReadFromJsonAsync<TestWebhook>();
+			var result = await request.ReadFromJsonAsync<TestWebhook>();
+			return new WebhookReceiveResult<TestWebhook>(result);
 		}
 	}
 }

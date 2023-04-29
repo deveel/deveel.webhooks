@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-
 namespace Deveel.Webhooks {
 	/// <summary>
 	/// Provides the configuration options for a webhook receiver.
@@ -24,6 +22,11 @@ namespace Deveel.Webhooks {
 		/// should be verified.
 		/// </summary>
 		public bool? VerifySignature { get; set; }
+
+		/// <summary>
+		/// Gets or sets the type of the root object of the incoming webhook.
+		/// </summary>
+		public WebhookRootType? RootType { get; set; } = WebhookRootType.Object;
 
 		/// <summary>
 		/// Gets or sets the options for the signature verification.

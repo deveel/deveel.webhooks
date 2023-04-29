@@ -59,28 +59,36 @@ namespace Deveel.Webhooks {
 
 		private int InvalidStatusCode => options.InvalidStatusCode ?? 400;
 
-		private async Task HandleWebhookAsync(IEnumerable<IWebhookHandler<TWebhook>> handlers, TWebhook webhook, CancellationToken cancellationToken) {
+		private async Task HandleWebhookResultAsync(IEnumerable<IWebhookHandler<TWebhook>> handlers, WebhookReceiveResult<TWebhook> result, CancellationToken cancellationToken) {
 			if (handlers == null)
 				return;
 
 			var mode = options.ExecutionMode ?? HandlerExecutionMode.Parallel;
 
+			if (result.Webhooks == null)
+				return;
+
 			switch (mode) {
 				case HandlerExecutionMode.Sequential:
-					foreach (var handler in handlers) {
-						await ExecuteSequentialAsync(handler, webhook, cancellationToken);
+					foreach (var webhook in result.Webhooks) {
+						foreach (var handler in handlers) {
+							await ExecuteSequentialAsync(handler, webhook, cancellationToken);
+						}
 					}
 					break;
-				case HandlerExecutionMode.Parallel:
+				case HandlerExecutionMode.Parallel: {
 					var parallelOptions = new ParallelOptions {
 						CancellationToken = cancellationToken,
 						MaxDegreeOfParallelism = options.MaxParallelThreads ?? Environment.ProcessorCount
 					};
 					await Parallel.ForEachAsync(handlers, parallelOptions, async (handler, token) => {
-						await ExecuteParallelAsync(handler, webhook, token);
+						foreach (var webhook in result.Webhooks) {
+							await ExecuteParallelAsync(handler, webhook, token);
+						}
 					});
 
 					break;
+				}
 			}
 		}
 
@@ -221,11 +229,11 @@ namespace Deveel.Webhooks {
 					logger.WarnInvalidWebhook();
 				}
 
-				if (result.Successful && result.Webhook != null) {
+				if (result.Successful) {
 					var handlers = ResolveHandlers(context);
 
 					if (handlers != null) {
-						await HandleWebhookAsync(handlers, result.Webhook, context.RequestAborted);
+						await HandleWebhookResultAsync(handlers, result, context.RequestAborted);
 					}
 				}
 

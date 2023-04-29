@@ -74,6 +74,19 @@
             SHA-1 algorithm to sign the payloads.
             </summary>
         </member>
+        <member name="M:Deveel.Webhooks.Sha1WebhookSigner.#ctor(System.String)">
+            <summary>
+            Constructs a new instance of the signer with the given encoding
+            name for the secret key.
+            </summary>
+            <param name="keyEncodingName"></param>
+        </member>
+        <member name="M:Deveel.Webhooks.Sha1WebhookSigner.#ctor">
+            <summary>
+            Constructs a new instance of the signer with the default encoding
+            name set to <c>ASCII</c>.
+            </summary>
+        </member>
         <member name="P:Deveel.Webhooks.Sha1WebhookSigner.Algorithms">
             <summary>
             Gets the name of the algorithm used by this signer.
@@ -94,6 +107,19 @@
             <summary>
             A default implementation of the <see cref="T:Deveel.Webhooks.IWebhookSigner"/> that handles
             a typical webhook signature using the SHA-256 algorithm.
+            </summary>
+        </member>
+        <member name="M:Deveel.Webhooks.Sha256WebhookSigner.#ctor(System.String)">
+            <summary>
+            Constructs a new instance of the signer with the given encoding
+            for the secret key.
+            </summary>
+            <param name="keyEncodingName"></param>
+        </member>
+        <member name="M:Deveel.Webhooks.Sha256WebhookSigner.#ctor">
+            <summary>
+            Constructs a new instance of the signer with the default encoding
+            set to <c>UTF-8</c>.
             </summary>
         </member>
         <member name="P:Deveel.Webhooks.Sha256WebhookSigner.Algorithms">

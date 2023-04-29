@@ -18,7 +18,7 @@
     <PackageTags>webhooks receiver receivers aspnet core aspnetcore httpcontext httprequest facebook messenger message fb</PackageTags>
     <Description>An implementation of the Deveel Webhooks ASP.NET Core Receiver that is able to receive webhooks from Facebook</Description>
     <PackageProjectUrl>https://deveel.com</PackageProjectUrl>
-    <DocumentationFile>.\Deveel.Webhooks.Receiver.Facebook</DocumentationFile>
+    <DocumentationFile>.\Deveel.Webhooks.Receiver.Facebook.xml</DocumentationFile>
 
   </PropertyGroup>
 

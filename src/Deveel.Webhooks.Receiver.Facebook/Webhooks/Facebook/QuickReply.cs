@@ -22,16 +22,18 @@ namespace Deveel.Webhooks.Facebook {
         /// <summary>
         /// Initializes the quick reply with the given message.
         /// </summary>
-        /// <param name="message"></param>
+        /// <param name="payload">
+		/// The message payload of the quick reply.
+		/// </param>
         [JsonConstructor]
-        public QuickReply(string message) {
-            Message = message;
+        public QuickReply(string payload) {
+            Payload = payload;
         }
 
         /// <summary>
         /// Gets the message payload of the quick reply.
         /// </summary>
         [JsonPropertyName("payload")]
-        public string Message { get; }
+        public string Payload { get; }
     }
 }

@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Diagnostics.CodeAnalysis;
+
 using Deveel.Webhooks.Facebook;
 
 using Microsoft.AspNetCore.Builder;
@@ -21,6 +23,7 @@ namespace Deveel.Webhooks {
 	/// Extends the <see cref="IApplicationBuilder"/> to provide methods
 	/// to map a Facebook Webhook endpoint.
 	/// </summary>
+	[ExcludeFromCodeCoverage]
     public static class ApplicationBuilderExtensions {
 		/// <summary>
 		/// Maps a Facebook Webhook endpoint to the specified <paramref name="path"/>.

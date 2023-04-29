@@ -34,33 +34,44 @@ namespace Deveel.Webhooks {
 		/// Whether the signature of the webhook was valid, or <c>null</c> if the signature
 		/// was not checked.
 		/// </param>
-		public WebhookReceiveResult(TWebhook? webhook, bool? signatureValid) : this() {
-			Webhook = webhook;
+		public WebhookReceiveResult(TWebhook? webhook, bool? signatureValid = null) {
+			Webhooks = webhook == null ? null : new[] {webhook};
 			SignatureValid = signatureValid;
 		}
 
 		/// <summary>
-		/// Gets the webhook instance that was received, or <c>null</c> if it was not
+		/// Constructs a new result of a webhook receive operation.
+		/// </summary>
+		/// <param name="webhooks"></param>
+		/// <param name="signatureValid"></param>
+		public WebhookReceiveResult(IList<TWebhook>? webhooks, bool? signatureValid = null) {
+			Webhooks = webhooks?.ToList()?.AsReadOnly();
+			SignatureValid = signatureValid;
+		}
+
+		/// <summary>
+		/// Gets the list of webhooks that were received, or <c>null</c> if it was not
 		/// possible to receive the webhook for any reason (invalid content, missing or
 		/// invalid signature, etc.).
 		/// </summary>
-		public TWebhook? Webhook { get; }
+		public IReadOnlyList<TWebhook>? Webhooks { get; }
+
+		/// <summary>
+		/// Gets the single webhook that was received, or <c>null</c> if it was not
+		/// possible to receive the webhook for any reason (invalid content, missing or
+		/// invalid signature, etc.), or if more than one webhook was received.
+		/// </summary>
+		/// <remarks>
+		/// It is recommended not to invoke this property, and instead rely on <see cref="Webhooks"/>,
+		/// verifying the number of webhooks received, and accessing the list.
+		/// </remarks>
+		public TWebhook? Webhook => Webhooks?.SingleOrDefault();
 
 		/// <summary>
 		/// Gets whether the signature of the webhook was valid, or <c>null</c> if the
 		/// signature was not checked.
 		/// </summary>
 		public bool? SignatureValid { get; }
-
-		/// <summary>
-		/// Implicitly converts a <see cref="WebhookReceiveResult{TWebhook}"/> to a
-		/// successful result with the given webhook instance.
-		/// </summary>
-		/// <param name="webhook">
-		/// The webhook instance that was received
-		/// </param>
-		public static implicit operator WebhookReceiveResult<TWebhook>(TWebhook? webhook)
-			=> new WebhookReceiveResult<TWebhook>(webhook, null);
 
 		/// <summary>
 		/// Gets whether the signature of the webhook was validated.
@@ -70,11 +81,21 @@ namespace Deveel.Webhooks {
 		/// <summary>
 		/// Gets whether the webhook was successfully received.
 		/// </summary>
-		public bool Successful => Webhook != null && (!SignatureValidated || SignatureValid == true);
+		public bool Successful => (Webhooks != null) && (!SignatureValidated || SignatureValid == true);
 
 		/// <summary>
 		/// Gets whether the webhook was received but the signature was invalid.
 		/// </summary>
 		public bool SignatureFailed => SignatureValidated && SignatureValid == false;
+
+		/// <summary>
+		/// Creates a new result of a webhook receive operation that indicates that
+		/// a signature validation failed.
+		/// </summary>
+		/// <returns>
+		/// Returns a new instance of <see cref="WebhookReceiveResult{TWebhook}"/> that
+		/// represents a failed signature validation.
+		/// </returns>
+		public static WebhookReceiveResult<TWebhook> SignatureFail() => new WebhookReceiveResult<TWebhook>((IList<TWebhook>?) null, false);
 	}
 }

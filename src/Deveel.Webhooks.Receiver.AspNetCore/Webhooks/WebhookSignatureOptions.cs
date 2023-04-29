@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Microsoft.AspNetCore.Http;
+
 namespace Deveel.Webhooks {
 	/// <summary>
 	/// Provides the configuration settings used to verify the signature
@@ -70,5 +72,11 @@ namespace Deveel.Webhooks {
 		/// by the receiver for validating the signature of the webhooks.
 		/// </summary>
 		public IList<IWebhookSigner> Signers { get; set; } = new List<IWebhookSigner>();
+
+		/// <summary>
+		/// Gets or sets a function that creates a signature from the given
+		/// request
+		/// </summary>
+		public Func<HttpRequest, Task<string>>? OnCreate { get; set; }
 	}
 }

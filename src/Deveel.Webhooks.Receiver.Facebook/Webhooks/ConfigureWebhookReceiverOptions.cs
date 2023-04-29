@@ -12,12 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
 using Deveel.Webhooks.Facebook;
+
 using Microsoft.Extensions.Options;
 
-namespace Deveel.Webhooks
-{
+namespace Deveel.Webhooks {
     class ConfigureWebhookReceiverOptions : IPostConfigureOptions<WebhookReceiverOptions<FacebookWebhook>> {
 		private readonly FacebookReceiverOptions facebookOptions;
 
@@ -31,6 +30,7 @@ namespace Deveel.Webhooks
 			options.Signature.Secret = facebookOptions.AppSecret;
 			options.Signature.Signer = new Sha256WebhookSigner();
 			options.VerifySignature = facebookOptions.VerifySignature;
+			options.ContentFormats = WebhookContentFormats.Json;
 			options.JsonParser = new SystemTextWebhookJsonParser<FacebookWebhook>(FacebookJsonSerializer.Options);
 		}
 	}

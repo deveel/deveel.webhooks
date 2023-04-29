@@ -31,15 +31,31 @@ namespace Deveel.Webhooks {
 		public WebhookSignatureOptions Signature { get; set; } = new WebhookSignatureOptions();
 
 		/// <summary>
-		/// Gets or sets the parser to use to parse the incoming webhook
-		/// of JSON content-type.
+		/// Gets or sets the supported content formats for the incoming
+		/// webhooks that are supported by the receiver.
 		/// </summary>
-		public IWebhookJsonParser<TWebhook> JsonParser { get; set; } = new SystemTextWebhookJsonParser<TWebhook>();
+		public WebhookContentFormats ContentFormats { get; set; } = WebhookContentFormats.All;
 
 		/// <summary>
 		/// Gets or sets the parser to use to parse the incoming webhook
-		/// that are of XML content-type.
+		/// of JSON content-type, used if the <see cref="ContentFormats"/>
+		/// supports <see cref="WebhookContentFormats.Json"/>.
 		/// </summary>
-		public IWebhookXmlParser<TWebhook> XmlParser { get; set; } = new SystemWebhookXmlParser<TWebhook>();
+		public IWebhookJsonParser<TWebhook>? JsonParser { get; set; } = new SystemTextWebhookJsonParser<TWebhook>();
+
+		/// <summary>
+		/// Gets or sets the parser to use to parse the incoming webhook
+		/// that are of XML content-type, used if the <see cref="ContentFormats"/>
+		/// supports <see cref="WebhookContentFormats.Xml"/>.
+		/// </summary>
+		public IWebhookXmlParser<TWebhook>? XmlParser { get; set; } = new SystemWebhookXmlParser<TWebhook>();
+
+		/// <summary>
+		/// Gets or sets the parser to use to parse the incoming webhook
+		/// from the form of the request (when requests are of
+		/// content type <c>application/x-www-form-urlencoded</c>), used
+		/// when the <see cref="ContentFormats"/> supports <see cref="WebhookContentFormats.Form"/>.
+		/// </summary>
+		public IWebhookFormParser<TWebhook>? FormParser { get; set; }
 	}
 }

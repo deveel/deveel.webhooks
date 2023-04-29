@@ -280,6 +280,23 @@
             webhook is delivered.
             </summary>
         </member>
+        <member name="T:Deveel.Webhooks.FacebookVerificationResult">
+            <summary>
+            Represents a result of the verification of the receiver
+            made by the Facebook.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.FacebookVerificationResult.IsVerified">
+            <inheritdoc/>
+        </member>
+        <member name="P:Deveel.Webhooks.FacebookVerificationResult.Challenge">
+            <summary>
+            Gets the challenge string to be sent back to Facebook
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.FacebookVerificationResult.IsValid">
+            <inheritdoc/>
+        </member>
         <member name="T:Deveel.Webhooks.FacebookWebhookHandlingOptions">
             <summary>
             Provides the options for handling a Facebook webhook.

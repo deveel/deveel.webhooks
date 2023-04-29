@@ -47,13 +47,17 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebhookReceiverApp.MinimalA
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebhookNotifierApp", "samples\WebhookNotifierApp\WebhookNotifierApp.csproj", "{7F2D88F5-10C8-4523-A629-2187F511C2AF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Deveel.Webhooks.Receiver.Facebook.XUnit", "test\Deveel.Webhooks.Receiver.Facebook.XUnit\Deveel.Webhooks.Receiver.Facebook.XUnit.csproj", "{E6C7729D-6E82-410F-B16E-B6E384A97E0D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Deveel.Webhooks.Receiver.Facebook.XUnit", "test\Deveel.Webhooks.Receiver.Facebook.XUnit\Deveel.Webhooks.Receiver.Facebook.XUnit.csproj", "{E6C7729D-6E82-410F-B16E-B6E384A97E0D}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Deveel.Webhooks.Receiver.Facebook", "src\Deveel.Webhooks.Receiver.Facebook\Deveel.Webhooks.Receiver.Facebook.csproj", "{4873EAA6-19AC-4DD2-BA37-DEF99E2FB4AE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Deveel.Webhooks.Receiver.Facebook.TestApi", "test\Deveel.Webhooks.Receiver.Facebook.TestApi\Deveel.Webhooks.Receiver.Facebook.TestApi.csproj", "{DEAE71EF-503D-4BAB-861E-511F9D22F2D7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Deveel.Webhooks.Receiver.Tests", "test\Deveel.Webhooks.Receiver.Tests\Deveel.Webhooks.Receiver.Tests.csproj", "{77C65E02-B3B4-4665-B31C-83DAB437BAC7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Deveel.Webhooks.Receiver.Tests", "test\Deveel.Webhooks.Receiver.Tests\Deveel.Webhooks.Receiver.Tests.csproj", "{77C65E02-B3B4-4665-B31C-83DAB437BAC7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Deveel.Webhooks.Receiver.Twilio", "src\Deveel.Webhooks.Receiver.Twilio\Deveel.Webhooks.Receiver.Twilio.csproj", "{93064573-8270-469B-8592-4485845C8BCB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Deveel.Webhooks.Twilio.TestApi", "test\Deveel.Webhooks.Twilio.TestApi\Deveel.Webhooks.Twilio.TestApi.csproj", "{B7B3BE00-6DBE-4376-A4D1-EB9C05899656}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Deveel.Webhooks.Receiver.Twilio.XUnit", "test\Deveel.Webhooks.Receiver.Twilio.XUnit\Deveel.Webhooks.Receiver.Twilio.XUnit.csproj", "{416B6496-0170-45CB-99A6-9AE2BA3D7FDC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -145,14 +149,22 @@ Global
 		{4873EAA6-19AC-4DD2-BA37-DEF99E2FB4AE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4873EAA6-19AC-4DD2-BA37-DEF99E2FB4AE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4873EAA6-19AC-4DD2-BA37-DEF99E2FB4AE}.Release|Any CPU.Build.0 = Release|Any CPU
-		{DEAE71EF-503D-4BAB-861E-511F9D22F2D7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{DEAE71EF-503D-4BAB-861E-511F9D22F2D7}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{DEAE71EF-503D-4BAB-861E-511F9D22F2D7}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{DEAE71EF-503D-4BAB-861E-511F9D22F2D7}.Release|Any CPU.Build.0 = Release|Any CPU
 		{77C65E02-B3B4-4665-B31C-83DAB437BAC7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{77C65E02-B3B4-4665-B31C-83DAB437BAC7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{77C65E02-B3B4-4665-B31C-83DAB437BAC7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{77C65E02-B3B4-4665-B31C-83DAB437BAC7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{93064573-8270-469B-8592-4485845C8BCB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{93064573-8270-469B-8592-4485845C8BCB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{93064573-8270-469B-8592-4485845C8BCB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{93064573-8270-469B-8592-4485845C8BCB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B7B3BE00-6DBE-4376-A4D1-EB9C05899656}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B7B3BE00-6DBE-4376-A4D1-EB9C05899656}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B7B3BE00-6DBE-4376-A4D1-EB9C05899656}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B7B3BE00-6DBE-4376-A4D1-EB9C05899656}.Release|Any CPU.Build.0 = Release|Any CPU
+		{416B6496-0170-45CB-99A6-9AE2BA3D7FDC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{416B6496-0170-45CB-99A6-9AE2BA3D7FDC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{416B6496-0170-45CB-99A6-9AE2BA3D7FDC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{416B6496-0170-45CB-99A6-9AE2BA3D7FDC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -179,8 +191,10 @@ Global
 		{7F2D88F5-10C8-4523-A629-2187F511C2AF} = {65A317B9-C8E2-4055-96A0-E6195881BD95}
 		{E6C7729D-6E82-410F-B16E-B6E384A97E0D} = {07F23FF6-2FE1-4072-BF37-9238E3750AA1}
 		{4873EAA6-19AC-4DD2-BA37-DEF99E2FB4AE} = {57F6404B-1FCC-473F-A189-ABC9D640CC0E}
-		{DEAE71EF-503D-4BAB-861E-511F9D22F2D7} = {07F23FF6-2FE1-4072-BF37-9238E3750AA1}
 		{77C65E02-B3B4-4665-B31C-83DAB437BAC7} = {07F23FF6-2FE1-4072-BF37-9238E3750AA1}
+		{93064573-8270-469B-8592-4485845C8BCB} = {57F6404B-1FCC-473F-A189-ABC9D640CC0E}
+		{B7B3BE00-6DBE-4376-A4D1-EB9C05899656} = {07F23FF6-2FE1-4072-BF37-9238E3750AA1}
+		{416B6496-0170-45CB-99A6-9AE2BA3D7FDC} = {07F23FF6-2FE1-4072-BF37-9238E3750AA1}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {E682A9F5-43D7-4D4C-82EA-953545B8F4DE}

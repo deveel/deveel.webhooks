@@ -64,6 +64,38 @@ namespace Deveel.Webhooks {
 		/// </summary>
 		protected virtual WebhookReceiverOptions<TWebhook> ReceiverOptions { get; }
 
+		private static bool TryGetContentFormat(HttpRequest request, [MaybeNullWhen(false)] out WebhookContentFormats? format) {
+			if (request.ContentType == null) {
+				format = null;
+				return false;
+			}
+			if (request.ContentType.StartsWith("application/json") ||
+				request.ContentType.StartsWith("text/json")) {
+				format = WebhookContentFormats.Json;
+				return true;
+			}
+			if (request.ContentType.StartsWith("application/xml") ||
+				request.ContentType.StartsWith("text/xml")) {
+				format = WebhookContentFormats.Xml;
+				return true;
+			}
+			if (request.ContentType.StartsWith("application/x-www-form-urlencoded") ||
+				request.ContentType.StartsWith("application/www-form-urlencoded")) {
+				format = WebhookContentFormats.Form;
+				return true;
+			}
+
+			format = null;
+			return false;
+		}
+
+		private bool IsValidContentFormat(HttpRequest request, [MaybeNullWhen(false)] out WebhookContentFormats? format) {
+			if (!TryGetContentFormat(request, out format))
+				return false;
+
+			return ReceiverOptions.ContentFormats.HasFlag(format!.Value);
+		}
+
 		/// <summary>
 		/// Resolves a webhook signer for the given algorithm.
 		/// </summary>
@@ -178,6 +210,29 @@ namespace Deveel.Webhooks {
 			return await ReceiverOptions.XmlParser.ParseWebhookAsync(utf8Stream, cancellationToken);
 		}
 
+		/// <summary>
+		/// Parses the form body of a webhook request.
+		/// </summary>
+		/// <param name="form">
+		/// The form collection that contains the webhook data to be parsed
+		/// </param>
+		/// <param name="cancellationToken">
+		/// A token that can be used to cancel the parsing operation
+		/// </param>
+		/// <returns>
+		/// Returns an instance of <typeparamref name="TWebhook"/> that is
+		/// the result of the parsing operation.
+		/// </returns>
+		/// <exception cref="NotSupportedException">
+		/// Thrown if the parsing operation is not supported by the receiver.
+		/// </exception>
+		protected virtual async Task<TWebhook> ParseFormAsync(IFormCollection form, CancellationToken cancellationToken) {
+			if (ReceiverOptions.FormParser == null)
+                throw new NotSupportedException("The form parser was not provided");
+
+            return await ReceiverOptions.FormParser.ParseWebhookAsync(form, cancellationToken);
+		}
+
 		private string? GetAlgorithm(HttpRequest request, string signature) {
             var index = signature.IndexOf('=');
 			if (index != -1)
@@ -252,7 +307,7 @@ namespace Deveel.Webhooks {
 		/// </summary>
 		/// <param name="signature">The signature sent alongside the webhook</param>
 		/// <param name="algorithm">The signing hash algorithm used to compute the signature</param>
-		/// <param name="jsonBody">The JSON-formatted body of the webhook</param>
+		/// <param name="webhookBody">The body of the webhook</param>
 		/// <remarks>
 		/// <para>
 		/// The default behavior of this method is to return <c>true</c> if the verification 
@@ -268,7 +323,7 @@ namespace Deveel.Webhooks {
 		/// Returns <c>true</c> if the signature is valid for the given webhook, 
 		/// or <c>false</c> otherwise.
 		/// </returns>
-		protected virtual bool IsSignatureValid(string signature, string algorithm, string jsonBody) {
+		protected virtual bool IsSignatureValid(string signature, string algorithm, string webhookBody) {
 			if (!ValidateSignature())
 				return true;
 
@@ -284,7 +339,7 @@ namespace Deveel.Webhooks {
 				signature = signature.Substring(index + 1);
 			}
 
-			var computedSignature = SignWebhook(jsonBody, algorithm, ReceiverOptions.Signature.Secret);
+			var computedSignature = SignWebhook(webhookBody, algorithm, ReceiverOptions.Signature.Secret);
 			if (String.IsNullOrWhiteSpace(computedSignature))
 				return false;
 
@@ -299,33 +354,39 @@ namespace Deveel.Webhooks {
 		/// Returns a <see cref="ValidateResult"/> that describes the result of the validation.
 		/// </returns>
 		protected async Task<ValidateResult> TryValidateWebhook(HttpRequest request) {
-			using var reader = new StreamReader(request.Body, Encoding.UTF8);
-			var jsonBody = await reader.ReadToEndAsync();
-
 			if (!ValidateSignature() ||
 				!TryGetSignature(request, out var signature) ||
 				String.IsNullOrWhiteSpace(signature))
-				return new ValidateResult(jsonBody, false, null);
+				return new ValidateResult(null, false, null);
 
-			var algorithm = GetAlgorithm(request, signature);
+			bool isValid = false;
 
-			if (String.IsNullOrWhiteSpace(algorithm))
-				return new ValidateResult(jsonBody, true, false);
+			using var reader = new StreamReader(request.Body, Encoding.UTF8);
+			var webhookBody = await reader.ReadToEndAsync();
 
-			var isValid = IsSignatureValid(signature, algorithm, jsonBody);
+			if (ReceiverOptions.Signature.OnCreate != null) {
+				var createdSignature = await ReceiverOptions.Signature.OnCreate(request);
+				if (String.IsNullOrWhiteSpace(createdSignature))
+					throw new WebhookReceiverException("The signature could not be created.");
 
-			return new ValidateResult(jsonBody, true, isValid);
+				isValid = String.Equals(createdSignature, signature, StringComparison.OrdinalIgnoreCase);
+			} else {
+				var algorithm = GetAlgorithm(request, signature);
+
+				if (String.IsNullOrWhiteSpace(algorithm))
+					return new ValidateResult(webhookBody, true, false);
+
+				isValid = IsSignatureValid(signature, algorithm, webhookBody);
+			}
+
+			return new ValidateResult(webhookBody, true, isValid);
 		}
 
 		/// <inheritdoc/>
 		public virtual async Task<WebhookReceiveResult<TWebhook>> ReceiveAsync(HttpRequest request, CancellationToken cancellationToken) {
 			try {
-				if (String.IsNullOrWhiteSpace(request.ContentType))
-					throw new NotSupportedException("Content type not provided in the request.");
-
-				var isJson = request.ContentType.StartsWith("application/json");
-				var isXml = request.ContentType.StartsWith("text/xml") ||
-					request.ContentType.StartsWith("application/xml");
+				if (!IsValidContentFormat(request, out var contentFormat))
+					throw new NotSupportedException($"Content type '{request.ContentType}' not supported by the receiver.");
 
 				if (ValidateSignature()) {
 					var result = await TryValidateWebhook(request);
@@ -337,10 +398,12 @@ namespace Deveel.Webhooks {
 						var signatureValid = result.SignatureValidated && (result.IsValid ?? false);
 
 						TWebhook? webhook;
-						if (isJson) {
+						if (contentFormat == WebhookContentFormats.Json) {
 							webhook = await ParseJsonAsync(result.Body, cancellationToken);
-						} else if (isXml) {
+						} else if (contentFormat == WebhookContentFormats.Xml) {
 							webhook = await ParseXmlAsync(result.Body, cancellationToken);
+						} else if (contentFormat == WebhookContentFormats.Form) {
+							webhook = await ParseFormAsync(request.Form, cancellationToken);
 						} else {
 							throw new NotSupportedException($"Content type '{request.ContentType}' is not supported");
 						}
@@ -350,10 +413,12 @@ namespace Deveel.Webhooks {
 						throw new NotSupportedException();
 					}
 				} else {
-					if (isJson) {
+					if (contentFormat == WebhookContentFormats.Json) {
 						return await ParseJsonAsync(request.Body, cancellationToken);
-					} else if (isXml) {
+					} else if (contentFormat == WebhookContentFormats.Xml) {
 						return await ParseXmlAsync(request.Body, cancellationToken);
+					} else if (contentFormat == WebhookContentFormats.Form) {
+						return await ParseFormAsync(request.Form, cancellationToken);
 					} else {
 						throw new NotSupportedException($"Content type '{request.ContentType}' is not supported");
 					}

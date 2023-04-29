@@ -35,11 +35,34 @@ namespace Deveel.Webhooks {
         /// </exception>
         public static async Task<TWebhook?> ParseWebhookAsync<TWebhook>(this IWebhookJsonParser<TWebhook> parser, string? json, CancellationToken cancellationToken = default)
             where TWebhook : class {
-            if (string.IsNullOrWhiteSpace(json))
-                return null;
+			try {
+				if (string.IsNullOrWhiteSpace(json))
+					return null;
 
-            using var stream = new MemoryStream(Encoding.UTF8.GetBytes(json));
-            return await parser.ParseWebhookAsync(stream, cancellationToken);
+				using var stream = new MemoryStream(Encoding.UTF8.GetBytes(json));
+				return await parser.ParseWebhookAsync(stream, cancellationToken);
+			} catch (WebhookParseException) {
+
+				throw;
+			} catch(Exception ex) {
+				throw new WebhookParseException("Unable to parse the JSON string into a webhook", ex);
+			}
         }
+
+		public static async Task<IList<TWebhook>> ParseWebhookArrayAsync<TWebhook>(this IWebhookJsonArrayParser<TWebhook> parser, string? json, CancellationToken cancellationToken = default)
+			where TWebhook : class {
+			try {
+				if (string.IsNullOrWhiteSpace(json))
+					return new List<TWebhook>();
+
+				using var stream = new MemoryStream(Encoding.UTF8.GetBytes(json));
+				return await parser.ParseWebhookArrayAsync(stream, cancellationToken);
+			} catch (WebhookParseException) {
+
+				throw;
+			} catch(Exception ex) {
+				throw new WebhookParseException("Unable to parse the JSON string into a webhook list", ex);
+			}
+		}
     }
 }

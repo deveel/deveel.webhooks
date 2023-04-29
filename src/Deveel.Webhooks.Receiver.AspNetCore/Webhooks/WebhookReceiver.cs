@@ -143,20 +143,41 @@ namespace Deveel.Webhooks {
 			return await ReceiverOptions.JsonParser.ParseWebhookAsync(jsonBody, cancellationToken);
 		}
 
-        /// <summary>
-        /// Parses the JSON body of a webhook request.
-        /// </summary>
-        /// <param name="utf8Stream">A stream that is UTF-8 encoded and that provides the
-        /// body of the webhook to be parsed</param>
-        /// <param name="cancellationToken"></param>
-        /// <returns>
-        /// Returns an instance of <typeparamref name="TWebhook"/> that completes the
-        /// parsing operation to obtain the webhook.
-        /// </returns>
-        /// <exception cref="NotSupportedException">
-        /// Thrown if the parsing operation is not supported by the receiver.
-        /// </exception>
-        protected virtual async Task<TWebhook?> ParseJsonAsync(Stream utf8Stream, CancellationToken cancellationToken) {
+		protected virtual async Task<IList<TWebhook>> ParseJsonArrayAsync(string? jsonBody, CancellationToken cancellationToken) {
+			if (ReceiverOptions.JsonParser == null)
+				throw new NotSupportedException("The JSON parser was not provided");
+
+			if (!(ReceiverOptions.JsonParser is IWebhookJsonArrayParser<TWebhook> parser))
+				throw new NotSupportedException("The JSON parser does not support parsing arrays");
+
+			return await parser.ParseWebhookArrayAsync(jsonBody, cancellationToken);
+		}
+
+		protected virtual async Task<IList<TWebhook>> ParseJsonArrayAsync(Stream jsonBody, CancellationToken cancellationToken) {
+			if (ReceiverOptions.JsonParser == null)
+				throw new NotSupportedException("The JSON parser was not provided");
+
+			if (!(ReceiverOptions.JsonParser is IWebhookJsonArrayParser<TWebhook> parser))
+				throw new NotSupportedException("The JSON parser does not support parsing arrays");
+
+			return await parser.ParseWebhookArrayAsync(jsonBody, cancellationToken);
+		}
+
+
+		/// <summary>
+		/// Parses the JSON body of a webhook request.
+		/// </summary>
+		/// <param name="utf8Stream">A stream that is UTF-8 encoded and that provides the
+		/// body of the webhook to be parsed</param>
+		/// <param name="cancellationToken"></param>
+		/// <returns>
+		/// Returns an instance of <typeparamref name="TWebhook"/> that completes the
+		/// parsing operation to obtain the webhook.
+		/// </returns>
+		/// <exception cref="NotSupportedException">
+		/// Thrown if the parsing operation is not supported by the receiver.
+		/// </exception>
+		protected virtual async Task<TWebhook?> ParseJsonAsync(Stream utf8Stream, CancellationToken cancellationToken) {
 			if (ReceiverOptions.JsonParser == null)
 				throw new NotSupportedException("The JSON parser was not provided");
 
@@ -388,39 +409,67 @@ namespace Deveel.Webhooks {
 				if (!IsValidContentFormat(request, out var contentFormat))
 					throw new NotSupportedException($"Content type '{request.ContentType}' not supported by the receiver.");
 
+				var rootType = ReceiverOptions.RootType ?? WebhookRootType.Object;
+
 				if (ValidateSignature()) {
 					var result = await TryValidateWebhook(request);
 
 					if (result.SignatureValidated && !(result.IsValid ?? false)) {
-						return new WebhookReceiveResult<TWebhook>(null, false);
+						return WebhookReceiveResult<TWebhook>.SignatureFail();
 					} else if ((result.SignatureValidated && (result.IsValid ?? false)) ||
 						!result.SignatureValidated) {
 						var signatureValid = result.SignatureValidated && (result.IsValid ?? false);
 
+						if (rootType == WebhookRootType.Object) {
+							TWebhook? webhook;
+							if (contentFormat == WebhookContentFormats.Json) {
+								webhook = await ParseJsonAsync(result.Body, cancellationToken);
+							} else if (contentFormat == WebhookContentFormats.Xml) {
+								webhook = await ParseXmlAsync(result.Body, cancellationToken);
+							} else if (contentFormat == WebhookContentFormats.Form) {
+								webhook = await ParseFormAsync(request.Form, cancellationToken);
+							} else {
+								throw new NotSupportedException($"Content type '{request.ContentType}' is not supported");
+							}
+
+							return new WebhookReceiveResult<TWebhook>(webhook, signatureValid);
+						} else {
+							IList<TWebhook> webhooks;
+							if (contentFormat == WebhookContentFormats.Json) {
+								webhooks = await ParseJsonArrayAsync(result.Body, cancellationToken);
+							} else {
+								throw new NotSupportedException($"Content type '{request.ContentType}' is not supported");
+							}
+
+							return new WebhookReceiveResult<TWebhook>(webhooks, signatureValid);
+						}
+					} else {
+						throw new NotSupportedException();
+					}
+				} else {
+					if (rootType == WebhookRootType.Object) {
 						TWebhook? webhook;
+
 						if (contentFormat == WebhookContentFormats.Json) {
-							webhook = await ParseJsonAsync(result.Body, cancellationToken);
+							webhook = await ParseJsonAsync(request.Body, cancellationToken);
 						} else if (contentFormat == WebhookContentFormats.Xml) {
-							webhook = await ParseXmlAsync(result.Body, cancellationToken);
+							webhook = await ParseXmlAsync(request.Body, cancellationToken);
 						} else if (contentFormat == WebhookContentFormats.Form) {
 							webhook = await ParseFormAsync(request.Form, cancellationToken);
 						} else {
 							throw new NotSupportedException($"Content type '{request.ContentType}' is not supported");
 						}
 
-						return new WebhookReceiveResult<TWebhook>(webhook, signatureValid);
+						return new WebhookReceiveResult<TWebhook>(webhook);
 					} else {
-						throw new NotSupportedException();
-					}
-				} else {
-					if (contentFormat == WebhookContentFormats.Json) {
-						return await ParseJsonAsync(request.Body, cancellationToken);
-					} else if (contentFormat == WebhookContentFormats.Xml) {
-						return await ParseXmlAsync(request.Body, cancellationToken);
-					} else if (contentFormat == WebhookContentFormats.Form) {
-						return await ParseFormAsync(request.Form, cancellationToken);
-					} else {
-						throw new NotSupportedException($"Content type '{request.ContentType}' is not supported");
+						IList<TWebhook> webhooks;
+						if (contentFormat == WebhookContentFormats.Json) {
+							webhooks = await ParseJsonArrayAsync(request.Body, cancellationToken);
+						}  else {
+							throw new NotSupportedException($"Content type '{request.ContentType}' is not supported");
+						}
+
+						return new WebhookReceiveResult<TWebhook>(webhooks);
 					}
 				}
 			} catch (WebhookReceiverException) {

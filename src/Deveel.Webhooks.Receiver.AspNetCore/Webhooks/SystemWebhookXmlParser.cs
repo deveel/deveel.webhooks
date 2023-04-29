@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Collections.Generic;
 using System.Text;
 using System.Xml;
 using System.Xml.Serialization;
@@ -24,7 +25,9 @@ namespace Deveel.Webhooks {
     /// <typeparam name="TWebhook">
 	/// The type of webhook that is parsed by the parser.
 	/// </typeparam>
-    public sealed class SystemWebhookXmlParser<TWebhook> : IWebhookXmlParser<TWebhook> where TWebhook : class {
+    public sealed class SystemWebhookXmlParser<TWebhook> : 
+		IWebhookXmlParser<TWebhook>
+		where TWebhook : class {
 		/// <inheritdoc/>
 		public Task<TWebhook?> ParseWebhookAsync(Stream utf8Stream, CancellationToken cancellationToken = default) {
 			try {

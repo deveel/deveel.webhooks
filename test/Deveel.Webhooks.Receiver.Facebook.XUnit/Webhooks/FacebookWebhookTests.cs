@@ -2,35 +2,22 @@
 #pragma warning disable CS8602 // Dereference of a possibly null reference.
 
 
-using System.Net;
 using System.Text.Json;
 
 using Deveel.Webhooks.Facebook;
 
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.Internal;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Primitives;
 
 using Xunit.Abstractions;
 
 namespace Deveel.Webhooks {
-	public class FacebookWebhookTests {
-		public FacebookWebhookTests(ITestOutputHelper outputHelper) {
-			var services = new ServiceCollection();
-
-			ConfigureServices(services, outputHelper);
-
-			Services = services.BuildServiceProvider();
+	public class FacebookWebhookTests : ReceiverTestBase<FacebookWebhook> {
+		public FacebookWebhookTests(ITestOutputHelper outputHelper) : base(outputHelper) {
 		}
 
-		private IServiceProvider Services { get; }
-
-		private void ConfigureServices(IServiceCollection services, ITestOutputHelper outputHelper) {
-			services.AddLogging(logging => logging.AddXUnit(outputHelper).SetMinimumLevel(LogLevel.Trace));
-
+		protected override void AddReceiver(IServiceCollection services) {
 			services.AddFacebookReceiver(options => {
 				options.VerifyToken = "9488500595995";
 				options.AppSecret = "hv3OkdL111_3lj";
@@ -38,19 +25,10 @@ namespace Deveel.Webhooks {
 		}
 
 		private async Task<WebhookReceiveResult<FacebookWebhook>> ReceiveWebhookAsync(object content) {
-			var httpContext = new DefaultHttpContext();
-			httpContext.Request.Headers["Host"] = "example.com";
-			httpContext.Request.Scheme = "https";
-			httpContext.Request.Method = "POST";
-			httpContext.Request.Path = "/webhooks/facebook";
-			httpContext.Request.ContentType = "application/json";
-			using var memory = new MemoryStream();
-			await JsonSerializer.SerializeAsync(memory, content, content.GetType());
-			memory.Position = 0;
-			httpContext.Request.Body = memory;
+			var request = CreateRequestWithJson(content);
 
 			var receiver = Services.GetRequiredService<IWebhookReceiver<FacebookWebhook>>();
-			return await receiver.ReceiveAsync(httpContext.Request);
+			return await receiver.ReceiveAsync(request);
 		}
 
 		[Fact]
@@ -339,6 +317,52 @@ namespace Deveel.Webhooks {
 			var audio = Assert.IsType<AudioAttachment>(result.Webhook.Entries[0].Messaging[0].Message.Attachments[0]);
 			Assert.NotNull(audio.Payload);
 			Assert.Equal("https://www.facebook.com/images/fb_icon_325x325.png", audio.Payload.Url);
+		}
+
+		[Fact]
+		public async Task ReceiveMessageWithQuickReply() {
+			var result = await ReceiveWebhookAsync(new {
+				@object = "page",
+				entry = new[] {
+					new {
+						id = "123456789",
+						time = 1458692752478,
+						messaging = new[] {
+							new {
+								sender = new {
+									id = "123456789"
+								},
+								recipient = new {
+									id = "987654321"
+								},
+								timestamp = 1458692752478,
+								message = new {
+									mid = "mid.1457764197618:41d102a3e1ae206a38",
+									seq = 73,
+									text = "hello, world!",
+									quick_reply = new {
+										payload = "DEVELOPER_DEFINED_PAYLOAD"
+									}
+								}
+							}
+						}
+					}
+				}
+			});
+
+			Assert.True(result.Successful);
+
+			Assert.NotNull(result.Webhook);
+			Assert.Equal("page", result.Webhook.Object);
+			Assert.NotNull(result.Webhook.Entries);
+			Assert.NotEmpty(result.Webhook.Entries);
+			Assert.NotNull(result.Webhook.Entries[0].Messaging);
+			Assert.NotEmpty(result.Webhook.Entries[0].Messaging);
+			Assert.NotNull(result.Webhook.Entries[0].Messaging[0].Message);
+			Assert.NotNull(result.Webhook.Entries[0].Messaging[0].Message.Id);
+			Assert.NotNull(result.Webhook.Entries[0].Messaging[0].Message.Text);
+			Assert.NotNull(result.Webhook.Entries[0].Messaging[0].Message.QuickReply);
+			Assert.Equal("DEVELOPER_DEFINED_PAYLOAD", result.Webhook.Entries[0].Messaging[0].Message.QuickReply.Payload);
 		}
 
 		[Fact]

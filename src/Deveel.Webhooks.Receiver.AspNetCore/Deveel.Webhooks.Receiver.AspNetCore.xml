@@ -124,6 +124,44 @@
         <member name="M:Deveel.Json.UnixTimeMillisConverter.Write(System.Text.Json.Utf8JsonWriter,System.DateTimeOffset,System.Text.Json.JsonSerializerOptions)">
             <inheritdoc/>
         </member>
+        <member name="T:Deveel.Json.UnixTimeSecondsConverter">
+            <summary>
+            A converter for the Unix time seconds format.
+            </summary>
+        </member>
+        <member name="M:Deveel.Json.UnixTimeSecondsConverter.Read(System.Text.Json.Utf8JsonReader@,System.Type,System.Text.Json.JsonSerializerOptions)">
+            <summary>
+            Converts a Unix time seconds value to a <see cref="T:System.DateTimeOffset"/> value.
+            </summary>
+            <param name="reader">
+            The JSON reader to read from.
+            </param>
+            <param name="typeToConvert">
+            The type to convert to.
+            </param>
+            <param name="options">
+            An optional set of serializer options.
+            </param>
+            <returns>
+            Returns a <see cref="T:System.DateTimeOffset"/> value that is equivalent
+            to the Unix time seconds value.
+            </returns>
+            <exception cref="T:System.Text.Json.JsonException"></exception>
+        </member>
+        <member name="M:Deveel.Json.UnixTimeSecondsConverter.Write(System.Text.Json.Utf8JsonWriter,System.DateTimeOffset,System.Text.Json.JsonSerializerOptions)">
+            <summary>
+            Writes a <see cref="T:System.DateTimeOffset"/> value as a Unix time seconds value.
+            </summary>
+            <param name="writer">
+            The JSON writer to write to.
+            </param>
+            <param name="value">
+            The date time offset value to write as a Unix time seconds value.
+            </param>
+            <param name="options">
+            An optional set of serializer options.
+            </param>
+        </member>
         <member name="T:Deveel.Webhooks.ApplicationBuilderExtensions">
             <summary>
             Extends the <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/> to provide methods
@@ -780,6 +818,9 @@
             Gets the options used to control the behavior of the serialization
             </summary>
         </member>
+        <member name="M:Deveel.Webhooks.SystemTextWebhookJsonParser`1.ParseWebhookArrayAsync(System.IO.Stream,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
         <member name="M:Deveel.Webhooks.SystemTextWebhookJsonParser`1.ParseWebhookAsync(System.IO.Stream,System.Threading.CancellationToken)">
             <inheritdoc/>
         </member>
@@ -1401,27 +1442,36 @@
             was not checked.
             </param>
         </member>
-        <member name="P:Deveel.Webhooks.WebhookReceiveResult`1.Webhook">
+        <member name="M:Deveel.Webhooks.WebhookReceiveResult`1.#ctor(System.Collections.Generic.IList{`0},System.Nullable{System.Boolean})">
             <summary>
-            Gets the webhook instance that was received, or <c>null</c> if it was not
+            Constructs a new result of a webhook receive operation.
+            </summary>
+            <param name="webhooks"></param>
+            <param name="signatureValid"></param>
+        </member>
+        <member name="P:Deveel.Webhooks.WebhookReceiveResult`1.Webhooks">
+            <summary>
+            Gets the list of webhooks that were received, or <c>null</c> if it was not
             possible to receive the webhook for any reason (invalid content, missing or
             invalid signature, etc.).
             </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.WebhookReceiveResult`1.Webhook">
+            <summary>
+            Gets the single webhook that was received, or <c>null</c> if it was not
+            possible to receive the webhook for any reason (invalid content, missing or
+            invalid signature, etc.), or if more than one webhook was received.
+            </summary>
+            <remarks>
+            It is recommended not to invoke this property, and instead rely on <see cref="P:Deveel.Webhooks.WebhookReceiveResult`1.Webhooks"/>,
+            verifying the number of webhooks received, and accessing the list.
+            </remarks>
         </member>
         <member name="P:Deveel.Webhooks.WebhookReceiveResult`1.SignatureValid">
             <summary>
             Gets whether the signature of the webhook was valid, or <c>null</c> if the
             signature was not checked.
             </summary>
-        </member>
-        <member name="M:Deveel.Webhooks.WebhookReceiveResult`1.op_Implicit(`0)~Deveel.Webhooks.WebhookReceiveResult{`0}">
-            <summary>
-            Implicitly converts a <see cref="T:Deveel.Webhooks.WebhookReceiveResult`1"/> to a
-            successful result with the given webhook instance.
-            </summary>
-            <param name="webhook">
-            The webhook instance that was received
-            </param>
         </member>
         <member name="P:Deveel.Webhooks.WebhookReceiveResult`1.SignatureValidated">
             <summary>
@@ -1437,6 +1487,16 @@
             <summary>
             Gets whether the webhook was received but the signature was invalid.
             </summary>
+        </member>
+        <member name="M:Deveel.Webhooks.WebhookReceiveResult`1.SignatureFail">
+            <summary>
+            Creates a new result of a webhook receive operation that indicates that
+            a signature validation failed.
+            </summary>
+            <returns>
+            Returns a new instance of <see cref="T:Deveel.Webhooks.WebhookReceiveResult`1"/> that
+            represents a failed signature validation.
+            </returns>
         </member>
         <member name="T:Deveel.Webhooks.WebhookReceiverException">
             <summary>
@@ -1551,6 +1611,11 @@
             <summary>
             Gets or sets whether the signature of the incoming webhook
             should be verified.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.WebhookReceiverOptions`1.RootType">
+            <summary>
+            Gets or sets the type of the root object of the incoming webhook.
             </summary>
         </member>
         <member name="P:Deveel.Webhooks.WebhookReceiverOptions`1.Signature">
@@ -1686,6 +1751,21 @@
         </member>
         <member name="M:Deveel.Webhooks.WebhookRequestVerifier`1.VerifyRequestAsync(Microsoft.AspNetCore.Http.HttpRequest,System.Threading.CancellationToken)">
             <inheritdoc/>
+        </member>
+        <member name="T:Deveel.Webhooks.WebhookRootType">
+            <summary>
+            The type of the root object of a webhook payload.
+            </summary>
+        </member>
+        <member name="F:Deveel.Webhooks.WebhookRootType.Object">
+            <summary>
+            The root of the payload is an object.
+            </summary>
+        </member>
+        <member name="F:Deveel.Webhooks.WebhookRootType.List">
+            <summary>
+            The root of the payload is an array of objects.
+            </summary>
         </member>
         <member name="T:Deveel.Webhooks.WebhookSignatureOptions">
             <summary>

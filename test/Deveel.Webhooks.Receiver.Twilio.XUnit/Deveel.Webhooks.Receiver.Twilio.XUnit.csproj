@@ -10,6 +10,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="coverlet.msbuild" Version="3.2.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.5.0" />
     <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.2.2" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="6.0.16" />
@@ -25,8 +29,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\Deveel.Webhooks.Receiver.Twilio\Deveel.Webhooks.Receiver.Twilio.csproj" />
     <ProjectReference Include="..\Deveel.Webhooks.Receiver.Tests\Deveel.Webhooks.Receiver.Tests.csproj" />
-    <ProjectReference Include="..\Deveel.Webhooks.Twilio.TestApi\Deveel.Webhooks.Twilio.TestApi.csproj" />
   </ItemGroup>
 
 </Project>

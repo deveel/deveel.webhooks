@@ -42,7 +42,7 @@ namespace Deveel.Webhooks {
 		/// <exception cref="WebhookParseException">
 		/// Thrown when the XML string cannot be parsed into a webhook object.
 		/// </exception>
-		public static async Task<TWebhook?> ParseWebhookAsync<TWebhook>(this IWebhookXmlParser<TWebhook> parser, string? xmlBody, CancellationToken cancellationToken)
+		public static async Task<TWebhook?> ParseWebhookAsync<TWebhook>(this IWebhookXmlParser<TWebhook> parser, string? xmlBody, CancellationToken cancellationToken = default)
 			where TWebhook : class {
 			try {
 				if (string.IsNullOrWhiteSpace(xmlBody))

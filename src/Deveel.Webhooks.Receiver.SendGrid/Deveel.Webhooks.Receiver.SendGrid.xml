@@ -1,0 +1,299 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Deveel.Webhooks.Receiver.SendGrid</name>
+    </assembly>
+    <members>
+        <member name="M:Deveel.Webhooks.SendGrid.EmailAddress.TryParse(System.String,Deveel.Webhooks.SendGrid.EmailAddress@)">
+            <summary>
+            Attempts to parse the given string as an email address.
+            </summary>
+            <param name="address">
+            The string that represents the email address.
+            </param>
+            <param name="email">
+            The parsed email address, if the parsing was successful.
+            </param>
+            <returns>
+            Returns <c>true</c> if the parsing was successful, otherwise <c>false</c>.
+            </returns>
+        </member>
+        <member name="P:Deveel.Webhooks.SendGrid.EmailAttachment.Content">
+            <summary>
+            The base64 encoded content of the attachment.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.SendGrid.EmailAttachment.Type">
+            <summary>
+            The MIME type of the attachment.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.SendGrid.EmailAttachment.Filename">
+            <summary>
+            The file name of the attachment.
+            </summary>
+        </member>
+        <member name="T:Deveel.Webhooks.SendGrid.SendGridEmailStatus">
+            <summary>
+            Represents the possible statuses of an email delivery 
+            status updates by SendGrid.
+            </summary>
+        </member>
+        <member name="F:Deveel.Webhooks.SendGrid.SendGridEmailStatus.Unknown">
+            <summary>
+            The status of the email is unknown.
+            </summary>
+        </member>
+        <member name="F:Deveel.Webhooks.SendGrid.SendGridEmailStatus.Processed">
+            <summary>
+            The email has been processed by SendGrid.
+            </summary>
+        </member>
+        <member name="F:Deveel.Webhooks.SendGrid.SendGridEmailStatus.Dropped">
+            <summary>
+            The email has been dropped by SendGrid.
+            </summary>
+        </member>
+        <member name="F:Deveel.Webhooks.SendGrid.SendGridEmailStatus.Delivered">
+            <summary>
+            The email has been delivered to the recipient.
+            </summary>
+        </member>
+        <member name="F:Deveel.Webhooks.SendGrid.SendGridEmailStatus.Bounce">
+            <summary>
+            The email has bounced back to SendGrid.
+            </summary>
+        </member>
+        <member name="F:Deveel.Webhooks.SendGrid.SendGridEmailStatus.Deferred">
+            <summary>
+            The delivery of the email has been deferred by SendGrid.
+            </summary>
+        </member>
+        <member name="F:Deveel.Webhooks.SendGrid.SendGridEmailStatus.Open">
+            <summary>
+            The email has been opened by the recipient.
+            </summary>
+        </member>
+        <member name="F:Deveel.Webhooks.SendGrid.SendGridEmailStatus.Click">
+            <summary>
+            The email has been clicked by the recipient.
+            </summary>
+        </member>
+        <member name="F:Deveel.Webhooks.SendGrid.SendGridEmailStatus.SpamReport">
+            <summary>
+            The email has been marked as spam by the recipient.
+            </summary>
+        </member>
+        <member name="F:Deveel.Webhooks.SendGrid.SendGridEmailStatus.Unsubscribe">
+            <summary>
+            The recipient has unsubscribed from the email list.
+            </summary>
+        </member>
+        <member name="F:Deveel.Webhooks.SendGrid.SendGridEmailStatus.GroupUnsubscribe">
+            <summary>
+            The recipient has unsubscribed from a group email list.
+            </summary>
+        </member>
+        <member name="F:Deveel.Webhooks.SendGrid.SendGridEmailStatus.GroupResubscribe">
+            <summary>
+            The recipient has resubscribed to a group email list.
+            </summary>
+        </member>
+        <member name="T:Deveel.Webhooks.SendGrid.SendGridEventType">
+            <summary>
+            Represents the type of events notified by a SendGrid webhook.
+            </summary>
+        </member>
+        <member name="F:Deveel.Webhooks.SendGrid.SendGridEventType.Unknown">
+            <summary>
+            The type of the event is unknown.
+            </summary>
+        </member>
+        <member name="F:Deveel.Webhooks.SendGrid.SendGridEventType.Processed">
+            <summary>
+            The email has been successfully processed by SendGrid.
+            </summary>
+        </member>
+        <member name="F:Deveel.Webhooks.SendGrid.SendGridEventType.Deferred">
+            <summary>
+            The email could not be delivered immediately and has been temporarily deferred by SendGrid.
+            </summary>
+        </member>
+        <member name="F:Deveel.Webhooks.SendGrid.SendGridEventType.Delivered">
+            <summary>
+            The email has been successfully delivered to the recipient's email server.
+            </summary>
+        </member>
+        <member name="F:Deveel.Webhooks.SendGrid.SendGridEventType.Opened">
+            <summary>
+            The recipient has opened the email.
+            </summary>
+        </member>
+        <member name="F:Deveel.Webhooks.SendGrid.SendGridEventType.Clicked">
+            <summary>
+            The recipient has clicked a link in the email.
+            </summary>
+        </member>
+        <member name="F:Deveel.Webhooks.SendGrid.SendGridEventType.Bounced">
+            <summary>
+            The email has bounced and could not be delivered to the recipient.
+            </summary>
+        </member>
+        <member name="F:Deveel.Webhooks.SendGrid.SendGridEventType.Dropped">
+            <summary>
+            The email has been dropped by SendGrid due to a policy violation or other issue.
+            </summary>
+        </member>
+        <member name="F:Deveel.Webhooks.SendGrid.SendGridEventType.SpamReported">
+            <summary>
+            The recipient has marked the email as spam.
+            </summary>
+        </member>
+        <member name="F:Deveel.Webhooks.SendGrid.SendGridEventType.Unsubscribed">
+            <summary>
+            The recipient has unsubscribed from the email.
+            </summary>
+        </member>
+        <member name="F:Deveel.Webhooks.SendGrid.SendGridEventType.GroupUnsubscribed">
+            <summary>
+            The recipient has unsubscribed from a specific email group.
+            </summary>
+        </member>
+        <member name="F:Deveel.Webhooks.SendGrid.SendGridEventType.GroupResubscribed">
+            <summary>
+            The recipient has resubscribed to a specific email group.
+            </summary>
+        </member>
+        <member name="F:Deveel.Webhooks.SendGrid.SendGridEventType.ProcessedInbound">
+            <summary>
+            The email has been successfully processed by SendGrid and was an inbound message.
+            </summary>
+        </member>
+        <member name="T:Deveel.Webhooks.SendGrid.SendGridWebhook">
+            <summary>
+            Represents a webhook event from SendGrid, that informs
+            of a change in the status of an email message.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.SendGrid.SendGridWebhook.Email">
+            <summary>
+            Gets or sets the email address of the recipient.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.SendGrid.SendGridWebhook.TimeStamp">
+            <summary>
+            Gets or sets the timestamp of the event in Unix seconds.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.SendGrid.SendGridWebhook.SmtpId">
+            <summary>
+            Gets or sets the unique identifier of the email message as
+            assigned by the SendGrid SMTP server.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.SendGrid.SendGridWebhook.EventType">
+            <summary>
+            Gets or sets the type of the event.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.SendGrid.SendGridWebhook.Categories">
+            <summary>
+            Gets or sets the categories of the email message,
+            that can be used to filter the events.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.SendGrid.SendGridWebhook.EventId">
+            <summary>
+            Gets or sets the unique identifier of the event.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.SendGrid.SendGridWebhook.MessageId">
+            <summary>
+            Gets or sets the unique identifier of the message.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.SendGrid.SendGridWebhook.Response">
+            <summary>
+            Gets or sets a response message from the recipient's email server.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.SendGrid.SendGridWebhook.Attempts">
+            <summary>
+            Gets or sets the number of times SendGrid has attempted to deliver the email.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.SendGrid.SendGridWebhook.UserAgent">
+            <summary>
+            Gets or sets the user-agent of the recipient's email client.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.SendGrid.SendGridWebhook.ClientIpAddress">
+            <summary>
+            Gets or sets the IP address of the recipient that triggered the event.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.SendGrid.SendGridWebhook.IpPoolName">
+            <summary>
+            Gets or sets the name of the IP pool that the email was sent from.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.SendGrid.SendGridWebhook.SenderIpAddress">
+            <summary>
+            Gets or sets the address of that sent the email.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.SendGrid.SendGridWebhook.Url">
+            <summary>
+            Gets or sets the URL that was clicked and triggered this event.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.SendGrid.SendGridWebhook.Reason">
+            <summary>
+            Gets or sets the reason why the event occurred.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.SendGrid.SendGridWebhook.ReasonCode">
+            <summary>
+            Gets or sets the reason code for the event.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.SendGrid.SendGridWebhook.Status">
+            <summary>
+            Gets or sets the status of the email message.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.SendGrid.SendGridWebhook.StatusCode">
+            <summary>
+            Gets or sets the status code returned by the recipient's email server.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.SendGrid.SendGridWebhook.Tls">
+            <summary>
+            Gets or sets a flag indicating whether TLS was used in the 
+            transmission of the email
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.SendGrid.SendGridWebhook.CertError">
+            <summary>
+            Gets or sets the certificate error that occurred, if any.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.SendGrid.SendGridWebhook.AsmGroupId">
+            <summary>
+            Gets or sets the identifier of the unsubscribe group the email recipient 
+            is a member of.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.SendGrid.SendGridWebhook.AsmpTemplateId">
+            <summary>
+            Gets or sets The identifier of the AMP template used for the email.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.SendGrid.SendGridWebhook.BatchId">
+            <summary>
+            Gets or sets the identifier of batch that the email 
+            was a part of.
+            </summary>
+        </member>
+    </members>
+</doc>

@@ -21,7 +21,10 @@ namespace Deveel.Webhooks {
 	/// representations of webhooks.
 	/// </summary>
 	/// <typeparam name="TWebhook">The type of the webhook to parse</typeparam>
-    public sealed class SystemTextWebhookJsonParser<TWebhook> : IWebhookJsonParser<TWebhook> where TWebhook : class {
+    public sealed class SystemTextWebhookJsonParser<TWebhook> : 
+		IWebhookJsonParser<TWebhook>,
+		IWebhookJsonArrayParser<TWebhook>
+		where TWebhook : class {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="SystemTextWebhookJsonParser{TWebhook}"/>
 		/// </summary>
@@ -39,6 +42,15 @@ namespace Deveel.Webhooks {
 		/// Gets the options used to control the behavior of the serialization
 		/// </summary>
 		public JsonSerializerOptions JsonSerializerOptions { get; }
+
+		/// <inheritdoc/>
+		public async Task<IList<TWebhook>> ParseWebhookArrayAsync(Stream utf8Stream, CancellationToken cancellationToken = default) {
+			try {
+				return (await JsonSerializer.DeserializeAsync<IList<TWebhook>>(utf8Stream, JsonSerializerOptions, cancellationToken))!;
+			} catch (Exception ex) {
+				throw new WebhookParseException("Could not parse the stream to a webhook array", ex);
+			}
+		}
 
 		/// <inheritdoc/>
 		public async Task<TWebhook?> ParseWebhookAsync(Stream utf8Stream, CancellationToken cancellationToken = default) {

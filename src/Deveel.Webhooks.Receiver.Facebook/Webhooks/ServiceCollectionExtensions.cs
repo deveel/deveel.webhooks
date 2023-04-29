@@ -41,14 +41,35 @@ namespace Deveel.Webhooks {
 			var builder = services.AddWebhookReceiver<FacebookWebhook>()
 				.Configure(_ => { });
 
+			services.AddOptions<FacebookReceiverOptions>();
+
 			services.AddWebhookVerifier<FacebookWebhook>()
 				.UseVerifier<FacebookRequestVerifier>();
 
 			services.AddTransient<IPostConfigureOptions<WebhookReceiverOptions<FacebookWebhook>>, ConfigureWebhookReceiverOptions>();
-			services.AddTransient<IPostConfigureOptions<WebhookHandlingOptions>, ConfigureWebhookHandlingOptions>();
 			services.AddTransient<IPostConfigureOptions<WebhookVerificationOptions<FacebookWebhook>>, ConfigureWebhookVerificationOptions>();
 
 			return builder;
+		}
+
+		/// <summary>
+		/// Adds a Facebook Webhook receiver to the service collection that is
+		/// configured using the specified options.
+		/// </summary>
+		/// <param name="services">
+		/// The collection of services to which the receiver is added
+		/// </param>
+		/// <param name="options">
+		/// The options that are used to configure the receiver
+		/// </param>
+		/// <returns>
+		/// Returns an instance of <see cref="WebhookReceiverBuilder{FacebookWebhook}"/> that can
+		/// be used to further configure the receiver.
+		/// </returns>
+		public static WebhookReceiverBuilder<FacebookWebhook> AddFacebookReceiver(this IServiceCollection services, FacebookReceiverOptions options) {
+			services.AddSingleton(Options.Create(options));
+
+			return services.AddFacebookReceiver();
 		}
 
 		/// <summary>

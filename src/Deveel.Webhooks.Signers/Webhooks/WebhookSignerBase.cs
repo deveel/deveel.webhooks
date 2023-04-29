@@ -22,11 +22,20 @@ namespace Deveel.Webhooks {
 	/// a generic method to sign the payloads.
 	/// </summary>
     public abstract class WebhookSignerBase : IWebhookSigner {
+		protected WebhookSignerBase(string keyEncodingName) {
+			if (string.IsNullOrWhiteSpace(keyEncodingName)) 
+				throw new ArgumentException($"'{nameof(keyEncodingName)}' cannot be null or whitespace.", nameof(keyEncodingName));
+
+			KeyEncodingName = keyEncodingName;
+		}
+
+		protected string KeyEncodingName { get; } = "UTF-8";
+
 		/// <summary>
 		/// When overridden, gets the names of the algorithms supported by this
 		/// signer instance.
 		/// </summary>
-        public abstract string[] Algorithms { get; }
+		public abstract string[] Algorithms { get; }
 
 		/// <summary>
 		/// When overridden, creates a new instance of the <see cref="KeyedHashAlgorithm"/>
@@ -50,7 +59,7 @@ namespace Deveel.Webhooks {
 		/// Returns a byte array representing the secret key.
 		/// </returns>
         protected virtual byte[] GetKeyBytes(string secret) {
-            return Encoding.ASCII.GetBytes(secret);
+            return Encoding.GetEncoding(KeyEncodingName).GetBytes(secret);
         }
 
 		/// <summary>

@@ -1,62 +1,42 @@
-﻿using System.Security.Cryptography;
-using System.Text;
-
-using Deveel.Webhooks.Twilio;
+﻿using Deveel.Webhooks.Twilio;
 
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Primitives;
 
 using Xunit.Abstractions;
 
 namespace Deveel.Webhooks {
-	public sealed class TwilioReceiverTests {
-		public TwilioReceiverTests(ITestOutputHelper outputHelper) {
-			var services = new ServiceCollection();
-			ConfigureServices(services);
-
-			Services = services.BuildServiceProvider();
+	public sealed class TwilioReceiverTests : ReceiverTestBase<TwilioWebhook> {
+		public TwilioReceiverTests(ITestOutputHelper outputHelper) : base(outputHelper) {
 		}
 
-		private void ConfigureServices(IServiceCollection services) {
-			services.AddTwilioReceiver(options => {
-				options.VerifySignature = true;
-				options.AuthToken = "1234567890";
+		protected override void AddReceiver(IServiceCollection services) {
+			services.AddTwilioReceiver(new TwilioReceiverOptions {
+				VerifySignature = true,
+				AuthToken = "1234567890"
 			});
 		}
 
-		private IServiceProvider Services { get; }
-
-		public IWebhookReceiver<TwilioWebhook> Receiver => Services.GetRequiredService<IWebhookReceiver<TwilioWebhook>>();
-
 		private static void SetSignature(HttpRequest request, string authToken) {
-			request.Headers["X-Twilio-Signature"] = TwilioSignature.Create(request, authToken);
+			SetSignatureHeader(request, TwilioSignature.Create(request, authToken));
 		}
 
-		private HttpContext CreateContext(Dictionary<string, StringValues> form) {
-			var context = new DefaultHttpContext();
-			context.Request.Scheme = "https";
-			context.Request.Headers.Host = "example.com";
-			context.Request.Method = "POST";
-			context.Request.Path = "/webhook/twilio";
-			context.Request.Form = new FormCollection(form);
-			context.Request.ContentType = "application/x-www-form-urlencoded";
-
-			SetSignature(context.Request, "1234567890");
-
-			return context;
+		private static void SetSignatureHeader(HttpRequest request, string signature) {
+			request.Headers["X-Twilio-Signature"] = signature;
 		}
 
-		private HttpContext CreateContextWithInvalidSignature(Dictionary<string, StringValues> form) {
-			var context = CreateContext(form);
-			context.Request.Headers["X-Twilio-Signature"] = "invalid-signature";
-			return context;
+		protected override HttpRequest CreateRequestWithForm(string path, Dictionary<string, StringValues> form) {
+			var request = base.CreateRequestWithForm(path, form);
+
+			SetSignature(request, "1234567890");
+
+			return request;
 		}
 
 		[Fact]
 		public async Task ReceiveSimpleSms() {
-			var context = CreateContext(new Dictionary<string, StringValues> {
+			var request = CreateRequestWithForm(new Dictionary<string, StringValues> {
 				{ "SmsSid", "SM1234567890" },
 				{ "SmsStatus", "received" },
 				{ "Body", "Hello World" },
@@ -64,7 +44,7 @@ namespace Deveel.Webhooks {
 				{ "To", "+0987654321"  }
 			});
 
-			var result = await Receiver.ReceiveAsync(context.Request);
+			var result = await Receiver.ReceiveAsync(request);
 
 			Assert.True(result.Successful);
 			Assert.NotNull(result.Webhook);
@@ -79,7 +59,7 @@ namespace Deveel.Webhooks {
 
 		[Fact]
 		public async Task ReceiveSmsWithMedia() {
-			var context = CreateContext(new Dictionary<string, StringValues> {
+			var request = CreateRequestWithForm(new Dictionary<string, StringValues> {
 				{ "SmsSid", "SM1234567890" },
 				{ "SmsStatus", "received" },
 				{ "Body", "Hello World" },
@@ -90,7 +70,7 @@ namespace Deveel.Webhooks {
 				{ "MediaContentType0", "image/jpeg" }
 			});
 
-			var result = await Receiver.ReceiveAsync(context.Request);
+			var result = await Receiver.ReceiveAsync(request);
 
 			Assert.True(result.Successful);
 			Assert.NotNull(result.Webhook);
@@ -109,7 +89,7 @@ namespace Deveel.Webhooks {
 
 		[Fact]
 		public async Task ReceiveSmsWithSegments() {
-			var context = CreateContext(new Dictionary<string, StringValues> {
+			var request = CreateRequestWithForm(new Dictionary<string, StringValues> {
 				{ "SmsSid", "SM1234567890" },
 				{ "SmsStatus", "received" },
 				{ "Body", "Hello World" },
@@ -123,7 +103,7 @@ namespace Deveel.Webhooks {
 				{ "Body1", "1" }
 			});
 
-			var result = await Receiver.ReceiveAsync(context.Request);
+			var result = await Receiver.ReceiveAsync(request);
 
 			Assert.True(result.Successful);
 			Assert.NotNull(result.Webhook);
@@ -144,7 +124,7 @@ namespace Deveel.Webhooks {
 
 		[Fact]
 		public async Task ReceiveErrorWebhook() {
-			var context = CreateContext(new Dictionary<string, StringValues> {
+			var request = CreateRequestWithForm(new Dictionary<string, StringValues> {
 				{ "SmsSid", "SM1234567890" },
 				{ "SmsStatus", "failed" },
 				{ "ErrorCode", "30001" },
@@ -153,7 +133,7 @@ namespace Deveel.Webhooks {
 				{ "To", "+0987654321"  }
 			});
 
-			var result = await Receiver.ReceiveAsync(context.Request);
+			var result = await Receiver.ReceiveAsync(request);
 			Assert.True(result.Successful);
 			Assert.NotNull(result.Webhook);
 			Assert.Equal("SM1234567890", result.Webhook.SmsId);
@@ -168,7 +148,7 @@ namespace Deveel.Webhooks {
 
 		[Fact]
 		public async Task ReceiverSmsWithValidSignature() {
-			var context = CreateContextWithInvalidSignature(new Dictionary<string, StringValues> {
+			var request = CreateRequestWithForm(new Dictionary<string, StringValues> {
 				{ "SmsSid", "SM1234567890" },
 				{ "SmsStatus", "received" },
 				{ "Body", "Hello World" },
@@ -176,7 +156,9 @@ namespace Deveel.Webhooks {
 				{ "To", "+0987654321"  }
 			});
 
-			var result = await Receiver.ReceiveAsync(context.Request);
+			SetSignatureHeader(request, "invalid");
+
+			var result = await Receiver.ReceiveAsync(request);
 			Assert.False(result.Successful);
 			Assert.Null(result.Webhook);
 		}

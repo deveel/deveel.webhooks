@@ -9,7 +9,7 @@ namespace Deveel.Webhooks {
 			// Add services to the container.
 			builder.Services.AddAuthorization();
 
-			builder.Services.AddWebhookReceiver<IdentityWebhook>()
+			builder.Services.AddWebhookReceiver<IdentityWebhook>(new WebhookReceiverOptions<IdentityWebhook>())
 				.AddHandler<UserRegisteredHandler>();
 
 

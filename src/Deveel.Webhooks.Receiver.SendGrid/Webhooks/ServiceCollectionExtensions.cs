@@ -40,8 +40,7 @@ namespace Deveel.Webhooks {
 		/// can be used to configure the receiver.
 		/// </returns>
 		public static WebhookReceiverBuilder<SendGridWebhook> AddSendGridReceiver(this IServiceCollection services) {
-			var builder = services.AddWebhookReceiver<SendGridWebhook>()
-				.Configure(_ => { });
+			var builder = services.AddWebhookReceiver<SendGridWebhook>(_ => { });
 
 			services.AddTransient<IPostConfigureOptions<WebhookReceiverOptions<SendGridWebhook>>, ConfigureWebhookReceiverOptions>();
 			services.AddTransient<IPostConfigureOptions<WebhookVerificationOptions<SendGridWebhook>>, ConfigureWebhookVerificationOptions>();
@@ -102,8 +101,7 @@ namespace Deveel.Webhooks {
 		/// can be used to configure the receiver.
 		/// </returns>
 		public static WebhookReceiverBuilder<SendGridEmail> AddSendGridEmailReceiver(this IServiceCollection services) {
-			var builder = services.AddWebhookReceiver<SendGridEmail>()
-				.Configure(_ => { });
+			var builder = services.AddWebhookReceiver<SendGridEmail>(_ => { });
 
 			services.PostConfigure<WebhookReceiverOptions<SendGridEmail>>(options => {
 				options.ContentFormats = WebhookContentFormats.Json | WebhookContentFormats.Form;

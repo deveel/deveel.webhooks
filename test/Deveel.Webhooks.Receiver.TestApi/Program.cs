@@ -11,13 +11,12 @@ namespace Deveel.Webhooks.Receiver.TestApi {
 			// Add services to the container.
 			builder.Services.AddAuthorization();
 			builder.Services
-				.AddWebhookReceiver<TestWebhook>()
+				.AddWebhookReceiver<TestWebhook>(_ => { })
 				.AddHandler<TestWebhookHandler>();
 
 			var secret = builder.Configuration["Webhook:Receiver:Signature:Secret"];
 
-			builder.Services.AddWebhookReceiver<TestSignedWebhook>()
-				.Configure(options => {
+			builder.Services.AddWebhookReceiver<TestSignedWebhook>(options => {
 					options.VerifySignature = true;
 					options.Signature.Secret = secret;
 					options.Signature.Algorithm = "sha256";

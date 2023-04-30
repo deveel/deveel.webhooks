@@ -34,11 +34,11 @@ namespace Deveel.Webhooks {
 		}
 
 		private void ConfigureServices(IServiceCollection services) {
-			services.AddWebhookReceiver<TestWebhook>()
-				.UseCallback(webhook => lastWebhook = webhook);
+			services.ConfigureWebhookReceiver<TestWebhook>(builder => builder
+				.UseCallback(webhook => lastWebhook = webhook));
 
-			services.AddWebhookReceiver<TestSignedWebhook>()
-				.UseCallback(webhook => lastWebhook = webhook);
+			services.ConfigureWebhookReceiver<TestSignedWebhook>(builder => builder
+				.UseCallback(webhook => lastWebhook = webhook));
 		}
 
 		public void Dispose() => appFactory?.Dispose();

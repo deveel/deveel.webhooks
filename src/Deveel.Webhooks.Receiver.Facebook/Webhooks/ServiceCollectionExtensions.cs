@@ -38,8 +38,7 @@ namespace Deveel.Webhooks {
 		/// be used to further configure the receiver.
 		/// </returns>
 		public static WebhookReceiverBuilder<FacebookWebhook> AddFacebookReceiver(this IServiceCollection services) {
-			var builder = services.AddWebhookReceiver<FacebookWebhook>()
-				.Configure(_ => { });
+			var builder = services.AddWebhookReceiver<FacebookWebhook>(_ => { });
 
 			services.AddOptions<FacebookReceiverOptions>();
 

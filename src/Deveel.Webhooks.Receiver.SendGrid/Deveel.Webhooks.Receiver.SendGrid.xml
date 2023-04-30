@@ -4,6 +4,410 @@
         <name>Deveel.Webhooks.Receiver.SendGrid</name>
     </assembly>
     <members>
+        <member name="T:Deveel.Webhooks.ApplicationBuilderExtensions">
+            <summary>
+            Extends the <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/> with methods
+            to map a SendGrid webhooks and emails.
+            </summary>
+        </member>
+        <member name="M:Deveel.Webhooks.ApplicationBuilderExtensions.MapSendGridWebhook(Microsoft.AspNetCore.Builder.IApplicationBuilder,System.String)">
+            <summary>
+            Maps a SendGrid webhook receiver to the given <paramref name="path"/>
+            </summary>
+            <param name="app">
+            The instance of the <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/> to extend
+            </param>
+            <param name="path">
+            The path to map the webhook to (default is <c>/webhook/sendgrid</c>)
+            </param>
+            <remarks>
+            This method will make the receiver to listen for incoming SendGrid
+            webhooks at the given <paramref name="path"/> and invoke any registered
+            handler for this kind of webhooks in the application.
+            </remarks>
+            <returns>
+            Returns the instance of the <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/> to extend
+            </returns>
+        </member>
+        <member name="M:Deveel.Webhooks.ApplicationBuilderExtensions.MapSendGridWebhook(Microsoft.AspNetCore.Builder.IApplicationBuilder,System.String,System.Func{Deveel.Webhooks.SendGrid.SendGridWebhook,System.Threading.Tasks.Task})">
+            <summary>
+            Maps a SendGrid webhook handle to the given <paramref name="path"/>
+            </summary>
+            <param name="app">
+            The instance of the <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/> to extend
+            </param>
+            <param name="path">
+            The path where to listen for incoming SendGrid webhooks
+            </param>
+            <param name="handler">
+            The asynchronous handler to invoke when a webhook is received
+            </param>
+            <returns>
+            Returns the instance of the <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/> to extend
+            </returns>
+        </member>
+        <member name="M:Deveel.Webhooks.ApplicationBuilderExtensions.MapSendGridWebhook``1(Microsoft.AspNetCore.Builder.IApplicationBuilder,System.String,System.Func{Deveel.Webhooks.SendGrid.SendGridWebhook,``0,System.Threading.Tasks.Task})">
+            <summary>
+            Maps a SendGrid webhook handler to the given <paramref name="path"/>
+            </summary>
+            <typeparam name="T1">
+            The type of the first argument of the handler
+            </typeparam>
+            <param name="app">
+            The instance of the <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/> to extend
+            </param>
+            <param name="path">
+            The path where to listen for incoming SendGrid webhooks
+            </param>
+            <param name="handler">
+            The asynchronous handler to invoke when a webhook is received
+            </param>
+            <returns>
+            Returns the instance of the <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/> to extend
+            </returns>
+        </member>
+        <member name="M:Deveel.Webhooks.ApplicationBuilderExtensions.MapSendGridWebhook``2(Microsoft.AspNetCore.Builder.IApplicationBuilder,System.String,System.Func{Deveel.Webhooks.SendGrid.SendGridWebhook,``0,``1,System.Threading.Tasks.Task})">
+            <summary>
+            Maps a SendGrid webhook handler to the given <paramref name="path"/>
+            </summary>
+            <typeparam name="T1">
+            The type of the first argument of the handler
+            </typeparam>
+            <typeparam name="T2">
+            The type of the second argument of the handler
+            </typeparam>
+            <param name="app">
+            The instance of the <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/> to extend
+            </param>
+            <param name="path">
+            The path where to listen for incoming SendGrid webhooks
+            </param>
+            <param name="handler">
+            The asynchronous handler to invoke when a webhook is received
+            </param>
+            <returns>
+            Returns the instance of the <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/> to extend
+            </returns>
+        </member>
+        <member name="M:Deveel.Webhooks.ApplicationBuilderExtensions.MapSendGridWebhook``3(Microsoft.AspNetCore.Builder.IApplicationBuilder,System.String,System.Func{Deveel.Webhooks.SendGrid.SendGridWebhook,``0,``1,``2,System.Threading.Tasks.Task})">
+            <summary>
+            Maps a SendGrid webhook handler to the given <paramref name="path"/>
+            </summary>
+            <typeparam name="T1">
+            The type of the first argument of the handler
+            </typeparam>
+            <typeparam name="T2">
+            The type of the second argument of the handler
+            </typeparam>
+            <typeparam name="T3">
+            The type of the third argument of the handler
+            </typeparam>
+            <param name="app">
+            The instance of the <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/> to extend
+            </param>
+            <param name="path">
+            The path where to listen for incoming SendGrid webhooks
+            </param>
+            <param name="handler">
+            The asynchronous handler to invoke when a webhook is received
+            </param>
+            <returns>
+            Returns the instance of the <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/> to extend
+            </returns>
+        </member>
+        <member name="M:Deveel.Webhooks.ApplicationBuilderExtensions.MapSendGridWebhook(Microsoft.AspNetCore.Builder.IApplicationBuilder,System.String,System.Action{Deveel.Webhooks.SendGrid.SendGridWebhook})">
+            <summary>
+            Maps a SendGrid webhook handler to the given <paramref name="path"/>
+            </summary>
+            <param name="app">
+            The instance of the <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/> to extend
+            </param>
+            <param name="path">
+            The path where to listen for incoming SendGrid webhooks
+            </param>
+            <param name="handler">
+            The handler function to invoke when a webhook is received
+            </param>
+            <returns>
+            Returns the instance of the <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/> to extend
+            </returns>
+        </member>
+        <member name="M:Deveel.Webhooks.ApplicationBuilderExtensions.MapSendGridWebhook``1(Microsoft.AspNetCore.Builder.IApplicationBuilder,System.String,System.Action{Deveel.Webhooks.SendGrid.SendGridWebhook,``0})">
+            <summary>
+            Maps a SendGrid webhook handler to the given <paramref name="path"/>
+            </summary>
+            <typeparam name="T1">
+            The type of the first argument of the handler
+            </typeparam>
+            <param name="app">
+            The instance of the <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/> to extend
+            </param>
+            <param name="path">
+            The path where to listen for incoming SendGrid webhooks
+            </param>
+            <param name="handler">
+            The handler function to invoke when a webhook is received
+            </param>
+            <returns>
+            Returns the instance of the <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/> to extend
+            </returns>
+        </member>
+        <member name="M:Deveel.Webhooks.ApplicationBuilderExtensions.MapSendGridWebhook``2(Microsoft.AspNetCore.Builder.IApplicationBuilder,System.String,System.Action{Deveel.Webhooks.SendGrid.SendGridWebhook,``0,``1})">
+            <summary>
+            Maps a SendGrid webhook handler to the given <paramref name="path"/>
+            </summary>
+            <typeparam name="T1">
+            The type of the first argument of the handler
+            </typeparam>
+            <typeparam name="T2">
+            The type of the second argument of the handler
+            </typeparam>
+            <param name="app">
+            The instance of the <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/> to extend
+            </param>
+            <param name="path">
+            The path where to listen for incoming SendGrid webhooks
+            </param>
+            <param name="handler">
+            The handler function to invoke when a webhook is received
+            </param>
+            <returns>
+            Returns the instance of the <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/> to extend
+            </returns>
+        </member>
+        <member name="M:Deveel.Webhooks.ApplicationBuilderExtensions.MapSendGridWebhook``3(Microsoft.AspNetCore.Builder.IApplicationBuilder,System.String,System.Action{Deveel.Webhooks.SendGrid.SendGridWebhook,``0,``1,``2})">
+            <summary>
+            Maps a SendGrid webhook handler to the given <paramref name="path"/>
+            </summary>
+            <typeparam name="T1">
+            The type of the first argument of the handler
+            </typeparam>
+            <typeparam name="T2">
+            The type of the second argument of the handler
+            </typeparam>
+            <typeparam name="T3">
+            The type of the third argument of the handler
+            </typeparam>
+            <param name="app">
+            The instance of the <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/> to extend
+            </param>
+            <param name="path">
+            The path where to listen for incoming SendGrid webhooks
+            </param>
+            <param name="handler">
+            The handler function to invoke when a webhook is received
+            </param>
+            <returns>
+            Returns the instance of the <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/> to extend
+            </returns>
+        </member>
+        <member name="M:Deveel.Webhooks.ApplicationBuilderExtensions.MapSendGridEmail(Microsoft.AspNetCore.Builder.IApplicationBuilder,System.String)">
+            <summary>
+            Maps the SendGrid email receiver to the given <paramref name="path"/>
+            </summary>
+            <param name="app">
+            The instance of the <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/> to extend
+            </param>
+            <param name="path">
+            The path where to listen for incoming SendGrid emails
+            </param>
+            <remarks>
+            <para>
+            By design, SendGrid emails are not considered as webhooks, since they implement
+            other methodologies and designs, but instead they are non-signed HTTP requests: 
+            this method provides a utility to exploit the infrastructure
+            provided by the framework to listen and handle incoming SendGrid emails, as if
+            they actually were webhooks.
+            </para>
+            <para>
+            This method will make the receiver to listen for incoming SendGrid
+            emails at the given <paramref name="path"/> and invoke any registered
+            email handlers in the application.
+            </para>
+            </remarks>
+            <returns>
+            Returns the instance of the <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/> to extend
+            </returns>
+        </member>
+        <member name="M:Deveel.Webhooks.ApplicationBuilderExtensions.MapSendGridEmail(Microsoft.AspNetCore.Builder.IApplicationBuilder,System.String,System.Func{Deveel.Webhooks.SendGrid.SendGridEmail,System.Threading.Tasks.Task})">
+            <summary>
+            Maps a SendGrid email handler to the given <paramref name="path"/>
+            </summary>
+            <param name="app">
+            The instance of the <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/> to extend
+            </param>
+            <param name="path">
+            The path where to listen for incoming SendGrid emails
+            </param>
+            <param name="handler">
+            The asynchronous handler to invoke when a SendGrid email is received
+            </param>
+            <remarks>
+            By design, SendGrid emails are not considered as webhooks, since they implement
+            other methodologies and designs, but instead they are non-signed HTTP requests: 
+            this method provides a utility to exploit the infrastructure
+            provided by the framework to listen and handle incoming SendGrid emails, as if
+            they actually were webhooks.
+            </remarks>
+            <returns>
+            Returns the instance of the <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/> to extend
+            </returns>
+        </member>
+        <member name="M:Deveel.Webhooks.ApplicationBuilderExtensions.MapSendGridEmail``1(Microsoft.AspNetCore.Builder.IApplicationBuilder,System.String,System.Func{Deveel.Webhooks.SendGrid.SendGridEmail,``0,System.Threading.Tasks.Task})">
+            <summary>
+            Maps a SendGrid email handler to the given <paramref name="path"/>
+            </summary>
+            <typeparam name="T1">
+            The type of the first argument of the handler
+            </typeparam>
+            <param name="app">
+            The instance of the <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/> to extend
+            </param>
+            <param name="path">
+            The path where to listen for incoming SendGrid emails
+            </param>
+            <param name="handler">
+            The asynchronous handler to invoke when a SendGrid email is received
+            </param>
+            <remarks>
+            By design, SendGrid emails are not considered as webhooks, since they implement
+            other methodologies and designs, but instead they are non-signed HTTP requests: 
+            this method provides a utility to exploit the infrastructure
+            provided by the framework to listen and handle incoming SendGrid emails, as if
+            they actually were webhooks.
+            </remarks>
+            <returns>
+            Returns the instance of the <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/> to extend
+            </returns>
+        </member>
+        <member name="M:Deveel.Webhooks.ApplicationBuilderExtensions.MapSendGridEmail``2(Microsoft.AspNetCore.Builder.IApplicationBuilder,System.String,System.Func{Deveel.Webhooks.SendGrid.SendGridEmail,``0,``1,System.Threading.Tasks.Task})">
+            <summary>
+            Maps a SendGrid email handler to the given <paramref name="path"/>
+            </summary>
+            <typeparam name="T1">
+            The type of the first argument of the handler
+            </typeparam>
+            <typeparam name="T2">
+            The type of the second argument of the handler
+            </typeparam>
+            <param name="app">
+            The instance of the <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/> to extend
+            </param>
+            <param name="path">
+            The path where to listen for incoming SendGrid emails
+            </param>
+            <param name="handler">
+            The asynchronous handler to invoke when a SendGrid email is received
+            </param>
+            <remarks>
+            By design, SendGrid emails are not considered as webhooks, since they implement
+            other methodologies and designs, but instead they are non-signed HTTP requests: 
+            this method provides a utility to exploit the infrastructure
+            provided by the framework to listen and handle incoming SendGrid emails, as if
+            they actually were webhooks.
+            </remarks>
+            <returns>
+            Returns the instance of the <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/> to extend
+            </returns>
+        </member>
+        <member name="M:Deveel.Webhooks.ApplicationBuilderExtensions.MapSendGridEmail``3(Microsoft.AspNetCore.Builder.IApplicationBuilder,System.String,System.Func{Deveel.Webhooks.SendGrid.SendGridEmail,``0,``1,``2,System.Threading.Tasks.Task})">
+            <summary>
+            Maps a SendGrid email handler to the given <paramref name="path"/>
+            </summary>
+            <typeparam name="T1">
+            The type of the first argument of the handler
+            </typeparam>
+            <typeparam name="T2">
+            The type of the second argument of the handler
+            </typeparam>
+            <typeparam name="T3">
+            The type of the third argument of the handler
+            </typeparam>
+            <param name="app">
+            The instance of the <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/> to extend
+            </param>
+            <param name="path">
+            The path where to listen for incoming SendGrid emails
+            </param>
+            <param name="handler">
+            The asynchronous handler to invoke when a SendGrid email is received
+            </param>
+            <remarks>
+            By design, SendGrid emails are not considered as webhooks, since they implement
+            other methodologies and designs, but instead they are non-signed HTTP requests: 
+            this method provides a utility to exploit the infrastructure
+            provided by the framework to listen and handle incoming SendGrid emails, as if
+            they actually were webhooks.
+            </remarks>
+            <returns>
+            Returns the instance of the <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/> to extend
+            </returns>
+        </member>
+        <member name="T:Deveel.Webhooks.SendGridReceiverOptions">
+            <summary>
+            The options used to configure the infrastructure to receive
+            webhooks from SendGrid.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.SendGridReceiverOptions.Secret">
+            <summary>
+            Gets or sets the secret used to verify the signature of the
+            webhooks received from SendGrid.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.SendGridReceiverOptions.VerifySignature">
+            <summary>
+            Gets or sets a value indicating if the signature of the webhook
+            sent by SendGrid should be verified.
+            </summary>
+        </member>
+        <member name="T:Deveel.Webhooks.SendGridWebhookSignature">
+            <summary>
+            Provides a helper to create a signature for a SendGrid webhook
+            </summary>
+        </member>
+        <member name="M:Deveel.Webhooks.SendGridWebhookSignature.Create(System.String,System.String)">
+            <summary>
+            Creates a signature for the given <paramref name="payload"/> and
+            secret key.
+            </summary>
+            <param name="payload">
+            The payload of the webhook to be signed
+            </param>
+            <param name="secret">
+            The secret key used to sign the payload
+            </param>
+            <returns>
+            Returns a string that represents the signature of the payload
+            for a SendGrid webhook
+            </returns>
+        </member>
+        <member name="T:Deveel.Webhooks.SendGrid.EmailAddress">
+            <summary>
+            Represents an email address in a SendGrid email.
+            </summary>
+        </member>
+        <member name="M:Deveel.Webhooks.SendGrid.EmailAddress.#ctor(System.String,System.String)">
+            <summary>
+            Constructs the email address with the given address and name.
+            </summary>
+            <param name="address">
+            The string that represents the email address.
+            </param>
+            <param name="name">
+            The display name of the assignee of the email address.
+            </param>
+        </member>
+        <member name="P:Deveel.Webhooks.SendGrid.EmailAddress.Name">
+            <summary>
+            Gets the display name of the assignee of the email address.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.SendGrid.EmailAddress.Address">
+            <summary>
+            Gets the string that represents the email address.
+            </summary>
+        </member>
         <member name="M:Deveel.Webhooks.SendGrid.EmailAddress.TryParse(System.String,Deveel.Webhooks.SendGrid.EmailAddress@)">
             <summary>
             Attempts to parse the given string as an email address.
@@ -18,6 +422,25 @@
             Returns <c>true</c> if the parsing was successful, otherwise <c>false</c>.
             </returns>
         </member>
+        <member name="T:Deveel.Webhooks.SendGrid.EmailAttachment">
+            <summary>
+            Represents an attachment in an email.
+            </summary>
+        </member>
+        <member name="M:Deveel.Webhooks.SendGrid.EmailAttachment.#ctor(System.String,System.String,System.String)">
+            <summary>
+            Constructs the attachment with the given parameters.
+            </summary>
+            <param name="filename">
+            The file name of the attachment.
+            </param>
+            <param name="type">
+            The content type of the attachment.
+            </param>
+            <param name="content">
+            The base64 encoded content of the attachment.
+            </param>
+        </member>
         <member name="P:Deveel.Webhooks.SendGrid.EmailAttachment.Content">
             <summary>
             The base64 encoded content of the attachment.
@@ -31,6 +454,159 @@
         <member name="P:Deveel.Webhooks.SendGrid.EmailAttachment.Filename">
             <summary>
             The file name of the attachment.
+            </summary>
+        </member>
+        <member name="T:Deveel.Webhooks.SendGrid.EmailSpamReport">
+            <summary>
+            Describes a spam report for an email message.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.SendGrid.EmailSpamReport.Score">
+            <summary>
+            Gets or sets the score of the spam report.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.SendGrid.EmailSpamReport.Threshold">
+            <summary>
+            Gets or sets the threshold of the spam report.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.SendGrid.EmailSpamReport.MatchedRules">
+            <summary>
+            Gets or sets the rules that were matched to
+            elaborate the spam report.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.SendGrid.EmailSpamReport.Details">
+            <summary>
+            Gets or sets the details of the spam report.
+            </summary>
+        </member>
+        <member name="T:Deveel.Webhooks.SendGrid.Envelope">
+            <summary>
+            Describes the envelope of a SendGrid email.
+            </summary>
+        </member>
+        <member name="T:Deveel.Webhooks.SendGrid.MatchedRule">
+            <summary>
+            Describes a rule that was matched by the SendGrid
+            to provide a spam report for an email.
+            </summary>
+        </member>
+        <member name="M:Deveel.Webhooks.SendGrid.MatchedRule.#ctor(System.String,System.Nullable{System.Double},System.String)">
+            <summary>
+            Constructs the rule with the given name,
+            score and description.
+            </summary>
+            <param name="name">
+            The name of the rule that was matched.
+            </param>
+            <param name="score">
+            The sceore of the rule.
+            </param>
+            <param name="description">
+            A description of the rule.
+            </param>
+        </member>
+        <member name="P:Deveel.Webhooks.SendGrid.MatchedRule.Name">
+            <summary>
+            Gets the name of the rule that was matched.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.SendGrid.MatchedRule.Description">
+            <summary>
+            Gets the description of the rule that was matched.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.SendGrid.MatchedRule.Score">
+            <summary>
+            Gets the score of the rule that was matched.
+            </summary>
+        </member>
+        <member name="T:Deveel.Webhooks.SendGrid.SendGridEmail">
+            <summary>
+            Represents an email that is delivered to a receiver
+            by SendGrid.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.SendGrid.SendGridEmail.Envelope">
+            <summary>
+            Gets or sets an envelope that describes the 
+            email metadata.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.SendGrid.SendGridEmail.From">
+            <summary>
+            Gets or sets the email address of the sender.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.SendGrid.SendGridEmail.Subject">
+            <summary>
+            Gets or sets the subject of the email.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.SendGrid.SendGridEmail.To">
+            <summary>
+            Gets or sets the list of email addresses that
+            are the main recipients of the email.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.SendGrid.SendGridEmail.Cc">
+            <summary>
+            Gets or sets the list of email addresses that
+            are the CC recipients of the email.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.SendGrid.SendGridEmail.Bcc">
+            <summary>
+            Gets or sets the list of email addresses that
+            are the BCC recipients of the email.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.SendGrid.SendGridEmail.Text">
+            <summary>
+            Gets or sets the plain text content of the email.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.SendGrid.SendGridEmail.Html">
+            <summary>
+            Gets or sets the HTML content of the email.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.SendGrid.SendGridEmail.Attachments">
+            <summary>
+            Gets or sets the list of attachments of the email.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.SendGrid.SendGridEmail.Headers">
+            <summary>
+            Gets or sets the list of headers of the email.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.SendGrid.SendGridEmail.Dkim">
+            <summary>
+            Gets or sets the DKIM signature of the email.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.SendGrid.SendGridEmail.Spf">
+            <summary>
+            Gets or sets the SPF signature of the email.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.SendGrid.SendGridEmail.SpamScore">
+            <summary>
+            Gets or sets the spam score of the email.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.SendGrid.SendGridEmail.SenderIpAddress">
+            <summary>
+            Gets or sets the IP address of the sender
+            of the email.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.SendGrid.SendGridEmail.SpamReport">
+            <summary>
+            Gets or sets the spam report of the email.
             </summary>
         </member>
         <member name="T:Deveel.Webhooks.SendGrid.SendGridEmailStatus">
@@ -294,6 +870,70 @@
             Gets or sets the identifier of batch that the email 
             was a part of.
             </summary>
+        </member>
+        <member name="T:Deveel.Webhooks.ServiceCollectionExtensions">
+            <summary>
+            Extends the <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/> with methods to
+            register receivers for SendGrid webhooks and emails.
+            </summary>
+        </member>
+        <member name="M:Deveel.Webhooks.ServiceCollectionExtensions.AddSendGridReceiver(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            Registers a receiver for the SendGrid webhooks.
+            </summary>
+            <param name="services">
+            The collection of services where to register the receiver
+            </param>
+            <returns>
+            The instance of the <see cref="T:Deveel.Webhooks.WebhookReceiverBuilder`1"/> that
+            can be used to configure the receiver.
+            </returns>
+        </member>
+        <member name="M:Deveel.Webhooks.ServiceCollectionExtensions.AddSendGridReceiver(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Action{Deveel.Webhooks.SendGridReceiverOptions})">
+            <summary>
+            Registers a receiver for the SendGrid webhooks with
+            the given configuration.
+            </summary>
+            <param name="services">
+            The collection of services where to register the receiver
+            </param>
+            <param name="configure">
+            A delegate to a method that can configure the SendGrid
+            receiver options.
+            </param>
+            <returns>
+            Returns the instance of the <see cref="T:Deveel.Webhooks.WebhookReceiverBuilder`1"/> that
+            can be used to configure the receiver.
+            </returns>
+        </member>
+        <member name="M:Deveel.Webhooks.ServiceCollectionExtensions.AddSendGridReceiver(Microsoft.Extensions.DependencyInjection.IServiceCollection,Deveel.Webhooks.SendGridReceiverOptions)">
+            <summary>
+            Registers a receiver for the SendGrid webhooks with
+            the given configuration.
+            </summary>
+            <param name="services">
+            The collection of services where to register the receiver
+            </param>
+            <param name="options">
+            An instance of the <see cref="T:Deveel.Webhooks.SendGridReceiverOptions"/> that is
+            used to configure the receiver.
+            </param>
+            <returns>
+            Returns the instance of the <see cref="T:Deveel.Webhooks.WebhookReceiverBuilder`1"/> that
+            can be used to configure the receiver.
+            </returns>
+        </member>
+        <member name="M:Deveel.Webhooks.ServiceCollectionExtensions.AddSendGridEmailReceiver(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            Registers a default receiver for the SendGrid emails.
+            </summary>
+            <param name="services">
+            The collection of services where to register the receiver
+            </param>
+            <returns>
+            Returns the instance of the <see cref="T:Deveel.Webhooks.WebhookReceiverBuilder`1"/> that
+            can be used to configure the receiver.
+            </returns>
         </member>
     </members>
 </doc>

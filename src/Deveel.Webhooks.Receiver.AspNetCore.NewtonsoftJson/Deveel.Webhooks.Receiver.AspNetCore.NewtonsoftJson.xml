@@ -28,5 +28,8 @@
         <member name="M:Deveel.Webhooks.NewtonsoftWebhookJsonParser`1.ParseWebhookAsync(System.IO.Stream,System.Threading.CancellationToken)">
             <inheritdoc/>
         </member>
+        <member name="M:Deveel.Webhooks.NewtonsoftWebhookJsonParser`1.ParseWebhookArrayAsync(System.IO.Stream,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
     </members>
 </doc>

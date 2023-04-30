@@ -18,7 +18,7 @@
 	  <PackageTags>webhook webhooks sender senders newtonsoft json serializer json-serializer</PackageTags>
 	  <Description>Extends the senders with webhook serializer implemented using the Newtonsoft.Json library</Description>
 	  <PackageProjectUrl>https://deveel.com</PackageProjectUrl>
-	  <DocumentationFile>.\Deveel.Webhooks.Sender.NewtonsoftJson</DocumentationFile>
+	  <DocumentationFile>.\Deveel.Webhooks.Sender.NewtonsoftJson.xml</DocumentationFile>
   </PropertyGroup>
 
 	<ItemGroup>

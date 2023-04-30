@@ -22,8 +22,7 @@ namespace Deveel.Webhooks {
 		private TestWebhook? LastWebhook { get; set; }
 
 		protected override void AddReceiver(IServiceCollection services) {
-			services.AddWebhookReceiver<TestWebhook>()
-				.Configure(options => {
+			services.AddWebhookReceiver<TestWebhook>(options => {
 					options.VerifySignature = false;
 				})
 				.Handle(webhook => LastWebhook = webhook)

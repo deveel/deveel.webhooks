@@ -33,8 +33,7 @@ namespace Deveel.Webhooks {
 		/// Returns the <see cref="WebhookReceiverBuilder{TWebhook}"/> to continue the configuration.
 		/// </returns>
 		public static WebhookReceiverBuilder<TwilioWebhook> AddTwilioReceiver(this IServiceCollection services) {
-			var builder = services.AddWebhookReceiver<TwilioWebhook>()
-				.Configure(options => { });
+			var builder = services.AddWebhookReceiver<TwilioWebhook>(_ => { });
 
 			services.AddTransient<IPostConfigureOptions<WebhookReceiverOptions<TwilioWebhook>>, ConfigureWebhookReceiverOptions>();
 

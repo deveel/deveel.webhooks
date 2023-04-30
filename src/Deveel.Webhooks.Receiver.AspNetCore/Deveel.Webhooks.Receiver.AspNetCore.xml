@@ -557,6 +557,24 @@
             Thrown if any error occurs while parsing the webhook stream.
             </exception>
         </member>
+        <member name="M:Deveel.Webhooks.IWebhookJsonParser`1.ParseWebhookArrayAsync(System.IO.Stream,System.Threading.CancellationToken)">
+            <summary>
+            Parses a list of webhooks from the given UTF-8 encoded stream.
+            </summary>
+            <param name="utf8Stream">
+            The UTF-8 stream that represents the binary data of a JSON-formatted
+            </param>
+            <param name="cancellationToken">
+            A cancellation token that can be used to cancel the operation.
+            </param>
+            <returns>
+            Returns a <see cref="T:System.Threading.Tasks.Task`1"/> that completes when the webhook
+            stream is parsed and produces the list of webhooks.
+            </returns>
+            <exception cref="T:Deveel.Webhooks.WebhookParseException">
+            Thrown if any error occurs while parsing the webhook stream.
+            </exception>
+        </member>
         <member name="T:Deveel.Webhooks.IWebhookReceiver`1">
             <summary>
             A service that receives a webhook from a remote source.
@@ -692,13 +710,19 @@
             a receiver of a specific type of webhooks.
             </summary>
         </member>
-        <member name="M:Deveel.Webhooks.ServiceCollectionExtensions.AddWebhookReceiver``1(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+        <member name="M:Deveel.Webhooks.ServiceCollectionExtensions.AddWebhookReceiver``1(Microsoft.Extensions.DependencyInjection.IServiceCollection,Deveel.Webhooks.WebhookReceiverOptions{``0})">
             <summary>
             Adds a receiver of webhooks of a specific type to the service collection.
             </summary>
-            <typeparam name="TWebhook">The type of webhooks to receive</typeparam>
+            <typeparam name="TWebhook">
+            The type of webhooks to receive
+            </typeparam>
             <param name="services">
             The service collection to which the receiver is added
+            </param>
+            <param name="options">
+            The instance of <see cref="T:Deveel.Webhooks.WebhookReceiverOptions`1"/> that
+            is used to configure the receiver.
             </param>
             <returns>
             Returns an instance of <see cref="T:Deveel.Webhooks.WebhookReceiverBuilder`1"/> that can
@@ -739,24 +763,6 @@
             <returns>
             Returns an instance of <see cref="T:Deveel.Webhooks.WebhookReceiverBuilder`1"/> that can
             be used to further configure the receiver.
-            </returns>
-        </member>
-        <member name="M:Deveel.Webhooks.ServiceCollectionExtensions.AddWebhookReceiver``1(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Action{Deveel.Webhooks.WebhookReceiverBuilder{``0}})">
-            <summary>
-            Adds a receiver of webhooks of a specific type to the service collection.
-            </summary>
-            <typeparam name="TWebhook">
-            The type of webhooks to receive
-            </typeparam>
-            <param name="services">
-            The service collection to which the receiver is added
-            </param>
-            <param name="configure">
-            A configuraton action that can be used to further configure the receiver
-            </param>
-            <returns>
-            Returns an instance of <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/> that can be used to register
-            other services and configurations.
             </returns>
         </member>
         <member name="M:Deveel.Webhooks.ServiceCollectionExtensions.AddWebhookVerifier``1(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
@@ -975,6 +981,29 @@
             Thrown if any error occurs while parsing the webhook
             </exception>
         </member>
+        <member name="M:Deveel.Webhooks.WebhookJsonParserExtensions.ParseWebhookArrayAsync``1(Deveel.Webhooks.IWebhookJsonParser{``0},System.String,System.Threading.CancellationToken)">
+            <summary>
+            Parses a list of webhooks from the given <paramref name="json"/> string.
+            </summary>
+            <typeparam name="TWebhook">
+            The type of the webhook to be parsed
+            </typeparam>
+            <param name="parser">
+            The instance of the <see cref="T:Deveel.Webhooks.IWebhookJsonParser`1"/> to extend
+            </param>
+            <param name="json">
+            The UTF-8 encoded JSON-formatted string to be parsed
+            </param>
+            <param name="cancellationToken">
+            A cancellation token that can be used to cancel the operation
+            </param>
+            <returns>
+            Returns a <see cref="T:System.Threading.Tasks.Task`1"/> that resolves to the parsed webhook list
+            </returns>
+            <exception cref="T:Deveel.Webhooks.WebhookParseException">
+            Thrown if any error occurs while parsing the webhook
+            </exception>
+        </member>
         <member name="T:Deveel.Webhooks.WebhookParseException">
             <summary>
             An exception thrown when a webhook cannot be parsed.
@@ -1058,6 +1087,44 @@
             </summary>
             <param name="jsonBody">The JSON-formatted body of the webhook to be parsed</param>
             <param name="cancellationToken"></param>
+            <returns>
+            Returns an instance of <typeparamref name="TWebhook"/> that completes the
+            parsing operation to obtain the webhook.
+            </returns>
+            <exception cref="T:System.NotSupportedException">
+            Thrown if the parsing operation is not supported by the receiver.
+            </exception>
+        </member>
+        <member name="M:Deveel.Webhooks.WebhookReceiver`1.ParseJsonArrayAsync(System.String,System.Threading.CancellationToken)">
+            <summary>
+            Parses the JSON body of a webhook request.
+            </summary>
+            <param name="jsonBody">
+            The JSON-formatted body of the webhook to be parsed
+            </param>
+            <param name="cancellationToken">
+            A <see cref="T:System.Threading.CancellationToken"/> that can be used to cancel the
+            parsing operation to obtain the webhook list.
+            </param>
+            <returns>
+            Returns an instance of <typeparamref name="TWebhook"/> that completes the
+            parsing operation to obtain the webhook.
+            </returns>
+            <exception cref="T:System.NotSupportedException">
+            Thrown if the parsing operation is not supported by the receiver.
+            </exception>
+        </member>
+        <member name="M:Deveel.Webhooks.WebhookReceiver`1.ParseJsonArrayAsync(System.IO.Stream,System.Threading.CancellationToken)">
+            <summary>
+            Parses the JSON body of a webhook request.
+            </summary>
+            <param name="jsonBody">
+            The JSON-formatted body of the webhook to be parsed
+            </param>
+            <param name="cancellationToken">
+            A <see cref="T:System.Threading.CancellationToken"/> that can be used to cancel the
+            parsing operation to obtain the webhook list.
+            </param>
             <returns>
             Returns an instance of <typeparamref name="TWebhook"/> that completes the
             parsing operation to obtain the webhook.
@@ -1392,30 +1459,6 @@
             </param>
             <returns>
             Returns the current builder instance with the handler registered
-            </returns>
-        </member>
-        <member name="M:Deveel.Webhooks.WebhookReceiverBuilder`1.Configure(System.String)">
-            <summary>
-            Configures the receiver with the options from the given section path
-            within the configuration of the application
-            </summary>
-            <param name="sectionPath">
-            The path to the section within the configuration of the application
-            where the options are defined
-            </param>
-            <returns>
-            Returns the current builder instance with the options configured
-            </returns>
-        </member>
-        <member name="M:Deveel.Webhooks.WebhookReceiverBuilder`1.Configure(System.Action{Deveel.Webhooks.WebhookReceiverOptions{`0}})">
-            <summary>
-            Configures the receiver with the given options
-            </summary>
-            <param name="configure">
-            A delegate that is used to configure the options of the receiver
-            </param>
-            <returns>
-            Returns the current builder instance with the options configured
             </returns>
         </member>
         <member name="T:Deveel.Webhooks.WebhookReceiveResult`1">

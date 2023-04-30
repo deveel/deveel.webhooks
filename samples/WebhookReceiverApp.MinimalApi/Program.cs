@@ -8,8 +8,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.AddWebhookReceiver<IdentityWebhook>()
-	.Configure(options => {
+builder.Services.AddWebhookReceiver<IdentityWebhook>(options => {
 		options.VerifySignature = true;
 		options.Signature.Location = WebhookSignatureLocation.QueryString;
 		options.Signature.ParameterName = "sig";

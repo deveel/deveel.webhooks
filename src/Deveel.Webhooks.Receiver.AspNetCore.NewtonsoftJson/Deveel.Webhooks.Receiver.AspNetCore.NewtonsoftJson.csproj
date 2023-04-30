@@ -17,7 +17,7 @@
 		<PackageTags>webhooks receiver receivers aspnet core aspnetcore httpcontext httprequest newtonsoft json jsonparser</PackageTags>
 		<Description>Extends the ASP.NET Core receivers with webhook parsers implemented using the Newtonsoft.Json library</Description>
 		<PackageProjectUrl>https://deveel.com</PackageProjectUrl>
-		<DocumentationFile>.\Deveel.Webhooks.Receiver.AspNetCore.NewtonsoftJson</DocumentationFile>
+		<DocumentationFile>.\Deveel.Webhooks.Receiver.AspNetCore.NewtonsoftJson.xml</DocumentationFile>
 	</PropertyGroup>
 
 	<ItemGroup>

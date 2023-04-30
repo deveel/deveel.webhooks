@@ -245,40 +245,5 @@ namespace Deveel.Webhooks {
 		public WebhookReceiverBuilder<TWebhook> Handle<T1, T2, T3>(Action<TWebhook, T1, T2, T3> handler) 
 			=> Handle(handler);
 
-		/// <summary>
-		/// Configures the receiver with the options from the given section path
-		/// within the configuration of the application
-		/// </summary>
-		/// <param name="sectionPath">
-		/// The path to the section within the configuration of the application
-		/// where the options are defined
-		/// </param>
-		/// <returns>
-		/// Returns the current builder instance with the options configured
-		/// </returns>
-		public WebhookReceiverBuilder<TWebhook> Configure(string sectionPath) {
-			// TODO: Validate the configured options
-			Services.AddOptions<WebhookReceiverOptions<TWebhook>>()
-				.BindConfiguration(sectionPath);
-
-			return this;
-		}
-
-		/// <summary>
-		/// Configures the receiver with the given options
-		/// </summary>
-		/// <param name="configure">
-		/// A delegate that is used to configure the options of the receiver
-		/// </param>
-		/// <returns>
-		/// Returns the current builder instance with the options configured
-		/// </returns>
-		public WebhookReceiverBuilder<TWebhook> Configure(Action<WebhookReceiverOptions<TWebhook>> configure) {
-			// TODO: Validate the configured options
-			Services.AddOptions<WebhookReceiverOptions<TWebhook>>()
-				.Configure(configure);
-
-			return this;
-		}
 	}
 }

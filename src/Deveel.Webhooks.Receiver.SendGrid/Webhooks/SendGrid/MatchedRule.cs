@@ -33,6 +33,7 @@ namespace Deveel.Webhooks.SendGrid {
 		/// <param name="description">
 		/// A description of the rule.
 		/// </param>
+		[JsonConstructor]
 		public MatchedRule(string name, double? score = null, string? description = null) {
 			Name = name;
 			Score = score;

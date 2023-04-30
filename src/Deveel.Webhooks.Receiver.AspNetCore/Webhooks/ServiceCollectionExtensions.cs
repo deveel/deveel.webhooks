@@ -14,6 +14,7 @@
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Options;
 
 namespace Deveel.Webhooks {
     /// <summary>
@@ -21,24 +22,44 @@ namespace Deveel.Webhooks {
     /// a receiver of a specific type of webhooks.
     /// </summary>
     public static class ServiceCollectionExtensions {
+		private static WebhookReceiverBuilder<TWebhook> AddWebhookReceiverCore<TWebhook>(this IServiceCollection services)
+			where TWebhook : class {
+			var builder = new WebhookReceiverBuilder<TWebhook>(services);
+			services.TryAddSingleton(builder);
+			return builder;
+		}
+
+		public static IServiceCollection ConfigureWebhookReceiver<TWebhook>(this IServiceCollection services, Action<WebhookReceiverBuilder<TWebhook>> configure)
+			where TWebhook : class {
+			var builder = new WebhookReceiverBuilder<TWebhook>(services);
+			configure?.Invoke(builder);
+
+			return services;
+		}
+
 		/// <summary>
 		/// Adds a receiver of webhooks of a specific type to the service collection.
 		/// </summary>
-		/// <typeparam name="TWebhook">The type of webhooks to receive</typeparam>
+		/// <typeparam name="TWebhook">
+		/// The type of webhooks to receive
+		/// </typeparam>
 		/// <param name="services">
 		/// The service collection to which the receiver is added
+		/// </param>
+		/// <param name="options">
+		/// The instance of <see cref="WebhookReceiverOptions{TWebhook}"/> that
+		/// is used to configure the receiver.
 		/// </param>
 		/// <returns>
 		/// Returns an instance of <see cref="WebhookReceiverBuilder{TWebhook}"/> that can
 		/// be used to further configure the receiver.
 		/// </returns>
-		public static WebhookReceiverBuilder<TWebhook> AddWebhookReceiver<TWebhook>(this IServiceCollection services)
+		public static WebhookReceiverBuilder<TWebhook> AddWebhookReceiver<TWebhook>(this IServiceCollection services, WebhookReceiverOptions<TWebhook> options)
 			where TWebhook : class {
-			var builder = new WebhookReceiverBuilder<TWebhook>(services);
 
-			services.TryAddSingleton(builder);
+			services.AddSingleton(Options.Create(options));
 
-			return builder;
+			return services.AddWebhookReceiverCore<TWebhook>();
 		}
 
 		/// <summary>
@@ -58,8 +79,12 @@ namespace Deveel.Webhooks {
 		/// be used to further configure the receiver.
 		/// </returns>
 		public static WebhookReceiverBuilder<TWebhook> AddWebhookReceiver<TWebhook>(this IServiceCollection services, string sectionPath)
-			where TWebhook : class
-			=> services.AddWebhookReceiver<TWebhook>().Configure(sectionPath);
+			where TWebhook : class {
+			services.AddOptions<WebhookReceiverOptions<TWebhook>>()
+				.BindConfiguration(sectionPath);
+
+			return services.AddWebhookReceiverCore<TWebhook>();
+		}
 
 		/// <summary>
 		/// Adds a receiver of webhooks of a specific type to the service collection.
@@ -78,32 +103,38 @@ namespace Deveel.Webhooks {
 		/// be used to further configure the receiver.
 		/// </returns>
 		public static WebhookReceiverBuilder<TWebhook> AddWebhookReceiver<TWebhook>(this IServiceCollection services, Action<WebhookReceiverOptions<TWebhook>> configure)
-			where TWebhook : class
-			=> services.AddWebhookReceiver<TWebhook>().Configure(configure);
-
-		/// <summary>
-		/// Adds a receiver of webhooks of a specific type to the service collection.
-		/// </summary>
-		/// <typeparam name="TWebhook">
-		/// The type of webhooks to receive
-		/// </typeparam>
-		/// <param name="services">
-		/// The service collection to which the receiver is added
-		/// </param>
-		/// <param name="configure">
-		/// A configuraton action that can be used to further configure the receiver
-		/// </param>
-		/// <returns>
-		/// Returns an instance of <see cref="IServiceCollection"/> that can be used to register
-		/// other services and configurations.
-		/// </returns>
-		public static IServiceCollection AddWebhookReceiver<TWebhook>(this IServiceCollection services, Action<WebhookReceiverBuilder<TWebhook>> configure) 
 			where TWebhook : class {
-			var builder = services.AddWebhookReceiver<TWebhook>();
-			configure?.Invoke(builder);
+			var builder = services.AddWebhookReceiverCore<TWebhook>();
 
-			return services;
+			builder.Services.AddOptions<WebhookReceiverOptions<TWebhook>>()
+				.Configure(configure);
+
+			return builder;
 		}
+
+		///// <summary>
+		///// Adds a receiver of webhooks of a specific type to the service collection.
+		///// </summary>
+		///// <typeparam name="TWebhook">
+		///// The type of webhooks to receive
+		///// </typeparam>
+		///// <param name="services">
+		///// The service collection to which the receiver is added
+		///// </param>
+		///// <param name="configure">
+		///// A configuraton action that can be used to further configure the receiver
+		///// </param>
+		///// <returns>
+		///// Returns an instance of <see cref="IServiceCollection"/> that can be used to register
+		///// other services and configurations.
+		///// </returns>
+		//public static IServiceCollection AddWebhookReceiver<TWebhook>(this IServiceCollection services, Action<WebhookReceiverBuilder<TWebhook>> configure) 
+		//	where TWebhook : class {
+		//	var builder = services.AddWebhookReceiver<TWebhook>();
+		//	configure?.Invoke(builder);
+
+		//	return services;
+		//}
 
 		/// <summary>
 		/// Registers the service that is handling the receiver verification

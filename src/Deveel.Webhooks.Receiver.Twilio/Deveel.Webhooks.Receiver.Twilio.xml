@@ -481,5 +481,182 @@
             Gets the error message, if the message was not delivered
             </summary>
         </member>
+        <member name="T:Deveel.Webhooks.WebhookReceiverBuilderExtensions">
+            <summary>
+            Extends the <see cref="T:Deveel.Webhooks.WebhookReceiverBuilder`1"/> to add support for handling
+            Twilio webhooks.
+            </summary>
+        </member>
+        <member name="M:Deveel.Webhooks.WebhookReceiverBuilderExtensions.HandleTwilio``1(Deveel.Webhooks.WebhookReceiverBuilder{Deveel.Webhooks.Twilio.TwilioWebhook})">
+            <summary>
+            Adds a handler for Twilio webhooks.
+            </summary>
+            <typeparam name="THandler">
+            The type of handler that supports Twilio webhooks.
+            </typeparam>
+            <param name="builder">
+            The instance of the <see cref="T:Deveel.Webhooks.WebhookReceiverBuilder`1"/> to add the handler to.
+            </param>
+            <returns>
+            Returns the same instance of the <see cref="T:Deveel.Webhooks.WebhookReceiverBuilder`1"/> to allow
+            further chaining of the builder.
+            </returns>
+        </member>
+        <member name="M:Deveel.Webhooks.WebhookReceiverBuilderExtensions.HandleTwilio(Deveel.Webhooks.WebhookReceiverBuilder{Deveel.Webhooks.Twilio.TwilioWebhook},System.Func{Deveel.Webhooks.Twilio.TwilioWebhook,System.Threading.Tasks.Task})">
+            <summary>
+            Adds a delegated handler for Twilio webhooks.
+            </summary>
+            <param name="builder">
+            The instance of the <see cref="T:Deveel.Webhooks.WebhookReceiverBuilder`1"/> to add the handler to.
+            </param>
+            <param name="handler">
+            The delegate that will handle a Twilio webhook when received.
+            </param>
+            <returns>
+            Returns the same instance of the <see cref="T:Deveel.Webhooks.WebhookReceiverBuilder`1"/> to allow
+            further chaining of the builder.
+            </returns>
+        </member>
+        <member name="M:Deveel.Webhooks.WebhookReceiverBuilderExtensions.HandleTwilio``1(Deveel.Webhooks.WebhookReceiverBuilder{Deveel.Webhooks.Twilio.TwilioWebhook},System.Func{Deveel.Webhooks.Twilio.TwilioWebhook,``0,System.Threading.Tasks.Task})">
+            <summary>
+            Adds a delegated handler for Twilio webhooks.
+            </summary>
+            <typeparam name="T1">
+            The type of the first parameter of the delegate.
+            </typeparam>
+            <param name="builder">
+            The instance of the <see cref="T:Deveel.Webhooks.WebhookReceiverBuilder`1"/> to add the handler to.
+            </param>
+            <param name="handler">
+            The delegate that will handle a Twilio webhook when received.
+            </param>
+            <returns>
+            Returns the same instance of the <see cref="T:Deveel.Webhooks.WebhookReceiverBuilder`1"/> to allow
+            further chaining of the builder.
+            </returns>
+        </member>
+        <member name="M:Deveel.Webhooks.WebhookReceiverBuilderExtensions.HandleTwilio``2(Deveel.Webhooks.WebhookReceiverBuilder{Deveel.Webhooks.Twilio.TwilioWebhook},System.Func{Deveel.Webhooks.Twilio.TwilioWebhook,``0,``1,System.Threading.Tasks.Task})">
+            <summary>
+            Adds a delegated handler for Twilio webhooks.
+            </summary>
+            <typeparam name="T1">
+            The type of the first parameter of the delegate.
+            </typeparam>
+            <typeparam name="T2">
+            The type of the second parameter of the delegate.
+            </typeparam>
+            <param name="builder">
+            The instance of the <see cref="T:Deveel.Webhooks.WebhookReceiverBuilder`1"/> to add the handler to.
+            </param>
+            <param name="handler">
+            The delegate that will handle a Twilio webhook when received.
+            </param>
+            <returns>
+            Returns the same instance of the <see cref="T:Deveel.Webhooks.WebhookReceiverBuilder`1"/> to allow
+            further chaining of the builder.
+            </returns>
+        </member>
+        <member name="M:Deveel.Webhooks.WebhookReceiverBuilderExtensions.HandleTwilio``3(Deveel.Webhooks.WebhookReceiverBuilder{Deveel.Webhooks.Twilio.TwilioWebhook},System.Func{Deveel.Webhooks.Twilio.TwilioWebhook,``0,``1,``2,System.Threading.Tasks.Task})">
+            <summary>
+            Adds a delegated handler for Twilio webhooks.
+            </summary>
+            <typeparam name="T1">
+            The type of the first parameter of the delegate.
+            </typeparam>
+            <typeparam name="T2">
+            The type of the second parameter of the delegate.
+            </typeparam>
+            <typeparam name="T3">
+            The type of the third parameter of the delegate.
+            </typeparam>
+            <param name="builder">
+            The instance of the <see cref="T:Deveel.Webhooks.WebhookReceiverBuilder`1"/> to add the handler to.
+            </param>
+            <param name="handler">
+            The delegate that will handle a Twilio webhook when received.
+            </param>
+            <returns>
+            Returns the same instance of the <see cref="T:Deveel.Webhooks.WebhookReceiverBuilder`1"/> to allow
+            further chaining of the builder.
+            </returns>
+        </member>
+        <member name="M:Deveel.Webhooks.WebhookReceiverBuilderExtensions.HandleTwilio(Deveel.Webhooks.WebhookReceiverBuilder{Deveel.Webhooks.Twilio.TwilioWebhook},System.Action{Deveel.Webhooks.Twilio.TwilioWebhook})">
+            <summary>
+            Adds a delegated handler for Twilio webhooks.
+            </summary>
+            <param name="builder">
+            The instance of the <see cref="T:Deveel.Webhooks.WebhookReceiverBuilder`1"/> to add the handler to.
+            </param>
+            <param name="handler">
+            The delegate that will handle a Twilio webhook when received.
+            </param>
+            <returns>
+            Returns the same instance of the <see cref="T:Deveel.Webhooks.WebhookReceiverBuilder`1"/> to allow
+            further chaining of the builder.
+            </returns>
+        </member>
+        <member name="M:Deveel.Webhooks.WebhookReceiverBuilderExtensions.HandleTwilio``1(Deveel.Webhooks.WebhookReceiverBuilder{Deveel.Webhooks.Twilio.TwilioWebhook},System.Action{Deveel.Webhooks.Twilio.TwilioWebhook,``0})">
+            <summary>
+            Adds a delegated handler for Twilio webhooks.
+            </summary>
+            <typeparam name="T1">
+            The type of the first parameter of the delegate.
+            </typeparam>
+            <param name="builder">
+            The instance of the <see cref="T:Deveel.Webhooks.WebhookReceiverBuilder`1"/> to add the handler to.
+            </param>
+            <param name="handler">
+            The delegate that will handle a Twilio webhook when received.
+            </param>
+            <returns>
+            Returns the same instance of the <see cref="T:Deveel.Webhooks.WebhookReceiverBuilder`1"/> to allow
+            further chaining of the builder.
+            </returns>
+        </member>
+        <member name="M:Deveel.Webhooks.WebhookReceiverBuilderExtensions.HandleTwilio``2(Deveel.Webhooks.WebhookReceiverBuilder{Deveel.Webhooks.Twilio.TwilioWebhook},System.Action{Deveel.Webhooks.Twilio.TwilioWebhook,``0,``1})">
+            <summary>
+            Adds a delegated handler for Twilio webhooks.
+            </summary>
+            <typeparam name="T1">
+            The type of the first parameter of the delegate.
+            </typeparam>
+            <typeparam name="T2">
+            The type of the second parameter of the delegate.
+            </typeparam>
+            <param name="builder">
+            The instance of the <see cref="T:Deveel.Webhooks.WebhookReceiverBuilder`1"/> to add the handler to.
+            </param>
+            <param name="handler">
+            The delegate that will handle a Twilio webhook when received.
+            </param>
+            <returns>
+            Returns the same instance of the <see cref="T:Deveel.Webhooks.WebhookReceiverBuilder`1"/> to allow
+            further chaining of the builder.
+            </returns>
+        </member>
+        <member name="M:Deveel.Webhooks.WebhookReceiverBuilderExtensions.HandleTwilio``3(Deveel.Webhooks.WebhookReceiverBuilder{Deveel.Webhooks.Twilio.TwilioWebhook},System.Action{Deveel.Webhooks.Twilio.TwilioWebhook,``0,``1,``2})">
+            <summary>
+            Adds a delegated handler for Twilio webhooks.
+            </summary>
+            <typeparam name="T1">
+            The type of the first parameter of the delegate.
+            </typeparam>
+            <typeparam name="T2">
+            The type of the second parameter of the delegate.
+            </typeparam>
+            <typeparam name="T3">
+            The type of the third parameter of the delegate.
+            </typeparam>
+            <param name="builder">
+            The instance of the <see cref="T:Deveel.Webhooks.WebhookReceiverBuilder`1"/> to add the handler to.
+            </param>
+            <param name="handler">
+            The delegate that will handle a Twilio webhook when received.
+            </param>
+            <returns>
+            Returns the same instance of the <see cref="T:Deveel.Webhooks.WebhookReceiverBuilder`1"/> to allow
+            further chaining of the builder.
+            </returns>
+        </member>
     </members>
 </doc>

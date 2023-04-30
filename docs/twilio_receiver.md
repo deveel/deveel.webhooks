@@ -30,6 +30,10 @@ Then, you need to configure the receiver in the `Configure` method of the `Start
 public void Configure(IApplicationBuilder app, IWebHostEnvironment env) {
   // ...
   app.MapTwilioWebhook("/twilio/webhook");
+
+  app.MapTwilioWebhook("/twilio/other", webhook => {
+    // ...
+  });
   // ...
 }
 ```

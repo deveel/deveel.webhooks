@@ -19,4 +19,7 @@
     <ProjectReference Include="..\..\src\Deveel.Webhooks.Receiver.AspNetCore\Deveel.Webhooks.Receiver.AspNetCore.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="..\..\apl-2.licenseheader" Link="apl-2.licenseheader" />
+  </ItemGroup>
 </Project>

@@ -30,4 +30,7 @@
     <ProjectReference Include="..\..\src\Deveel.Webhooks.DynamicLinq\Deveel.Webhooks.DynamicLinq.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="..\..\apl-2.licenseheader" Link="apl-2.licenseheader" />
+  </ItemGroup>
 </Project>

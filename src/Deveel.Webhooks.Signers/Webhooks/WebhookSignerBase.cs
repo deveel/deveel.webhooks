@@ -22,6 +22,16 @@ namespace Deveel.Webhooks {
 	/// a generic method to sign the payloads.
 	/// </summary>
     public abstract class WebhookSignerBase : IWebhookSigner {
+		/// <summary>
+		/// Initializes a new instance of the <see cref="WebhookSignerBase"/> class
+		/// with the given encoding name used for the secret key.
+		/// </summary>
+		/// <param name="keyEncodingName">
+		/// The name of the encoding used to create the secret key (eg. UTF-8, ASCII).
+		/// </param>
+		/// <exception cref="ArgumentException">
+		/// Thrown when the given encoding name is null or whitespace.
+		/// </exception>
 		protected WebhookSignerBase(string keyEncodingName) {
 			if (string.IsNullOrWhiteSpace(keyEncodingName)) 
 				throw new ArgumentException($"'{nameof(keyEncodingName)}' cannot be null or whitespace.", nameof(keyEncodingName));
@@ -29,6 +39,10 @@ namespace Deveel.Webhooks {
 			KeyEncodingName = keyEncodingName;
 		}
 
+		/// <summary>
+		/// Gets the name of the encoding used to create the secret key
+		/// (by default is UTF-8).
+		/// </summary>
 		protected string KeyEncodingName { get; } = "UTF-8";
 
 		/// <summary>

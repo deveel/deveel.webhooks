@@ -36,4 +36,7 @@
     <ProjectReference Include="..\..\src\Deveel.Webhooks.Service\Deveel.Webhooks.Service.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="..\..\apl-2.licenseheader" Link="apl-2.licenseheader" />
+  </ItemGroup>
 </Project>

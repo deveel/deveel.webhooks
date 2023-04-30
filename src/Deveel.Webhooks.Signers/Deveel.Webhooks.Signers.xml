@@ -185,6 +185,24 @@
             a generic method to sign the payloads.
             </summary>
         </member>
+        <member name="M:Deveel.Webhooks.WebhookSignerBase.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Deveel.Webhooks.WebhookSignerBase"/> class
+            with the given encoding name used for the secret key.
+            </summary>
+            <param name="keyEncodingName">
+            The name of the encoding used to create the secret key (eg. UTF-8, ASCII).
+            </param>
+            <exception cref="T:System.ArgumentException">
+            Thrown when the given encoding name is null or whitespace.
+            </exception>
+        </member>
+        <member name="P:Deveel.Webhooks.WebhookSignerBase.KeyEncodingName">
+            <summary>
+            Gets the name of the encoding used to create the secret key
+            (by default is UTF-8).
+            </summary>
+        </member>
         <member name="P:Deveel.Webhooks.WebhookSignerBase.Algorithms">
             <summary>
             When overridden, gets the names of the algorithms supported by this

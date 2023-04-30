@@ -32,4 +32,7 @@
     <ProjectReference Include="..\Deveel.Webhooks.Receiver.SendGrid\Deveel.Webhooks.Receiver.SendGrid.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="..\..\apl-2.licenseheader" Link="apl-2.licenseheader" />
+  </ItemGroup>
 </Project>

@@ -1,5 +1,7 @@
 ﻿using System.Text.Json.Serialization;
 
+using Deveel.Webhooks.Json;
+
 namespace Deveel.Webhooks.Models {
 	public class IdentityWebhook {
 		[JsonPropertyName("event_type")]

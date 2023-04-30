@@ -16,6 +16,8 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
 
+using Deveel.Webhooks.Json;
+
 namespace Deveel.Webhooks {
 	public static class SystemTextJsonSerializationTests {
 		[Fact]

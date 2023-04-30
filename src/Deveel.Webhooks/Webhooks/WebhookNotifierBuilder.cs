@@ -86,7 +86,7 @@ namespace Deveel.Webhooks {
 		/// <returns>
 		/// Returns an instance of the builder to allow chaining.
 		/// </returns>
-		public WebhookNotifierBuilder<TWebhook> UseSender(Action<WebhookSenderOptions> configure) {
+		public WebhookNotifierBuilder<TWebhook> UseSender(Action<WebhookSenderOptions<TWebhook>> configure) {
 			Services.AddWebhookSender<TWebhook>(configure);
 
 			return this;

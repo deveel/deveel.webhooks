@@ -221,5 +221,54 @@ namespace Deveel.Webhooks {
 			Assert.Equal("Hello, World!", webhook.Subject);
 			Assert.Equal("This is a test email", webhook.Text);
 		}
+
+		[Fact]
+		public async Task ReceiveEmailWithAttachments() {
+			var result = await ReceiveEmailAsync(new {
+				from = new {
+					email = "joe@example.com",
+					name = "John Doe"
+				},
+				to = new[] {
+					new {
+						email = "info@deveel.com"
+					}
+				},
+				subject = "Hello, World!",
+				text = "This is a test email",
+				ip = "192.168.0.1",
+				attachments = new[] {
+					new {
+						filename = "test.txt",
+						type = "text/plain",
+						content = "VGhpcyBpcyBhIHRlc3QgZW1haWw="
+					}
+				}
+			});
+
+			Assert.True(result.Successful);
+
+			Assert.NotNull(result.Webhooks);
+			Assert.NotEmpty(result.Webhooks);
+			Assert.Single(result.Webhooks);
+
+			var webhook = result.Webhooks[0];
+
+			Assert.NotNull(webhook);
+
+			Assert.Equal("joe@example.com", webhook.From.Address);
+			Assert.Equal("John Doe", webhook.From.Name);
+
+			Assert.NotNull(webhook.Attachments);
+			Assert.NotEmpty(webhook.Attachments);
+			Assert.Single(webhook.Attachments);
+
+			var attachment = webhook.Attachments[0];
+			Assert.Equal("test.txt", attachment.Filename);
+			Assert.Equal("text/plain", attachment.Type);
+
+			var decoded = Encoding.UTF8.GetString(Convert.FromBase64String(attachment.Content));
+			Assert.Equal("This is a test email", decoded);
+		}
 	}
 }

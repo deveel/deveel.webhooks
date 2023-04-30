@@ -24,12 +24,13 @@ using Polly.Timeout;
 
 namespace Deveel.Webhooks {
 	/// <summary>
-	/// A default implementation of the <see cref="IWebhookDestinationVerifier"/>,
+	/// A default implementation of the <see cref="IWebhookDestinationVerifier{TWebhook}"/>,
 	/// that pings a destination URL with some configured parameters to verify if it is reachable.
 	/// </summary>
-	public class WebhookDestinationVerifier : WebhookSenderClient, IWebhookDestinationVerifier, IDisposable {
+	public class WebhookDestinationVerifier<TWebhook> : WebhookSenderClient, IWebhookDestinationVerifier<TWebhook>, IDisposable
+		where TWebhook : class {
 		/// <summary>
-		/// Creates a new instance of the <see cref="WebhookDestinationVerifier"/> class
+		/// Creates a new instance of the <see cref="WebhookDestinationVerifier{TWebhook}"/> class
 		/// with the given options.
 		/// </summary>
 		/// <param name="options">
@@ -39,13 +40,13 @@ namespace Deveel.Webhooks {
 		/// An optional factory to create the <see cref="HttpClient"/> instances
 		/// used to sende the verification requests.
 		/// </param>
-        public WebhookDestinationVerifier(IOptions<WebhookDestinationVerifierOptions> options, 
+		public WebhookDestinationVerifier(IOptions<WebhookSenderOptions<TWebhook>> options, 
 			IHttpClientFactory? httpClientFactory = null)
             : this(options.Value, httpClientFactory) {
         }
 
 		/// <summary>
-		/// Creates a new instance of the <see cref="WebhookDestinationVerifier"/> class
+		/// Creates a new instance of the <see cref="WebhookDestinationVerifier{TWebhook}"/> class
 		/// that is configured with the given options and an optional factory of HTTP clients.
 		/// </summary>
 		/// <param name="options">
@@ -57,13 +58,24 @@ namespace Deveel.Webhooks {
 		/// <exception cref="ArgumentNullException">
 		/// Thrown when the <paramref name="options"/> is <c>null</c>.
 		/// </exception>
-        protected WebhookDestinationVerifier(WebhookDestinationVerifierOptions options, IHttpClientFactory? httpClientFactory = null) 
-			: base(httpClientFactory) {
-            VerifierOptions = options ?? throw new ArgumentNullException(nameof(options));
+		protected WebhookDestinationVerifier(WebhookSenderOptions<TWebhook> options, IHttpClientFactory? httpClientFactory = null) 
+			: this(options.Verification, httpClientFactory) {
         }
 
 		/// <summary>
-		/// Creates a new instance of the <see cref="WebhookDestinationVerifier"/> class
+		/// Creates a new instance of the <see cref="WebhookDestinationVerifier{TWebhook}"/> class
+		/// that is configured with the given options and an optional factory of HTTP clients.
+		/// </summary>
+		/// <param name="options"></param>
+		/// <param name="httpClientFactory"></param>
+		/// <exception cref="ArgumentNullException"></exception>
+		protected WebhookDestinationVerifier(WebhookReceiverVerificationOptions options, IHttpClientFactory? httpClientFactory = null)
+			: base(httpClientFactory) {
+			VerifierOptions = options ?? throw new ArgumentNullException(nameof(options));
+		}
+
+		/// <summary>
+		/// Creates a new instance of the <see cref="WebhookDestinationVerifier{TWebhook}"/> class
 		/// using an optional HTTP client.
 		/// </summary>
 		/// <param name="options">
@@ -75,14 +87,25 @@ namespace Deveel.Webhooks {
 		/// <exception cref="ArgumentNullException">
 		/// Thrown when the <paramref name="options"/> is <c>null</c>.
 		/// </exception>
-		protected WebhookDestinationVerifier(WebhookDestinationVerifierOptions options, HttpClient httpClient) : base(httpClient) {
+		protected WebhookDestinationVerifier(WebhookSenderOptions<TWebhook> options, HttpClient httpClient) 
+			: this(options.Verification, httpClient) {
+		}
+
+		/// <summary>
+		/// Creates a new instance of the <see cref="WebhookDestinationVerifier{TWebhook}"/> class
+		/// that is configured with the given options and an optional HTTP client.
+		/// </summary>
+		/// <param name="options"></param>
+		/// <param name="httpClient"></param>
+		/// <exception cref="ArgumentNullException"></exception>
+		protected WebhookDestinationVerifier(WebhookReceiverVerificationOptions options, HttpClient httpClient) : base(httpClient) {
 			VerifierOptions = options ?? throw new ArgumentNullException(nameof(options));
 		}
 
 		/// <summary>
 		/// Gets the options used to configure the verifier service.
 		/// </summary>
-        protected WebhookDestinationVerifierOptions VerifierOptions { get; }
+        protected WebhookReceiverVerificationOptions VerifierOptions { get; }
 
 		/// <inheritdoc/>
 		protected override WebhookRetryOptions? Retry => VerifierOptions.Retry;

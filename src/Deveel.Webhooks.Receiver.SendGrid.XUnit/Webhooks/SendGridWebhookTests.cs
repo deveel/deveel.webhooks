@@ -53,6 +53,7 @@ namespace Deveel.Webhooks {
 					sg_event_id = Guid.NewGuid().ToString(),
 					sg_message_id = Guid.NewGuid().ToString(),
 					status = "processed",
+					ip = "192.168.0.1"
 					// TODO: find a way with anonymou types ...
 					// smtp-id = "<14c5d75ce93.dfd.64b469@ismtpd-555>"
 				}
@@ -78,6 +79,11 @@ namespace Deveel.Webhooks {
 					sg_event_id = Guid.NewGuid().ToString(),
 					sg_message_id = Guid.NewGuid().ToString(),
 					status = "processed",
+					ip = "192.168.0.1",
+					ip_pool = "Pool 0",
+					ip_address = "255.255.255.0",
+					tls = true,
+
 					// TODO: find a way with anonymou types ...
 					// smtp-id = "<14c5d75ce93.dfd.64b469@ismtpd-555>"
 				}
@@ -102,6 +108,9 @@ namespace Deveel.Webhooks {
 			Assert.Contains("foo", webhook.Categories);
 			Assert.NotNull(webhook.EventId);
 			Assert.NotNull(webhook.MessageId);
+			Assert.Equal("192.168.0.1", webhook.ClientIpAddress);
+			Assert.Equal("Pool 0", webhook.IpPoolName);
+			Assert.Equal("255.255.255.0", webhook.SenderIpAddress);
 		}
 
 		[Fact]

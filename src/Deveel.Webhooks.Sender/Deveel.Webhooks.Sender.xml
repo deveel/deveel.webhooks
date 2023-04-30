@@ -25,7 +25,7 @@
             further configure the webhook sender.
             </returns>
         </member>
-        <member name="M:Deveel.ServiceCollectionExtensions.AddWebhookSender``1(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Action{Deveel.Webhooks.WebhookSenderOptions})">
+        <member name="M:Deveel.ServiceCollectionExtensions.AddWebhookSender``1(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Action{Deveel.Webhooks.WebhookSenderOptions{``0}})">
             <summary>
             Adds the webhook sender services to the given <paramref name="services"/> with
             and initial configuration of the options.
@@ -64,6 +64,15 @@
             Returns an instance of the <see cref="T:Deveel.Webhooks.WebhookSenderBuilder`1"/> that can be used
             to further configure the webhook sender.
             </returns>
+        </member>
+        <member name="M:Deveel.ServiceCollectionExtensions.AddWebhookSender``1(Microsoft.Extensions.DependencyInjection.IServiceCollection,Deveel.Webhooks.WebhookSenderOptions{``0})">
+            <summary>
+            
+            </summary>
+            <typeparam name="TWebhook"></typeparam>
+            <param name="services"></param>
+            <param name="options"></param>
+            <returns></returns>
         </member>
         <member name="M:Deveel.ServiceCollectionExtensions.AddWebhookSender``1(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Action{Deveel.Webhooks.WebhookSenderBuilder{``0}})">
             <summary>
@@ -128,13 +137,17 @@
             </param>
             <returns></returns>
         </member>
-        <member name="T:Deveel.Webhooks.IWebhookDestinationVerifier">
+        <member name="T:Deveel.Webhooks.IWebhookDestinationVerifier`1">
             <summary>
             A service that verifies the destination of a webhook, before
             attempting the delivery.
             </summary>
+            <typeparam name="TWebhook">
+            The type of the webhook that is delivered, used to
+            segregate the verification service to a given scope.
+            </typeparam>
         </member>
-        <member name="M:Deveel.Webhooks.IWebhookDestinationVerifier.VerifyDestinationAsync(Deveel.Webhooks.WebhookDestination,System.Threading.CancellationToken)">
+        <member name="M:Deveel.Webhooks.IWebhookDestinationVerifier`1.VerifyDestinationAsync(Deveel.Webhooks.WebhookDestination,System.Threading.CancellationToken)">
             <summary>
             Verifies that the given destination is valid and reachable.
             </summary>
@@ -149,20 +162,6 @@
             Returns <c>true</c> if the destination is valid and reachable,
             otherwise it returns <c>false</c>.
             </returns>
-        </member>
-        <member name="T:Deveel.Webhooks.IWebhookDestinationVerifier`1">
-            <summary>
-            A service that verifies the destination of a webhook, before
-            attempting a delivery.
-            </summary>
-            <typeparam name="TWebhook">
-            The type of the webhook that is delivered, used to
-            segregate the verification service to a given scope.
-            </typeparam>
-            <remarks>
-            Implementations of this interface are scoped to a given type 
-            of webhook.
-            </remarks>
         </member>
         <member name="T:Deveel.Webhooks.IWebhookJsonSerializer`1">
             <summary>
@@ -240,6 +239,17 @@
             Returns an asynchronous operation that when completed
             </returns>
         </member>
+        <member name="T:Deveel.Webhooks.Json.UnixTimeMillisJsonConverter">
+            <summary>
+            A JSON converter that converts a <see cref="T:System.DateTimeOffset"/> to a Unix timestamp
+            </summary>
+        </member>
+        <member name="M:Deveel.Webhooks.Json.UnixTimeMillisJsonConverter.Read(System.Text.Json.Utf8JsonReader@,System.Type,System.Text.Json.JsonSerializerOptions)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Deveel.Webhooks.Json.UnixTimeMillisJsonConverter.Write(System.Text.Json.Utf8JsonWriter,System.DateTimeOffset,System.Text.Json.JsonSerializerOptions)">
+            <inheritdoc/>
+        </member>
         <member name="T:Deveel.Webhooks.SystemTextWebhookJsonSerializer`1">
             <summary>
             An implementation of <see cref="T:Deveel.Webhooks.IWebhookJsonSerializer`1"/> that
@@ -277,17 +287,6 @@
             </typeparam>
         </member>
         <member name="M:Deveel.Webhooks.SystemWebhookXmlSerializer`1.SerializeAsync(System.IO.Stream,`0,System.Threading.CancellationToken)">
-            <inheritdoc/>
-        </member>
-        <member name="T:Deveel.Webhooks.UnixTimeMillisJsonConverter">
-            <summary>
-            A JSON converter that converts a <see cref="T:System.DateTimeOffset"/> to a Unix timestamp
-            </summary>
-        </member>
-        <member name="M:Deveel.Webhooks.UnixTimeMillisJsonConverter.Read(System.Text.Json.Utf8JsonReader@,System.Type,System.Text.Json.JsonSerializerOptions)">
-            <inheritdoc/>
-        </member>
-        <member name="M:Deveel.Webhooks.UnixTimeMillisJsonConverter.Write(System.Text.Json.Utf8JsonWriter,System.DateTimeOffset,System.Text.Json.JsonSerializerOptions)">
             <inheritdoc/>
         </member>
         <member name="T:Deveel.Webhooks.UriExtensions">
@@ -673,7 +672,7 @@
             the verification options set.
             </returns>
         </member>
-        <member name="M:Deveel.Webhooks.WebhookDestination.Merge(Deveel.Webhooks.WebhookSenderOptions)">
+        <member name="M:Deveel.Webhooks.WebhookDestination.Merge``1(Deveel.Webhooks.WebhookSenderOptions{``0})">
             <summary>
             Merges the current settings with the default settings
             from the configuration of a sender service.
@@ -759,15 +758,15 @@
             Gets or sets the parameters to be sent to the verification services.
             </summary>
         </member>
-        <member name="T:Deveel.Webhooks.WebhookDestinationVerifier">
+        <member name="T:Deveel.Webhooks.WebhookDestinationVerifier`1">
             <summary>
-            A default implementation of the <see cref="T:Deveel.Webhooks.IWebhookDestinationVerifier"/>,
+            A default implementation of the <see cref="T:Deveel.Webhooks.IWebhookDestinationVerifier`1"/>,
             that pings a destination URL with some configured parameters to verify if it is reachable.
             </summary>
         </member>
-        <member name="M:Deveel.Webhooks.WebhookDestinationVerifier.#ctor(Microsoft.Extensions.Options.IOptions{Deveel.Webhooks.WebhookDestinationVerifierOptions},System.Net.Http.IHttpClientFactory)">
+        <member name="M:Deveel.Webhooks.WebhookDestinationVerifier`1.#ctor(Microsoft.Extensions.Options.IOptions{Deveel.Webhooks.WebhookSenderOptions{`0}},System.Net.Http.IHttpClientFactory)">
             <summary>
-            Creates a new instance of the <see cref="T:Deveel.Webhooks.WebhookDestinationVerifier"/> class
+            Creates a new instance of the <see cref="T:Deveel.Webhooks.WebhookDestinationVerifier`1"/> class
             with the given options.
             </summary>
             <param name="options">
@@ -778,9 +777,9 @@
             used to sende the verification requests.
             </param>
         </member>
-        <member name="M:Deveel.Webhooks.WebhookDestinationVerifier.#ctor(Deveel.Webhooks.WebhookDestinationVerifierOptions,System.Net.Http.IHttpClientFactory)">
+        <member name="M:Deveel.Webhooks.WebhookDestinationVerifier`1.#ctor(Deveel.Webhooks.WebhookSenderOptions{`0},System.Net.Http.IHttpClientFactory)">
             <summary>
-            Creates a new instance of the <see cref="T:Deveel.Webhooks.WebhookDestinationVerifier"/> class
+            Creates a new instance of the <see cref="T:Deveel.Webhooks.WebhookDestinationVerifier`1"/> class
             that is configured with the given options and an optional factory of HTTP clients.
             </summary>
             <param name="options">
@@ -793,9 +792,18 @@
             Thrown when the <paramref name="options"/> is <c>null</c>.
             </exception>
         </member>
-        <member name="M:Deveel.Webhooks.WebhookDestinationVerifier.#ctor(Deveel.Webhooks.WebhookDestinationVerifierOptions,System.Net.Http.HttpClient)">
+        <member name="M:Deveel.Webhooks.WebhookDestinationVerifier`1.#ctor(Deveel.Webhooks.WebhookReceiverVerificationOptions,System.Net.Http.IHttpClientFactory)">
             <summary>
-            Creates a new instance of the <see cref="T:Deveel.Webhooks.WebhookDestinationVerifier"/> class
+            Creates a new instance of the <see cref="T:Deveel.Webhooks.WebhookDestinationVerifier`1"/> class
+            that is configured with the given options and an optional factory of HTTP clients.
+            </summary>
+            <param name="options"></param>
+            <param name="httpClientFactory"></param>
+            <exception cref="T:System.ArgumentNullException"></exception>
+        </member>
+        <member name="M:Deveel.Webhooks.WebhookDestinationVerifier`1.#ctor(Deveel.Webhooks.WebhookSenderOptions{`0},System.Net.Http.HttpClient)">
+            <summary>
+            Creates a new instance of the <see cref="T:Deveel.Webhooks.WebhookDestinationVerifier`1"/> class
             using an optional HTTP client.
             </summary>
             <param name="options">
@@ -808,18 +816,27 @@
             Thrown when the <paramref name="options"/> is <c>null</c>.
             </exception>
         </member>
-        <member name="P:Deveel.Webhooks.WebhookDestinationVerifier.VerifierOptions">
+        <member name="M:Deveel.Webhooks.WebhookDestinationVerifier`1.#ctor(Deveel.Webhooks.WebhookReceiverVerificationOptions,System.Net.Http.HttpClient)">
+            <summary>
+            Creates a new instance of the <see cref="T:Deveel.Webhooks.WebhookDestinationVerifier`1"/> class
+            that is configured with the given options and an optional HTTP client.
+            </summary>
+            <param name="options"></param>
+            <param name="httpClient"></param>
+            <exception cref="T:System.ArgumentNullException"></exception>
+        </member>
+        <member name="P:Deveel.Webhooks.WebhookDestinationVerifier`1.VerifierOptions">
             <summary>
             Gets the options used to configure the verifier service.
             </summary>
         </member>
-        <member name="P:Deveel.Webhooks.WebhookDestinationVerifier.Retry">
+        <member name="P:Deveel.Webhooks.WebhookDestinationVerifier`1.Retry">
             <inheritdoc/>
         </member>
-        <member name="P:Deveel.Webhooks.WebhookDestinationVerifier.Timeout">
+        <member name="P:Deveel.Webhooks.WebhookDestinationVerifier`1.Timeout">
             <inheritdoc/>
         </member>
-        <member name="M:Deveel.Webhooks.WebhookDestinationVerifier.AddChallenge(System.Net.Http.HttpRequestMessage,System.String)">
+        <member name="M:Deveel.Webhooks.WebhookDestinationVerifier`1.AddChallenge(System.Net.Http.HttpRequestMessage,System.String)">
             <summary>
             Appends a challenge to query string of the 
             given <paramref name="request"/>
@@ -832,7 +849,7 @@
             </param>
             <exception cref="T:System.NotSupportedException"></exception>
         </member>
-        <member name="M:Deveel.Webhooks.WebhookDestinationVerifier.CreateChallenge">
+        <member name="M:Deveel.Webhooks.WebhookDestinationVerifier`1.CreateChallenge">
             <summary>
             Creates a new challenge to be sent to the destination URL.
             </summary>
@@ -841,7 +858,7 @@
             destination URL.
             </returns>
         </member>
-        <member name="M:Deveel.Webhooks.WebhookDestinationVerifier.CreateRequest(System.Uri,System.String,System.String)">
+        <member name="M:Deveel.Webhooks.WebhookDestinationVerifier`1.CreateRequest(System.Uri,System.String,System.String)">
             <summary>
             Creates a new HTTP request to the given <paramref name="verificationUrl"/>
             </summary>
@@ -858,7 +875,7 @@
             Returns an instance of <see cref="T:System.Net.Http.HttpRequestMessage"/> that can be sent
             </returns>
         </member>
-        <member name="M:Deveel.Webhooks.WebhookDestinationVerifier.TryGetVerifyToken(System.Collections.Generic.IDictionary{System.String,System.Object},System.String@)">
+        <member name="M:Deveel.Webhooks.WebhookDestinationVerifier`1.TryGetVerifyToken(System.Collections.Generic.IDictionary{System.String,System.Object},System.String@)">
             <summary>
             Tries to get the verification token from the given parameters.
             </summary>
@@ -874,7 +891,7 @@
             it returns <c>false</c>.
             </returns>
         </member>
-        <member name="M:Deveel.Webhooks.WebhookDestinationVerifier.VerifyDestinationAsync(Deveel.Webhooks.WebhookDestination,System.Threading.CancellationToken)">
+        <member name="M:Deveel.Webhooks.WebhookDestinationVerifier`1.VerifyDestinationAsync(Deveel.Webhooks.WebhookDestination,System.Threading.CancellationToken)">
             <summary>
             Verifies the given destination to ensure that it is valid.
             </summary>
@@ -891,81 +908,6 @@
             <exception cref="T:Deveel.Webhooks.WebhookVerificationException">
             Thrown when an error occurs while verifying the destination.
             </exception>
-        </member>
-        <member name="T:Deveel.Webhooks.WebhookDestinationVerifierOptions">
-            <summary>
-            Provides options for the verification of the webhook destination.
-            </summary>
-        </member>
-        <member name="P:Deveel.Webhooks.WebhookDestinationVerifierOptions.Timeout">
-            <summary>
-            Gets or sets the timeout for the verification request.
-            </summary>
-        </member>
-        <member name="P:Deveel.Webhooks.WebhookDestinationVerifierOptions.Retry">
-            <summary>
-            Gets or sets the retry options for the verification request.
-            </summary>
-        </member>
-        <member name="P:Deveel.Webhooks.WebhookDestinationVerifierOptions.HttpMethod">
-            <summary>
-            Gets or sets the HTTP method to use for the verification request.
-            </summary>
-        </member>
-        <member name="P:Deveel.Webhooks.WebhookDestinationVerifierOptions.TokenQueryParameter">
-            <summary>
-            Gets or sets the query parameter name to use for passing the
-            token specific for the receiver in a verification request.
-            </summary>
-        </member>
-        <member name="P:Deveel.Webhooks.WebhookDestinationVerifierOptions.TokenHeaderName">
-            <summary>
-            Gets or sets the header name to use for passing the
-            token specific for the receiver in a verification request.
-            </summary>
-        </member>
-        <member name="P:Deveel.Webhooks.WebhookDestinationVerifierOptions.Challenge">
-            <summary>
-            Gets or sets a value indicating whether the verification request
-            should be sent with a challenge response.
-            </summary>
-        </member>
-        <member name="P:Deveel.Webhooks.WebhookDestinationVerifierOptions.ChallengeQueryParameter">
-            <summary>
-            Gets or sets the query parameter name to use for passing the
-            challenge to the receiver in a verification request.
-            </summary>
-        </member>
-        <member name="P:Deveel.Webhooks.WebhookDestinationVerifierOptions.ChallengeLength">
-            <summary>
-            Gets or sets the size of the challenge to be sent 
-            in the verification request.
-            </summary>
-        </member>
-        <member name="P:Deveel.Webhooks.WebhookDestinationVerifierOptions.TokenLocation">
-            <summary>
-            Gets or sets the location of the token in the verification request.
-            </summary>
-        </member>
-        <member name="T:Deveel.Webhooks.WebhookDestinationVerifier`1">
-            <summary>
-            An implementation of a <see cref="T:Deveel.Webhooks.IWebhookDestinationVerifier"/> that
-            is strongly-typed to a specific webhook type.
-            </summary>
-            <typeparam name="TWebhook">
-            The type of the webhook that this verifier is used for.
-            </typeparam>
-        </member>
-        <member name="M:Deveel.Webhooks.WebhookDestinationVerifier`1.#ctor(Microsoft.Extensions.Options.IOptionsSnapshot{Deveel.Webhooks.WebhookDestinationVerifierOptions},System.Net.Http.IHttpClientFactory)">
-            <summary>
-            Creates a new instance of the <see cref="T:Deveel.Webhooks.WebhookDestinationVerifier`1"/> class
-            </summary>
-            <param name="options">
-            The options to configure the verifier service.
-            </param>
-            <param name="httpClientFactory">
-            The factory of HTTP clients used to send the verification requests.
-            </param>
         </member>
         <member name="T:Deveel.Webhooks.WebhookFormat">
             <summary>
@@ -1032,6 +974,61 @@
             Returns an anonymous object containing the serialized webhook.
             </returns>
         </member>
+        <member name="T:Deveel.Webhooks.WebhookReceiverVerificationOptions">
+            <summary>
+            Provides options for the verification of the webhook destination.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.WebhookReceiverVerificationOptions.Timeout">
+            <summary>
+            Gets or sets the timeout for the verification request.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.WebhookReceiverVerificationOptions.Retry">
+            <summary>
+            Gets or sets the retry options for the verification request.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.WebhookReceiverVerificationOptions.HttpMethod">
+            <summary>
+            Gets or sets the HTTP method to use for the verification request.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.WebhookReceiverVerificationOptions.TokenQueryParameter">
+            <summary>
+            Gets or sets the query parameter name to use for passing the
+            token specific for the receiver in a verification request.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.WebhookReceiverVerificationOptions.TokenHeaderName">
+            <summary>
+            Gets or sets the header name to use for passing the
+            token specific for the receiver in a verification request.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.WebhookReceiverVerificationOptions.Challenge">
+            <summary>
+            Gets or sets a value indicating whether the verification request
+            should be sent with a challenge response.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.WebhookReceiverVerificationOptions.ChallengeQueryParameter">
+            <summary>
+            Gets or sets the query parameter name to use for passing the
+            challenge to the receiver in a verification request.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.WebhookReceiverVerificationOptions.ChallengeLength">
+            <summary>
+            Gets or sets the size of the challenge to be sent 
+            in the verification request.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.WebhookReceiverVerificationOptions.TokenLocation">
+            <summary>
+            Gets or sets the location of the token in the verification request.
+            </summary>
+        </member>
         <member name="T:Deveel.Webhooks.WebhookRetryOptions">
             <summary>
             Provides options for the retry policy of the webhook sender.
@@ -1097,7 +1094,7 @@
             a proper management of the <see cref="T:System.Net.Http.HttpClient"/> instances.
             </remarks>
         </member>
-        <member name="M:Deveel.Webhooks.WebhookSender`1.#ctor(Microsoft.Extensions.Options.IOptionsSnapshot{Deveel.Webhooks.WebhookSenderOptions},System.Net.Http.IHttpClientFactory,Deveel.Webhooks.IWebhookJsonSerializer{`0},Deveel.Webhooks.IWebhookXmlSerializer{`0},Deveel.Webhooks.IWebhookSignerProvider{`0})">
+        <member name="M:Deveel.Webhooks.WebhookSender`1.#ctor(Microsoft.Extensions.Options.IOptions{Deveel.Webhooks.WebhookSenderOptions{`0}},System.Net.Http.IHttpClientFactory)">
             <summary>
             Constructs a new instance of the <see cref="T:Deveel.Webhooks.WebhookSender`1"/>
             </summary>
@@ -1109,22 +1106,8 @@
             is <c>null</c> the sender will create a new instance of <see cref="T:System.Net.Http.HttpClient"/>
             and dispose it when this services is disposed.
             </param>
-            <param name="jsonSerializer">
-            An optional service that is used to serialize the webhook to a JSON string.
-            When not provided, the sender will use the default JSON serializer.
-            </param>
-            <param name="xmlSerializer">
-            An optional service that is used to serialize the webhook to a XML string.
-            When not provided, the sender will use the default XML serializer.
-            </param>
-            <param name="signerProvider">
-            An optional service that is used to compute a signature for the webhook. When
-            the sender options specify that the webhook should be signed, and this service
-            is not provided, the sender will attempt to use the default signature provider
-            for a configured algorithm.
-            </param>
         </member>
-        <member name="M:Deveel.Webhooks.WebhookSender`1.#ctor(Deveel.Webhooks.WebhookSenderOptions,System.Net.Http.IHttpClientFactory)">
+        <member name="M:Deveel.Webhooks.WebhookSender`1.#ctor(Deveel.Webhooks.WebhookSenderOptions{`0},System.Net.Http.IHttpClientFactory)">
             <summary>
             Constucts a sender that uses the given options and a HTTP client factory
             </summary>
@@ -1140,7 +1123,7 @@
             are <c>null</c>
             </exception>
         </member>
-        <member name="M:Deveel.Webhooks.WebhookSender`1.#ctor(Deveel.Webhooks.WebhookSenderOptions,System.Net.Http.HttpClient)">
+        <member name="M:Deveel.Webhooks.WebhookSender`1.#ctor(Deveel.Webhooks.WebhookSenderOptions{`0},System.Net.Http.HttpClient)">
             <summary>
             Constructs a sender that uses the given options and a HTTP client
             </summary>
@@ -1375,10 +1358,10 @@
             <item>
             The sender attempts to send the webhook to the destination, retrying for so many times as specified in the destination:
             a first attempt is always made, and then the number of retries specified in the destination specification
-            (<see cref="P:Deveel.Webhooks.WebhookDestination.Retry"/>) or from the sender configuration (see <see cref="P:Deveel.Webhooks.WebhookSenderOptions.Retry"/>).
+            (<see cref="P:Deveel.Webhooks.WebhookDestination.Retry"/>) or from the sender configuration (see <see cref="!:WebhookSenderOptions.Retry"/>).
             </item>
             <item>
-            A general timeout is applied to the whole operation, if configured in the sender configuration (see <see cref="P:Deveel.Webhooks.WebhookSenderOptions.Timeout"/>),
+            A general timeout is applied to the whole operation, if configured in the sender configuration (see <see cref="!:WebhookSenderOptions.Timeout"/>),
             otherwise no timeout is applied.
             </item>
             </list>
@@ -1412,31 +1395,6 @@
             Gets the collection of services that is used to register the webhook sender.
             </summary>
         </member>
-        <member name="M:Deveel.Webhooks.WebhookSenderBuilder`1.Configure(System.String)">
-            <summary>
-            Configures the webhook sender options using the section at
-            the given <paramref name="sectionPath"/> within the
-            underling configuration of the application.
-            </summary>
-            <param name="sectionPath">
-            The path of the section within the configuration that
-            defines the options configurations.
-            </param>
-            <returns>
-            Returns the instance of the builder, to allow chaining
-            </returns>
-        </member>
-        <member name="M:Deveel.Webhooks.WebhookSenderBuilder`1.Configure(System.Action{Deveel.Webhooks.WebhookSenderOptions})">
-            <summary>
-            Configures the webhook sender options using the given function
-            </summary>
-            <param name="configure">
-            A function that is used to configure the sender options.
-            </param>
-            <returns>
-            Returns the instance of the builder, to allow chaining
-            </returns>
-        </member>
         <member name="M:Deveel.Webhooks.WebhookSenderBuilder`1.UseSender``1(Microsoft.Extensions.DependencyInjection.ServiceLifetime)">
             <summary>
             Registers the given sender service.
@@ -1449,42 +1407,7 @@
             </param>
             <returns></returns>
         </member>
-        <member name="M:Deveel.Webhooks.WebhookSenderBuilder`1.UseJsonSerializer``1">
-            <summary>
-            Registers a JSON serializer service.
-            </summary>
-            <typeparam name="TSerializer">
-            The type of the serializer service that is registered.
-            </typeparam>
-            <returns>
-            Returns the instance of the builder, to allow chaining
-            </returns>
-        </member>
-        <member name="M:Deveel.Webhooks.WebhookSenderBuilder`1.AddSigner``1">
-            <summary>
-            Registers a service used to sign webhook payloads.
-            </summary>
-            <typeparam name="TSigner">
-            The type of the signer service that is registered.
-            </typeparam>
-            <returns>
-            Returns the instance of the builder, to allow chaining
-            </returns>
-        </member>
-        <member name="M:Deveel.Webhooks.WebhookSenderBuilder`1.UseDestinationVerifier(System.String)">
-            <summary>
-            Registers a service used to verify receivers of webhooks before
-            attempting to deliver them.
-            </summary>
-            <param name="sectionPath">
-            The path of the section within the configuration that
-            is used to configure the verifier.
-            </param>
-            <returns>
-            Returns the instance of the builder, to allow chaining
-            </returns>
-        </member>
-        <member name="M:Deveel.Webhooks.WebhookSenderBuilder`1.UseDestinationVerifier">
+        <member name="M:Deveel.Webhooks.WebhookSenderBuilder`1.UseDestinationVerifier``1">
             <summary>
             Registers a service used to verify receivers of webhooks before
             attempting to deliver them.
@@ -1492,14 +1415,6 @@
             <returns>
             Returns the instance of the builder, to allow chaining
             </returns>
-        </member>
-        <member name="M:Deveel.Webhooks.WebhookSenderBuilder`1.UseDestinationVerifier(System.Action{Deveel.Webhooks.WebhookDestinationVerifierOptions})">
-            <summary>
-            Registers a service used to verify receivers of webhooks before
-            attempting to deliver them.
-            </summary>
-            <param name="configure"></param>
-            <returns></returns>
         </member>
         <member name="T:Deveel.Webhooks.WebhookSenderClient">
             <summary>
@@ -1655,19 +1570,19 @@
             the exception is caused by a <see cref="T:System.Net.Http.HttpRequestException"/>.
             </summary>
         </member>
-        <member name="T:Deveel.Webhooks.WebhookSenderOptions">
+        <member name="T:Deveel.Webhooks.WebhookSenderOptions`1">
             <summary>
             Provides configurations for the webhooks sender service.
             </summary>
         </member>
-        <member name="P:Deveel.Webhooks.WebhookSenderOptions.HttpClientName">
+        <member name="P:Deveel.Webhooks.WebhookSenderOptions`1.HttpClientName">
             <summary>
             Gets or sets the name of the HTTP client registered in the
             factory pool and that will be used to send the webhooks. 
             When this is not provided, the default HTTP client is used.
             </summary>
         </member>
-        <member name="P:Deveel.Webhooks.WebhookSenderOptions.DefaultHeaders">
+        <member name="P:Deveel.Webhooks.WebhookSenderOptions`1.DefaultHeaders">
             <summary>
             Gets or sets the default headers to be sent with the webhook,
             additionally to the ones specified in the webhook definition.
@@ -1675,14 +1590,14 @@
             will override the value of the one in the default headers.
             </summary>
         </member>
-        <member name="P:Deveel.Webhooks.WebhookSenderOptions.DefaultFormat">
+        <member name="P:Deveel.Webhooks.WebhookSenderOptions`1.DefaultFormat">
             <summary>
             Gets or sets the default format to be used when sending a webhook,
             used when the destination does not specify a format to be used
             (by default set to <see cref="F:Deveel.Webhooks.WebhookFormat.Json"/>).
             </summary>
         </member>
-        <member name="P:Deveel.Webhooks.WebhookSenderOptions.Retry">
+        <member name="P:Deveel.Webhooks.WebhookSenderOptions`1.Retry">
             <summary>
             Gets or sets the options for the retry policy to be used
             when sending a webhook fails. Any specification in the
@@ -1690,18 +1605,50 @@
             configurations provided here.
             </summary>
         </member>
-        <member name="P:Deveel.Webhooks.WebhookSenderOptions.Timeout">
+        <member name="P:Deveel.Webhooks.WebhookSenderOptions`1.Timeout">
             <summary>
             Gets or sets the timeout for the HTTP request to be sent,
             across all retries. When this is not set, the sender has no
             timeout to wait for the response.
             </summary>
         </member>
-        <member name="P:Deveel.Webhooks.WebhookSenderOptions.Signature">
+        <member name="P:Deveel.Webhooks.WebhookSenderOptions`1.Signature">
             <summary>
             Gets or sets the options for the signature of the webhooks. Any
             specification in the <see cref="P:Deveel.Webhooks.WebhookDestination.Signature"/>
             will override the value of these configurations.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.WebhookSenderOptions`1.JsonSerializer">
+            <summary>
+            A service that is used to serialize the webhook to a JSON string.
+            (by default set to <see cref="T:Deveel.Webhooks.SystemTextWebhookJsonSerializer`1"/>).
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.WebhookSenderOptions`1.XmlSerializer">
+            <summary>
+            A service that is used to serialize the webhook to an XML string.
+            (by default set to <see cref="T:Deveel.Webhooks.SystemWebhookXmlSerializer`1"/>).
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.WebhookSenderOptions`1.SignWebhooks">
+            <summary>
+            Gets or sets a flag indicating if the webhooks sent should
+            be signed or not. When this is not set, the sender will
+            assume that the webhooks should be signed if the signer
+            is set and the <see cref="P:Deveel.Webhooks.WebhookSenderOptions`1.Signature"/> configurations are
+            provided.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.WebhookSenderOptions`1.Signer">
+            <summary>
+            An instance of a service that is used to sign the webhooks
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.WebhookSenderOptions`1.Verification">
+            <summary>
+            Gets or sets the options for the verification of the receiver
+            of webhooks that is performed before sending the webhook.
             </summary>
         </member>
         <member name="T:Deveel.Webhooks.WebhookSenderSignatureOptions">

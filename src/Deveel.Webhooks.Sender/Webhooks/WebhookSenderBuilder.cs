@@ -51,46 +51,7 @@ namespace Deveel.Webhooks {
 			Services.TryAddScoped<IWebhookSender<TWebhook>, WebhookSender<TWebhook>>();
 			Services.TryAddScoped<WebhookSender<TWebhook>>();
 
-			Services.TryAddSingleton<IWebhookJsonSerializer<TWebhook>, SystemTextWebhookJsonSerializer<TWebhook>>();
-			Services.TryAddSingleton<IWebhookXmlSerializer<TWebhook>, SystemWebhookXmlSerializer<TWebhook>>();
-
-			Services.TryAddSingleton<IWebhookSigner<TWebhook>>(new WebhookSignerAdapter(new Sha256WebhookSigner()));
-			Services.TryAddSingleton<IWebhookSigner<TWebhook>>(new WebhookSignerAdapter(new Sha1WebhookSigner()));
-		}
-
-		/// <summary>
-		/// Configures the webhook sender options using the section at
-		/// the given <paramref name="sectionPath"/> within the
-		/// underling configuration of the application.
-		/// </summary>
-		/// <param name="sectionPath">
-		/// The path of the section within the configuration that
-		/// defines the options configurations.
-		/// </param>
-		/// <returns>
-		/// Returns the instance of the builder, to allow chaining
-		/// </returns>
-		public WebhookSenderBuilder<TWebhook> Configure(string sectionPath) {
-			Services.AddOptions<WebhookSenderOptions>(typeof(TWebhook).Name)
-				.BindConfiguration(sectionPath);
-
-			return this;
-		}
-
-		/// <summary>
-		/// Configures the webhook sender options using the given function
-		/// </summary>
-		/// <param name="configure">
-		/// A function that is used to configure the sender options.
-		/// </param>
-		/// <returns>
-		/// Returns the instance of the builder, to allow chaining
-		/// </returns>
-		public WebhookSenderBuilder<TWebhook> Configure(Action<WebhookSenderOptions> configure) {
-			Services.AddOptions<WebhookSenderOptions>(typeof(TWebhook).Name)
-				.Configure(configure);
-
-			return this;
+			Services.AddScoped<IWebhookDestinationVerifier<TWebhook>, WebhookDestinationVerifier<TWebhook>>();
 		}
 
 		/// <summary>
@@ -115,139 +76,21 @@ namespace Deveel.Webhooks {
 		}
 
 		/// <summary>
-		/// Registers a JSON serializer service.
-		/// </summary>
-		/// <typeparam name="TSerializer">
-		/// The type of the serializer service that is registered.
-		/// </typeparam>
-		/// <returns>
-		/// Returns the instance of the builder, to allow chaining
-		/// </returns>
-		public WebhookSenderBuilder<TWebhook> UseJsonSerializer<TSerializer>()
-			where TSerializer : class, IWebhookJsonSerializer<TWebhook> {
-			
-			Services.TryAddSingleton<IWebhookJsonSerializer<TWebhook>, TSerializer>();
-			Services.TryAddSingleton<TSerializer>();
-
-			return this;
-		}
-
-		/// <summary>
-		/// Registers a service used to sign webhook payloads.
-		/// </summary>
-		/// <typeparam name="TSigner">
-		/// The type of the signer service that is registered.
-		/// </typeparam>
-		/// <returns>
-		/// Returns the instance of the builder, to allow chaining
-		/// </returns>
-		public WebhookSenderBuilder<TWebhook> AddSigner<TSigner>()
-			where TSigner : class, IWebhookSigner {
-
-			if (typeof(IWebhookSigner<TWebhook>).IsAssignableFrom(typeof(TSigner))) {
-				Services.AddSingleton<IWebhookSigner<TWebhook>>(provider => 
-					(IWebhookSigner<TWebhook>) provider.GetRequiredService<TSigner>());
-			} else {
-				Services.AddSingleton<IWebhookSigner<TWebhook>>(provider => {
-					var signer = provider.GetRequiredService<TSigner>();
-					return new WebhookSignerAdapter(signer);
-				});
-			}
-
-			Services.AddSingleton<TSigner>();
-            Services.AddSingleton<IWebhookSignerProvider<TWebhook>, DefaultWebhookSignerProvider>();
-
-            return this;
-		}
-
-		/// <summary>
 		/// Registers a service used to verify receivers of webhooks before
 		/// attempting to deliver them.
 		/// </summary>
-		/// <param name="sectionPath">
-		/// The path of the section within the configuration that
-		/// is used to configure the verifier.
-		/// </param>
 		/// <returns>
 		/// Returns the instance of the builder, to allow chaining
 		/// </returns>
-		public WebhookSenderBuilder<TWebhook> UseDestinationVerifier(string sectionPath) {
-			Services.AddOptions<WebhookDestinationVerifierOptions>(typeof(TWebhook).Name)
-				.BindConfiguration(sectionPath);
-
+		public WebhookSenderBuilder<TWebhook> UseDestinationVerifier<TVerifier>()
+			where TVerifier : class, IWebhookDestinationVerifier<TWebhook> {
 			Services.RemoveAll<IWebhookDestinationVerifier<TWebhook>>();
 
-			Services.AddScoped<IWebhookDestinationVerifier<TWebhook>, WebhookDestinationVerifier<TWebhook>>();
-			Services.AddScoped<WebhookDestinationVerifier<TWebhook>>();
+			Services.AddScoped<IWebhookDestinationVerifier<TWebhook>, TVerifier>();
+			Services.AddScoped<TVerifier>();
 
 			return this;
 		}
 
-		/// <summary>
-		/// Registers a service used to verify receivers of webhooks before
-		/// attempting to deliver them.
-		/// </summary>
-		/// <returns>
-		/// Returns the instance of the builder, to allow chaining
-		/// </returns>
-		public WebhookSenderBuilder<TWebhook> UseDestinationVerifier()
-			=> UseDestinationVerifier(_ => { });
-
-		/// <summary>
-		/// Registers a service used to verify receivers of webhooks before
-		/// attempting to deliver them.
-		/// </summary>
-		/// <param name="configure"></param>
-		/// <returns></returns>
-		public WebhookSenderBuilder<TWebhook> UseDestinationVerifier(Action<WebhookDestinationVerifierOptions> configure) {
-			Services.AddOptions<WebhookDestinationVerifierOptions>(typeof(TWebhook).Name)
-				.Configure(configure);
-
-			Services.RemoveAll<IWebhookDestinationVerifier<TWebhook>>();
-
-			Services.AddScoped<IWebhookDestinationVerifier<TWebhook>, WebhookDestinationVerifier<TWebhook>>();
-			Services.AddScoped<WebhookDestinationVerifier<TWebhook>>();
-
-			return this;
-		}
-
-        #region DefaultWebhookSignerProvider
-
-        class DefaultWebhookSignerProvider : IWebhookSignerProvider<TWebhook> {
-            private readonly IDictionary<string, IWebhookSigner> signers;
-
-            public DefaultWebhookSignerProvider(IEnumerable<IWebhookSigner<TWebhook>> signers) {
-                this.signers = new Dictionary<string, IWebhookSigner>(StringComparer.OrdinalIgnoreCase);
-
-                if (signers != null) {
-                    foreach (var signer in signers) {
-                        foreach (var alg in signer.Algorithms) {
-                            this.signers[alg] = signer;
-                        }
-                    }
-                }
-            }
-
-            public IWebhookSigner? GetSigner(string algorithm) {
-                if (!signers.TryGetValue(algorithm, out var signer))
-                    return null;
-
-                return signer;
-            }
-        }
-
-        #endregion
-
-        private class WebhookSignerAdapter : IWebhookSigner<TWebhook> {
-			private IWebhookSigner signer;
-
-			public WebhookSignerAdapter(IWebhookSigner signer) {
-				this.signer = signer;
-			}
-
-			public string[] Algorithms => signer.Algorithms;
-
-			public string SignWebhook(string webhookBody, string secret) => signer.SignWebhook(webhookBody, secret);
-		}
 	}
 }

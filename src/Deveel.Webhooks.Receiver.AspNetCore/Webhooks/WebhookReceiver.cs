@@ -41,8 +41,9 @@ namespace Deveel.Webhooks {
 		/// <summary>
 		/// Constructs a <see cref="WebhookReceiver{TWebhook}"/> instance.
 		/// </summary>
-		/// <param name="options">An instance of the <see cref="IOptionsSnapshot{TOptions}"/> that is
-		/// used to resolve the configurations specific for this receiver.</param>
+		/// <param name="options">
+		/// The configurations used by the receiver to process the requests
+		/// </param>
 		public WebhookReceiver(IOptions<WebhookReceiverOptions<TWebhook>> options)
 			: this(options.Value) {
 		}

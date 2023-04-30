@@ -169,6 +169,54 @@
             Thrown when the given <paramref name="obj"/> is <c>null</c>
             </exception>
         </member>
+        <member name="M:Deveel.Webhooks.EventInfoExtensions.TryGetValue``1(Deveel.Webhooks.IEventInfo,System.String,``0@)">
+            <summary>
+            Attempts to get the value of the given path from the data 
+            of the event.
+            </summary>
+            <typeparam name="TValue">
+            The type of the value to attempt getting.
+            </typeparam>
+            <param name="eventInfo">
+            The instance of the object that implements the <see cref="T:Deveel.Webhooks.IEventInfo"/> contract
+            </param>
+            <param name="path">
+            The path to the value to get from the data of the event.
+            </param>
+            <param name="value">
+            The value of the given path, if found, or the default value of the type
+            </param>
+            <returns>
+            Returns <c>true</c> if the value was found, otherwise <c>false</c>.
+            </returns>
+            <exception cref="T:System.ArgumentNullException">
+            Thrown when the given <paramref name="eventInfo"/> is <c>null</c>
+            </exception>
+            <exception cref="T:System.NotSupportedException">
+            Thrown if the data of the event is not supported by this reflection.
+            </exception>
+            <exception cref="T:System.InvalidCastException">
+            Thrown if the value found in the data of the event cannot be casted
+            to the given type <typeparamref name="TValue"/>.
+            </exception>
+        </member>
+        <member name="M:Deveel.Webhooks.EventInfoExtensions.GetValue``1(Deveel.Webhooks.IEventInfo,System.String)">
+            <summary>
+            Gets the value of the given path from the data of the event.
+            </summary>
+            <typeparam name="TValue">
+            The type of the value to get.
+            </typeparam>
+            <param name="eventInfo">
+            The instance of the object that implements the <see cref="T:Deveel.Webhooks.IEventInfo"/> contract
+            </param>
+            <param name="path">
+            The path to the value to get from the data of the event.
+            </param>
+            <returns>
+            Returns the value of the given path, or <c>null</c> if not found.
+            </returns>
+        </member>
         <member name="T:Deveel.Webhooks.ITenantWebhookNotifier`1">
             <summary>
             A service that resolves subscriptions to events, prepares

@@ -59,15 +59,22 @@ namespace Deveel.Webhooks {
 			[XmlAttribute("eventId")]
 			public string Id { get; set; }
 
-			[XmlAttribute("timestamp", DataType = "dateTime")]
+			[XmlIgnore]
 			public DateTime TimeStamp { get; set; }
 
+			[XmlAttribute("timestamp")]
+			public string TimeStampString {
+				get => TimeStamp.ToString("O");
+				set => TimeStamp = DateTime.Parse(value);
+			}
+
 			[XmlIgnore]
-			public int Count { get; set; }
+			public int? Count { get; set; }
 
 			[XmlAttribute("count")]
 			public string? CountString {
-				get => Count.ToString();
+				get => Count?.ToString();
+				set => Count = value != null ? int.Parse(value) : null;
 			}
 		}
 

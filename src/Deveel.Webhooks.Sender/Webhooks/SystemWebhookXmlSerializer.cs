@@ -12,11 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using System.Xml;
 using System.Xml.Serialization;
 
 namespace Deveel.Webhooks {
@@ -28,13 +25,49 @@ namespace Deveel.Webhooks {
 	/// The type of the webhook to serialize.
 	/// </typeparam>
 	public sealed class SystemWebhookXmlSerializer<TWebhook> : IWebhookXmlSerializer<TWebhook> where TWebhook : class {
+		private readonly XmlSerializerOptions options;
+
+		/// <summary>
+		/// Constructs the serializer with the given options.
+		/// </summary>
+		/// <param name="options">
+		/// The options to use to serialize the webhook.
+		/// </param>
+		public SystemWebhookXmlSerializer(XmlSerializerOptions? options = null) {
+			this.options = options ?? new XmlSerializerOptions();
+		}
+
 		/// <inheritdoc/>
 		public async Task SerializeAsync(Stream utf8Stream, TWebhook webhook, CancellationToken cancellationToken = default) {
-			try {
-				var serializer = new XmlSerializer(typeof(TWebhook));
-				serializer.Serialize(utf8Stream, webhook);
+			if (utf8Stream == null)
+				throw new ArgumentNullException(nameof(utf8Stream));
+			if (!utf8Stream.CanWrite)
+				throw new ArgumentException("The stream is not writable", nameof(utf8Stream));
 
-				await Task.CompletedTask;
+			try {
+				var settings = new XmlWriterSettings {
+					Async = true,
+					Indent = options.Indent,
+					Encoding = Encoding.UTF8,
+					NamespaceHandling = NamespaceHandling.OmitDuplicates,
+					CloseOutput = false
+				};
+
+				using var writer = XmlWriter.Create(utf8Stream, settings);
+
+				var ns = new XmlSerializerNamespaces();
+				if (options.IncludeNamespaces ?? false) {
+					foreach (var pair in options.Namespaces) {
+						ns.Add(pair.Key, pair.Value);
+					}
+				} else {
+					ns.Add("", "");
+				}
+
+				var serializer = new XmlSerializer(typeof(TWebhook));
+				serializer.Serialize(writer, webhook, ns);
+				await writer.FlushAsync();
+
 			} catch (Exception ex) {
 				throw new WebhookSerializationException("Could not serialize the webhook to XML", ex);
 			}

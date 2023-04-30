@@ -176,5 +176,27 @@ namespace Deveel.Webhooks {
 			Assert.False(result.Successful);
 			Assert.Null(result.Webhook);
 		}
+
+		[Fact]
+		public async Task ReceiveSmsFromWhatsApp() {
+			var request = CreateRequestWithForm(new Dictionary<string, StringValues> {
+				{ "MessageSid", "SM1234567890" },
+				{ "AccountSid", "AC1234567890" },
+				{ "MessagingServiceSid", "MG1234567890" },
+				{ "From", "whatsapp:+1234567890" },
+				{ "To", "whatsapp:+0987654321" },
+				{ "Body", "Hello World" }
+			});
+
+			var result = await Receiver.ReceiveAsync(request);
+			Assert.True(result.Successful);
+			Assert.NotNull(result.Webhook);
+			Assert.NotNull(result.Webhook.From);
+			Assert.True(result.Webhook.From.IsWhatsApp());
+			Assert.Equal("+1234567890", result.Webhook.From.WhatsAppPhoneNumber);
+			Assert.NotNull(result.Webhook.To);
+			Assert.True(result.Webhook.To.IsWhatsApp());
+			Assert.Equal("+0987654321", result.Webhook.To.WhatsAppPhoneNumber);
+		}
 	}
 }

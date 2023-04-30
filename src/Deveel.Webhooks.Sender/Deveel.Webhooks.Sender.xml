@@ -286,6 +286,14 @@
             The type of the webhook to serialize.
             </typeparam>
         </member>
+        <member name="M:Deveel.Webhooks.SystemWebhookXmlSerializer`1.#ctor(Deveel.Webhooks.XmlSerializerOptions)">
+            <summary>
+            Constructs the serializer with the given options.
+            </summary>
+            <param name="options">
+            The options to use to serialize the webhook.
+            </param>
+        </member>
         <member name="M:Deveel.Webhooks.SystemWebhookXmlSerializer`1.SerializeAsync(System.IO.Stream,`0,System.Threading.CancellationToken)">
             <inheritdoc/>
         </member>

@@ -270,5 +270,54 @@ namespace Deveel.Webhooks {
 			var decoded = Encoding.UTF8.GetString(Convert.FromBase64String(attachment.Content));
 			Assert.Equal("This is a test email", decoded);
 		}
+
+		[Fact]
+		public async Task ReceiveFormEmailWithAttachments() {
+			var result = await ReceiveFormEmailAsync(new Dictionary<string, StringValues> {
+				{"from", "\"Jonh Doe\"<joe@example.com>"},
+				{"to", "info@foobar.com"},
+				{ "cc", "support@bar.com" },
+				{"subject", "Hello, World!"},
+				{"text", "This is a test email"},
+				{"ip", "192.168.0.1"},
+				{"attachments", new StringValues("test.txt;text/plain;VGhpcyBpcyBhIHRlc3QgZW1haWw=")},
+			});
+
+			Assert.True(result.Successful);
+
+			Assert.NotNull(result.Webhooks);
+			Assert.NotEmpty(result.Webhooks);
+			Assert.Single(result.Webhooks);
+
+			var webhook = result.Webhooks[0];
+
+			Assert.NotNull(webhook);
+
+			Assert.Equal("joe@example.com", webhook.From.Address);
+			Assert.Equal("Jonh Doe", webhook.From.Name);
+
+			Assert.NotNull(webhook.To);
+			Assert.NotEmpty(webhook.To);
+			Assert.Single(webhook.To);
+			Assert.Equal("info@foobar.com", webhook.To[0].Address);
+			Assert.Equal("", webhook.To[0].Name);
+
+			Assert.NotNull(webhook.Cc);
+			Assert.NotEmpty(webhook.Cc);
+			Assert.Single(webhook.Cc);
+			Assert.Equal("support@bar.com", webhook.Cc[0].Address);
+			Assert.Equal("", webhook.Cc[0].Name);
+
+			Assert.NotNull(webhook.Attachments);
+			Assert.NotEmpty(webhook.Attachments);
+			Assert.Single(webhook.Attachments);
+
+			var attachment = webhook.Attachments[0];
+			Assert.Equal("test.txt", attachment.Filename);
+			Assert.Equal("text/plain", attachment.Type);
+
+			var decoded = Encoding.UTF8.GetString(Convert.FromBase64String(attachment.Content));
+			Assert.Equal("This is a test email", decoded);
+		}
 	}
 }

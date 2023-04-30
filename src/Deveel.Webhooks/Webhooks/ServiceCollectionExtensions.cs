@@ -70,26 +70,5 @@ namespace Deveel.Webhooks {
 
 			return services;
 		}
-
-		/// <summary>
-		/// Registers the webhook service to handle the given type of webhook.
-		/// </summary>
-		/// <typeparam name="TWebhook">
-		/// The type of the webhook handled by the service.
-		/// </typeparam>
-		/// <param name="services">
-		/// The service collection to add the service to.
-		/// </param>
-		/// <returns>
-		/// Returns an instance of <see cref="WebhooksBuilder{TWebhook}"/> that can be used
-		/// to configure the webhook service.
-		/// </returns>
-		public static WebhooksBuilder<TWebhook> AddWebhooks<TWebhook>(this IServiceCollection services)
-			where TWebhook : class {
-			var builder = new WebhooksBuilder<TWebhook>(services);
-			services.TryAddSingleton(builder);
-
-			return builder;
-		}
 	}
 }

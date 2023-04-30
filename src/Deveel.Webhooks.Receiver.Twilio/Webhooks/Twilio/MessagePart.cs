@@ -44,5 +44,16 @@ namespace Deveel.Webhooks.Twilio {
 		/// Gets the postal code of the messaging part
 		/// </summary>
         public string? Zip { get; internal set; }
+
+		/// <summary>
+		/// If the part is a WhatsApp number, gets the phone number
+		/// </summary>
+		public string WhatsAppPhoneNumber => IsWhatsApp() ? PhoneNumber.Substring(9) : PhoneNumber;
+
+		/// <summary>
+		/// Gets a value indicating if the messaging part is a WhatsApp
+		/// telephone number.
+		/// </summary>
+		public bool IsWhatsApp() => PhoneNumber?.StartsWith("whatsapp:") ?? false;
     }
 }

@@ -329,6 +329,17 @@
             Gets the postal code of the messaging part
             </summary>
         </member>
+        <member name="P:Deveel.Webhooks.Twilio.MessagePart.WhatsAppPhoneNumber">
+            <summary>
+            If the part is a WhatsApp number, gets the phone number
+            </summary>
+        </member>
+        <member name="M:Deveel.Webhooks.Twilio.MessagePart.IsWhatsApp">
+            <summary>
+            Gets a value indicating if the messaging part is a WhatsApp
+            telephone number.
+            </summary>
+        </member>
         <member name="T:Deveel.Webhooks.Twilio.MessageStatus">
             <summary>
             Enumerates the possible values for the status of a Twilio message

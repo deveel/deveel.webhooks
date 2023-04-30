@@ -29,8 +29,7 @@ namespace Deveel.Webhooks {
 			});
 
 
-			builder.Services.AddWebhooks<IdentityWebhook>()
-				.AddNotifier(notifier => notifier
+			builder.Services.AddWebhookNotifier<IdentityWebhook>(notifier => notifier
 					.UseWebhookFactory<UserCreatedWebhookFactory>()
 					.UseMongoSubscriptionResolver());
 

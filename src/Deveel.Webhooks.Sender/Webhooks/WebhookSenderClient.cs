@@ -18,6 +18,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
+
 using Polly;
 
 namespace Deveel.Webhooks {
@@ -39,9 +42,14 @@ namespace Deveel.Webhooks {
 		/// <param name="httpClient">
 		/// The HTTP client to use for sending the requests.
 		/// </param>
-		protected WebhookSenderClient(HttpClient httpClient) {
+		/// <param name="logger">
+		/// A logger to use for logging the operations of the sender.
+		/// </param>
+		protected WebhookSenderClient(HttpClient httpClient, ILogger? logger) {
 			this.httpClient = httpClient;
 			disposeClient = (httpClient == null);
+
+			Logger = logger ?? NullLogger.Instance;
 		}
 
 		/// <summary>
@@ -50,8 +58,9 @@ namespace Deveel.Webhooks {
 		/// <param name="httpClientFactory">
 		/// The factory of HTTP clients to use for sending the requests.
 		/// </param>
-		protected WebhookSenderClient(IHttpClientFactory? httpClientFactory) {
+		protected WebhookSenderClient(IHttpClientFactory? httpClientFactory, ILogger? logger) {
 			this.httpClientFactory = httpClientFactory;
+			Logger = logger ?? NullLogger.Instance;
 		}
 
 		/// <summary>
@@ -63,6 +72,11 @@ namespace Deveel.Webhooks {
 		/// Gets the retry options for each request sent.
 		/// </summary>
 		protected virtual WebhookRetryOptions? Retry { get; }
+
+		/// <summary>
+		/// Gets the logger to use for logging the operations of the sender.
+		/// </summary>
+		protected ILogger Logger { get; }
 
 		/// <summary>
 		/// Gets the name of the <see cref="HttpClient"/> to be obtained 

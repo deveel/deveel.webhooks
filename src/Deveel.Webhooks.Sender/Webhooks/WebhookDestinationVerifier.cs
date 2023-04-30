@@ -17,6 +17,7 @@ using System.Globalization;
 using System.Net;
 using System.Text;
 
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 using Polly;
@@ -40,9 +41,13 @@ namespace Deveel.Webhooks {
 		/// An optional factory to create the <see cref="HttpClient"/> instances
 		/// used to sende the verification requests.
 		/// </param>
+		/// <param name="logger">
+		/// A logger to use for logging the operations of the verifier.
+		/// </param>
 		public WebhookDestinationVerifier(IOptions<WebhookSenderOptions<TWebhook>> options, 
-			IHttpClientFactory? httpClientFactory = null)
-            : this(options.Value, httpClientFactory) {
+			IHttpClientFactory? httpClientFactory = null,
+			ILogger<WebhookDestinationVerifier<TWebhook>>? logger = null)
+            : this(options.Value, httpClientFactory, logger) {
         }
 
 		/// <summary>
@@ -55,11 +60,16 @@ namespace Deveel.Webhooks {
 		/// <param name="httpClientFactory">
 		/// The factory of HTTP clients used to send the verification requests.
 		/// </param>
+		/// <param name="logger">
+		/// A logger to use for logging the operations of the verifier.
+		/// </param>
 		/// <exception cref="ArgumentNullException">
 		/// Thrown when the <paramref name="options"/> is <c>null</c>.
 		/// </exception>
-		protected WebhookDestinationVerifier(WebhookSenderOptions<TWebhook> options, IHttpClientFactory? httpClientFactory = null) 
-			: this(options.Verification, httpClientFactory) {
+		protected WebhookDestinationVerifier(WebhookSenderOptions<TWebhook> options, 
+			IHttpClientFactory? httpClientFactory = null,
+			ILogger? logger = null) 
+			: this(options.Verification, httpClientFactory, logger) {
         }
 
 		/// <summary>
@@ -68,9 +78,12 @@ namespace Deveel.Webhooks {
 		/// </summary>
 		/// <param name="options"></param>
 		/// <param name="httpClientFactory"></param>
+		/// <param name="logger"></param>
 		/// <exception cref="ArgumentNullException"></exception>
-		protected WebhookDestinationVerifier(WebhookReceiverVerificationOptions options, IHttpClientFactory? httpClientFactory = null)
-			: base(httpClientFactory) {
+		protected WebhookDestinationVerifier(WebhookReceiverVerificationOptions options, 
+			IHttpClientFactory? httpClientFactory = null,
+			ILogger? logger = null)
+			: base(httpClientFactory, logger) {
 			VerifierOptions = options ?? throw new ArgumentNullException(nameof(options));
 		}
 
@@ -84,11 +97,14 @@ namespace Deveel.Webhooks {
 		/// <param name="httpClient">
 		/// The optional HTTP client used to send the verification requests.
 		/// </param>
+		/// <param name="logger">
+		/// A logger to use for logging the operations of the verifier.
+		/// </param>
 		/// <exception cref="ArgumentNullException">
 		/// Thrown when the <paramref name="options"/> is <c>null</c>.
 		/// </exception>
-		protected WebhookDestinationVerifier(WebhookSenderOptions<TWebhook> options, HttpClient httpClient) 
-			: this(options.Verification, httpClient) {
+		protected WebhookDestinationVerifier(WebhookSenderOptions<TWebhook> options, HttpClient httpClient, ILogger? logger) 
+			: this(options.Verification, httpClient, logger) {
 		}
 
 		/// <summary>
@@ -97,8 +113,10 @@ namespace Deveel.Webhooks {
 		/// </summary>
 		/// <param name="options"></param>
 		/// <param name="httpClient"></param>
+		/// <param name="logger"></param>
 		/// <exception cref="ArgumentNullException"></exception>
-		protected WebhookDestinationVerifier(WebhookReceiverVerificationOptions options, HttpClient httpClient) : base(httpClient) {
+		protected WebhookDestinationVerifier(WebhookReceiverVerificationOptions options, HttpClient httpClient, ILogger? logger) 
+			: base(httpClient, logger) {
 			VerifierOptions = options ?? throw new ArgumentNullException(nameof(options));
 		}
 

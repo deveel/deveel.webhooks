@@ -14,6 +14,8 @@
 
 using System.Text;
 
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 
 using Polly;
@@ -46,9 +48,13 @@ namespace Deveel.Webhooks {
 		/// is <c>null</c> the sender will create a new instance of <see cref="HttpClient"/>
 		/// and dispose it when this services is disposed.
 		/// </param>
+		/// <param name="logger">
+		/// A logger used to log messages during the sending of webhooks.
+		/// </param>
 		public WebhookSender(IOptions<WebhookSenderOptions<TWebhook>> options,
-			IHttpClientFactory? httpClientFactory = null)
-			: this(options.Value, httpClientFactory) {
+			IHttpClientFactory? httpClientFactory = null,
+			ILogger<WebhookSender<TWebhook>>? logger = null)
+			: this(options.Value, httpClientFactory, logger) {
 		}
 
 		/// <summary>
@@ -61,12 +67,17 @@ namespace Deveel.Webhooks {
 		/// An <see cref="IHttpClientFactory"/> used to create instances of
 		/// <see cref="HttpClient"/> used to send webhooks.
 		/// </param>
+		/// <param name="logger">
+		/// A logger that is used to log messages during the sending of webhooks.
+		/// </param>
 		/// <exception cref="ArgumentNullException">
 		/// Thrown when the <paramref name="options"/> or the <paramref name="httpClientFactory"/>
 		/// are <c>null</c>
 		/// </exception>
-		protected WebhookSender(WebhookSenderOptions<TWebhook> options, IHttpClientFactory? httpClientFactory = null) 
-			: base(httpClientFactory) {
+		protected WebhookSender(WebhookSenderOptions<TWebhook> options, 
+			IHttpClientFactory? httpClientFactory = null,
+			ILogger<WebhookSender<TWebhook>>? logger = null) 
+			: base(httpClientFactory, logger ?? NullLogger<WebhookSender<TWebhook>>.Instance) {
 			if (options is null) throw new ArgumentNullException(nameof(options));
 
 			SenderOptions = options;
@@ -81,6 +92,9 @@ namespace Deveel.Webhooks {
 		/// <param name="httpClient">
 		/// A <see cref="HttpClient"/> used to send webhooks.
 		/// </param>
+		/// <param name="logger">
+		/// A logger that is used to log messages during the sending of webhooks.
+		/// </param>
 		/// <exception cref="ArgumentNullException">
 		/// Thown when the <paramref name="options"/> or the <paramref name="httpClient"/>
 		/// are <c>null</c>.
@@ -89,7 +103,8 @@ namespace Deveel.Webhooks {
 		/// The provided <paramref name="httpClient"/> will not be disposed when
 		/// the sender is disposed.
 		/// </remarks>
-		protected WebhookSender(WebhookSenderOptions<TWebhook> options, HttpClient httpClient) : base(httpClient) {
+		protected WebhookSender(WebhookSenderOptions<TWebhook> options, HttpClient httpClient, ILogger? logger) 
+			: base(httpClient, logger) {
 			if (options is null)
 				throw new ArgumentNullException(nameof(options));
 
@@ -165,12 +180,21 @@ namespace Deveel.Webhooks {
                 throw new ArgumentNullException(nameof(secret));
             if (string.IsNullOrWhiteSpace(webhookBody))
                 throw new ArgumentNullException(nameof(webhookBody));
-            
-			var signer = GetSigner(algorithm);
-			if (signer == null)
-				return WebhookSignature.Create(algorithm, webhookBody, secret);
 
-            return signer.SignWebhook(webhookBody, secret);
+			Logger.TraceCreatingSignature(algorithm);
+
+			string? signature = null;
+
+			var signer = GetSigner(algorithm);
+			if (signer == null) {
+				signature = WebhookSignature.Create(algorithm, webhookBody, secret);
+			} else {
+				signature = signer.SignWebhook(webhookBody, secret);
+			}
+
+			Logger.TraceCreatingSignature(algorithm);
+
+			return signature;
         }
 
 		/// <summary>
@@ -195,7 +219,13 @@ namespace Deveel.Webhooks {
 			if (SenderOptions.JsonSerializer == null)
 				throw new NotSupportedException("No JSON serializer was set");
 
-			return await SenderOptions.JsonSerializer.SerializeToStringAsync(webhook, cancellationToken);
+			Logger.TraceSerializing("json");
+
+			var result = await SenderOptions.JsonSerializer.SerializeToStringAsync(webhook, cancellationToken);
+
+			Logger.TraceSerialized("json");
+
+			return result;
 		}
 
 		/// <summary>
@@ -220,7 +250,13 @@ namespace Deveel.Webhooks {
 			if (SenderOptions.XmlSerializer == null)
 				throw new NotSupportedException("No XML serializer was set");
 
-			return await SenderOptions.XmlSerializer.SerializeToStringAsync(webhook, cancellationToken);
+			Logger.TraceSerializing("xml");
+
+			var result = await SenderOptions.XmlSerializer.SerializeToStringAsync(webhook, cancellationToken);
+
+			Logger.TraceSerialized("xml");
+
+			return result;
 		}
 
 		/// <summary>
@@ -267,11 +303,17 @@ namespace Deveel.Webhooks {
 				if (String.IsNullOrWhiteSpace(SenderOptions.Signature.HeaderName))
 					throw new WebhookSenderException("The header name for the signature is not set");
 
+				Logger.TraceSigningRequest(algorithm, WebhookSignatureLocation.Header, SenderOptions.Signature.HeaderName);
+
 				// request.Headers.Add(configuration.DeliveryOptions.SignatureHeaderName, $"{provider.Algorithm}={signature}");
 				request.Headers.Add(SenderOptions.Signature.HeaderName, signature);
+
+				Logger.TraceRequestSigned(algorithm, WebhookSignatureLocation.Header, SenderOptions.Signature.HeaderName);
 			} else if (SenderOptions.Signature.Location == WebhookSignatureLocation.QueryString) {
 				if (String.IsNullOrWhiteSpace(SenderOptions.Signature.QueryParameter))
                     throw new WebhookSenderException("The query parameter for the signature is not set");
+
+				Logger.TraceSigningRequest(algorithm, WebhookSignatureLocation.QueryString, SenderOptions.Signature.QueryParameter);
 
 				var uri = request.RequestUri!
 					.AddQueryParameter(SenderOptions.Signature.QueryParameter, signature);
@@ -281,6 +323,8 @@ namespace Deveel.Webhooks {
 				}
 
 				request.RequestUri = uri;
+
+				Logger.TraceRequestSigned(algorithm, WebhookSignatureLocation.QueryString, SenderOptions.Signature.QueryParameter);
 			}
 		}
 
@@ -417,25 +461,34 @@ namespace Deveel.Webhooks {
 
             await OnAttemptStartedAsync(destination, webhook, attempt, cancellationToken);
 
+			HttpRequestMessage? request = null;
+
             try {
-                var request = await CreateRequestAsync(destination, webhook, cancellationToken);
+                request = await CreateRequestAsync(destination, webhook, cancellationToken);
+
+				Logger.TraceStartingAttempt(request.RequestUri!.GetLeftPart(UriPartial.Path));
 
                 response = await timeoutPolicy.ExecuteAsync(token => SendRequestAsync(request, token), cancellationToken);
 
 				attempt.Complete((int) response.StatusCode, response.ReasonPhrase);
 
 				response.EnsureSuccessStatusCode();
-			} catch (TaskCanceledException) {
+			} catch (TaskCanceledException ex) {
+				Logger.WarnTimeOut(ex);
                 attempt.TimeOut();
                 throw;
-			} catch (TimeoutException) {
+			} catch (TimeoutException ex) {
+				Logger.WarnTimeOut(ex);
 				attempt.TimeOut();
 				throw;
 			} catch (TimeoutRejectedException ex) {
+				Logger.WarnTimeOut(ex);
 				attempt.TimeOut();
 
 				throw new TimeoutException("A timeout occurred while trying to get the response", ex);
 			} catch (HttpRequestException ex) {
+				Logger.WarnRequestFailed(ex, request?.RequestUri!.GetLeftPart(UriPartial.Path)!, (int?)(response?.StatusCode ?? ex.StatusCode));
+
 				if (response != null) {
 					attempt.Complete((int)response.StatusCode, response.ReasonPhrase);
 				} else {
@@ -444,14 +497,26 @@ namespace Deveel.Webhooks {
 
 				throw;
 			} catch (WebhookSenderException ex) {
+				Logger.LogUnknownError(ex);
+
 				attempt.LocalFail($"Local error: {ex.Message}");
 				throw;
 			} catch (Exception ex) {
+				Logger.LogUnknownError(ex);
+
 				attempt.LocalFail($"Local error: {ex.Message}");
 				throw new WebhookSenderException("Could not send the webhook", ex);
 			} finally {
 				if (!attempt.HasCompleted) {
 					attempt.LocalFail("Could not complete the request");
+				}
+
+				Logger.TraceAttemptFinished(request?.RequestUri!.GetLeftPart(UriPartial.Path)!, (int?)attempt.ResponseCode);
+
+				if (attempt.Failed) {
+					// TODO: log that the attempt failed
+				} else if (attempt.Succeeded) {
+					// TODO: log that the attempt succeeded
 				}
 
                 await OnAttemptCompletedAsync(destination, webhook, attempt, cancellationToken);
@@ -499,6 +564,8 @@ namespace Deveel.Webhooks {
 			try {
 				var destination = receiver.Merge(SenderOptions);
 
+				Logger.TraceSendingWebhook(destination.Url.GetLeftPart(UriPartial.Path));
+
 				var result = new WebhookDeliveryResult<TWebhook>(destination, webhook);
 
 				var timeoutPolicy = CreateTimeoutPolicy();
@@ -515,11 +582,19 @@ namespace Deveel.Webhooks {
 					throw ex;
                 }
 
+				if (result.Successful) {
+					Logger.TraceSuccessfulDelivery(destination.Url.GetLeftPart(UriPartial.Path));
+				} else {
+					Logger.WarnDeliveryFailed(destination.Url.GetLeftPart(UriPartial.Path));
+				}
+
 				return result;
 			} catch (WebhookSenderException) {
 
 				throw;
 			} catch(Exception ex) {
+				Logger.LogUnknownError(ex);
+
 				throw new WebhookSenderException("An error occurred while sending the webhook", ex);
 			}
 		}

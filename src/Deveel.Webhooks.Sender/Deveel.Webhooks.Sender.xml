@@ -772,7 +772,7 @@
             that pings a destination URL with some configured parameters to verify if it is reachable.
             </summary>
         </member>
-        <member name="M:Deveel.Webhooks.WebhookDestinationVerifier`1.#ctor(Microsoft.Extensions.Options.IOptions{Deveel.Webhooks.WebhookSenderOptions{`0}},System.Net.Http.IHttpClientFactory)">
+        <member name="M:Deveel.Webhooks.WebhookDestinationVerifier`1.#ctor(Microsoft.Extensions.Options.IOptions{Deveel.Webhooks.WebhookSenderOptions{`0}},System.Net.Http.IHttpClientFactory,Microsoft.Extensions.Logging.ILogger{Deveel.Webhooks.WebhookDestinationVerifier{`0}})">
             <summary>
             Creates a new instance of the <see cref="T:Deveel.Webhooks.WebhookDestinationVerifier`1"/> class
             with the given options.
@@ -784,8 +784,11 @@
             An optional factory to create the <see cref="T:System.Net.Http.HttpClient"/> instances
             used to sende the verification requests.
             </param>
+            <param name="logger">
+            A logger to use for logging the operations of the verifier.
+            </param>
         </member>
-        <member name="M:Deveel.Webhooks.WebhookDestinationVerifier`1.#ctor(Deveel.Webhooks.WebhookSenderOptions{`0},System.Net.Http.IHttpClientFactory)">
+        <member name="M:Deveel.Webhooks.WebhookDestinationVerifier`1.#ctor(Deveel.Webhooks.WebhookSenderOptions{`0},System.Net.Http.IHttpClientFactory,Microsoft.Extensions.Logging.ILogger)">
             <summary>
             Creates a new instance of the <see cref="T:Deveel.Webhooks.WebhookDestinationVerifier`1"/> class
             that is configured with the given options and an optional factory of HTTP clients.
@@ -796,20 +799,24 @@
             <param name="httpClientFactory">
             The factory of HTTP clients used to send the verification requests.
             </param>
+            <param name="logger">
+            A logger to use for logging the operations of the verifier.
+            </param>
             <exception cref="T:System.ArgumentNullException">
             Thrown when the <paramref name="options"/> is <c>null</c>.
             </exception>
         </member>
-        <member name="M:Deveel.Webhooks.WebhookDestinationVerifier`1.#ctor(Deveel.Webhooks.WebhookReceiverVerificationOptions,System.Net.Http.IHttpClientFactory)">
+        <member name="M:Deveel.Webhooks.WebhookDestinationVerifier`1.#ctor(Deveel.Webhooks.WebhookReceiverVerificationOptions,System.Net.Http.IHttpClientFactory,Microsoft.Extensions.Logging.ILogger)">
             <summary>
             Creates a new instance of the <see cref="T:Deveel.Webhooks.WebhookDestinationVerifier`1"/> class
             that is configured with the given options and an optional factory of HTTP clients.
             </summary>
             <param name="options"></param>
             <param name="httpClientFactory"></param>
+            <param name="logger"></param>
             <exception cref="T:System.ArgumentNullException"></exception>
         </member>
-        <member name="M:Deveel.Webhooks.WebhookDestinationVerifier`1.#ctor(Deveel.Webhooks.WebhookSenderOptions{`0},System.Net.Http.HttpClient)">
+        <member name="M:Deveel.Webhooks.WebhookDestinationVerifier`1.#ctor(Deveel.Webhooks.WebhookSenderOptions{`0},System.Net.Http.HttpClient,Microsoft.Extensions.Logging.ILogger)">
             <summary>
             Creates a new instance of the <see cref="T:Deveel.Webhooks.WebhookDestinationVerifier`1"/> class
             using an optional HTTP client.
@@ -820,17 +827,21 @@
             <param name="httpClient">
             The optional HTTP client used to send the verification requests.
             </param>
+            <param name="logger">
+            A logger to use for logging the operations of the verifier.
+            </param>
             <exception cref="T:System.ArgumentNullException">
             Thrown when the <paramref name="options"/> is <c>null</c>.
             </exception>
         </member>
-        <member name="M:Deveel.Webhooks.WebhookDestinationVerifier`1.#ctor(Deveel.Webhooks.WebhookReceiverVerificationOptions,System.Net.Http.HttpClient)">
+        <member name="M:Deveel.Webhooks.WebhookDestinationVerifier`1.#ctor(Deveel.Webhooks.WebhookReceiverVerificationOptions,System.Net.Http.HttpClient,Microsoft.Extensions.Logging.ILogger)">
             <summary>
             Creates a new instance of the <see cref="T:Deveel.Webhooks.WebhookDestinationVerifier`1"/> class
             that is configured with the given options and an optional HTTP client.
             </summary>
             <param name="options"></param>
             <param name="httpClient"></param>
+            <param name="logger"></param>
             <exception cref="T:System.ArgumentNullException"></exception>
         </member>
         <member name="P:Deveel.Webhooks.WebhookDestinationVerifier`1.VerifierOptions">
@@ -1102,7 +1113,7 @@
             a proper management of the <see cref="T:System.Net.Http.HttpClient"/> instances.
             </remarks>
         </member>
-        <member name="M:Deveel.Webhooks.WebhookSender`1.#ctor(Microsoft.Extensions.Options.IOptions{Deveel.Webhooks.WebhookSenderOptions{`0}},System.Net.Http.IHttpClientFactory)">
+        <member name="M:Deveel.Webhooks.WebhookSender`1.#ctor(Microsoft.Extensions.Options.IOptions{Deveel.Webhooks.WebhookSenderOptions{`0}},System.Net.Http.IHttpClientFactory,Microsoft.Extensions.Logging.ILogger{Deveel.Webhooks.WebhookSender{`0}})">
             <summary>
             Constructs a new instance of the <see cref="T:Deveel.Webhooks.WebhookSender`1"/>
             </summary>
@@ -1114,8 +1125,11 @@
             is <c>null</c> the sender will create a new instance of <see cref="T:System.Net.Http.HttpClient"/>
             and dispose it when this services is disposed.
             </param>
+            <param name="logger">
+            A logger used to log messages during the sending of webhooks.
+            </param>
         </member>
-        <member name="M:Deveel.Webhooks.WebhookSender`1.#ctor(Deveel.Webhooks.WebhookSenderOptions{`0},System.Net.Http.IHttpClientFactory)">
+        <member name="M:Deveel.Webhooks.WebhookSender`1.#ctor(Deveel.Webhooks.WebhookSenderOptions{`0},System.Net.Http.IHttpClientFactory,Microsoft.Extensions.Logging.ILogger{Deveel.Webhooks.WebhookSender{`0}})">
             <summary>
             Constucts a sender that uses the given options and a HTTP client factory
             </summary>
@@ -1126,12 +1140,15 @@
             An <see cref="T:System.Net.Http.IHttpClientFactory"/> used to create instances of
             <see cref="T:System.Net.Http.HttpClient"/> used to send webhooks.
             </param>
+            <param name="logger">
+            A logger that is used to log messages during the sending of webhooks.
+            </param>
             <exception cref="T:System.ArgumentNullException">
             Thrown when the <paramref name="options"/> or the <paramref name="httpClientFactory"/>
             are <c>null</c>
             </exception>
         </member>
-        <member name="M:Deveel.Webhooks.WebhookSender`1.#ctor(Deveel.Webhooks.WebhookSenderOptions{`0},System.Net.Http.HttpClient)">
+        <member name="M:Deveel.Webhooks.WebhookSender`1.#ctor(Deveel.Webhooks.WebhookSenderOptions{`0},System.Net.Http.HttpClient,Microsoft.Extensions.Logging.ILogger)">
             <summary>
             Constructs a sender that uses the given options and a HTTP client
             </summary>
@@ -1140,6 +1157,9 @@
             </param>
             <param name="httpClient">
             A <see cref="T:System.Net.Http.HttpClient"/> used to send webhooks.
+            </param>
+            <param name="logger">
+            A logger that is used to log messages during the sending of webhooks.
             </param>
             <exception cref="T:System.ArgumentNullException">
             Thown when the <paramref name="options"/> or the <paramref name="httpClient"/>
@@ -1429,7 +1449,7 @@
             A base class for the clients that send HTTP requests to a destination.
             </summary>
         </member>
-        <member name="M:Deveel.Webhooks.WebhookSenderClient.#ctor(System.Net.Http.HttpClient)">
+        <member name="M:Deveel.Webhooks.WebhookSenderClient.#ctor(System.Net.Http.HttpClient,Microsoft.Extensions.Logging.ILogger)">
             <summary>
             Creates a new instance of the <see cref="T:Deveel.Webhooks.WebhookSenderClient"/> class
             that uses the given HTTP client.
@@ -1437,8 +1457,11 @@
             <param name="httpClient">
             The HTTP client to use for sending the requests.
             </param>
+            <param name="logger">
+            A logger to use for logging the operations of the sender.
+            </param>
         </member>
-        <member name="M:Deveel.Webhooks.WebhookSenderClient.#ctor(System.Net.Http.IHttpClientFactory)">
+        <member name="M:Deveel.Webhooks.WebhookSenderClient.#ctor(System.Net.Http.IHttpClientFactory,Microsoft.Extensions.Logging.ILogger)">
             <summary>
             Creates a new instance of the <see cref="T:Deveel.Webhooks.WebhookSenderClient"/> class
             </summary>
@@ -1454,6 +1477,11 @@
         <member name="P:Deveel.Webhooks.WebhookSenderClient.Retry">
             <summary>
             Gets the retry options for each request sent.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.WebhookSenderClient.Logger">
+            <summary>
+            Gets the logger to use for logging the operations of the sender.
             </summary>
         </member>
         <member name="P:Deveel.Webhooks.WebhookSenderClient.HttpClientName">

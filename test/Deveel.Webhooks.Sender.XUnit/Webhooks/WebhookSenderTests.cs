@@ -126,7 +126,8 @@ namespace Deveel.Webhooks {
 
 			var services = new ServiceCollection()
 				.AddSingleton<IHttpClientFactory>(new MockHttpClientFactory("", mockHandler.ToHttpClient()))
-				.AddLogging(logging => logging.AddXUnit(outputHelper).SetMinimumLevel(LogLevel.Trace));
+				.AddLogging(logging => logging.AddXUnit(outputHelper, options => options.Filter = (cat, level) => true)
+					.SetMinimumLevel(LogLevel.Trace));
 
 			services.AddWebhookSender<TestWebhook>(options => {
 				options.DefaultHeaders = new Dictionary<string, string> {

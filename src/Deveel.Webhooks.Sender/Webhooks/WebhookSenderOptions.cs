@@ -16,7 +16,7 @@ namespace Deveel.Webhooks {
     /// <summary>
     /// Provides configurations for the webhooks sender service.
     /// </summary>
-    public class WebhookSenderOptions {
+    public class WebhookSenderOptions<TWebhook> where TWebhook : class {
 		/// <summary>
 		/// Gets or sets the name of the HTTP client registered in the
 		/// factory pool and that will be used to send the webhooks. 
@@ -62,5 +62,40 @@ namespace Deveel.Webhooks {
 		/// </summary>
 		public WebhookSenderSignatureOptions Signature { get; set; } 
 			= new WebhookSenderSignatureOptions();
+
+		/// <summary>
+		/// A service that is used to serialize the webhook to a JSON string.
+		/// (by default set to <see cref="SystemTextWebhookJsonSerializer{TWebhook}"/>).
+		/// </summary>
+		public IWebhookJsonSerializer<TWebhook>? JsonSerializer { get; set; } 
+			= new SystemTextWebhookJsonSerializer<TWebhook>();
+
+		/// <summary>
+		/// A service that is used to serialize the webhook to an XML string.
+		/// (by default set to <see cref="SystemWebhookXmlSerializer{TWebhook}"/>).
+		/// </summary>
+		public IWebhookXmlSerializer<TWebhook>? XmlSerializer { get; set; } 
+			= new SystemWebhookXmlSerializer<TWebhook>();
+
+		/// <summary>
+		/// Gets or sets a flag indicating if the webhooks sent should
+		/// be signed or not. When this is not set, the sender will
+		/// assume that the webhooks should be signed if the signer
+		/// is set and the <see cref="Signature"/> configurations are
+		/// provided.
+		/// </summary>
+		public bool? SignWebhooks { get; set; } = true;
+
+		/// <summary>
+		/// An instance of a service that is used to sign the webhooks
+		/// </summary>
+		public IWebhookSigner<TWebhook>? Signer { get; set; }
+
+		/// <summary>
+		/// Gets or sets the options for the verification of the receiver
+		/// of webhooks that is performed before sending the webhook.
+		/// </summary>
+		public WebhookReceiverVerificationOptions Verification { get; set; }
+			= new WebhookReceiverVerificationOptions();
 	}
 }

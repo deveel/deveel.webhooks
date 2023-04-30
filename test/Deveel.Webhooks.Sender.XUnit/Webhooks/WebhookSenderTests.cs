@@ -128,19 +128,16 @@ namespace Deveel.Webhooks {
 				.AddSingleton<IHttpClientFactory>(new MockHttpClientFactory("", mockHandler.ToHttpClient()))
 				.AddLogging(logging => logging.AddXUnit(outputHelper).SetMinimumLevel(LogLevel.Trace));
 
-			services.AddWebhookSender<TestWebhook>()
-				.UseDestinationVerifier(options => {
-					options.Challenge = true;
-				})
-				.Configure(options => {
-					options.DefaultHeaders = new Dictionary<string, string> {
+			services.AddWebhookSender<TestWebhook>(options => {
+				options.DefaultHeaders = new Dictionary<string, string> {
 						{"X-Test", "true"}
-                    };
-					options.Retry.Timeout = TimeSpan.FromMilliseconds(retryTimeoutMs);
-					options.Signature.Location = WebhookSignatureLocation.QueryString;
-					options.Signature.AlgorithmQueryParameter = "sig_alg";
-					options.Signature.QueryParameter = "sig";
-				});
+					};
+				options.Retry.Timeout = TimeSpan.FromMilliseconds(retryTimeoutMs);
+				options.Signature.Location = WebhookSignatureLocation.QueryString;
+				options.Signature.AlgorithmQueryParameter = "sig_alg";
+				options.Signature.QueryParameter = "sig";
+				options.Verification.Challenge = true;
+			});
 
 			return services.BuildServiceProvider();
 		}

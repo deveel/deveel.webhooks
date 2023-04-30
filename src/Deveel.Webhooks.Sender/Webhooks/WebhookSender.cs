@@ -35,10 +35,6 @@ namespace Deveel.Webhooks {
 	/// a proper management of the <see cref="HttpClient"/> instances.
 	/// </remarks>
     public class WebhookSender<TWebhook> : WebhookSenderClient, IWebhookSender<TWebhook>, IDisposable where TWebhook : class {
-		private readonly IWebhookSignerProvider<TWebhook>? signerProvider;
-		private readonly IWebhookJsonSerializer<TWebhook>? jsonSerializer;
-		private readonly IWebhookXmlSerializer<TWebhook>? xmlSerializer;
-
 		/// <summary>
 		/// Constructs a new instance of the <see cref="WebhookSender{TWebhook}"/>
 		/// </summary>
@@ -50,29 +46,9 @@ namespace Deveel.Webhooks {
 		/// is <c>null</c> the sender will create a new instance of <see cref="HttpClient"/>
 		/// and dispose it when this services is disposed.
 		/// </param>
-		/// <param name="jsonSerializer">
-		/// An optional service that is used to serialize the webhook to a JSON string.
-		/// When not provided, the sender will use the default JSON serializer.
-		/// </param>
-		/// <param name="xmlSerializer">
-		/// An optional service that is used to serialize the webhook to a XML string.
-		/// When not provided, the sender will use the default XML serializer.
-		/// </param>
-		/// <param name="signerProvider">
-		/// An optional service that is used to compute a signature for the webhook. When
-		/// the sender options specify that the webhook should be signed, and this service
-		/// is not provided, the sender will attempt to use the default signature provider
-		/// for a configured algorithm.
-		/// </param>
-		public WebhookSender(IOptionsSnapshot<WebhookSenderOptions> options,
-			IHttpClientFactory? httpClientFactory = null,
-			IWebhookJsonSerializer<TWebhook>? jsonSerializer = null,
-			IWebhookXmlSerializer<TWebhook>? xmlSerializer = null,
-			IWebhookSignerProvider<TWebhook>? signerProvider = null)
-			: this(options.Get(typeof(TWebhook).Name), httpClientFactory) {
-            this.jsonSerializer = jsonSerializer ?? new SystemTextWebhookJsonSerializer<TWebhook>();
-			this.xmlSerializer = xmlSerializer ?? new SystemWebhookXmlSerializer<TWebhook>();
-			this.signerProvider = signerProvider;
+		public WebhookSender(IOptions<WebhookSenderOptions<TWebhook>> options,
+			IHttpClientFactory? httpClientFactory = null)
+			: this(options.Value, httpClientFactory) {
 		}
 
 		/// <summary>
@@ -89,7 +65,7 @@ namespace Deveel.Webhooks {
 		/// Thrown when the <paramref name="options"/> or the <paramref name="httpClientFactory"/>
 		/// are <c>null</c>
 		/// </exception>
-		protected WebhookSender(WebhookSenderOptions options, IHttpClientFactory? httpClientFactory = null) 
+		protected WebhookSender(WebhookSenderOptions<TWebhook> options, IHttpClientFactory? httpClientFactory = null) 
 			: base(httpClientFactory) {
 			if (options is null) throw new ArgumentNullException(nameof(options));
 
@@ -113,7 +89,7 @@ namespace Deveel.Webhooks {
 		/// The provided <paramref name="httpClient"/> will not be disposed when
 		/// the sender is disposed.
 		/// </remarks>
-		protected WebhookSender(WebhookSenderOptions options, HttpClient httpClient) : base(httpClient) {
+		protected WebhookSender(WebhookSenderOptions<TWebhook> options, HttpClient httpClient) : base(httpClient) {
 			if (options is null)
 				throw new ArgumentNullException(nameof(options));
 
@@ -126,7 +102,7 @@ namespace Deveel.Webhooks {
 		/// <summary>
 		/// Gets the options used to configure the sender
 		/// </summary>
-		protected WebhookSenderOptions SenderOptions { get; }
+		protected WebhookSenderOptions<TWebhook> SenderOptions { get; }
 
 		/// <inheritdoc/>
 		protected override WebhookRetryOptions? Retry => SenderOptions.Retry;
@@ -155,7 +131,11 @@ namespace Deveel.Webhooks {
         protected virtual IWebhookSigner? GetSigner(string algorithm) {
 			ThrowIfDisposed();
 
-			return signerProvider?.GetSigner(algorithm);
+			if (SenderOptions.Signer != null &&
+				SenderOptions.Signer.Algorithms.Any(x => String.Equals(x, algorithm, StringComparison.OrdinalIgnoreCase)))
+				return SenderOptions.Signer;
+
+			return null;
 		}
 
 		/// <summary>
@@ -212,10 +192,10 @@ namespace Deveel.Webhooks {
 		/// Thrown if the serialization failed through an unhandled error.
 		/// </exception>
 		protected virtual async Task<string> SerializeToJsonAsync(TWebhook webhook, CancellationToken cancellationToken) {
-			if (jsonSerializer == null)
+			if (SenderOptions.JsonSerializer == null)
 				throw new NotSupportedException("No JSON serializer was set");
 
-			return await jsonSerializer.SerializeToStringAsync(webhook, cancellationToken);
+			return await SenderOptions.JsonSerializer.SerializeToStringAsync(webhook, cancellationToken);
 		}
 
 		/// <summary>
@@ -237,10 +217,10 @@ namespace Deveel.Webhooks {
 		/// Thrown if the serialization failed through an unhandled error.
 		/// </exception>
 		protected virtual async Task<string> SerializeToXmlAsync(TWebhook webhook, CancellationToken cancellationToken) {
-			if (xmlSerializer == null)
+			if (SenderOptions.XmlSerializer == null)
 				throw new NotSupportedException("No XML serializer was set");
 
-			return await xmlSerializer.SerializeToStringAsync(webhook, cancellationToken);
+			return await SenderOptions.XmlSerializer.SerializeToStringAsync(webhook, cancellationToken);
 		}
 
 		/// <summary>

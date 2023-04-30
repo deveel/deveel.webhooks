@@ -1080,7 +1080,7 @@
             Returns an instance of the builder to allow chaining.
             </returns>
         </member>
-        <member name="M:Deveel.Webhooks.WebhookNotifierBuilder`1.UseSender(System.Action{Deveel.Webhooks.WebhookSenderOptions})">
+        <member name="M:Deveel.Webhooks.WebhookNotifierBuilder`1.UseSender(System.Action{Deveel.Webhooks.WebhookSenderOptions{`0}})">
             <summary>
             Adds a sender service for the notifier.
             </summary>

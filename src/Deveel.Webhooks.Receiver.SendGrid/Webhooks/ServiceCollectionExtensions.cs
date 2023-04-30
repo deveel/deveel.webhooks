@@ -43,7 +43,6 @@ namespace Deveel.Webhooks {
 			var builder = services.AddWebhookReceiver<SendGridWebhook>(_ => { });
 
 			services.AddTransient<IPostConfigureOptions<WebhookReceiverOptions<SendGridWebhook>>, ConfigureWebhookReceiverOptions>();
-			services.AddTransient<IPostConfigureOptions<WebhookVerificationOptions<SendGridWebhook>>, ConfigureWebhookVerificationOptions>();
 
 			return builder;
 		}

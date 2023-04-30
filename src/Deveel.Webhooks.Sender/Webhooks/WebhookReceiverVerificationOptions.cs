@@ -18,7 +18,7 @@ namespace Deveel.Webhooks {
 	/// <summary>
 	/// Provides options for the verification of the webhook destination.
 	/// </summary>
-    public class WebhookDestinationVerifierOptions {      
+    public class WebhookReceiverVerificationOptions {      
 		/// <summary>
 		/// Gets or sets the timeout for the verification request.
 		/// </summary>

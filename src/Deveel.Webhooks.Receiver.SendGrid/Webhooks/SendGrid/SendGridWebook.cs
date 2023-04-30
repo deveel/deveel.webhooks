@@ -149,18 +149,6 @@ namespace Deveel.Webhooks.SendGrid {
 		[JsonPropertyName("cert_err")]
 		public bool? CertificateError { get; set; }
 
-		[JsonPropertyName("cert_issuer")]
-		public string CertIssuer { get; set; }
-
-		[JsonPropertyName("cert_subject")]
-		public string CertSubject { get; set; }
-
-		[JsonPropertyName("cert_verified")]
-		public string CertVerified { get; set; }
-
-		[JsonPropertyName("url_offset")]
-		public string UrlOffset { get; set; }
-
 		/// <summary>
 		/// Gets or sets the identifier of the unsubscribe group the email recipient 
 		/// is a member of.

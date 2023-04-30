@@ -15,15 +15,36 @@
 using System;
 
 namespace Deveel.Webhooks {
+	/// <summary>
+	/// Describes the receiver of a webhook notification
+	/// </summary>
 	public interface IWebhookReceiver {
+		/// <summary>
+		/// If the notification was performed to a specific subscription,
+		/// this returns the identifier of the subscription.
+		/// </summary>
 		string? SubscriptionId { get; }
 
+		/// <summary>
+		/// If the notification was performed to a specific subscription,
+		/// this returns the name of the subscription.
+		/// </summary>
 		string? SubscriptionName { get; }
 
+		/// <summary>
+		/// Gets the URL where the notification was sent.
+		/// </summary>
 		string DestinationUrl { get; }
 
+		/// <summary>
+		/// Gets the list of headers sent with the notification.
+		/// </summary>
 		IEnumerable<KeyValuePair<string, string>> Headers { get; }
 
+		/// <summary>
+		/// Gets a code that identifies the format of the request
+		/// body content. (either <c>json</c>, <c>xml</c> or <c>form</c>).
+		/// </summary>
 		string BodyFormat { get; }
 	}
 }

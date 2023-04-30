@@ -19,7 +19,7 @@ namespace Deveel.Webhooks {
 	/// Provides information on an event that might
 	/// trigger some notifications
 	/// </summary>
-	public readonly struct EventInfo {
+	public readonly struct EventInfo : IEventInfo {
 		/// <summary>
 		/// Constructs an EventInfo instance of the given type
 		/// and providing the given data
@@ -29,6 +29,9 @@ namespace Deveel.Webhooks {
 		/// </param>
 		/// <param name="eventType">
 		/// The type of event that was triggered
+		/// </param>
+		/// <param name="dataVersion">
+		/// The version of the data carried by the event
 		/// </param>
 		/// <param name="data">
 		/// The data carried by the event
@@ -48,7 +51,7 @@ namespace Deveel.Webhooks {
 		/// <exception cref="ArgumentNullException">
 		/// If the data provided are null
 		/// </exception>
-		public EventInfo(string subject, string eventType, object? data = null, string? id = null, DateTimeOffset? timeStamp = null) {
+		public EventInfo(string subject, string eventType, string? dataVersion = null, object? data = null, string? id = null, DateTimeOffset? timeStamp = null) {
 			if (string.IsNullOrEmpty(subject)) 
 				throw new ArgumentException($"'{nameof(subject)}' cannot be null or empty.", nameof(subject));
 
@@ -57,6 +60,7 @@ namespace Deveel.Webhooks {
 
 			Subject = subject;
 			EventType = eventType;
+			DataVersion = dataVersion;
 			Data = data ?? new object();
 
 			Id = String.IsNullOrWhiteSpace(id) ? Guid.NewGuid().ToString("N") : id;
@@ -86,20 +90,13 @@ namespace Deveel.Webhooks {
 		public DateTimeOffset TimeStamp { get; }
 
 		/// <summary>
-		/// Gets the data transported by the event.
+		/// Gets the version of the data carried by the event
 		/// </summary>
-		public object Data { get; }
+		public string? DataVersion { get; }
 
 		/// <summary>
-		/// Creates a new instance of this event with the given data
+		/// Gets the data transported by the event.
 		/// </summary>
-		/// <param name="data">
-		/// The new data to be transported by the event
-		/// </param>
-		/// <returns>
-		/// Returns a new instance of this event with the given data
-		/// </returns>
-		public EventInfo WithData(object data)
-			=> new EventInfo(Subject, EventType, data, Id, TimeStamp);
+		public object? Data { get; }
 	}
 }

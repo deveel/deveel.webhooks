@@ -47,7 +47,6 @@ namespace Deveel.Webhooks {
 				.UseSubscriptionManager()
 				.UseNotifier<Webhook>(config => config
 					.UseWebhookFactory<DefaultWebhookFactory>()
-					.AddDataTranformer<TestDataFactory>()
 					.UseLinqFilter()
 					.UseSubscriptionResolver<TestSubscriptionResolver>(ServiceLifetime.Singleton)
 					.UseSender(options => {
@@ -98,7 +97,7 @@ namespace Deveel.Webhooks {
 
 		[Fact]
 		public async Task DeliverWebhookFromEvent() {
-			var subscriptionId = CreateSubscription("Data Created", "data.created", new WebhookFilter("hook.data.data_type == \"test-data\"", "linq"));
+			var subscriptionId = CreateSubscription("Data Created", "data.created", new WebhookFilter("hook.data.type == \"test\"", "linq"));
 			var notification = new EventInfo("test", "data.created", data: new {
 				creationTime = DateTimeOffset.UtcNow,
 				type = "test"
@@ -132,7 +131,7 @@ namespace Deveel.Webhooks {
 
 			var testData = Assert.IsType<JsonElement>(lastWebhook.Data);
 
-			Assert.Equal("test-data", testData.GetProperty("data_type").GetString());
+			Assert.Equal("test", testData.GetProperty("type").GetString());
 		}
 
 		[Fact]
@@ -178,9 +177,12 @@ namespace Deveel.Webhooks {
 		[Fact]
 		public async Task DeliverWebhookWithMultipleFiltersFromEvent() {
 			var subscriptionId = CreateSubscription("Data Created", "data.created",
-				new WebhookFilter("hook.data.data_type == \"test-data\"", "linq"),
+				new WebhookFilter("hook.data.type == \"test\"", "linq"),
 				new WebhookFilter("hook.data.creator.user_name == \"antonello\"", "linq"));
 			var notification = new EventInfo("test", "data.created", data: new {
+				creator = new {
+					user_name = "antonello"
+				},
 				creationTime = DateTimeOffset.UtcNow,
 				type = "test"
 			});
@@ -241,7 +243,7 @@ namespace Deveel.Webhooks {
 			var subscriptionId = CreateSubscription(new TestWebhookSubscription {
 				EventTypes = new[] { "data.created" },
 				DestinationUrl = "https://callback.example.com",
-				Filters = new[] { new WebhookFilter("hook.data.data_type == \"test-data\"", "linq") },
+				Filters = new[] { new WebhookFilter("hook.data.type == \"test\"", "linq") },
 				Name = "Data Created",
 				Secret = "abc12345",
 				RetryCount = 3,
@@ -276,7 +278,7 @@ namespace Deveel.Webhooks {
 
 		[Fact]
 		public async Task FailToDeliver() {
-			var subscriptionId = CreateSubscription("Data Created", "data.created", new WebhookFilter("hook.data.data_type == \"test-data\"", "linq"));
+			var subscriptionId = CreateSubscription("Data Created", "data.created", new WebhookFilter("hook.data.type == \"test\"", "linq"));
 			var notification = new EventInfo("test", "data.created", data: new {
 				creationTime = DateTimeOffset.UtcNow,
 				type = "test"
@@ -305,7 +307,7 @@ namespace Deveel.Webhooks {
 
 		[Fact]
 		public async Task TimeOutWhileDelivering() {
-			var subscriptionId = CreateSubscription("Data Created", "data.created", new WebhookFilter("hook.data.data_type == \"test-data\"", "linq"));
+			var subscriptionId = CreateSubscription("Data Created", "data.created", new WebhookFilter("hook.data.type == \"test\"", "linq"));
 			var notification = new EventInfo("test", "data.created", data: new {
 				creationTime = DateTimeOffset.UtcNow,
 				type = "test"
@@ -344,18 +346,6 @@ namespace Deveel.Webhooks {
 
 			Assert.NotNull(result);
 			Assert.Empty(result);
-		}
-
-
-		private class TestDataFactory : IEventDataTransformer {
-			public bool Handles(EventInfo eventInfo) => eventInfo.EventType == "data.created";
-
-			public Task<object> CreateDataAsync(EventInfo eventInfo, CancellationToken cancellationToken)
-				=> Task.FromResult<object>(new {
-					creator = new { user_id = "1234", user_name = "antonello" },
-					data_type = "test-data",
-					created_at = DateTimeOffset.UtcNow
-				});
 		}
 	}
 }

@@ -12,15 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Logging;
-using System.Reflection;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace Deveel.Webhooks {
 	/// <summary>
@@ -34,19 +27,16 @@ namespace Deveel.Webhooks {
 		private readonly IWebhookDeliveryResultLogger<TWebhook> deliveryResultLogger;
 		private readonly IWebhookSender<TWebhook> sender;
 		private readonly IWebhookFactory<TWebhook> webhookFactory;
-		private readonly IEventTransformerPipeline? eventTransformer;
 		private readonly IDictionary<string, IWebhookFilterEvaluator<TWebhook>> filterEvaluators;
 
 		internal WebhookNotifierBase(
 			IWebhookSender<TWebhook> sender,
 			IWebhookFactory<TWebhook> webhookFactory,
-			IEventTransformerPipeline? eventTransformer = null,
 			IEnumerable<IWebhookFilterEvaluator<TWebhook>>? filterEvaluators = null,
 			IWebhookDeliveryResultLogger<TWebhook>? deliveryResultLogger = null,
 			ILogger<TenantWebhookNotifier<TWebhook>>? logger = null) {
 			this.sender = sender;
 			this.webhookFactory = webhookFactory;
-			this.eventTransformer = eventTransformer;
 			this.filterEvaluators = GetFilterEvaluators(filterEvaluators);
 			this.deliveryResultLogger = deliveryResultLogger ?? NullWebhookDeliveryResultLogger<TWebhook>.Instance;
 			Logger = logger ?? NullLogger<TenantWebhookNotifier<TWebhook>>.Instance;
@@ -80,38 +70,6 @@ namespace Deveel.Webhooks {
 		/// </returns>
 		protected virtual WebhookSubscriptionFilter? BuildSubscriptionFilter(IWebhookSubscription subscription) {
 			return subscription.AsFilter();
-		}
-
-		/// <summary>
-		/// Transforms the data included in the event into an
-		/// object that can be used to create a webhook.
-		/// </summary>
-		/// <param name="eventInfo">
-		/// The information about the event that triggered the notification.
-		/// </param>
-		/// <param name="cancellationToken">
-		/// A cancellation token that can be used to cancel the operation.
-		/// </param>
-		/// <remarks>
-		/// This method is called before a webhook is created and sent: the
-		/// generated data will be used to renew the instance of the
-		/// <see cref="EventInfo"/>, that will then be constructed into the webhook.
-		/// </remarks>
-		/// <returns>
-		/// Returns an object that will be used to renew the data of the event
-		/// before passing it to the factory.
-		/// </returns>
-		/// <seealso cref="IWebhookFactory{TWebhook}"/>
-		protected virtual async Task<object> GetWebhookDataAsync(EventInfo eventInfo, CancellationToken cancellationToken) {
-			var data = eventInfo.Data;
-
-			if (eventTransformer != null) {
-				var result = await eventTransformer.TransformAsync(eventInfo, cancellationToken);
-
-				data = result.Data;
-			}
-
-			return data;
 		}
 
 		/// <summary>
@@ -433,26 +391,8 @@ namespace Deveel.Webhooks {
 		/// </returns>
 		/// <exception cref="WebhookException"></exception>
 		protected virtual async Task<TWebhook?> CreateWebhook(IWebhookSubscription subscription, EventInfo eventInfo, CancellationToken cancellationToken) {
-			object data;
-
 			try {
-				data = await GetWebhookDataAsync(eventInfo, cancellationToken);
-			} catch (Exception ex) {
-				Logger.LogError(ex, "Error setting the data for the event {EventType} to subscription {SubscriptionId}",
-					eventInfo.EventType, subscription.SubscriptionId);
-
-				throw new WebhookException("An error occurred while trying to create the webhook data", ex);
-			}
-
-			if (data == null) {
-				Logger.LogWarning("It was not possible to generate data for the event of type {EventType}", eventInfo.EventType);
-				return null;
-			}
-
-			var newEvent = eventInfo.WithData(data);
-
-			try {
-				return await webhookFactory.CreateAsync(subscription, newEvent, cancellationToken);
+				return await webhookFactory.CreateAsync(subscription, eventInfo, cancellationToken);
 			} catch (Exception ex) {
 				throw new WebhookException("An error occurred while creating a new webhook", ex);
 			}

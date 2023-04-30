@@ -16,11 +16,25 @@ using System;
 using System.Collections.Generic;
 
 namespace Deveel.Webhooks {
+	/// <summary>
+	/// Describes the result of a webhook delivery operation
+	/// </summary>
 	public interface IWebhookDeliveryResult {
+		/// <summary>
+		/// Gets the webhook that was notified
+		/// </summary>
 		IWebhook Webhook { get; }
 
+		/// <summary>
+		/// Gets the information about the receiver
+		/// of the webhook
+		/// </summary>
 		IWebhookReceiver Receiver { get;}
 
+		/// <summary>
+		/// Gets a list of all the delivery attempts made
+		/// during the notification of the webhook
+		/// </summary>
 		IEnumerable<IWebhookDeliveryAttempt> DeliveryAttempts { get; }
 	}
 }

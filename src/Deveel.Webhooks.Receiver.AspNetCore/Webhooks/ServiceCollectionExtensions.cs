@@ -29,6 +29,22 @@ namespace Deveel.Webhooks {
 			return builder;
 		}
 
+		/// <summary>
+		/// Configures a receiver without adding it to the service collection
+		/// or registering any default services.
+		/// </summary>
+		/// <typeparam name="TWebhook">
+		/// The type of webhooks to receive
+		/// </typeparam>
+		/// <param name="services">
+		/// The service collection of which the receiver is part
+		/// </param>
+		/// <param name="configure">
+		/// The delegate used to configure the receiver
+		/// </param>
+		/// <returns>
+		/// Returns the collection of services.
+		/// </returns>
 		public static IServiceCollection ConfigureWebhookReceiver<TWebhook>(this IServiceCollection services, Action<WebhookReceiverBuilder<TWebhook>> configure)
 			where TWebhook : class {
 			var builder = new WebhookReceiverBuilder<TWebhook>(services);

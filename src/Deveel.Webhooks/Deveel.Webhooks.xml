@@ -4,24 +4,6 @@
         <name>Deveel.Webhooks</name>
     </assembly>
     <members>
-        <member name="T:Deveel.Webhooks.DefaultEventTransformerPipeline">
-            <summary>
-            A default implementation of <see cref="T:Deveel.Webhooks.IEventTransformerPipeline"/> that
-            will iterate through all the registered <see cref="T:Deveel.Webhooks.IEventDataTransformer"/>
-            instances and transform an input event.
-            </summary>
-        </member>
-        <member name="M:Deveel.Webhooks.DefaultEventTransformerPipeline.#ctor(System.Collections.Generic.IEnumerable{Deveel.Webhooks.IEventDataTransformer})">
-            <summary>
-            Constructs the pipeline with the given transformers.
-            </summary>
-            <param name="dataTransformers">
-            The collection of the registered transformers to use to transform the event.
-            </param>
-        </member>
-        <member name="M:Deveel.Webhooks.DefaultEventTransformerPipeline.TransformAsync(Deveel.Webhooks.EventInfo,System.Threading.CancellationToken)">
-            <inheritdoc/>
-        </member>
         <member name="T:Deveel.Webhooks.DefaultWebhookFactory">
             <summary>
             A default implementation of the <see cref="T:Deveel.Webhooks.IWebhookFactory`1"/>
@@ -94,7 +76,7 @@
             trigger some notifications
             </summary>
         </member>
-        <member name="M:Deveel.Webhooks.EventInfo.#ctor(System.String,System.String,System.Object,System.String,System.Nullable{System.DateTimeOffset})">
+        <member name="M:Deveel.Webhooks.EventInfo.#ctor(System.String,System.String,System.String,System.Object,System.String,System.Nullable{System.DateTimeOffset})">
             <summary>
             Constructs an EventInfo instance of the given type
             and providing the given data
@@ -104,6 +86,9 @@
             </param>
             <param name="eventType">
             The type of event that was triggered
+            </param>
+            <param name="dataVersion">
+            The version of the data carried by the event
             </param>
             <param name="data">
             The data carried by the event
@@ -146,83 +131,43 @@
             (by default, the time of the creation of this instance)
             </summary>
         </member>
+        <member name="P:Deveel.Webhooks.EventInfo.DataVersion">
+            <summary>
+            Gets the version of the data carried by the event
+            </summary>
+        </member>
         <member name="P:Deveel.Webhooks.EventInfo.Data">
             <summary>
             Gets the data transported by the event.
             </summary>
         </member>
-        <member name="M:Deveel.Webhooks.EventInfo.WithData(System.Object)">
+        <member name="T:Deveel.Webhooks.EventInfoExtensions">
             <summary>
-            Creates a new instance of this event with the given data
+            Provides a utility methods to extend the functions of implementations
+            of the <see cref="T:Deveel.Webhooks.IEventInfo"/> contract.
             </summary>
-            <param name="data">
-            The new data to be transported by the event
+        </member>
+        <member name="M:Deveel.Webhooks.EventInfoExtensions.AsEventInfo``1(``0)">
+            <summary>
+            Creates a new <see cref="T:Deveel.Webhooks.EventInfo"/> from the given object
+            </summary>
+            <typeparam name="T">
+            The type of the object that implements the <see cref="T:Deveel.Webhooks.IEventInfo"/> contract
+            </typeparam>
+            <param name="obj">
+            The instance of the object that implements the <see cref="T:Deveel.Webhooks.IEventInfo"/> contract
             </param>
-            <returns>
-            Returns a new instance of this event with the given data
-            </returns>
-        </member>
-        <member name="T:Deveel.Webhooks.IEventDataTransformer">
-            <summary>
-            A service that handles a specific event and 
-            transforms its data
-            </summary>
-        </member>
-        <member name="M:Deveel.Webhooks.IEventDataTransformer.Handles(Deveel.Webhooks.EventInfo)">
-            <summary>
-            Determines if the instance can handle
-            the event given and transforms it.
-            </summary>
-            <param name="eventInfo">The information of the
-            event to be handled.</param>
             <remarks>
-            During the process of resolution of data creators,
-            the system stops at the first that is capable of handling
-            the event given: this means that if two instances of
-            this contract are capable of handling the same event,
-            only the first one is executed and the data used.
+            An event is an immutable information across the line of a system that
+            receives it, and therefore the framework deals only with the <see cref="T:Deveel.Webhooks.EventInfo"/>
+            instances to trigger the notification of a webhook.
             </remarks>
             <returns>
-            Returns <strong>true</strong> if the instance is
-            capable of handling the data transformations for the
-            event give, <strong>false</strong> otherwise.
+            Returns an instance of <see cref="T:Deveel.Webhooks.EventInfo"/> that wraps the given object
             </returns>
-        </member>
-        <member name="M:Deveel.Webhooks.IEventDataTransformer.CreateDataAsync(Deveel.Webhooks.EventInfo,System.Threading.CancellationToken)">
-            <summary>
-            Creates an object that is used to form
-            the contents of a webhook.
-            </summary>
-            <param name="eventInfo">The information of the event
-            that carries the base data to be transformed.</param>
-            <param name="cancellationToken">A token used to synchronize
-            the read operations.</param>
-            <returns>
-            Returns an object that is used to form the contents of
-            a webhook delivered to subscribers.
-            </returns>
-        </member>
-        <member name="T:Deveel.Webhooks.IEventTransformerPipeline">
-            <summary>
-            Provides a pipeline mechanism to transform the events
-            incoming to a notifier, before forming a webhook to send.
-            </summary>
-        </member>
-        <member name="M:Deveel.Webhooks.IEventTransformerPipeline.TransformAsync(Deveel.Webhooks.EventInfo,System.Threading.CancellationToken)">
-            <summary>
-            Transforms the given event into a new one, that will be
-            used to create the webhook to send.
-            </summary>
-            <param name="eventInfo">
-            The original event to transform.
-            </param>
-            <param name="cancellationToken">
-            A token used to cancel the operation.
-            </param>
-            <returns>
-            Returns an instance of <see cref="T:Deveel.Webhooks.EventInfo"/> that represents
-            the final version of an event to use to create the webhook.
-            </returns>
+            <exception cref="T:System.ArgumentNullException">
+            Thrown when the given <paramref name="obj"/> is <c>null</c>
+            </exception>
         </member>
         <member name="T:Deveel.Webhooks.ITenantWebhookNotifier`1">
             <summary>
@@ -500,7 +445,7 @@
             that addresses specific tenants
             </summary>
         </member>
-        <member name="M:Deveel.Webhooks.TenantWebhookNotifier`1.#ctor(Deveel.Webhooks.IWebhookSender{`0},Deveel.Webhooks.IWebhookFactory{`0},Deveel.Webhooks.ITenantWebhookSubscriptionResolver{`0},Deveel.Webhooks.IEventTransformerPipeline,System.Collections.Generic.IEnumerable{Deveel.Webhooks.IWebhookFilterEvaluator{`0}},Deveel.Webhooks.IWebhookDeliveryResultLogger{`0},Microsoft.Extensions.Logging.ILogger{Deveel.Webhooks.TenantWebhookNotifier{`0}})">
+        <member name="M:Deveel.Webhooks.TenantWebhookNotifier`1.#ctor(Deveel.Webhooks.IWebhookSender{`0},Deveel.Webhooks.IWebhookFactory{`0},Deveel.Webhooks.ITenantWebhookSubscriptionResolver{`0},System.Collections.Generic.IEnumerable{Deveel.Webhooks.IWebhookFilterEvaluator{`0}},Deveel.Webhooks.IWebhookDeliveryResultLogger{`0},Microsoft.Extensions.Logging.ILogger{Deveel.Webhooks.TenantWebhookNotifier{`0}})">
             <summary>
             Constructs the notifier with the given services.
             </summary>
@@ -513,9 +458,6 @@
             </param>
             <param name="webhookFactory">
             A service used to create the webhook to send.
-            </param>
-            <param name="eventTransformer">
-            A service used to transform the event data
             </param>
             <param name="filterEvaluators">
             A collection of services used to filter the webhooks to
@@ -771,7 +713,7 @@
             The type of the webhook that is scoped for the notifier.
             </typeparam>
         </member>
-        <member name="M:Deveel.Webhooks.WebhookNotifier`1.#ctor(Deveel.Webhooks.IWebhookSender{`0},Deveel.Webhooks.IWebhookFactory{`0},Deveel.Webhooks.IWebhookSubscriptionResolver{`0},Deveel.Webhooks.IEventTransformerPipeline,System.Collections.Generic.IEnumerable{Deveel.Webhooks.IWebhookFilterEvaluator{`0}},Deveel.Webhooks.IWebhookDeliveryResultLogger{`0},Microsoft.Extensions.Logging.ILogger{Deveel.Webhooks.TenantWebhookNotifier{`0}})">
+        <member name="M:Deveel.Webhooks.WebhookNotifier`1.#ctor(Deveel.Webhooks.IWebhookSender{`0},Deveel.Webhooks.IWebhookFactory{`0},Deveel.Webhooks.IWebhookSubscriptionResolver{`0},System.Collections.Generic.IEnumerable{Deveel.Webhooks.IWebhookFilterEvaluator{`0}},Deveel.Webhooks.IWebhookDeliveryResultLogger{`0},Microsoft.Extensions.Logging.ILogger{Deveel.Webhooks.TenantWebhookNotifier{`0}})">
             <summary>
             Constructs the notifier with the given sender and factory.
             </summary>
@@ -783,9 +725,6 @@
             </param>
             <param name="subscriptionResolver">
             A service used to resolve the subscriptions to a given event
-            </param>
-            <param name="eventTransformer">
-            A service used to transform the event data
             </param>
             <param name="filterEvaluators">
             A list of all the evaluators registered in the application context,
@@ -828,28 +767,6 @@
             <returns>
             Returns an instance of <see cref="T:Deveel.Webhooks.WebhookSubscriptionFilter"/>
             </returns>
-        </member>
-        <member name="M:Deveel.Webhooks.WebhookNotifierBase`1.GetWebhookDataAsync(Deveel.Webhooks.EventInfo,System.Threading.CancellationToken)">
-            <summary>
-            Transforms the data included in the event into an
-            object that can be used to create a webhook.
-            </summary>
-            <param name="eventInfo">
-            The information about the event that triggered the notification.
-            </param>
-            <param name="cancellationToken">
-            A cancellation token that can be used to cancel the operation.
-            </param>
-            <remarks>
-            This method is called before a webhook is created and sent: the
-            generated data will be used to renew the instance of the
-            <see cref="T:Deveel.Webhooks.EventInfo"/>, that will then be constructed into the webhook.
-            </remarks>
-            <returns>
-            Returns an object that will be used to renew the data of the event
-            before passing it to the factory.
-            </returns>
-            <seealso cref="T:Deveel.Webhooks.IWebhookFactory`1"/>
         </member>
         <member name="M:Deveel.Webhooks.WebhookNotifierBase`1.GetFilterEvaluator(System.String)">
             <summary>
@@ -1225,20 +1142,6 @@
             </summary>
             <typeparam name="TLogger">
             The type of the logger to register.
-            </typeparam>
-            <param name="lifetime">
-            An optional value that specifies the lifetime of the service (by default
-            set to <see cref="F:Microsoft.Extensions.DependencyInjection.ServiceLifetime.Scoped"/>).
-            </param>
-            <returns></returns>
-        </member>
-        <member name="M:Deveel.Webhooks.WebhookNotifierBuilder`1.AddDataTranformer``1(Microsoft.Extensions.DependencyInjection.ServiceLifetime)">
-            <summary>
-            Adds a service that transforms the data of events
-            before creating a webhook.
-            </summary>
-            <typeparam name="TTransformer">
-            The type of the transformer to register.
             </typeparam>
             <param name="lifetime">
             An optional value that specifies the lifetime of the service (by default

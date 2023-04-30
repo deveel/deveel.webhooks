@@ -16,14 +16,32 @@ using System;
 using System.Runtime.Serialization;
 
 namespace Deveel.Webhooks {
+	/// <summary>
+	/// Enumerates the possible statuses of a webhook subscription
+	/// </summary>
 	public enum WebhookSubscriptionStatus {
+		/// <summary>
+		/// It is not possible to determine the status of the subscription
+		/// </summary>
 		[EnumMember(Value = "none")]
 		None = 0,
 
+		/// <summary>
+		/// The subscription is active and can receive notifications
+		/// </summary>
 		[EnumMember(Value = "active")]
 		Active = 1,
 
+		/// <summary>
+		/// The subscription is suspended and should not receive notifications
+		/// </summary>
 		[EnumMember(Value = "suspended")]
 		Suspended = 2,
+
+		/// <summary>
+		/// The subscription has been cancelled and should not receive notifications
+		/// </summary>
+		[EnumMember(Value = "cancelled")]
+		Cancelled = 3,
 	}
 }

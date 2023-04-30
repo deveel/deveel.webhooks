@@ -57,7 +57,6 @@ namespace Deveel.Webhooks {
 
 			Services.TryAddScoped<IWebhookSender<TWebhook>, WebhookSender<TWebhook>>();
 
-			Services.TryAddScoped<IEventTransformerPipeline, DefaultEventTransformerPipeline>();
 			// TODO: register the default filter evaluator
 		}
 
@@ -322,26 +321,6 @@ namespace Deveel.Webhooks {
 			Services.Add(new ServiceDescriptor(typeof(IWebhookDeliveryResultLogger<TWebhook>), typeof(TLogger), lifetime));
 			Services.TryAdd(new ServiceDescriptor(typeof(TLogger), typeof(TLogger), lifetime));
 
-			return this;
-		}
-
-		/// <summary>
-		/// Adds a service that transforms the data of events
-		/// before creating a webhook.
-		/// </summary>
-		/// <typeparam name="TTransformer">
-		/// The type of the transformer to register.
-		/// </typeparam>
-		/// <param name="lifetime">
-		/// An optional value that specifies the lifetime of the service (by default
-		/// set to <see cref="ServiceLifetime.Scoped"/>).
-		/// </param>
-		/// <returns></returns>
-		public WebhookNotifierBuilder<TWebhook> AddDataTranformer<TTransformer>(ServiceLifetime lifetime = ServiceLifetime.Scoped)
-			where TTransformer : class, IEventDataTransformer {
-
-			Services.Add(new ServiceDescriptor(typeof(IEventDataTransformer), typeof(TTransformer), lifetime));
-			Services.TryAdd(new ServiceDescriptor(typeof(TTransformer), typeof(TTransformer), lifetime));
 			return this;
 		}
 

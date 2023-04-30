@@ -16,7 +16,7 @@ namespace Deveel.Webhooks.Controllers {
 
 		[HttpPost("{tenantId}")]
 		public async Task<IActionResult> PostAsync([FromRoute] string tenantId, [FromBody] UserCreatedEvent userCreated) {
-			var eventInfo = new EventInfo("user", "created", userCreated);
+			var eventInfo = userCreated.AsEventInfo();
 			var result = await notifier.NotifyAsync(eventInfo, HttpContext.RequestAborted);
 
 			// TODO: output the result of the notification

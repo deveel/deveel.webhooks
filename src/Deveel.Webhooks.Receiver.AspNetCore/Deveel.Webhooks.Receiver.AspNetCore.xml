@@ -710,6 +710,24 @@
             a receiver of a specific type of webhooks.
             </summary>
         </member>
+        <member name="M:Deveel.Webhooks.ServiceCollectionExtensions.ConfigureWebhookReceiver``1(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Action{Deveel.Webhooks.WebhookReceiverBuilder{``0}})">
+            <summary>
+            Configures a receiver without adding it to the service collection
+            or registering any default services.
+            </summary>
+            <typeparam name="TWebhook">
+            The type of webhooks to receive
+            </typeparam>
+            <param name="services">
+            The service collection of which the receiver is part
+            </param>
+            <param name="configure">
+            The delegate used to configure the receiver
+            </param>
+            <returns>
+            Returns the collection of services.
+            </returns>
+        </member>
         <member name="M:Deveel.Webhooks.ServiceCollectionExtensions.AddWebhookReceiver``1(Microsoft.Extensions.DependencyInjection.IServiceCollection,Deveel.Webhooks.WebhookReceiverOptions{``0})">
             <summary>
             Adds a receiver of webhooks of a specific type to the service collection.

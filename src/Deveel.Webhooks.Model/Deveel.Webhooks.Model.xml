@@ -1,0 +1,280 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Deveel.Webhooks.Model</name>
+    </assembly>
+    <members>
+        <member name="T:Deveel.Webhooks.IEventInfo">
+            <summary>
+            Defines a contract for an event that might trigger
+            the notification of a webhook
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.IEventInfo.Subject">
+            <summary>
+            Gets the subject of the event (e.g. the name of the aggregate)
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.IEventInfo.EventType">
+            <summary>
+            Gets the type of event that occurred.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.IEventInfo.Id">
+            <summary>
+            Gets a unique identifier of the event from the remote system
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.IEventInfo.TimeStamp">
+            <summary>
+            Gets the exact time the event occurred
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.IEventInfo.DataVersion">
+            <summary>
+            Gets the version of the data carried by the event
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.IEventInfo.Data">
+            <summary>
+            Gets a set of data carried by the event
+            </summary>
+        </member>
+        <member name="T:Deveel.Webhooks.IWebhook">
+            <summary>
+            Notifies the occurrence of an event
+            and trasports related data
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.IWebhook.Id">
+            <summary>
+            Gets an unique identifier of the event
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.IWebhook.TimeStamp">
+            <summary>
+            Gets the exact time of the event occurrence.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.IWebhook.EventType">
+            <summary>
+            Gets the type of the event
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.IWebhook.Data">
+            <summary>
+            Gets the data carried by the webhook to the receiver
+            </summary>
+        </member>
+        <member name="T:Deveel.Webhooks.IWebhookDeliveryAttempt">
+            <summary>
+            Represents a single attempt to deliver a webhook notification
+            to a remote receiver.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.IWebhookDeliveryAttempt.ResponseStatusCode">
+            <summary>
+            Gets an HTTP status code that was returned by the remote
+            server when the notification was attempted.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.IWebhookDeliveryAttempt.ResponseMessage">
+            <summary>
+            Gets a message that was returned by the remote server when
+            the notification was attempted.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.IWebhookDeliveryAttempt.StartedAt">
+            <summary>
+            Gets the exact time the delivery attempt started.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.IWebhookDeliveryAttempt.EndedAt">
+            <summary>
+            Gets the exact time the delivery attempt ended,
+            if it was able to be completed.
+            </summary>
+        </member>
+        <member name="T:Deveel.Webhooks.IWebhookDeliveryResult">
+            <summary>
+            Describes the result of a webhook delivery operation
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.IWebhookDeliveryResult.Webhook">
+            <summary>
+            Gets the webhook that was notified
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.IWebhookDeliveryResult.Receiver">
+            <summary>
+            Gets the information about the receiver
+            of the webhook
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.IWebhookDeliveryResult.DeliveryAttempts">
+            <summary>
+            Gets a list of all the delivery attempts made
+            during the notification of the webhook
+            </summary>
+        </member>
+        <member name="T:Deveel.Webhooks.IWebhookFilter">
+            <summary>
+            Represents a single filter used to
+            match webhook subscriptions
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.IWebhookFilter.Expression">
+            <summary>
+            Gets the filtering expression
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.IWebhookFilter.Format">
+            <summary>
+            Gets the name of the format of the expression
+            </summary>
+        </member>
+        <member name="T:Deveel.Webhooks.IWebhookReceiver">
+            <summary>
+            Describes the receiver of a webhook notification
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.IWebhookReceiver.SubscriptionId">
+            <summary>
+            If the notification was performed to a specific subscription,
+            this returns the identifier of the subscription.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.IWebhookReceiver.SubscriptionName">
+            <summary>
+            If the notification was performed to a specific subscription,
+            this returns the name of the subscription.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.IWebhookReceiver.DestinationUrl">
+            <summary>
+            Gets the URL where the notification was sent.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.IWebhookReceiver.Headers">
+            <summary>
+            Gets the list of headers sent with the notification.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.IWebhookReceiver.BodyFormat">
+            <summary>
+            Gets a code that identifies the format of the request
+            body content. (either <c>json</c>, <c>xml</c> or <c>form</c>).
+            </summary>
+        </member>
+        <member name="T:Deveel.Webhooks.IWebhookSubscription">
+            <summary>
+            Represents the subscription to the notification
+            of the occurrence of an event
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.IWebhookSubscription.SubscriptionId">
+            <summary>
+            Gets the unique identifier of the subscription
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.IWebhookSubscription.TenantId">
+            <summary>
+            Gets the unique identifier of the tenant of 
+            the subscription
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.IWebhookSubscription.Name">
+            <summary>
+            Gets a name of the subscription
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.IWebhookSubscription.EventTypes">
+            <summary>
+            Gets a list of types of event to which occurrence
+            the subscription is activated.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.IWebhookSubscription.DestinationUrl">
+            <summary>
+            Gets the URL of the receiver of webhooks matching
+            the subscription
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.IWebhookSubscription.Secret">
+            <summary>
+            Gets an optional secret used to compute a signature
+            to secure the webhooks delivered to receivers.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.IWebhookSubscription.Format">
+            <summary>
+            Gets the format of the webhooks payload delivered to receivers.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.IWebhookSubscription.Status">
+            <summary>
+            Gets the current status of the subscription.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.IWebhookSubscription.RetryCount">
+            <summary>
+            Gets a maximum number of retries when delivring
+            a webhook to the receivers (overrides the service 
+            configurations).
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.IWebhookSubscription.Filters">
+            <summary>
+            Gets a set of optional filters to mach the subscription
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.IWebhookSubscription.Headers">
+            <summary>
+            Gets an optional set of headers to be attached to
+            a HTTP request when attempting the delivery of a
+            webhook to receivers.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.IWebhookSubscription.Properties">
+            <summary>
+            Gets an optional set of properties for the
+            subscription, that can extend the model dynamically
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.IWebhookSubscription.CreatedAt">
+            <summary>
+            Gets the exact time of the creation of the subscription
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.IWebhookSubscription.UpdatedAt">
+            <summary>
+            Gets the exact time of the last update of the subscription
+            </summary>
+        </member>
+        <member name="T:Deveel.Webhooks.WebhookSubscriptionStatus">
+            <summary>
+            Enumerates the possible statuses of a webhook subscription
+            </summary>
+        </member>
+        <member name="F:Deveel.Webhooks.WebhookSubscriptionStatus.None">
+            <summary>
+            It is not possible to determine the status of the subscription
+            </summary>
+        </member>
+        <member name="F:Deveel.Webhooks.WebhookSubscriptionStatus.Active">
+            <summary>
+            The subscription is active and can receive notifications
+            </summary>
+        </member>
+        <member name="F:Deveel.Webhooks.WebhookSubscriptionStatus.Suspended">
+            <summary>
+            The subscription is suspended and should not receive notifications
+            </summary>
+        </member>
+        <member name="F:Deveel.Webhooks.WebhookSubscriptionStatus.Cancelled">
+            <summary>
+            The subscription has been cancelled and should not receive notifications
+            </summary>
+        </member>
+    </members>
+</doc>

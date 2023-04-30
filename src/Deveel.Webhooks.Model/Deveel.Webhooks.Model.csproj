@@ -18,6 +18,8 @@
     <RepositoryUrl>https://github.com/deveel/deveel.webhooks</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageTags>webhook events model abstractions</PackageTags>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <DocumentationFile>./Deveel.Webhooks.Model.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>

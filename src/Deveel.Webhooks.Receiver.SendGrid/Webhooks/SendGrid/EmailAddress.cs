@@ -16,16 +16,34 @@ using System.Net.Mail;
 using System.Text.Json.Serialization;
 
 namespace Deveel.Webhooks.SendGrid {
+	/// <summary>
+	/// Represents an email address in a SendGrid email.
+	/// </summary>
 	public readonly struct EmailAddress {
+		/// <summary>
+		/// Constructs the email address with the given address and name.
+		/// </summary>
+		/// <param name="address">
+		/// The string that represents the email address.
+		/// </param>
+		/// <param name="name">
+		/// The display name of the assignee of the email address.
+		/// </param>
 		[JsonConstructor]
 		public EmailAddress(string address, string? name = null) {
 			Address = address;
 			Name = name;
 		}
 
+		/// <summary>
+		/// Gets the display name of the assignee of the email address.
+		/// </summary>
 		[JsonPropertyName("name")]
 		public string? Name { get; }
 
+		/// <summary>
+		/// Gets the string that represents the email address.
+		/// </summary>
 		[JsonPropertyName("email")]
 		public string Address { get; }
 

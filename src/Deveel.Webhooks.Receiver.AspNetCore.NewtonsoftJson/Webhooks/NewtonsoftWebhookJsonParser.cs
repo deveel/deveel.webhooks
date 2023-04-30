@@ -50,5 +50,21 @@ namespace Deveel.Webhooks {
 				throw new WebhookParseException("Could not parse the stream to a webhook", ex);
 			}
 		}
+
+		/// <inheritdoc/>
+		public async Task<IList<TWebhook>> ParseWebhookArrayAsync(Stream utf8Stream, CancellationToken cancellationToken = default) {
+			try {
+				using var textReader = new StreamReader(utf8Stream, Encoding.UTF8);
+				var json = await textReader.ReadToEndAsync();
+
+				var result = JsonConvert.DeserializeObject<IList<TWebhook>>(json, JsonSerializerSettings);
+				if (result == null)
+					result = new List<TWebhook>();
+
+				return result;
+			} catch (Exception ex) {
+				throw new WebhookParseException("Could not parse the stream to a webhook list", ex);
+			}
+		}
 	}
 }

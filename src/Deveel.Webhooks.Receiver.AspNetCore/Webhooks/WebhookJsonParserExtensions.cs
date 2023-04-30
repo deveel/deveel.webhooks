@@ -49,7 +49,28 @@ namespace Deveel.Webhooks {
 			}
         }
 
-		public static async Task<IList<TWebhook>> ParseWebhookArrayAsync<TWebhook>(this IWebhookJsonArrayParser<TWebhook> parser, string? json, CancellationToken cancellationToken = default)
+		/// <summary>
+		/// Parses a list of webhooks from the given <paramref name="json"/> string.
+		/// </summary>
+		/// <typeparam name="TWebhook">
+		/// The type of the webhook to be parsed
+		/// </typeparam>
+		/// <param name="parser">
+		/// The instance of the <see cref="IWebhookJsonParser{TWebhook}"/> to extend
+		/// </param>
+		/// <param name="json">
+		/// The UTF-8 encoded JSON-formatted string to be parsed
+		/// </param>
+		/// <param name="cancellationToken">
+		/// A cancellation token that can be used to cancel the operation
+		/// </param>
+		/// <returns>
+		/// Returns a <see cref="Task{TResult}"/> that resolves to the parsed webhook list
+		/// </returns>
+		/// <exception cref="WebhookParseException">
+		/// Thrown if any error occurs while parsing the webhook
+		/// </exception>
+		public static async Task<IList<TWebhook>> ParseWebhookArrayAsync<TWebhook>(this IWebhookJsonParser<TWebhook> parser, string? json, CancellationToken cancellationToken = default)
 			where TWebhook : class {
 			try {
 				if (string.IsNullOrWhiteSpace(json))

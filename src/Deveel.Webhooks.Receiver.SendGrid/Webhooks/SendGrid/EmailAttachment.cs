@@ -12,15 +12,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Text.Json.Serialization;
-using System.Threading.Tasks;
 
 namespace Deveel.Webhooks.SendGrid {
+	/// <summary>
+	/// Represents an attachment in an email.
+	/// </summary>
 	public readonly struct EmailAttachment {
+		/// <summary>
+		/// Constructs the attachment with the given parameters.
+		/// </summary>
+		/// <param name="filename">
+		/// The file name of the attachment.
+		/// </param>
+		/// <param name="type">
+		/// The content type of the attachment.
+		/// </param>
+		/// <param name="content">
+		/// The base64 encoded content of the attachment.
+		/// </param>
 		[JsonConstructor]
 		public EmailAttachment(string filename, string type, string content) : this() {
 			Filename = filename;
@@ -31,6 +41,8 @@ namespace Deveel.Webhooks.SendGrid {
 		/// <summary>
 		/// The base64 encoded content of the attachment.
 		/// </summary>
+		// TODO: this should be a byte array and we shoud
+		//   handle it with a custom converter
 		[JsonPropertyName("content")]
 		public string Content { get; }
 

@@ -15,16 +15,32 @@
 using System.Text.Json.Serialization;
 
 namespace Deveel.Webhooks.SendGrid {
+	/// <summary>
+	/// Describes a spam report for an email message.
+	/// </summary>
 	public sealed class EmailSpamReport {
+		/// <summary>
+		/// Gets or sets the score of the spam report.
+		/// </summary>
 		[JsonPropertyName("score")]
 		public double Score { get; set; }
 
+		/// <summary>
+		/// Gets or sets the threshold of the spam report.
+		/// </summary>
 		[JsonPropertyName("threshold")]
 		public double? Threshold { get; set; }
 
+		/// <summary>
+		/// Gets or sets the rules that were matched to
+		/// elaborate the spam report.
+		/// </summary>
 		[JsonPropertyName("matched_rules")]
 		public IList<MatchedRule>? MatchedRules { get; set; }
 
+		/// <summary>
+		/// Gets or sets the details of the spam report.
+		/// </summary>
 		[JsonPropertyName("spam_report")]
 		public SpamReportDetails? Details { get; set; }
 	}

@@ -21,10 +21,7 @@ namespace Deveel.Webhooks {
 	/// representations of webhooks.
 	/// </summary>
 	/// <typeparam name="TWebhook">The type of the webhook to parse</typeparam>
-    public sealed class SystemTextWebhookJsonParser<TWebhook> : 
-		IWebhookJsonParser<TWebhook>,
-		IWebhookJsonArrayParser<TWebhook>
-		where TWebhook : class {
+    public sealed class SystemTextWebhookJsonParser<TWebhook> : IWebhookJsonParser<TWebhook> where TWebhook : class {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="SystemTextWebhookJsonParser{TWebhook}"/>
 		/// </summary>

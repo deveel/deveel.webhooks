@@ -15,14 +15,46 @@
 using System.Text.Json.Serialization;
 
 namespace Deveel.Webhooks.SendGrid {
-	public record class MatchedRule {
+	/// <summary>
+	/// Describes a rule that was matched by the SendGrid
+	/// to provide a spam report for an email.
+	/// </summary>
+	public readonly struct MatchedRule {
+		/// <summary>
+		/// Constructs the rule with the given name,
+		/// score and description.
+		/// </summary>
+		/// <param name="name">
+		/// The name of the rule that was matched.
+		/// </param>
+		/// <param name="score">
+		/// The sceore of the rule.
+		/// </param>
+		/// <param name="description">
+		/// A description of the rule.
+		/// </param>
+		public MatchedRule(string name, double? score = null, string? description = null) {
+			Name = name;
+			Score = score;
+			Description = description;
+		}
+
+		/// <summary>
+		/// Gets the name of the rule that was matched.
+		/// </summary>
 		[JsonPropertyName("name")]
-		public string Name { get; set; }
+		public string Name { get; }
 
+		/// <summary>
+		/// Gets the description of the rule that was matched.
+		/// </summary>
 		[JsonPropertyName("description")]
-		public string Description { get; set; }
+		public string? Description { get; }
 
+		/// <summary>
+		/// Gets the score of the rule that was matched.
+		/// </summary>
 		[JsonPropertyName("score")]
-		public double? Score { get; set; }
+		public double? Score { get; }
 	}
 }

@@ -13,9 +13,21 @@
 // limitations under the License.
 
 namespace Deveel.Webhooks {
+	/// <summary>
+	/// The options used to configure the infrastructure to receive
+	/// webhooks from SendGrid.
+	/// </summary>
 	public sealed class SendGridReceiverOptions {
+		/// <summary>
+		/// Gets or sets the secret used to verify the signature of the
+		/// webhooks received from SendGrid.
+		/// </summary>
 		public string? Secret { get; set; }
 
+		/// <summary>
+		/// Gets or sets a value indicating if the signature of the webhook
+		/// sent by SendGrid should be verified.
+		/// </summary>
 		public bool? VerifySignature { get; set; }
 	}
 }

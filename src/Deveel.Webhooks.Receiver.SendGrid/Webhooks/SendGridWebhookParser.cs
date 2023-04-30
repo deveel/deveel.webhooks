@@ -16,7 +16,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace Deveel.Webhooks {
-	public static class SendGridWebhookParser {
+	static class SendGridWebhookParser {
 		static SendGridWebhookParser() {
 			Options = new JsonSerializerOptions {
 				PropertyNameCaseInsensitive = false,

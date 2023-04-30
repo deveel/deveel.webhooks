@@ -143,24 +143,52 @@ namespace Deveel.Webhooks {
 			return await ReceiverOptions.JsonParser.ParseWebhookAsync(jsonBody, cancellationToken);
 		}
 
+		/// <summary>
+		/// Parses the JSON body of a webhook request.
+		/// </summary>
+		/// <param name="jsonBody">
+		/// The JSON-formatted body of the webhook to be parsed
+		/// </param>
+		/// <param name="cancellationToken">
+		/// A <see cref="CancellationToken"/> that can be used to cancel the
+		/// parsing operation to obtain the webhook list.
+		/// </param>
+		/// <returns>
+		/// Returns an instance of <typeparamref name="TWebhook"/> that completes the
+		/// parsing operation to obtain the webhook.
+		/// </returns>
+		/// <exception cref="NotSupportedException">
+		/// Thrown if the parsing operation is not supported by the receiver.
+		/// </exception>
 		protected virtual async Task<IList<TWebhook>> ParseJsonArrayAsync(string? jsonBody, CancellationToken cancellationToken) {
 			if (ReceiverOptions.JsonParser == null)
 				throw new NotSupportedException("The JSON parser was not provided");
 
-			if (!(ReceiverOptions.JsonParser is IWebhookJsonArrayParser<TWebhook> parser))
-				throw new NotSupportedException("The JSON parser does not support parsing arrays");
-
-			return await parser.ParseWebhookArrayAsync(jsonBody, cancellationToken);
+			return await ReceiverOptions.JsonParser.ParseWebhookArrayAsync(jsonBody, cancellationToken);
 		}
 
+		/// <summary>
+		/// Parses the JSON body of a webhook request.
+		/// </summary>
+		/// <param name="jsonBody">
+		/// The JSON-formatted body of the webhook to be parsed
+		/// </param>
+		/// <param name="cancellationToken">
+		/// A <see cref="CancellationToken"/> that can be used to cancel the
+		/// parsing operation to obtain the webhook list.
+		/// </param>
+		/// <returns>
+		/// Returns an instance of <typeparamref name="TWebhook"/> that completes the
+		/// parsing operation to obtain the webhook.
+		/// </returns>
+		/// <exception cref="NotSupportedException">
+		/// Thrown if the parsing operation is not supported by the receiver.
+		/// </exception>
 		protected virtual async Task<IList<TWebhook>> ParseJsonArrayAsync(Stream jsonBody, CancellationToken cancellationToken) {
 			if (ReceiverOptions.JsonParser == null)
 				throw new NotSupportedException("The JSON parser was not provided");
 
-			if (!(ReceiverOptions.JsonParser is IWebhookJsonArrayParser<TWebhook> parser))
-				throw new NotSupportedException("The JSON parser does not support parsing arrays");
-
-			return await parser.ParseWebhookArrayAsync(jsonBody, cancellationToken);
+			return await ReceiverOptions.JsonParser.ParseWebhookArrayAsync(jsonBody, cancellationToken);
 		}
 
 

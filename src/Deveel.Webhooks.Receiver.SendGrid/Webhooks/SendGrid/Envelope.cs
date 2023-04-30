@@ -20,6 +20,9 @@ using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace Deveel.Webhooks.SendGrid {
+	/// <summary>
+	/// Describes the envelope of a SendGrid email.
+	/// </summary>
 	public sealed class Envelope {
 		[JsonPropertyName("to")]
 		public List<string> To { get; set; }

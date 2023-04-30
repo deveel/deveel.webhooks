@@ -32,5 +32,23 @@ namespace Deveel.Webhooks {
 		/// Thrown if any error occurs while parsing the webhook stream.
 		/// </exception>
 		Task<TWebhook?> ParseWebhookAsync(Stream utf8Stream, CancellationToken cancellationToken = default);
+
+		/// <summary>
+		/// Parses a list of webhooks from the given UTF-8 encoded stream.
+		/// </summary>
+		/// <param name="utf8Stream">
+		/// The UTF-8 stream that represents the binary data of a JSON-formatted
+		/// </param>
+		/// <param name="cancellationToken">
+		/// A cancellation token that can be used to cancel the operation.
+		/// </param>
+		/// <returns>
+		/// Returns a <see cref="Task{TResult}"/> that completes when the webhook
+		/// stream is parsed and produces the list of webhooks.
+		/// </returns>
+		/// <exception cref="WebhookParseException">
+		/// Thrown if any error occurs while parsing the webhook stream.
+		/// </exception>
+		Task<IList<TWebhook>> ParseWebhookArrayAsync(Stream utf8Stream, CancellationToken cancellationToken = default);
 	}
 }

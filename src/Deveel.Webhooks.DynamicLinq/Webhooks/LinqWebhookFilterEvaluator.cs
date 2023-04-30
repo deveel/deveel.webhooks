@@ -15,15 +15,23 @@
 using System.Linq.Dynamic.Core;
 using System.Linq.Expressions;
 
+using Microsoft.Extensions.Options;
+
 namespace Deveel.Webhooks {
 	public sealed class LinqWebhookFilterEvaluator<TWebhook> : IWebhookFilterEvaluator<TWebhook> where TWebhook : class {
 		private readonly IDictionary<string, Func<object, bool>> filterCache;
-		private readonly IWebhookJsonSerializer<TWebhook> jsonSerializer;
+		private readonly WebhookSenderOptions<TWebhook> senderOptions;
 
-		public LinqWebhookFilterEvaluator(IWebhookJsonSerializer<TWebhook> jsonSerializer) {
+		public LinqWebhookFilterEvaluator(IOptions<WebhookSenderOptions<TWebhook>> senderOptions) {
 			filterCache = new Dictionary<string, Func<object, bool>>();
-			this.jsonSerializer = jsonSerializer;
+			this.senderOptions = senderOptions.Value;
 		}
+
+		static LinqWebhookFilterEvaluator() {
+			Default = new LinqWebhookFilterEvaluator<TWebhook>(Options.Create(new WebhookSenderOptions<TWebhook>()));
+		}
+
+		public static LinqWebhookFilterEvaluator<TWebhook> Default { get; }
 
 		string IWebhookFilterEvaluator<TWebhook>.Format => "linq";
 
@@ -51,6 +59,14 @@ namespace Deveel.Webhooks {
 			return Compile(objType, exp);
 		}
 
+		private Task<object?> SerializeToObjectAsync(TWebhook webhook, CancellationToken cancellationToken) {
+			// TODO: check the format and select the proper serializer
+			if (senderOptions.JsonSerializer == null)
+				throw new NotSupportedException("Serialization is not supported by the sender");
+
+			return senderOptions.JsonSerializer.SerializeToObjectAsync(webhook, cancellationToken);
+		}
+
 		public async Task<bool> MatchesAsync(WebhookSubscriptionFilter filter, TWebhook webhook, CancellationToken cancellationToken) {
 			if (filter is null)
 				throw new ArgumentNullException(nameof(filter));
@@ -64,7 +80,7 @@ namespace Deveel.Webhooks {
 				return true;
 
 			try {
-				var obj = await jsonSerializer.SerializeToObjectAsync(webhook, cancellationToken);
+				var obj = await SerializeToObjectAsync(webhook, cancellationToken);
 
 				if (obj is null)
 					return false;

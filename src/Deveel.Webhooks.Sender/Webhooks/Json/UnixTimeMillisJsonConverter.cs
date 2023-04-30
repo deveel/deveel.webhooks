@@ -16,7 +16,7 @@ using System;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace Deveel.Webhooks {
+namespace Deveel.Webhooks.Json {
 	/// <summary>
 	/// A JSON converter that converts a <see cref="DateTimeOffset"/> to a Unix timestamp
 	/// </summary>

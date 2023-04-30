@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -21,7 +20,7 @@ namespace Deveel.Webhooks {
 		private readonly IWebhookFilterEvaluator<TestWebhook> evaluator;
 
 		public LinqEvaluatorTests() {
-			evaluator = new LinqWebhookFilterEvaluator<TestWebhook>(new SystemTextWebhookJsonSerializer<TestWebhook>());
+			evaluator = LinqWebhookFilterEvaluator<TestWebhook>.Default;
 		}
 
 		[Fact]

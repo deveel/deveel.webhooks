@@ -229,7 +229,7 @@ namespace Deveel.Webhooks {
 		/// the default settings from the configuration of a sender service
 		/// merged with the current settings.
 		/// </returns>
-		public WebhookDestination Merge(WebhookSenderOptions options) {
+		public WebhookDestination Merge<TWebhook>(WebhookSenderOptions<TWebhook> options) where TWebhook : class {
 			var result = new WebhookDestination(Url) {
 				Sign = Sign,
 				Headers = new Dictionary<string, string>(),

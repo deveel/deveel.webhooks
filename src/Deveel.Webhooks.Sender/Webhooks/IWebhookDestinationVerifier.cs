@@ -13,11 +13,15 @@
 // limitations under the License.
 
 namespace Deveel.Webhooks {
-    /// <summary>
-    /// A service that verifies the destination of a webhook, before
-    /// attempting the delivery.
-    /// </summary>
-    public interface IWebhookDestinationVerifier {
+	/// <summary>
+	/// A service that verifies the destination of a webhook, before
+	/// attempting the delivery.
+	/// </summary>
+	/// <typeparam name="TWebhook">
+	/// The type of the webhook that is delivered, used to
+	/// segregate the verification service to a given scope.
+	/// </typeparam>
+	public interface IWebhookDestinationVerifier<TWebhook> where TWebhook : class {
         /// <summary>
         /// Verifies that the given destination is valid and reachable.
         /// </summary>

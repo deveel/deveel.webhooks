@@ -19,6 +19,8 @@ using System;
 using System.Text.Json.Serialization;
 using System.Xml.Serialization;
 
+using Deveel.Webhooks.Json;
+
 namespace Deveel.Webhooks {
 	/// <summary>
 	/// A default implementation of <see cref="IWebhook"/> that can be used

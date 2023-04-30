@@ -16,6 +16,7 @@ using Deveel.Webhooks;
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Options;
 
 namespace Deveel {
     /// <summary>
@@ -62,9 +63,13 @@ namespace Deveel {
 		/// Returns an instance of the <see cref="WebhookSenderBuilder{TWebhook}"/> that can be used
 		/// to further configure the webhook sender.
 		/// </returns>
-		public static WebhookSenderBuilder<TWebhook> AddWebhookSender<TWebhook>(this IServiceCollection services, Action<WebhookSenderOptions> configure)
-			where TWebhook : class
-			=> services.AddWebhookSender<TWebhook>().Configure(configure);
+		public static WebhookSenderBuilder<TWebhook> AddWebhookSender<TWebhook>(this IServiceCollection services, Action<WebhookSenderOptions<TWebhook>> configure)
+			where TWebhook : class {
+			services.AddOptions<WebhookSenderOptions<TWebhook>>()
+								.Configure(configure);
+
+			return services.AddWebhookSender<TWebhook>();
+		}
 
 		/// <summary>
 		/// Adds the webhook sender services to the given <paramref name="services"/> with
@@ -86,8 +91,27 @@ namespace Deveel {
 		/// to further configure the webhook sender.
 		/// </returns>
 		public static WebhookSenderBuilder<TWebhook> AddWebhookSender<TWebhook>(this IServiceCollection services, string sectionPath)
-            where TWebhook : class
-            => services.AddWebhookSender<TWebhook>().Configure(sectionPath);
+			where TWebhook : class {
+			services.AddOptions<WebhookSenderOptions<TWebhook>>()
+				.BindConfiguration(sectionPath);
+
+			return services.AddWebhookSender<TWebhook>();
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <typeparam name="TWebhook"></typeparam>
+		/// <param name="services"></param>
+		/// <param name="options"></param>
+		/// <returns></returns>
+		public static WebhookSenderBuilder<TWebhook> AddWebhookSender<TWebhook>(this IServiceCollection services, WebhookSenderOptions<TWebhook> options)
+			where TWebhook : class {
+
+			services.AddSingleton(Options.Create(options));
+
+			return services.AddWebhookSender<TWebhook>();
+		}
 
 		/// <summary>
 		/// Adds the webhook sender services to the given <paramref name="services"/>

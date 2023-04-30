@@ -30,24 +30,6 @@
             Returns a string representing the signature of the given body
             </returns>
         </member>
-        <member name="T:Deveel.Webhooks.IWebhookSignerProvider`1">
-            <summary>
-            Implements a provider of <see cref="T:Deveel.Webhooks.IWebhookSigner"/> instances
-            for given algorithms.
-            </summary>
-            <typeparam name="TWebhook">The type of webhook to provide signers for</typeparam>
-        </member>
-        <member name="M:Deveel.Webhooks.IWebhookSignerProvider`1.GetSigner(System.String)">
-            <summary>
-            Gets the signer for the given algorithm.
-            </summary>
-            <param name="algorithm">The name of the algorithm handled by
-            the signer to lookup for</param>
-            <returns>
-            Returns an instance of <see cref="T:Deveel.Webhooks.IWebhookSigner"/> that supports
-            the given algorithm, or <c>null</c> if no such signer is available.
-            </returns>
-        </member>
         <member name="T:Deveel.Webhooks.IWebhookSigner`1">
             <summary>
             Defines a contract for a service that can verify the signature of a

@@ -849,7 +849,7 @@
             transmission of the email
             </summary>
         </member>
-        <member name="P:Deveel.Webhooks.SendGrid.SendGridWebhook.CertError">
+        <member name="P:Deveel.Webhooks.SendGrid.SendGridWebhook.CertificateError">
             <summary>
             Gets or sets the certificate error that occurred, if any.
             </summary>

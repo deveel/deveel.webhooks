@@ -147,7 +147,7 @@ namespace Deveel.Webhooks.SendGrid {
 		/// Gets or sets the certificate error that occurred, if any.
 		/// </summary>
 		[JsonPropertyName("cert_err")]
-		public bool? CertError { get; set; }
+		public bool? CertificateError { get; set; }
 
 		[JsonPropertyName("cert_issuer")]
 		public string CertIssuer { get; set; }

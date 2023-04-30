@@ -56,13 +56,22 @@ While working on a .NET Core 3.1/.NET 5 *aaS (_as-a-Service_) project that funct
 
 ## Usage Documentation
 
-We would like to help you getting started with this framework and to eventually extend it: please refer to the [Documentation](docs/README.md) section that we have produced for you.
+We would like to help you getting started with this framework and to eventually extend it: please refer to the **[Documentation](docs/README.md)** section that we have produced for you.
 
-The easiest way to get started is to follow the [Quick Start](docs/QUICKSTART.md) guide, but you can also refer to the [Frequently Asked Questions](docs/FAQS.md) section to get answers to the most common questions.
+The easiest way to get started is to follow the **[Quick Start](docs/QUICKSTART.md)** guide, but you can also refer to the **[Frequently Asked Questions](docs/FAQS.md)** section to get answers to the most common questions.
 
-## A Simple Example
+## Simple Usage Example
 
-The following example shows how to create a webhook subscription, and how to send a notification to the subscribed endpoint:
+To help you getting started with the framework, please consider the following examples that show how to create a simple webhook management service, that handle subscriptions and notifications, and a client receiver.
+
+### Subscriptions and Notifications
+
+As a provider of service, this library provide functions to handle the two main aspects of the webhook pattern:
+
+* **Subscriptions**: the capability of a client to subscribe to a specific event, providing an endpoint to be notified
+* **Notifications**: the capability of a server to send notifications to the subscribed endpoints
+
+The following example shows how to create a webhook subscription, and how to send a notification to the subscriber endpoints:
 
 ```csharp
 using Microsoft.AspNetCore.Builder;
@@ -70,61 +79,94 @@ using Microsoft.AspNetCore.Builder;
 using Deveel.Webhooks;
 
 namespace Example {
-	public class Program {
-		public static void Main(string[] args) {
-			var builder = WebApplication.CreateBuilder(args);
-			
-			// configure your other services ...
+    public class Program {
+        public static void Main(string[] args) {
+            var builder = WebApplication.CreateBuilder(args);
+            
+            // ...
 
-			// ... and then configure the webhooks
-			builder.Services.AddWebhooks(webhooks => {
-				webhooks.AddSubscriptions<MongoWebhookSubscription>(subs => {
-					subs.UseMongoDb("mongodb://localhost:27017")
-						.UseSubscriptionResolver();
-				});
+            builder.Services.AddSubscriptions<MongoWebhookSubscription>(subs => { 
+                subs.UseMongoDb("mongodb://localhost:27017")
+                    .UseSubscriptionResolver();
+            });
+				
+            builder.Services.AddNotifier<MyWebhook>(notifier => {
+                notifier.UseSender(sender => {
+                   sender.Configure(options => {
+                        options.Timeout = TimeSpan.FromSeconds(30);
+                   });
+               });
+            });
 
-				webhooks.AddNotifier<MyWebhook>(notifier => {
-					notifier.UseSender(sender => {
-						sender.Configure(options => {
-							options.Timeout = TimeSpan.FromSeconds(30);
-						});
-					});
-				});
-			});
+            var app = builder.Build();
 
-			var app = builder.Build();
+            // ...
 
-			// configure your other middlewares ...
+            // ... and notify the receivers manually ...
+            app.MapPost("/webhooks", async (HttpContext context, 
+                [FromServices] IWebhookSender<MyWebhook> sender, [FromBody] MyWebhookModel webhook) => {
+                var destination = webhook.Destination.ToWebhookDestination();
+                var result = await sender.SendAsync(destination webhook, context.HttpContext.RequestAborted);
 
-			// ... and then configure the webhooks
-			// to manually send the webhooks ...
-			app.MapPost("/webhooks", async (HttpContext context, 
-				[FromServices] IWebhookSender<MyWebhook> sender, [FromBody] MyWebhookModel webhook) => {
-				var destination = webhook.Destination.ToWebhookDestination();
-				var result = await sender.SendAsync(destination webhook, context.HttpContext.RequestAborted);
+                // ...
 
-				// you can log the result of the delivery ...
+                return Results.Ok();
+            });
 
-				return Results.Ok();
-			});
+            // ... or notify the webhooks automatically from subscriptions
+            app.MapPost("/webhooks/notify", async (HttpContext context, 
+                [FromServices] IWebhookNotifier<MyWebhook> notifier, [FromBody] MyEventModel eventModel) => {
+                var eventInfo = eventModel.AsEventInfo();
+                var result = await notifier.NotifyAsync(eventInfo, context.HttpContext.RequestAborted);
 
-			// ... or notify the webhooks automatically from subscriptions
-			app.MapPost("/webhooks/notify", async (HttpContext context, 
-				[FromServices] IWebhookNotifier<MyWebhook> notifier, [FromBody] MyEventModel eventModel) => {
-				var eventInfo = eventModel.AsEventInfo();
-				var result = await notifier.NotifyAsync(eventInfo, context.HttpContext.RequestAborted);
+                // you can log the result of the notification to all receivers ...
+                return Results.Ok();
+            });
 
-				// you can log the result of the notification to all receivers ...
-				return Results.Ok();
-			});
-
-			app.Run();
-		}
-	}
+            app.Run();
+        }
+    }
 }
 ```
 
-More examples are available in the [Examples](examples/README.md) section.
+## Receivers
+
+The framework also provides a set of built-in receivers that can be used to handle the incoming notifications from the subscribed endpoints in your application.
+
+The following example shows how to create a receiver for a webhook that is backed by a [Facebook Messenger](https://facebook.com) message:
+
+```csharp
+namespace Example {
+    public class Program {
+        public static void Main(string[] args) {
+            var builder = WebApplication.CreateBuilder(args);
+            
+            // ...
+
+            builder.Services.AddFacebookReceiver()
+                .AddHandler<MyFacebookWebhookHandler>();
+
+            var app = builder.Build();
+
+            // ...
+
+            // ... you can handle all the incoming webhooks at "/webhooks/facebook"
+            // invoking all the handlers registered in the service collection ...
+            app.MapFacebookWebhook("/webhooks/facebook");
+
+            // ... or you can handle the incoming webhooks manually ...
+
+            app.MapFacebookWebhook("/webhooks/facebook2", async (FacebookWebhook webhook, IService service, CancellationToken ct) => {
+                // ...
+                await service.DoSomethingAsync(webhook, ct);
+            });
+
+            app.Run();
+        }
+    }
+}
+```
+
 
 ## Contribute
 

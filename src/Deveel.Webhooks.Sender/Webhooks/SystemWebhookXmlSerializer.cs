@@ -48,8 +48,9 @@ namespace Deveel.Webhooks {
 				var settings = new XmlWriterSettings {
 					Async = true,
 					Indent = options.Indent,
-					Encoding = Encoding.UTF8,
+					Encoding = Encoding.GetEncoding(options.Encoding),
 					NamespaceHandling = NamespaceHandling.OmitDuplicates,
+					OmitXmlDeclaration = !(options.IncludeXmlDeclaration ?? true),
 					CloseOutput = false
 				};
 

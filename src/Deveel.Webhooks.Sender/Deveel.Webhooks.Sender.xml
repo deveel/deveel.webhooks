@@ -1874,5 +1874,40 @@
             Thrown if it was not possible to serialize the webhook to a XML string.
             </exception>
         </member>
+        <member name="T:Deveel.Webhooks.XmlSerializerOptions">
+            <summary>
+            Configuration options to control the serialization behavior
+            of XML-formatted webhooks.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.XmlSerializerOptions.IncludeNamespaces">
+            <summary>
+            Gets or sets a value indicating XML namespace declarations
+            in the document should be included (defaults to <c>false</c>).
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.XmlSerializerOptions.IncludeXmlDeclaration">
+            <summary>
+            Gets or sets a value indicating if the XML declaration should
+            be included in the document (defaults to <c>false</c>).
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.XmlSerializerOptions.Encoding">
+            <summary>
+            Gets or sets the encoding to use to write the XML document
+            (defaults to <c>UTF-8</c>).
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.XmlSerializerOptions.Namespaces">
+            <summary>
+            Gets or sets the namespaces to include in the document.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.XmlSerializerOptions.Indent">
+            <summary>
+            Gets or sets a value indicating if the XML document should be
+            written with indentation (defaults to <c>false</c>).
+            </summary>
+        </member>
     </members>
 </doc>

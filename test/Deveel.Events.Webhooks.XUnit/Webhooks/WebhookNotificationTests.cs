@@ -239,6 +239,25 @@ namespace Deveel.Webhooks {
 		}
 
 		[Fact]
+		public async Task DeliverWenhookWithFilterTypeNotRegistered() {
+			var subscriptionId = CreateSubscription("Data Created", "data.created",
+						new WebhookFilter("hook.data.type == \"test\"", "query"),
+						new WebhookFilter("hook.data.creator.user_name == \"antonello\"", "query"));
+
+			var notification = new EventInfo("test", "data.created", data: new {
+				creator = new {
+					user_name = "antonello"
+				},
+				creationTime = DateTimeOffset.UtcNow,
+				type = "test"
+			});
+
+			var result = await notifier.NotifyAsync(notification, CancellationToken.None);
+			Assert.NotNull(result);
+			Assert.Empty(result);
+		}
+
+		[Fact]
 		public async Task DeliverSignedWebhookFromEvent() {
 			var subscriptionId = CreateSubscription(new TestWebhookSubscription {
 				EventTypes = new[] { "data.created" },
@@ -336,7 +355,7 @@ namespace Deveel.Webhooks {
 
 		[Fact]
 		public async Task NoSubscriptionMatches() {
-			CreateSubscription("Data Created", "data.created", new WebhookFilter("hook.data.data_type == \"test-data2\"", "linq"));
+			CreateSubscription("Data Created", "data.created", new WebhookFilter("hook.data.type == \"test-data2\"", "linq"));
 			var notification = new EventInfo("test", "data.created", data: new {
 				creationTime = DateTimeOffset.UtcNow,
 				type = "test"

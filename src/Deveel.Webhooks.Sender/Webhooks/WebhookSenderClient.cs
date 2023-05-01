@@ -63,6 +63,7 @@ namespace Deveel.Webhooks {
 			Logger = logger ?? NullLogger.Instance;
 		}
 
+		
 		/// <summary>
 		/// Gets the timeout for each request sent.
 		/// </summary>

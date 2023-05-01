@@ -100,6 +100,18 @@
             Describes the result of a webhook delivery operation
             </summary>
         </member>
+        <member name="P:Deveel.Webhooks.IWebhookDeliveryResult.OperationId">
+            <summary>
+            Gets the identifier of the operation that
+            attempted to deliver the webhook
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.IWebhookDeliveryResult.EventInfo">
+            <summary>
+            Gets the information about the event that
+            triggered the notification
+            </summary>
+        </member>
         <member name="P:Deveel.Webhooks.IWebhookDeliveryResult.Webhook">
             <summary>
             Gets the webhook that was notified

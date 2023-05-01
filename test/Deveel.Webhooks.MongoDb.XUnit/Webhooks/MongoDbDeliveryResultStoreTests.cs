@@ -43,7 +43,19 @@ namespace Deveel.Webhooks {
                 .RuleFor(x => x.StartedAt, (f, a) => f.Date.PastOffset())
                 .RuleFor(x => x.EndedAt, (f, a) => a.StartedAt.AddMilliseconds(200).OrNull(f));
 
+			var eventInfo = new Faker<MongoEventInfo>()
+				.RuleFor(x => x.EventType, f => f.Random.ListItem(new[] { "created", "deleted", "updated" }))
+				.RuleFor(x => x.DataVersion, "1.0")
+				.RuleFor(x => x.EventId, f => f.Random.Guid().ToString("N"))
+				.RuleFor(x => x.TimeStamp, f => f.Date.PastOffset())
+				.RuleFor(x => x.Subject, "data")
+				.RuleFor(x => x.EventData, f => new BsonDocument {
+					{ "data-type", f.Random.Word() },
+					{ "users", new BsonArray(f.Random.ListItems(new string[]{ "user1", "user2" })) }
+				});
+
             faker = new Faker<MongoWebhookDeliveryResult>()
+				.RuleFor(x => x.EventInfo, f => eventInfo.Generate())
                 .RuleFor(x => x.Receiver, f => receiver.Generate())
                 .RuleFor(x => x.Webhook, f => webhook.Generate())
                 .RuleFor(x => x.DeliveryAttempts, f => attempt.Generate(2));
@@ -97,6 +109,11 @@ namespace Deveel.Webhooks {
 			Assert.Equal(result.Webhook.WebhookId, deliveryResult.Webhook.Id);
 			Assert.Equal(result.Webhook.EventType, deliveryResult.Webhook.EventType);
 			Assert.Equal(result.Webhook.TimeStamp, deliveryResult.Webhook.TimeStamp);
+			Assert.Equal(result.EventInfo.EventType, deliveryResult.EventInfo.EventType);
+			Assert.Equal(result.EventInfo.EventId, deliveryResult.EventInfo.Id);
+			Assert.Equal(result.EventInfo.DataVersion, deliveryResult.EventInfo.DataVersion);
+			Assert.Equal(result.EventInfo.Subject, deliveryResult.EventInfo.Subject);
+			Assert.Equal(result.EventInfo.TimeStamp, deliveryResult.EventInfo.TimeStamp);
 			Assert.Equal(result.DeliveryAttempts.Count, deliveryResult.DeliveryAttempts.Count());
         }
 

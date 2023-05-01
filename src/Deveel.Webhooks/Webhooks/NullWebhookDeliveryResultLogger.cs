@@ -34,7 +34,7 @@ namespace Deveel.Webhooks {
 		public static readonly NullWebhookDeliveryResultLogger<TWebhook> Instance = new NullWebhookDeliveryResultLogger<TWebhook>();
 
 		/// <inheritdoc/>
-		public Task LogResultAsync(IWebhookSubscription subscription, WebhookDeliveryResult<TWebhook> result, CancellationToken cancellationToken) {
+		public Task LogResultAsync(EventInfo eventInfo, IWebhookSubscription subscription, WebhookDeliveryResult<TWebhook> result, CancellationToken cancellationToken) {
 			return Task.CompletedTask;
 		}
 	}

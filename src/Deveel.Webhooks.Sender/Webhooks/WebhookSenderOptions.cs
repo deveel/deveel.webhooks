@@ -38,7 +38,7 @@ namespace Deveel.Webhooks {
 		/// used when the destination does not specify a format to be used
 		/// (by default set to <see cref="WebhookFormat.Json"/>).
 		/// </summary>
-		public WebhookFormat DefaultFormat { get; set; } = WebhookFormat.Json;
+		public WebhookFormat DefaultFormat { get; set; } = WebhookSenderDefaults.Format;
 
 		/// <summary>
 		/// Gets or sets the options for the retry policy to be used
@@ -54,6 +54,27 @@ namespace Deveel.Webhooks {
 		/// timeout to wait for the response.
 		/// </summary>
 		public TimeSpan? Timeout { get; set; }
+
+		/// <summary>
+		/// Gets or sets a flag indicating if the sender should add
+		/// trace headers to the HTTP request. When this is not set,
+		/// the default value is <c>true</c>.
+		/// </summary>
+		public bool? AddTraceHeaders { get; set; } = WebhookSenderDefaults.AddTraceHeaders;
+
+		/// <summary>
+		/// Gets or sets the name of the header that will be used
+		/// to send the session trace ID. When this is not set, the
+		/// default value is <c>X-Webhook-TraceId</c>.
+		/// </summary>
+		public string? TraceHeaderName { get; set; } = WebhookSenderDefaults.TraceHeaderName;
+
+		/// <summary>
+		/// Gets or sets the name of the header that will be used to
+		/// send the attempt number of the webhook. When this is not
+		/// set the default value is <c>X-Webhook-Attempt</c>.
+		/// </summary>
+		public string? AttemptTraceHeaderName { get; set; } = WebhookSenderDefaults.AttemptTraceHeaderName;
 
 		/// <summary>
 		/// Gets or sets the options for the signature of the webhooks. Any
@@ -84,7 +105,7 @@ namespace Deveel.Webhooks {
 		/// is set and the <see cref="Signature"/> configurations are
 		/// provided.
 		/// </summary>
-		public bool? SignWebhooks { get; set; } = true;
+		public bool? SignWebhooks { get; set; } = WebhookSenderDefaults.SignWebhooks;
 
 		/// <summary>
 		/// An instance of a service that is used to sign the webhooks

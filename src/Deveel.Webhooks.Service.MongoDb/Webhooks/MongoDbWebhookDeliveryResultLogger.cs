@@ -12,6 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Collections;
+using System.Reflection;
+
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 
@@ -72,6 +75,9 @@ namespace Deveel.Webhooks {
 		/// Converts the given result to an object that can be stored in the
 		/// MongoDB database collection.
 		/// </summary>
+		/// <param name="eventInfo">
+		/// The information about the event that triggered the delivery of the webhook.
+		/// </param>
 		/// <param name="subscription">
 		/// The subscription for which the delivery result is logged.
 		/// </param>
@@ -81,16 +87,87 @@ namespace Deveel.Webhooks {
 		/// <returns>
 		/// Returns an object that can be stored in the MongoDB database collection.
 		/// </returns>
-		protected virtual TResult ConvertResult(IWebhookSubscription subscription, WebhookDeliveryResult<TWebhook> result) {
+		protected virtual TResult ConvertResult(EventInfo eventInfo, IWebhookSubscription subscription, WebhookDeliveryResult<TWebhook> result) {
 			var obj = new TResult();
 
 			obj.TenantId = subscription.TenantId;
+			obj.OperationId = result.OperationId;
+			obj.EventInfo = CreateEvent(eventInfo);
 			obj.Receiver = CreateReceiver(subscription);
 			obj.Webhook = ConvertWebhook(result.Webhook);
 			obj.DeliveryAttempts = result.Attempts?.Select(ConvertDeliveryAttempt).ToList() 
 				?? new List<MongoWebhookDeliveryAttempt>();
 
 			return obj;
+		}
+
+		/// <summary>
+		/// Converts the given webhook object to a MongoDB compatible object
+		/// </summary>
+		/// <param name="eventInfo">
+		/// The information about the event that triggered the delivery of the webhook.
+		/// </param>
+		/// <returns>
+		/// Returns an instance of <see cref="MongoEventInfo"/> that can be stored
+		/// in a MongoDB database collection.
+		/// </returns>
+		protected virtual MongoEventInfo CreateEvent(EventInfo eventInfo) {
+			return new MongoEventInfo {
+				EventId = eventInfo.Id,
+				EventType = eventInfo.EventType,
+				TimeStamp = eventInfo.TimeStamp,
+				Subject = eventInfo.Subject,
+				DataVersion = eventInfo.DataVersion,
+				EventData = ConvertData(eventInfo.Data)
+			};
+		}
+
+		private BsonDocument GetBsonDocument(object data) {
+			var type = data.GetType();
+			var properties = type.GetProperties(BindingFlags.Public | BindingFlags.Instance);
+
+			var doc = new BsonDocument();
+			foreach (var property in properties) {
+				var value = GetBsonValue(property.GetValue(data));
+				doc.Add(property.Name, BsonValue.Create(value));
+			}
+
+			return doc;
+		}
+
+		private BsonValue GetBsonValue(object? value) {
+			if (value == null)
+				return BsonNull.Value;
+
+			if (value is int ||
+				value is long ||
+				value is double ||
+				value is float ||
+				value is string ||
+				value is DateTime)
+				return BsonValue.Create(value);
+
+			if (value is DateTimeOffset dateTimeOffset)
+				return new BsonArray(new BsonValue[] {
+					BsonValue.Create(dateTimeOffset.UtcDateTime),
+					BsonValue.Create(dateTimeOffset.Offset.Minutes)
+				});
+
+			if (value is IEnumerable en)
+				return GetBsonArray(en);
+
+			return GetBsonDocument(value);
+		}
+
+		private BsonValue GetBsonArray(IEnumerable en) {
+			var array = new BsonArray();
+
+			foreach (var item in en) {
+				var value = GetBsonValue(item);
+				array.Add(value);
+			}
+
+			return array;
 		}
 
 		/// <summary>
@@ -154,7 +231,7 @@ namespace Deveel.Webhooks {
 			return new MongoWebhook {
 				WebhookId = obj.Id,
 				EventType = obj.EventType,
-				Data = ConvertWebhookData(obj.Data),
+				Data = ConvertData(obj.Data),
 				TimeStamp = obj.TimeStamp
 			};
 		}
@@ -169,7 +246,7 @@ namespace Deveel.Webhooks {
 		/// <returns>
 		/// 
 		/// </returns>
-		protected virtual BsonDocument ConvertWebhookData(object? data) {
+		protected virtual BsonDocument ConvertData(object? data) {
 			// this is tricky: we try some possible options...
 
 			if (data is null)
@@ -205,19 +282,11 @@ namespace Deveel.Webhooks {
 		/// </param>
 		/// <returns></returns>
 		protected virtual BsonValue ConvertValue(object? value) {
-			if (value is null)
-				return BsonNull.Value;
-			if (value is BsonValue bson)
-				return bson;
-
-			if (value is DateTimeOffset)
-				value = ((DateTimeOffset)value).DateTime;
-
-			return BsonValue.Create(value);
+			return GetBsonValue(value);
 		}
 
 		/// <inheritdoc/>
-		public async Task LogResultAsync(IWebhookSubscription subscription, WebhookDeliveryResult<TWebhook> result, CancellationToken cancellationToken) {
+		public async Task LogResultAsync(EventInfo eventInfo, IWebhookSubscription subscription, WebhookDeliveryResult<TWebhook> result, CancellationToken cancellationToken) {
 			if (result is null) 
 				throw new ArgumentNullException(nameof(result));
 			if (subscription is null) 
@@ -231,7 +300,7 @@ namespace Deveel.Webhooks {
 				typeof(TWebhook), subscription.TenantId);
 
 			try {
-				var resultObj = ConvertResult(subscription, result);
+				var resultObj = ConvertResult(eventInfo, subscription, result);
 
 				await StoreProvider.GetTenantStore(subscription.TenantId).CreateAsync(resultObj, cancellationToken);
 			} catch (Exception ex) {

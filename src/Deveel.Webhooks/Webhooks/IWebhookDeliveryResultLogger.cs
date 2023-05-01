@@ -28,6 +28,9 @@ namespace Deveel.Webhooks {
 		/// <summary>
 		/// Logs the result of a delivery of a webhook
 		/// </summary>
+		/// <param name="eventInfo">
+		/// The information about the event that triggered the notification.
+		/// </param>
 		/// <param name="subscription">
 		/// The subscription that was used to deliver the webhook
 		/// </param>
@@ -40,6 +43,6 @@ namespace Deveel.Webhooks {
 		/// <returns>
 		/// Returns a task that when completed will log the result of the delivery
 		/// </returns>
-		Task LogResultAsync(IWebhookSubscription subscription, WebhookDeliveryResult<TWebhook> result, CancellationToken cancellationToken = default);
+		Task LogResultAsync(EventInfo eventInfo, IWebhookSubscription subscription, WebhookDeliveryResult<TWebhook> result, CancellationToken cancellationToken = default);
 	}
 }

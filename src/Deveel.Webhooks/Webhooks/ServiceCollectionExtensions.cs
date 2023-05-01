@@ -12,14 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Options;
 
 namespace Deveel.Webhooks {
 	/// <summary>
@@ -46,6 +41,32 @@ namespace Deveel.Webhooks {
 			services.TryAddSingleton(builder);
 
 			return builder;
+		}
+
+		public static WebhookNotifierBuilder<TWebhook> AddWebhookNotifier<TWebhook>(this IServiceCollection services, WebhookNotificationOptions<TWebhook> options)
+			where TWebhook : class {
+
+			services.AddSingleton(Options.Create(options));
+
+			return services.AddWebhookNotifier<TWebhook>();
+		}
+
+		public static WebhookNotifierBuilder<TWebhook> AddWebhookNotifier<TWebhook>(this IServiceCollection services, Action<WebhookNotificationOptions<TWebhook>> configure)
+			where TWebhook : class {
+
+			services.AddOptions<WebhookNotificationOptions<TWebhook>>()
+				.Configure(configure);
+
+			return services.AddWebhookNotifier<TWebhook>();
+		}
+
+		public static WebhookNotifierBuilder<TWebhook> AddWebhookNotifier<TWebhook>(this IServiceCollection services, string sectionPath)
+			where TWebhook : class {
+
+			services.AddOptions<WebhookNotificationOptions<TWebhook>>()
+				.BindConfiguration(sectionPath);
+
+			return services.AddWebhookNotifier<TWebhook>();
 		}
 
 		/// <summary>

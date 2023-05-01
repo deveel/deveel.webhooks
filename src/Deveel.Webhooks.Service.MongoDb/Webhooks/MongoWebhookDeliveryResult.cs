@@ -36,6 +36,16 @@ namespace Deveel.Webhooks {
 
 		IWebhook IWebhookDeliveryResult.Webhook => Webhook;
 
+		/// <summary>
+		/// Gets or sets the information on the event that
+		/// triggered the notification.
+		/// </summary>
+		public MongoEventInfo EventInfo { get; set; }
+
+		IEventInfo IWebhookDeliveryResult.EventInfo => EventInfo;
+
+		/// <inheritdoc/>
+		public virtual string OperationId { get; set; }
 
         /// <inheritdoc/>
         public virtual MongoWebhookReceiver Receiver { get; set; }

@@ -20,6 +20,7 @@ using System.Threading.Tasks;
 
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Extensions.Options;
 
 namespace Deveel.Webhooks {
 	/// <summary>
@@ -32,6 +33,9 @@ namespace Deveel.Webhooks {
 		/// <summary>
 		/// Constructs the notifier with the given services.
 		/// </summary>
+		/// <param name="options">
+		/// The configuration options of the notifier.
+		/// </param>
 		/// <param name="sender">
 		/// The service used to send the webhook.
 		/// </param>
@@ -53,12 +57,14 @@ namespace Deveel.Webhooks {
 		/// A logger used to log the activity of the notifier.
 		/// </param>
 		public TenantWebhookNotifier(
+			IOptions<WebhookNotificationOptions<TWebhook>> options,
 			IWebhookSender<TWebhook> sender,
 			IWebhookFactory<TWebhook> webhookFactory,
 			ITenantWebhookSubscriptionResolver<TWebhook>? subscriptionResolver = null,
 			IEnumerable<IWebhookFilterEvaluator<TWebhook>>? filterEvaluators = null,
 			IWebhookDeliveryResultLogger<TWebhook>? deliveryResultLogger = null,
-			ILogger<TenantWebhookNotifier<TWebhook>>? logger = null) : base(sender, webhookFactory, filterEvaluators, deliveryResultLogger, logger) {
+			ILogger<TenantWebhookNotifier<TWebhook>>? logger = null) 
+			: base(options.Value, sender, webhookFactory, filterEvaluators, deliveryResultLogger, logger) {
 			this.subscriptionResolver = subscriptionResolver;
 		}
 

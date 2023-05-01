@@ -295,10 +295,13 @@
             The type of the webhook that is delivered
             </typeparam>
         </member>
-        <member name="M:Deveel.Webhooks.IWebhookDeliveryResultLogger`1.LogResultAsync(Deveel.Webhooks.IWebhookSubscription,Deveel.Webhooks.WebhookDeliveryResult{`0},System.Threading.CancellationToken)">
+        <member name="M:Deveel.Webhooks.IWebhookDeliveryResultLogger`1.LogResultAsync(Deveel.Webhooks.EventInfo,Deveel.Webhooks.IWebhookSubscription,Deveel.Webhooks.WebhookDeliveryResult{`0},System.Threading.CancellationToken)">
             <summary>
             Logs the result of a delivery of a webhook
             </summary>
+            <param name="eventInfo">
+            The information about the event that triggered the notification.
+            </param>
             <param name="subscription">
             The subscription that was used to deliver the webhook
             </param>
@@ -447,7 +450,7 @@
             Gets the singleton instance of the logger.
             </summary>
         </member>
-        <member name="M:Deveel.Webhooks.NullWebhookDeliveryResultLogger`1.LogResultAsync(Deveel.Webhooks.IWebhookSubscription,Deveel.Webhooks.WebhookDeliveryResult{`0},System.Threading.CancellationToken)">
+        <member name="M:Deveel.Webhooks.NullWebhookDeliveryResultLogger`1.LogResultAsync(Deveel.Webhooks.EventInfo,Deveel.Webhooks.IWebhookSubscription,Deveel.Webhooks.WebhookDeliveryResult{`0},System.Threading.CancellationToken)">
             <inheritdoc/>
         </member>
         <member name="T:Deveel.Webhooks.ServiceCollectionExtensions">
@@ -493,10 +496,13 @@
             that addresses specific tenants
             </summary>
         </member>
-        <member name="M:Deveel.Webhooks.TenantWebhookNotifier`1.#ctor(Deveel.Webhooks.IWebhookSender{`0},Deveel.Webhooks.IWebhookFactory{`0},Deveel.Webhooks.ITenantWebhookSubscriptionResolver{`0},System.Collections.Generic.IEnumerable{Deveel.Webhooks.IWebhookFilterEvaluator{`0}},Deveel.Webhooks.IWebhookDeliveryResultLogger{`0},Microsoft.Extensions.Logging.ILogger{Deveel.Webhooks.TenantWebhookNotifier{`0}})">
+        <member name="M:Deveel.Webhooks.TenantWebhookNotifier`1.#ctor(Microsoft.Extensions.Options.IOptions{Deveel.Webhooks.WebhookNotificationOptions{`0}},Deveel.Webhooks.IWebhookSender{`0},Deveel.Webhooks.IWebhookFactory{`0},Deveel.Webhooks.ITenantWebhookSubscriptionResolver{`0},System.Collections.Generic.IEnumerable{Deveel.Webhooks.IWebhookFilterEvaluator{`0}},Deveel.Webhooks.IWebhookDeliveryResultLogger{`0},Microsoft.Extensions.Logging.ILogger{Deveel.Webhooks.TenantWebhookNotifier{`0}})">
             <summary>
             Constructs the notifier with the given services.
             </summary>
+            <param name="options">
+            The configuration options of the notifier.
+            </param>
             <param name="sender">
             The service used to send the webhook.
             </param>
@@ -675,6 +681,18 @@
             Returns <c>true</c> if the given <paramref name="filter"/> is a wildcard filter.
             </returns>
         </member>
+        <member name="T:Deveel.Webhooks.WebhookNotificationOptions`1">
+            <summary>
+            Provides configuration options for the notification of webhooks.
+            </summary>
+            <typeparam name="TWebhook"></typeparam>
+        </member>
+        <member name="P:Deveel.Webhooks.WebhookNotificationOptions`1.ParallelThreadCount">
+            <summary>
+            Gets or sets the number of parallel threads that will be used
+            to send the notifications.
+            </summary>
+        </member>
         <member name="T:Deveel.Webhooks.WebhookNotificationResult`1">
             <summary>
             Repsents an aggregated result of the notification of an event.
@@ -761,10 +779,13 @@
             The type of the webhook that is scoped for the notifier.
             </typeparam>
         </member>
-        <member name="M:Deveel.Webhooks.WebhookNotifier`1.#ctor(Deveel.Webhooks.IWebhookSender{`0},Deveel.Webhooks.IWebhookFactory{`0},Deveel.Webhooks.IWebhookSubscriptionResolver{`0},System.Collections.Generic.IEnumerable{Deveel.Webhooks.IWebhookFilterEvaluator{`0}},Deveel.Webhooks.IWebhookDeliveryResultLogger{`0},Microsoft.Extensions.Logging.ILogger{Deveel.Webhooks.TenantWebhookNotifier{`0}})">
+        <member name="M:Deveel.Webhooks.WebhookNotifier`1.#ctor(Microsoft.Extensions.Options.IOptions{Deveel.Webhooks.WebhookNotificationOptions{`0}},Deveel.Webhooks.IWebhookSender{`0},Deveel.Webhooks.IWebhookFactory{`0},Deveel.Webhooks.IWebhookSubscriptionResolver{`0},System.Collections.Generic.IEnumerable{Deveel.Webhooks.IWebhookFilterEvaluator{`0}},Deveel.Webhooks.IWebhookDeliveryResultLogger{`0},Microsoft.Extensions.Logging.ILogger{Deveel.Webhooks.TenantWebhookNotifier{`0}})">
             <summary>
             Constructs the notifier with the given sender and factory.
             </summary>
+            <param name="options">
+            The configuration options of the notifier.
+            </param>
             <param name="sender">
             The service instance that will be used to send the notifications.
             </param>
@@ -891,10 +912,13 @@
             The result of the delivery operation.
             </param>
         </member>
-        <member name="M:Deveel.Webhooks.WebhookNotifierBase`1.LogDeliveryResultAsync(Deveel.Webhooks.IWebhookSubscription,Deveel.Webhooks.WebhookDeliveryResult{`0},System.Threading.CancellationToken)">
+        <member name="M:Deveel.Webhooks.WebhookNotifierBase`1.LogDeliveryResultAsync(Deveel.Webhooks.EventInfo,Deveel.Webhooks.IWebhookSubscription,Deveel.Webhooks.WebhookDeliveryResult{`0},System.Threading.CancellationToken)">
             <summary>
             Logs the given delivery result.
             </summary>
+            <param name="eventInfo">
+            The information about the event that triggered the notification.
+            </param>
             <param name="subscription">
             The subscription that was used to send the webhook.
             </param>

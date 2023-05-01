@@ -30,11 +30,13 @@ namespace Deveel.Webhooks {
 		private readonly IDictionary<string, IWebhookFilterEvaluator<TWebhook>> filterEvaluators;
 
 		internal WebhookNotifierBase(
+			WebhookNotificationOptions<TWebhook> notificationOptions,
 			IWebhookSender<TWebhook> sender,
 			IWebhookFactory<TWebhook> webhookFactory,
 			IEnumerable<IWebhookFilterEvaluator<TWebhook>>? filterEvaluators = null,
 			IWebhookDeliveryResultLogger<TWebhook>? deliveryResultLogger = null,
 			ILogger<TenantWebhookNotifier<TWebhook>>? logger = null) {
+			NotificationOptions = notificationOptions;
 			this.sender = sender;
 			this.webhookFactory = webhookFactory;
 			this.filterEvaluators = GetFilterEvaluators(filterEvaluators);
@@ -46,6 +48,11 @@ namespace Deveel.Webhooks {
 		/// Gets the logger used to log the activity of the notifier.
 		/// </summary>
 		protected ILogger Logger { get; }
+
+		/// <summary>
+		/// Gets the options used to configure the notification.
+		/// </summary>
+		protected WebhookNotificationOptions<TWebhook> NotificationOptions { get; }
 
 		private static IDictionary<string, IWebhookFilterEvaluator<TWebhook>> GetFilterEvaluators(IEnumerable<IWebhookFilterEvaluator<TWebhook>>? filterEvaluators) {
 			var evaluators = new Dictionary<string, IWebhookFilterEvaluator<TWebhook>>();
@@ -115,21 +122,21 @@ namespace Deveel.Webhooks {
 		/// </exception>
 		protected virtual async Task<bool> MatchesAsync(WebhookSubscriptionFilter? filter, TWebhook webhook, CancellationToken cancellationToken) {
 			if (filter == null || filter.IsEmpty) {
-				Logger.LogTrace("The filter request was null or empty: accepting by default");
+				Logger.TraceEmptyFilter();
 				return true;
 			}
 
 			if (filter.IsWildcard) {
-				Logger.LogTrace("The whole filter request was a wildcard");
+				Logger.TraceWildcardFilter();
 				return true;
 			}
 
-			Logger.LogTrace("Selecting the filter evaluator for '{FilterFormat}' format", filter.FilterFormat);
+			Logger.TraceSelectingEvaluator(filter.FilterFormat);
 
 			var filterEvaluator = GetFilterEvaluator(filter.FilterFormat);
 
 			if (filterEvaluator == null) {
-				Logger.LogError("Could not resolve any filter evaluator for the format '{FilterFormat}'", filter.FilterFormat);
+				Logger.WarnEvaluatorNotFound(filter.FilterFormat);
 				throw new NotSupportedException($"Filers of type '{filter.FilterFormat}' are not supported");
 			}
 
@@ -178,6 +185,9 @@ namespace Deveel.Webhooks {
 		/// <summary>
 		/// Logs the given delivery result.
 		/// </summary>
+		/// <param name="eventInfo">
+		/// The information about the event that triggered the notification.
+		/// </param>
 		/// <param name="subscription">
 		/// The subscription that was used to send the webhook.
 		/// </param>
@@ -190,33 +200,31 @@ namespace Deveel.Webhooks {
 		/// <returns>
 		/// Returns a task that completes when the operation is done.
 		/// </returns>
-		protected virtual async Task LogDeliveryResultAsync(IWebhookSubscription subscription, WebhookDeliveryResult<TWebhook> deliveryResult, CancellationToken cancellationToken) {
+		protected virtual async Task LogDeliveryResultAsync(EventInfo eventInfo, IWebhookSubscription subscription, WebhookDeliveryResult<TWebhook> deliveryResult, CancellationToken cancellationToken) {
 			try {
 				if (deliveryResultLogger != null)
-					await deliveryResultLogger.LogResultAsync(subscription, deliveryResult, cancellationToken);
+					await deliveryResultLogger.LogResultAsync(eventInfo, subscription, deliveryResult, cancellationToken);
 			} catch (Exception ex) {
 				// If an error occurs here, we report it, but we don't throw it...
-				Logger.LogError(ex, "Error while logging a delivery result for tenant {TenantId}", subscription.TenantId);
+				Logger.LogUnknownEventDeliveryError(ex, subscription.SubscriptionId!, eventInfo.EventType);
 			}
 		}
 
-		private void TraceDeliveryResult(WebhookDeliveryResult<TWebhook> deliveryResult) {
+		private void TraceDeliveryResult(EventInfo eventInfo, WebhookDeliveryResult<TWebhook> deliveryResult) {
 			if (!deliveryResult.HasAttempted) {
-				Logger.LogTrace("The delivery was not attempted");
+				Logger.WarnDeliveryNotAttempted(deliveryResult.Destination.Url.GetLeftPart(UriPartial.Path), eventInfo.EventType);
 			} else if (deliveryResult.Successful) {
-				Logger.LogTrace("The delivery was successful after {AttemptCount} attempts", deliveryResult.Attempts.Count());
+				Logger.TraceDeliveryDoneAfterAttempts(deliveryResult.Destination.Url.GetLeftPart(UriPartial.Path), eventInfo.EventType, deliveryResult.Attempts.Count);
 			} else {
-				Logger.LogTrace("The delivery failed after {AttemptCount} attempts", deliveryResult.Attempts.Count());
+				Logger.WarnDeliveryFailed(deliveryResult.Destination.Url.GetLeftPart(UriPartial.Path), eventInfo.EventType, deliveryResult.Attempts.Count);
 			}
 
 			if (deliveryResult.HasAttempted) {
 				foreach (var attempt in deliveryResult.Attempts) {
 					if (attempt.Failed) {
-						Logger.LogTrace("Attempt {AttemptNumber} Failed - [{StartDate} - {EndDate}] {StatusCode}: {ErrorMessage}",
-							attempt.Number, attempt.StartedAt, attempt.CompletedAt, attempt.ResponseCode, attempt.ResponseMessage);
+						Logger.TraceDeliveryAttemptFailed(attempt.Number, attempt.StartedAt, attempt.CompletedAt, attempt.ResponseCode);
 					} else {
-						Logger.LogTrace("Attempt {AttemptNumber} Successful - [{StartDate} - {EndDate}] {StatusCode}",
-							attempt.Number, attempt.StartedAt, attempt.CompletedAt, attempt.ResponseCode);
+						Logger.TraceDeliveryAttemptSuccess(attempt.Number, attempt.StartedAt, attempt.CompletedAt, attempt.ResponseCode);
 					}
 				}
 			}
@@ -226,15 +234,12 @@ namespace Deveel.Webhooks {
 			if (String.IsNullOrWhiteSpace(subscription.SubscriptionId))
 				throw new WebhookException("The subscription identifier is missing");
 
-			Logger.LogDebug("Evaluating subscription {SubscriptionId} to the event of type {EventType}",
-				subscription.SubscriptionId, eventInfo.EventType);
+			Logger.TraceEvaluatingSubscription(subscription.SubscriptionId, eventInfo.EventType);
 
 			var webhook = await CreateWebhook(subscription, eventInfo, cancellationToken);
 
 			if (webhook == null) {
-				Logger.LogWarning("It was not possible to generate the webhook for the event {EventType} to be delivered to subscription {SubscriptionName} ({SubscriptionId})",
-					eventInfo.EventType, subscription.Name, subscription.SubscriptionId);
-				
+				Logger.WarnWebhookNotCreated(subscription.SubscriptionId, eventInfo.EventType);				
 				return;
 			}
 
@@ -242,30 +247,26 @@ namespace Deveel.Webhooks {
 				var filter = BuildSubscriptionFilter(subscription);
 
 				if (await MatchesAsync(filter, webhook, cancellationToken)) {
-					Logger.LogTrace("Delivering webhook for event {EventType} to subscription {SubscriptionId}",
-						eventInfo.EventType, subscription.SubscriptionId);
+					Logger.TraceSubscriptionMatched(subscription.SubscriptionId, eventInfo.EventType);
 
 					var deliveryResult = await SendAsync(subscription, webhook, cancellationToken);
 
 					result.AddDelivery(subscription.SubscriptionId, deliveryResult);
 
-					await LogDeliveryResultAsync(subscription, deliveryResult, cancellationToken);
+					await LogDeliveryResultAsync(eventInfo, subscription, deliveryResult, cancellationToken);
 
-					TraceDeliveryResult(deliveryResult);
+					TraceDeliveryResult(eventInfo, deliveryResult);
 
 					try {
 						await OnDeliveryResultAsync(subscription, webhook, deliveryResult, cancellationToken);
 					} catch (Exception ex) {
-						Logger.LogError(ex, "The event handling on the delivery thrown an error");
+						Logger.LogUnknownEventDeliveryError(ex, subscription.SubscriptionId, eventInfo.EventType);
 					}
-
 				} else {
-					Logger.LogTrace("The webhook for event {EventType} could not match the subscription {SubscriptionId}",
-						eventInfo.EventType, subscription.SubscriptionId);
+					Logger.TraceSubscriptionNotMatched(subscription.SubscriptionId, eventInfo.EventType);
 				}
 			} catch (Exception ex) {
-				Logger.LogError(ex, "Could not deliver a webhook for event {EventType} to subscription {SubscriptionId}",
-					typeof(TWebhook), subscription.SubscriptionId);
+				Logger.LogUnknownEventDeliveryError(ex, subscription.SubscriptionId, eventInfo.EventType);
 
 				await OnDeliveryErrorAsync(subscription, webhook, ex, cancellationToken);
 
@@ -294,7 +295,7 @@ namespace Deveel.Webhooks {
 
 			// TODO: Make the parallel thread count configurable
 			var options = new ParallelOptions { 
-				MaxDegreeOfParallelism = Environment.ProcessorCount - 1, 
+				MaxDegreeOfParallelism = NotificationOptions.ParallelThreadCount,
 				CancellationToken = cancellationToken 
 			};
 
@@ -362,12 +363,10 @@ namespace Deveel.Webhooks {
 
 				return sender.SendAsync(destination, webhook, cancellationToken);
 			} catch (WebhookSenderException ex) {
-				Logger.LogError(ex, "The webhook sender failed to send a webhook for event {EventType} to tenant {TenantId} because of an error",
-					typeof(TWebhook), subscription.TenantId);
+				Logger.LogUnknownDeliveryError(ex, subscription.SubscriptionId!);
 				throw;
 			} catch (Exception ex) {
-				Logger.LogError(ex, "An unknown error occurred when trying to send a webhook for event {EventType} to tenant {TenantId}",
-										typeof(TWebhook), subscription.TenantId);
+				Logger.LogUnknownDeliveryError(ex, subscription.SubscriptionId!);
 
 				throw new WebhookException("An unknown error occurred when trying to send a webhook", ex);
 			}
@@ -394,6 +393,7 @@ namespace Deveel.Webhooks {
 			try {
 				return await webhookFactory.CreateAsync(subscription, eventInfo, cancellationToken);
 			} catch (Exception ex) {
+				Logger.LogWebhookCreationError(ex, subscription.SubscriptionId!, eventInfo.EventType);
 				throw new WebhookException("An error occurred while creating a new webhook", ex);
 			}
 

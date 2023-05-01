@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace Deveel.Webhooks {
 	/// <summary>
@@ -27,6 +28,9 @@ namespace Deveel.Webhooks {
 		/// <summary>
 		/// Constructs the notifier with the given sender and factory.
 		/// </summary>
+		/// <param name="options">
+		/// The configuration options of the notifier.
+		/// </param>
 		/// <param name="sender">
 		/// The service instance that will be used to send the notifications.
 		/// </param>
@@ -47,13 +51,14 @@ namespace Deveel.Webhooks {
 		/// A logger instance used to log the activity of the notifier.
 		/// </param>
 		public WebhookNotifier(
+			IOptions<WebhookNotificationOptions<TWebhook>> options,
 			IWebhookSender<TWebhook> sender, 
 			IWebhookFactory<TWebhook> webhookFactory,
 			IWebhookSubscriptionResolver<TWebhook>? subscriptionResolver = null,
 			IEnumerable<IWebhookFilterEvaluator<TWebhook>>? filterEvaluators = null, 
 			IWebhookDeliveryResultLogger<TWebhook>? deliveryResultLogger = null, 
 			ILogger<TenantWebhookNotifier<TWebhook>>? logger = null) 
-			: base(sender, webhookFactory, filterEvaluators, deliveryResultLogger, logger) {
+			: base(options.Value, sender, webhookFactory, filterEvaluators, deliveryResultLogger, logger) {
 			this.subscriptionResolver = subscriptionResolver;
 		}
 

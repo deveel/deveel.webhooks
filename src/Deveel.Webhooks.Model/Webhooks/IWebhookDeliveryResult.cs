@@ -21,6 +21,18 @@ namespace Deveel.Webhooks {
 	/// </summary>
 	public interface IWebhookDeliveryResult {
 		/// <summary>
+		/// Gets the identifier of the operation that
+		/// attempted to deliver the webhook
+		/// </summary>
+		string OperationId { get; }
+
+		/// <summary>
+		/// Gets the information about the event that
+		/// triggered the notification
+		/// </summary>
+		IEventInfo EventInfo { get; }
+
+		/// <summary>
 		/// Gets the webhook that was notified
 		/// </summary>
 		IWebhook Webhook { get; }

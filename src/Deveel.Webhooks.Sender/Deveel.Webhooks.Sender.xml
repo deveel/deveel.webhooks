@@ -465,16 +465,24 @@
             </para>
             </remarks>
         </member>
-        <member name="M:Deveel.Webhooks.WebhookDeliveryResult`1.#ctor(Deveel.Webhooks.WebhookDestination,`0)">
+        <member name="M:Deveel.Webhooks.WebhookDeliveryResult`1.#ctor(System.String,Deveel.Webhooks.WebhookDestination,`0)">
             <summary>
             Constructs a new delivery result for the given webhook to the given destination.
             </summary>
+            <param name="operationId">
+            The unique identifier of the operation that delivered the webhook.
+            </param>
             <param name="destination">
             The destination of the webhook.
             </param>
             <param name="webhook">
             The webhook that was delivered.
             </param>
+        </member>
+        <member name="P:Deveel.Webhooks.WebhookDeliveryResult`1.OperationId">
+            <summary>
+            Gets the unique identifier of the operation that delivered the webhook.
+            </summary>
         </member>
         <member name="P:Deveel.Webhooks.WebhookDeliveryResult`1.Attempts">
             <summary>
@@ -806,16 +814,6 @@
             Thrown when the <paramref name="options"/> is <c>null</c>.
             </exception>
         </member>
-        <member name="M:Deveel.Webhooks.WebhookDestinationVerifier`1.#ctor(Deveel.Webhooks.WebhookReceiverVerificationOptions,System.Net.Http.IHttpClientFactory,Microsoft.Extensions.Logging.ILogger)">
-            <summary>
-            Creates a new instance of the <see cref="T:Deveel.Webhooks.WebhookDestinationVerifier`1"/> class
-            that is configured with the given options and an optional factory of HTTP clients.
-            </summary>
-            <param name="options"></param>
-            <param name="httpClientFactory"></param>
-            <param name="logger"></param>
-            <exception cref="T:System.ArgumentNullException"></exception>
-        </member>
         <member name="M:Deveel.Webhooks.WebhookDestinationVerifier`1.#ctor(Deveel.Webhooks.WebhookSenderOptions{`0},System.Net.Http.HttpClient,Microsoft.Extensions.Logging.ILogger)">
             <summary>
             Creates a new instance of the <see cref="T:Deveel.Webhooks.WebhookDestinationVerifier`1"/> class
@@ -834,17 +832,7 @@
             Thrown when the <paramref name="options"/> is <c>null</c>.
             </exception>
         </member>
-        <member name="M:Deveel.Webhooks.WebhookDestinationVerifier`1.#ctor(Deveel.Webhooks.WebhookReceiverVerificationOptions,System.Net.Http.HttpClient,Microsoft.Extensions.Logging.ILogger)">
-            <summary>
-            Creates a new instance of the <see cref="T:Deveel.Webhooks.WebhookDestinationVerifier`1"/> class
-            that is configured with the given options and an optional HTTP client.
-            </summary>
-            <param name="options"></param>
-            <param name="httpClient"></param>
-            <param name="logger"></param>
-            <exception cref="T:System.ArgumentNullException"></exception>
-        </member>
-        <member name="P:Deveel.Webhooks.WebhookDestinationVerifier`1.VerifierOptions">
+        <member name="P:Deveel.Webhooks.WebhookDestinationVerifier`1.SenderOptions">
             <summary>
             Gets the options used to configure the verifier service.
             </summary>
@@ -1003,11 +991,6 @@
             Gets or sets the timeout for the verification request.
             </summary>
         </member>
-        <member name="P:Deveel.Webhooks.WebhookReceiverVerificationOptions.Retry">
-            <summary>
-            Gets or sets the retry options for the verification request.
-            </summary>
-        </member>
         <member name="P:Deveel.Webhooks.WebhookReceiverVerificationOptions.HttpMethod">
             <summary>
             Gets or sets the HTTP method to use for the verification request.
@@ -1028,7 +1011,7 @@
         <member name="P:Deveel.Webhooks.WebhookReceiverVerificationOptions.Challenge">
             <summary>
             Gets or sets a value indicating whether the verification request
-            should be sent with a challenge response.
+            should be sent with a challenge response (default: <c>true</c>).
             </summary>
         </member>
         <member name="P:Deveel.Webhooks.WebhookReceiverVerificationOptions.ChallengeQueryParameter">
@@ -1305,6 +1288,40 @@
             </param>
             <exception cref="T:Deveel.Webhooks.WebhookSenderException">
             Thrown when the header cannot be added to the request.
+            </exception>
+        </member>
+        <member name="M:Deveel.Webhooks.WebhookSender`1.AddTraceHeader(System.Net.Http.HttpRequestMessage,System.String)">
+            <summary>
+            Adds the trace header to the request, if enabled.
+            </summary>
+            <param name="request">
+            The HTTP request to add the trace header to.
+            </param>
+            <param name="traceId">
+            The unique identifier of the current operation.
+            </param>
+            <exception cref="T:System.ArgumentNullException">
+            Thrown when the <paramref name="request"/> is <c>null</c>.
+            </exception>
+            <exception cref="T:Deveel.Webhooks.WebhookSenderException">
+            Thrown when the trace header cannot be added to the request.
+            </exception>
+        </member>
+        <member name="M:Deveel.Webhooks.WebhookSender`1.AddAttemptHeader(System.Net.Http.HttpRequestMessage,System.Int32)">
+            <summary>
+            Adds the attempt header to the request, if enabled.
+            </summary>
+            <param name="request">
+            The HTTP request to add the attempt header to.
+            </param>
+            <param name="attempt">
+            The attempt number to add to the header.
+            </param>
+            <exception cref="T:System.ArgumentNullException">
+            Thrown when the <paramref name="request"/> is <c>null</c>.
+            </exception>
+            <exception cref="T:Deveel.Webhooks.WebhookSenderException">
+            Thrown when the attempt header cannot be added to the request.
             </exception>
         </member>
         <member name="M:Deveel.Webhooks.WebhookSender`1.CreateRequest(Deveel.Webhooks.WebhookDestination)">
@@ -1586,6 +1603,83 @@
         <member name="M:Deveel.Webhooks.WebhookSenderClient.Dispose">
             <inheritdoc/>
         </member>
+        <member name="T:Deveel.Webhooks.WebhookSenderDefaults">
+            <summary>
+            The default configuration values for the webhooks sender.
+            </summary>
+        </member>
+        <member name="F:Deveel.Webhooks.WebhookSenderDefaults.AddTraceHeaders">
+            <summary>
+            Whether the sender should add trace headers to the 
+            HTTP request (default: <c>true</c>).
+            </summary>
+        </member>
+        <member name="F:Deveel.Webhooks.WebhookSenderDefaults.TraceHeaderName">
+            <summary>
+            The name of the header that will be used to send the
+            trace ID (default: <c>X-Webhook-TraceId</c>).
+            </summary>
+        </member>
+        <member name="F:Deveel.Webhooks.WebhookSenderDefaults.AttemptTraceHeaderName">
+            <summary>
+            The name of the header that will be used to send the
+            attempt number of the webhook (default: <c>X-Webhook-Attempt</c>).
+            </summary>
+        </member>
+        <member name="F:Deveel.Webhooks.WebhookSenderDefaults.SignatureLocation">
+            <summary>
+            The default location of the signature in the HTTP request
+            (default: <see cref="F:Deveel.Webhooks.WebhookSignatureLocation.Header"/>).
+            </summary>
+        </member>
+        <member name="F:Deveel.Webhooks.WebhookSenderDefaults.SignWebhooks">
+            <summary>
+            Gets the default value for the flag indicating if the
+            webhook request should be signed or not (default: <c>true</c>).
+            </summary>
+        </member>
+        <member name="F:Deveel.Webhooks.WebhookSenderDefaults.SignatureHeaderName">
+            <summary>
+            The default name of the header that will be used to send
+            the signature of the webhook (default: <c>X-Webhook-Signature</c>).
+            </summary>
+        </member>
+        <member name="F:Deveel.Webhooks.WebhookSenderDefaults.SignatureQueryParameterName">
+            <summary>
+            The default name of the query parameter that will be used
+            to send the signature of the webhook (default: <c>signature</c>).
+            </summary>
+        </member>
+        <member name="F:Deveel.Webhooks.WebhookSenderDefaults.Format">
+            <summary>
+            The default format of the webhook payload (default: <see cref="F:Deveel.Webhooks.WebhookFormat.Json"/>).
+            </summary>
+        </member>
+        <member name="F:Deveel.Webhooks.WebhookSenderDefaults.JsonContentType">
+            <summary>
+            The default content type for the JSON payload (default: <c>application/json</c>).
+            </summary>
+        </member>
+        <member name="F:Deveel.Webhooks.WebhookSenderDefaults.XmlContentType">
+            <summary>
+            The default content type for the XML payload (default: <c>text/xml</c>).
+            </summary>
+        </member>
+        <member name="F:Deveel.Webhooks.WebhookSenderDefaults.VerifyTokenHeaderName">
+            <summary>
+            The default header name for the verification token (default: <c>X-Verify-Token</c>).
+            </summary>
+        </member>
+        <member name="F:Deveel.Webhooks.WebhookSenderDefaults.VerifyTokenQueryParameterName">
+            <summary>
+            The default query parameter name for the verification token (default: <c>token</c>).
+            </summary>
+        </member>
+        <member name="F:Deveel.Webhooks.WebhookSenderDefaults.VerifyHttpMethod">
+            <summary>
+            The default HTTP method to use for the verification request (default: <c>GET</c>).
+            </summary>
+        </member>
         <member name="T:Deveel.Webhooks.WebhookSenderException">
             <summary>
             An exception thrown when an error occurs while sending a webhook.
@@ -1646,6 +1740,27 @@
             Gets or sets the timeout for the HTTP request to be sent,
             across all retries. When this is not set, the sender has no
             timeout to wait for the response.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.WebhookSenderOptions`1.AddTraceHeaders">
+            <summary>
+            Gets or sets a flag indicating if the sender should add
+            trace headers to the HTTP request. When this is not set,
+            the default value is <c>true</c>.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.WebhookSenderOptions`1.TraceHeaderName">
+            <summary>
+            Gets or sets the name of the header that will be used
+            to send the session trace ID. When this is not set, the
+            default value is <c>X-Webhook-TraceId</c>.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.WebhookSenderOptions`1.AttemptTraceHeaderName">
+            <summary>
+            Gets or sets the name of the header that will be used to
+            send the attempt number of the webhook. When this is not
+            set the default value is <c>X-Webhook-Attempt</c>.
             </summary>
         </member>
         <member name="P:Deveel.Webhooks.WebhookSenderOptions`1.Signature">

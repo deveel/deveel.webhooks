@@ -46,10 +46,9 @@ namespace Deveel.Webhooks {
 			Func<HttpRequestMessage, Task<TestWebhook>> readContent = async request => {
 				TestWebhook? webhook;
 
-				if (request.Content!.Headers!.ContentType!.MediaType == "application/json") {
+				if (request.Content!.Headers!.ContentType!.MediaType == WebhookSenderDefaults.JsonContentType) {
 					webhook = await request.Content!.ReadFromJsonAsync<TestWebhook>();
-				} else if (request.Content.Headers.ContentType.MediaType == "application/xml" ||
-				           request.Content.Headers.ContentType.MediaType == "text/xml") {
+				} else if (request.Content.Headers.ContentType.MediaType == WebhookSenderDefaults.XmlContentType) {
 					var xml = await request.Content!.ReadAsStringAsync();
 					var serializer = new XmlSerializer(typeof(TestWebhook));
 					webhook = (TestWebhook) serializer.Deserialize(new StringReader(xml))!;
@@ -177,6 +176,13 @@ namespace Deveel.Webhooks {
 			Assert.Equal(webhook.Id, lastWebhook!.Id);
 			Assert.Equal(webhook.Event, lastWebhook!.Event);
 			Assert.Equal(webhook.TimeStamp, lastWebhook!.TimeStamp);
+
+			Assert.True(lastRequest.Headers.TryGetValues(WebhookSenderDefaults.TraceHeaderName, out var traceId));
+			Assert.Equal(result.OperationId, traceId.First());
+
+			Assert.True(lastRequest.Headers.TryGetValues(WebhookSenderDefaults.AttemptTraceHeaderName, out var attemptHeader));
+			Assert.NotNull(attemptHeader);
+			Assert.Equal("1", attemptHeader.First());
 		}
 
 		[Fact]
@@ -205,6 +211,12 @@ namespace Deveel.Webhooks {
 			Assert.Equal(webhook.Id, lastWebhook!.Id);
 			Assert.Equal(webhook.Event, lastWebhook!.Event);
 			Assert.Equal(webhook.TimeStamp, lastWebhook!.TimeStamp);
+
+			Assert.True(lastRequest.Headers.TryGetValues(WebhookSenderDefaults.TraceHeaderName, out var traceId));
+			Assert.Equal(result.OperationId, traceId.First());
+			Assert.True(lastRequest.Headers.TryGetValues(WebhookSenderDefaults.AttemptTraceHeaderName, out var attemptHeader));
+			Assert.NotNull(attemptHeader);
+			Assert.Equal("1", attemptHeader.First());
 		}
 
 
@@ -232,9 +244,15 @@ namespace Deveel.Webhooks {
             Assert.Equal(webhook.Id, lastWebhook!.Id);
             Assert.Equal(webhook.Event, lastWebhook!.Event);
             Assert.Equal(webhook.TimeStamp, lastWebhook!.TimeStamp);
-        }
 
-        [Fact]
+			Assert.True(lastRequest.Headers.TryGetValues(WebhookSenderDefaults.TraceHeaderName, out var traceId));
+			Assert.Equal(result.OperationId, traceId.First());
+			Assert.True(lastRequest.Headers.TryGetValues(WebhookSenderDefaults.AttemptTraceHeaderName, out var attemptHeader));
+			Assert.NotNull(attemptHeader);
+			Assert.Equal("1", attemptHeader.First());
+		}
+
+		[Fact]
         public async Task SendWebhook_TimeoutErrorRetried() {
             var sender = GetSender<TestWebhook>();
 
@@ -260,9 +278,15 @@ namespace Deveel.Webhooks {
             Assert.Equal(webhook.Id, lastWebhook!.Id);
             Assert.Equal(webhook.Event, lastWebhook!.Event);
             Assert.Equal(webhook.TimeStamp, lastWebhook!.TimeStamp);
-        }
 
-        [Fact]
+			Assert.True(lastRequest.Headers.TryGetValues(WebhookSenderDefaults.TraceHeaderName, out var traceId));
+			Assert.Equal(result.OperationId, traceId.First());
+			Assert.True(lastRequest.Headers.TryGetValues(WebhookSenderDefaults.AttemptTraceHeaderName, out var attemptHeader));
+			Assert.NotNull(attemptHeader);
+			Assert.Equal("4", attemptHeader.First());
+		}
+
+		[Fact]
         public async Task SendWebhook_TimeoutResponse() {
             var sender = GetSender<TestWebhook>();
 

@@ -94,11 +94,14 @@
             Gets the logger used to log messages emitted by this service.
             </summary>
         </member>
-        <member name="M:Deveel.Webhooks.MongoDbWebhookDeliveryResultLogger`2.ConvertResult(Deveel.Webhooks.IWebhookSubscription,Deveel.Webhooks.WebhookDeliveryResult{`0})">
+        <member name="M:Deveel.Webhooks.MongoDbWebhookDeliveryResultLogger`2.ConvertResult(Deveel.Webhooks.EventInfo,Deveel.Webhooks.IWebhookSubscription,Deveel.Webhooks.WebhookDeliveryResult{`0})">
             <summary>
             Converts the given result to an object that can be stored in the
             MongoDB database collection.
             </summary>
+            <param name="eventInfo">
+            The information about the event that triggered the delivery of the webhook.
+            </param>
             <param name="subscription">
             The subscription for which the delivery result is logged.
             </param>
@@ -107,6 +110,18 @@
             </param>
             <returns>
             Returns an object that can be stored in the MongoDB database collection.
+            </returns>
+        </member>
+        <member name="M:Deveel.Webhooks.MongoDbWebhookDeliveryResultLogger`2.CreateEvent(Deveel.Webhooks.EventInfo)">
+            <summary>
+            Converts the given webhook object to a MongoDB compatible object
+            </summary>
+            <param name="eventInfo">
+            The information about the event that triggered the delivery of the webhook.
+            </param>
+            <returns>
+            Returns an instance of <see cref="T:Deveel.Webhooks.MongoEventInfo"/> that can be stored
+            in a MongoDB database collection.
             </returns>
         </member>
         <member name="M:Deveel.Webhooks.MongoDbWebhookDeliveryResultLogger`2.CreateReceiver(Deveel.Webhooks.IWebhookSubscription)">
@@ -147,7 +162,7 @@
             no converter was provided.
             </exception>
         </member>
-        <member name="M:Deveel.Webhooks.MongoDbWebhookDeliveryResultLogger`2.ConvertWebhookData(System.Object)">
+        <member name="M:Deveel.Webhooks.MongoDbWebhookDeliveryResultLogger`2.ConvertData(System.Object)">
             <summary>
             Converts the webhook data to a <see cref="T:MongoDB.Bson.BsonDocument"/> that can
             be stored in the MongoDB database.
@@ -169,7 +184,7 @@
             </param>
             <returns></returns>
         </member>
-        <member name="M:Deveel.Webhooks.MongoDbWebhookDeliveryResultLogger`2.LogResultAsync(Deveel.Webhooks.IWebhookSubscription,Deveel.Webhooks.WebhookDeliveryResult{`0},System.Threading.CancellationToken)">
+        <member name="M:Deveel.Webhooks.MongoDbWebhookDeliveryResultLogger`2.LogResultAsync(Deveel.Webhooks.EventInfo,Deveel.Webhooks.IWebhookSubscription,Deveel.Webhooks.WebhookDeliveryResult{`0},System.Threading.CancellationToken)">
             <inheritdoc/>
         </member>
         <member name="T:Deveel.Webhooks.MongoDbWebhookDeliveryResultStore">
@@ -700,6 +715,30 @@
         <member name="M:Deveel.Webhooks.MongoDbWebhookTenantContext`1.OnConfigureMapping(MongoFramework.MappingBuilder)">
             <inheritdoc/>
         </member>
+        <member name="T:Deveel.Webhooks.MongoEventInfo">
+            <summary>
+            Provides an implementation of <see cref="T:Deveel.Webhooks.IEventInfo"/> that is
+            capable of being stored in a MongoDB database.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.MongoEventInfo.Subject">
+            <inheritdoc/>
+        </member>
+        <member name="P:Deveel.Webhooks.MongoEventInfo.EventType">
+            <inheritdoc/>
+        </member>
+        <member name="P:Deveel.Webhooks.MongoEventInfo.EventId">
+            <inheritdoc/>
+        </member>
+        <member name="P:Deveel.Webhooks.MongoEventInfo.TimeStamp">
+            <inheritdoc/>
+        </member>
+        <member name="P:Deveel.Webhooks.MongoEventInfo.DataVersion">
+            <inheritdoc/>
+        </member>
+        <member name="P:Deveel.Webhooks.MongoEventInfo.EventData">
+            <inheritdoc/>
+        </member>
         <member name="T:Deveel.Webhooks.MongoWebhook">
             <summary>
             An implementation of the <see cref="T:Deveel.Webhooks.IWebhook"/> that is backed by a MongoDB database.
@@ -763,6 +802,15 @@
             <summary>
             Gets or sets the identifier of the delivery result entity.
             </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.MongoWebhookDeliveryResult.EventInfo">
+            <summary>
+            Gets or sets the information on the event that
+            triggered the notification.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.MongoWebhookDeliveryResult.OperationId">
+            <inheritdoc/>
         </member>
         <member name="P:Deveel.Webhooks.MongoWebhookDeliveryResult.Receiver">
             <inheritdoc/>

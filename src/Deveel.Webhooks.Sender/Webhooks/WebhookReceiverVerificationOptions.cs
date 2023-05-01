@@ -25,38 +25,33 @@ namespace Deveel.Webhooks {
         public TimeSpan? Timeout { get; set; }
 
 		/// <summary>
-		/// Gets or sets the retry options for the verification request.
-		/// </summary>
-		public WebhookRetryOptions? Retry { get; set; } = new WebhookRetryOptions();
-
-		/// <summary>
 		/// Gets or sets the HTTP method to use for the verification request.
 		/// </summary>
-        public string HttpMethod { get; set; } = "GET";
+        public string HttpMethod { get; set; } = WebhookSenderDefaults.VerifyHttpMethod;
 
 		/// <summary>
 		/// Gets or sets the query parameter name to use for passing the
 		/// token specific for the receiver in a verification request.
 		/// </summary>
-        public string TokenQueryParameter { get; set; } = "token";
+        public string TokenQueryParameter { get; set; } = WebhookSenderDefaults.VerifyTokenQueryParameterName;
 
 		/// <summary>
 		/// Gets or sets the header name to use for passing the
 		/// token specific for the receiver in a verification request.
 		/// </summary>
-        public string TokenHeaderName { get; set; } = "X-Verify-Token";
+        public string TokenHeaderName { get; set; } = WebhookSenderDefaults.VerifyTokenHeaderName;
 
 		/// <summary>
 		/// Gets or sets a value indicating whether the verification request
-		/// should be sent with a challenge response.
+		/// should be sent with a challenge response (default: <c>true</c>).
 		/// </summary>
-		public bool? Challenge { get; set; }
+		public bool? Challenge { get; set; } = WebhookSenderDefaults.VerificationChallenge;
 
 		/// <summary>
 		/// Gets or sets the query parameter name to use for passing the
 		/// challenge to the receiver in a verification request.
 		/// </summary>
-		public string? ChallengeQueryParameter { get; set; } = "challenge";
+		public string? ChallengeQueryParameter { get; set; } = WebhookSenderDefaults.ChallengeQueryParameterName;
 
 		/// <summary>
 		/// Gets or sets the size of the challenge to be sent 
@@ -67,6 +62,6 @@ namespace Deveel.Webhooks {
 		/// <summary>
 		/// Gets or sets the location of the token in the verification request.
 		/// </summary>
-        public VerificationTokenLocation TokenLocation { get; set; }
+		public VerificationTokenLocation TokenLocation { get; set; } = WebhookSenderDefaults.DefaultVerificationTokenLocation;
 	}
 }

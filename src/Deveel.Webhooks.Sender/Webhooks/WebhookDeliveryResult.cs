@@ -40,16 +40,28 @@ namespace Deveel.Webhooks {
 		/// <summary>
 		/// Constructs a new delivery result for the given webhook to the given destination.
 		/// </summary>
+		/// <param name="operationId">
+		/// The unique identifier of the operation that delivered the webhook.
+		/// </param>
 		/// <param name="destination">
 		/// The destination of the webhook.
 		/// </param>
 		/// <param name="webhook">
 		/// The webhook that was delivered.
 		/// </param>
-		public WebhookDeliveryResult(WebhookDestination destination, TWebhook webhook) {
+		public WebhookDeliveryResult(string operationId, WebhookDestination destination, TWebhook webhook) {
+			if (string.IsNullOrWhiteSpace(operationId)) 
+				throw new ArgumentException($"'{nameof(operationId)}' cannot be null or whitespace.", nameof(operationId));
+
 			Destination = destination ?? throw new ArgumentNullException(nameof(destination));
 			Webhook = webhook ?? throw new ArgumentNullException(nameof(webhook));
+			OperationId = operationId;
 		}
+
+		/// <summary>
+		/// Gets the unique identifier of the operation that delivered the webhook.
+		/// </summary>
+		public string OperationId { get; }
 
 		/// <summary>
 		/// Gets a read-only list of the delivery attempts that were made

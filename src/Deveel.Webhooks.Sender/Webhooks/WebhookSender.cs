@@ -355,6 +355,64 @@ namespace Deveel.Webhooks {
 		}
 
 		/// <summary>
+		/// Adds the trace header to the request, if enabled.
+		/// </summary>
+		/// <param name="request">
+		/// The HTTP request to add the trace header to.
+		/// </param>
+		/// <param name="traceId">
+		/// The unique identifier of the current operation.
+		/// </param>
+		/// <exception cref="ArgumentNullException">
+		/// Thrown when the <paramref name="request"/> is <c>null</c>.
+		/// </exception>
+		/// <exception cref="WebhookSenderException">
+		/// Thrown when the trace header cannot be added to the request.
+		/// </exception>
+		protected virtual void AddTraceHeader(HttpRequestMessage request, string traceId) {
+			if (request == null)
+				throw new ArgumentNullException(nameof(request));
+
+			if (SenderOptions.AddTraceHeaders ?? false) {
+				var headerName = String.IsNullOrWhiteSpace(SenderOptions.TraceHeaderName) ? 
+					WebhookSenderDefaults.TraceHeaderName : 
+					SenderOptions.TraceHeaderName;
+
+				if (!request.Headers.TryAddWithoutValidation(headerName, traceId))
+					throw new WebhookSenderException("Could not add the trace header to the request");
+			}
+		}
+
+		/// <summary>
+		/// Adds the attempt header to the request, if enabled.
+		/// </summary>
+		/// <param name="request">
+		/// The HTTP request to add the attempt header to.
+		/// </param>
+		/// <param name="attempt">
+		/// The attempt number to add to the header.
+		/// </param>
+		/// <exception cref="ArgumentNullException">
+		/// Thrown when the <paramref name="request"/> is <c>null</c>.
+		/// </exception>
+		/// <exception cref="WebhookSenderException">
+		/// Thrown when the attempt header cannot be added to the request.
+		/// </exception>
+		protected virtual void AddAttemptHeader(HttpRequestMessage request, int attempt) {
+			if (request == null)
+				throw new ArgumentNullException(nameof(request));
+
+			if (SenderOptions.AddTraceHeaders ?? false) {
+				var headerName = String.IsNullOrWhiteSpace(SenderOptions.AttemptTraceHeaderName) ?
+					WebhookSenderDefaults.AttemptTraceHeaderName :
+					SenderOptions.AttemptTraceHeaderName;
+
+				if (!request.Headers.TryAddWithoutValidation(headerName, attempt.ToString()))
+					throw new WebhookSenderException("Could not add the attempt header to the request");
+			}
+		}
+
+		/// <summary>
 		/// Creates a new HTTP request for the given webhook destination.
 		/// </summary>
 		/// <param name="destination">
@@ -380,11 +438,11 @@ namespace Deveel.Webhooks {
 
 				switch (destination.Format ?? SenderOptions.DefaultFormat) {
 					case WebhookFormat.Json:
-						mediaType = "application/json";
+						mediaType = WebhookSenderDefaults.JsonContentType;
 						body = await SerializeToJsonAsync(webhook, cancellationToken);
 						break;
 					case WebhookFormat.Xml:
-						mediaType = "application/xml";
+						mediaType = WebhookSenderDefaults.XmlContentType;
 						body = await SerializeToXmlAsync(webhook, cancellationToken);
 						break;
 					default:
@@ -465,6 +523,9 @@ namespace Deveel.Webhooks {
 
             try {
                 request = await CreateRequestAsync(destination, webhook, cancellationToken);
+
+				AddTraceHeader(request, result.OperationId);
+				AddAttemptHeader(request, attempt.Number);
 
 				Logger.TraceStartingAttempt(request.RequestUri!.GetLeftPart(UriPartial.Path));
 
@@ -566,7 +627,8 @@ namespace Deveel.Webhooks {
 
 				Logger.TraceSendingWebhook(destination.Url.GetLeftPart(UriPartial.Path));
 
-				var result = new WebhookDeliveryResult<TWebhook>(destination, webhook);
+				var operationId = Guid.NewGuid().ToString("N");
+				var result = new WebhookDeliveryResult<TWebhook>(operationId, destination, webhook);
 
 				var timeoutPolicy = CreateTimeoutPolicy();
 

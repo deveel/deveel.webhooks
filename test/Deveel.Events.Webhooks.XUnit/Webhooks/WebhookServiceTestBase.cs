@@ -36,7 +36,7 @@ namespace Deveel.Webhooks {
 			return new ServiceCollection()
 				.AddWebhookSubscriptions<TestWebhookSubscription>(buidler => ConfigureWebhookService(buidler))
 				.AddTestHttpClient(OnRequestAsync)
-				.AddLogging(logging => logging.AddXUnit(outputHelper))
+				.AddLogging(logging => logging.AddXUnit(outputHelper).SetMinimumLevel(LogLevel.Trace))
 				.BuildServiceProvider();
 		}
 

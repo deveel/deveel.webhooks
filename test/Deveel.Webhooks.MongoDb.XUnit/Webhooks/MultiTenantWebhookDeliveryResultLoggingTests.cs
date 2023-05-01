@@ -54,19 +54,29 @@ namespace Deveel.Webhooks {
 				});
 
 			builder
-			.UseSubscriptionManager()
-			.UseNotifier<Webhook>(notifier => notifier
-				.UseTenantNotifier()
-				.UseSender(options => {
-					options.Timeout = TimeSpan.FromSeconds(TimeOutSeconds);
-					options.Retry.MaxRetries = 2;
-				})
-				.UseLinqFilter()
-				.UseWebhookFactory<DefaultWebhookFactory>()
-				.UseMongoTenantSubscriptionResolver())
-			.UseMongoDb(options => options
-				.UseMultiTenant()
-				.UseDeliveryResultLogger<Webhook>());
+				.UseSubscriptionManager()
+				.UseNotifier<Webhook>(notifier => notifier
+					.UseTenantNotifier()
+					.UseSender(options => {
+						options.Timeout = TimeSpan.FromSeconds(TimeOutSeconds);
+						options.Retry.MaxRetries = 2;
+					})
+					.UseLinqFilter()
+					.UseWebhookFactory<DefaultWebhookFactory>()
+					.UseMongoTenantSubscriptionResolver())
+				.UseMongoDb(options => options
+					.UseMultiTenant()
+					.UseDeliveryResultLogger<Webhook>());
+		}
+
+		private static MongoWebhook ConvertToMongo(Webhook webhook) {
+			return new TestMongoWebhook {
+				TimeStamp = webhook.TimeStamp,
+				EventType = webhook.EventType,
+				SubscriptionId = webhook.SubscriptionId,
+				EventName = webhook.Name,
+				WebhookId = webhook.Id,
+			};
 		}
 
 		protected override async Task<HttpResponseMessage> OnRequestAsync(HttpRequestMessage httpRequest) {
@@ -157,5 +167,22 @@ namespace Deveel.Webhooks {
 			Assert.NotEmpty(storedResult.DeliveryAttempts);
 		}
 
+		[Fact]
+		public async Task NotifyEventNotListened() {
+			var notification = new EventInfo("test", "data.created", data: new {
+				creationTime = DateTimeOffset.UtcNow,
+				type = "test"
+			});
+
+			var result = await notifier.NotifyAsync(tenantId, notification, default);
+			Assert.NotNull(result);
+			Assert.Empty(result);
+		}
+
+		class TestMongoWebhook : MongoWebhook {
+			public string SubscriptionId { get; set; }
+
+			public string EventName { get; set; }
+		}
 	}
 }

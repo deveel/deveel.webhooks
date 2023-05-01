@@ -69,7 +69,7 @@ namespace Deveel.Webhooks {
 		/// <summary>
 		/// Gets the logger used to log messages emitted by this service.
 		/// </summary>
-		protected ILogger<MongoDbWebhookDeliveryResultLogger<TWebhook, TResult>> Logger { get; }
+		protected ILogger Logger { get; }
 
 		/// <summary>
 		/// Converts the given result to an object that can be stored in the
@@ -94,7 +94,7 @@ namespace Deveel.Webhooks {
 			obj.OperationId = result.OperationId;
 			obj.EventInfo = CreateEvent(eventInfo);
 			obj.Receiver = CreateReceiver(subscription);
-			obj.Webhook = ConvertWebhook(result.Webhook);
+			obj.Webhook = ConvertWebhook(eventInfo, result.Webhook);
 			obj.DeliveryAttempts = result.Attempts?.Select(ConvertDeliveryAttempt).ToList() 
 				?? new List<MongoWebhookDeliveryAttempt>();
 
@@ -118,56 +118,8 @@ namespace Deveel.Webhooks {
 				TimeStamp = eventInfo.TimeStamp,
 				Subject = eventInfo.Subject,
 				DataVersion = eventInfo.DataVersion,
-				EventData = ConvertData(eventInfo.Data)
+				EventData = BsonValueUtil.ConvertData(eventInfo.Data)
 			};
-		}
-
-		private BsonDocument GetBsonDocument(object data) {
-			var type = data.GetType();
-			var properties = type.GetProperties(BindingFlags.Public | BindingFlags.Instance);
-
-			var doc = new BsonDocument();
-			foreach (var property in properties) {
-				var value = GetBsonValue(property.GetValue(data));
-				doc.Add(property.Name, BsonValue.Create(value));
-			}
-
-			return doc;
-		}
-
-		private BsonValue GetBsonValue(object? value) {
-			if (value == null)
-				return BsonNull.Value;
-
-			if (value is int ||
-				value is long ||
-				value is double ||
-				value is float ||
-				value is string ||
-				value is DateTime)
-				return BsonValue.Create(value);
-
-			if (value is DateTimeOffset dateTimeOffset)
-				return new BsonArray(new BsonValue[] {
-					BsonValue.Create(dateTimeOffset.UtcDateTime),
-					BsonValue.Create(dateTimeOffset.Offset.Minutes)
-				});
-
-			if (value is IEnumerable en)
-				return GetBsonArray(en);
-
-			return GetBsonDocument(value);
-		}
-
-		private BsonValue GetBsonArray(IEnumerable en) {
-			var array = new BsonArray();
-
-			foreach (var item in en) {
-				var value = GetBsonValue(item);
-				array.Add(value);
-			}
-
-			return array;
 		}
 
 		/// <summary>
@@ -210,6 +162,9 @@ namespace Deveel.Webhooks {
 		/// Converts the given webhook to an object that can be stored in the
 		/// MongoDB database collection.
 		/// </summary>
+		/// <param name="eventInfo">
+		/// The information about the event that triggered the delivery of the webhook.
+		/// </param>
 		/// <param name="webhook">
 		/// The instance of the webhook to convert.
 		/// </param>
@@ -220,69 +175,11 @@ namespace Deveel.Webhooks {
 		/// Thrown when the given type of webhook is not supported by this instance and
 		/// no converter was provided.
 		/// </exception>
-		protected virtual MongoWebhook ConvertWebhook(TWebhook webhook) {
-			if (!(webhook is IWebhook obj)) {
-				if (webhookConverter == null)
-					throw new NotSupportedException("The given type of webhook is not supported by this instance of the logger");
+		protected virtual MongoWebhook ConvertWebhook(EventInfo eventInfo, TWebhook webhook) {
+			if (webhookConverter != null)
+				return webhookConverter.ConvertWebhook(eventInfo, webhook);
 
-				return webhookConverter.ConvertWebhook(webhook);
-			}
-
-			return new MongoWebhook {
-				WebhookId = obj.Id,
-				EventType = obj.EventType,
-				Data = ConvertData(obj.Data),
-				TimeStamp = obj.TimeStamp
-			};
-		}
-
-		/// <summary>
-		/// Converts the webhook data to a <see cref="BsonDocument"/> that can
-		/// be stored in the MongoDB database.
-		/// </summary>
-		/// <param name="data">
-		/// The data component of the webhook to convert.
-		/// </param>
-		/// <returns>
-		/// 
-		/// </returns>
-		protected virtual BsonDocument ConvertData(object? data) {
-			// this is tricky: we try some possible options...
-
-			if (data is null)
-				return new BsonDocument();
-
-			IDictionary<string, object?> dictionary;
-
-			if (data is IDictionary<string, object?>) {
-				dictionary = (IDictionary<string, object?>)data;
-			} else {
-				// TODO: make this recursive ...
-				dictionary = data.GetType()
-					.GetProperties()
-					.ToDictionary(x => x.Name, y => y.GetValue(data));
-			}
-
-			var document = new BsonDocument();
-
-			// we hope here that the values are supported objects
-			foreach (var item in dictionary) {
-				document[item.Key] = ConvertValue(item.Value);
-			}
-
-			return document;
-		}
-
-		/// <summary>
-		/// Converts a single value to a <see cref="BsonValue"/> that can be
-		/// stored in the MongoDB database.
-		/// </summary>
-		/// <param name="value">
-		/// The value to convert.
-		/// </param>
-		/// <returns></returns>
-		protected virtual BsonValue ConvertValue(object? value) {
-			return GetBsonValue(value);
+			throw new NotSupportedException("The given type of webhook is not supported by this instance of the logger");
 		}
 
 		/// <inheritdoc/>

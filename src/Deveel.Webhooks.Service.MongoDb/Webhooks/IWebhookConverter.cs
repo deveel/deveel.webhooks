@@ -20,11 +20,16 @@ namespace Deveel.Webhooks {
     /// <typeparam name="TWebhook">
     /// The type of webhook to convert.
     /// </typeparam>
-    public interface IMongoWebhookConverter<TWebhook> {
+    public interface IMongoWebhookConverter<TWebhook>
+		where TWebhook : class {
         /// <summary>
         /// Converts the given webhook to an object that can be stored
         /// in a MongoDB database.
         /// </summary>
+		/// <param name="eventInfo">
+		/// The information about the event that triggered the
+		/// notification of the webhook.
+		/// </param>
         /// <param name="webhook">
         /// The instance of the webhook to be converted.
         /// </param>
@@ -32,6 +37,6 @@ namespace Deveel.Webhooks {
         /// Returns an instance of <see cref="MongoWebhook"/>
         /// that can be stored in a MongoDB database.
         /// </returns>
-        MongoWebhook ConvertWebhook(TWebhook webhook);
+        MongoWebhook ConvertWebhook(EventInfo eventInfo, TWebhook webhook);
     }
 }

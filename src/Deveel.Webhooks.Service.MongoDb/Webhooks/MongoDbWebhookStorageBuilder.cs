@@ -50,6 +50,8 @@ namespace Deveel.Webhooks {
 			Services.TryAddScoped<IWebhookDeliveryResultStore<MongoWebhookDeliveryResult>, MongoDbWebhookDeliveryResultStore>();
 			Services.AddScoped<MongoDbWebhookDeliveryResultStore>();
 			Services.TryAddScoped<MongoDbWebhookDeliveryResultStore<MongoWebhookDeliveryResult>>();
+
+			Services.TryAddSingleton(typeof(IMongoWebhookConverter<>), typeof(DefaultMongoWebhookConverter<>));
 		}
 
 		/// <summary>
@@ -251,5 +253,36 @@ namespace Deveel.Webhooks {
 
             return this;
         }
+
+		/// <summary>
+		/// Registers a function that is used to convert the webhook
+		/// </summary>
+		/// <typeparam name="TWebhook">
+		/// The type of the webhook that is being delivered and that
+		/// should be converted to a <see cref="MongoWebhook"/> object.
+		/// </typeparam>
+		/// <param name="converter">
+		/// The function that is used to convert the webhook
+		/// </param>
+		/// <returns>
+		/// Returns the current instance of the builder for chaining.
+		/// </returns>
+		public MongoDbWebhookStorageBuilder<TSubscription> UseWebhookConverter<TWebhook>(Func<EventInfo, TWebhook, MongoWebhook> converter)
+			where TWebhook : class {
+
+			Services.AddSingleton<IMongoWebhookConverter<TWebhook>>(new MongoWebhookConverterWrapper<TWebhook>(converter));
+
+			return this;
+		}
+
+		private class MongoWebhookConverterWrapper<TWebhook> : IMongoWebhookConverter<TWebhook> where TWebhook : class {
+			private readonly Func<EventInfo, TWebhook, MongoWebhook> converter;
+
+			public MongoWebhookConverterWrapper(Func<EventInfo, TWebhook, MongoWebhook> converter) {
+				this.converter = converter;
+			}
+
+			public MongoWebhook ConvertWebhook(EventInfo eventInfo, TWebhook webhook) => converter.Invoke(eventInfo, webhook);
+		}
 	}
 }

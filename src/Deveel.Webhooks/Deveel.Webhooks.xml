@@ -826,6 +826,11 @@
             Gets the logger used to log the activity of the notifier.
             </summary>
         </member>
+        <member name="P:Deveel.Webhooks.WebhookNotifierBase`1.NotificationOptions">
+            <summary>
+            Gets the options used to configure the notification.
+            </summary>
+        </member>
         <member name="M:Deveel.Webhooks.WebhookNotifierBase`1.BuildSubscriptionFilter(Deveel.Webhooks.IWebhookSubscription)">
             <summary>
             Creates a new webhook filter for the given subscription.

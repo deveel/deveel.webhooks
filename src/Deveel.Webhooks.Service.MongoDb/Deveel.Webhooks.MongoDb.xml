@@ -19,11 +19,15 @@
             The type of webhook to convert.
             </typeparam>
         </member>
-        <member name="M:Deveel.Webhooks.IMongoWebhookConverter`1.ConvertWebhook(`0)">
+        <member name="M:Deveel.Webhooks.IMongoWebhookConverter`1.ConvertWebhook(Deveel.Webhooks.EventInfo,`0)">
             <summary>
             Converts the given webhook to an object that can be stored
             in a MongoDB database.
             </summary>
+            <param name="eventInfo">
+            The information about the event that triggered the
+            notification of the webhook.
+            </param>
             <param name="webhook">
             The instance of the webhook to be converted.
             </param>
@@ -146,11 +150,14 @@
             Returns an object that can be stored in the MongoDB database collection.
             </returns>
         </member>
-        <member name="M:Deveel.Webhooks.MongoDbWebhookDeliveryResultLogger`2.ConvertWebhook(`0)">
+        <member name="M:Deveel.Webhooks.MongoDbWebhookDeliveryResultLogger`2.ConvertWebhook(Deveel.Webhooks.EventInfo,`0)">
             <summary>
             Converts the given webhook to an object that can be stored in the
             MongoDB database collection.
             </summary>
+            <param name="eventInfo">
+            The information about the event that triggered the delivery of the webhook.
+            </param>
             <param name="webhook">
             The instance of the webhook to convert.
             </param>
@@ -161,28 +168,6 @@
             Thrown when the given type of webhook is not supported by this instance and
             no converter was provided.
             </exception>
-        </member>
-        <member name="M:Deveel.Webhooks.MongoDbWebhookDeliveryResultLogger`2.ConvertData(System.Object)">
-            <summary>
-            Converts the webhook data to a <see cref="T:MongoDB.Bson.BsonDocument"/> that can
-            be stored in the MongoDB database.
-            </summary>
-            <param name="data">
-            The data component of the webhook to convert.
-            </param>
-            <returns>
-            
-            </returns>
-        </member>
-        <member name="M:Deveel.Webhooks.MongoDbWebhookDeliveryResultLogger`2.ConvertValue(System.Object)">
-            <summary>
-            Converts a single value to a <see cref="T:MongoDB.Bson.BsonValue"/> that can be
-            stored in the MongoDB database.
-            </summary>
-            <param name="value">
-            The value to convert.
-            </param>
-            <returns></returns>
         </member>
         <member name="M:Deveel.Webhooks.MongoDbWebhookDeliveryResultLogger`2.LogResultAsync(Deveel.Webhooks.EventInfo,Deveel.Webhooks.IWebhookSubscription,Deveel.Webhooks.WebhookDeliveryResult{`0},System.Threading.CancellationToken)">
             <inheritdoc/>
@@ -523,6 +508,21 @@
             <typeparam name="TConverter">
             The type of the service that is used to convert the webhook
             </typeparam>
+            <returns>
+            Returns the current instance of the builder for chaining.
+            </returns>
+        </member>
+        <member name="M:Deveel.Webhooks.MongoDbWebhookStorageBuilder`1.UseWebhookConverter``1(System.Func{Deveel.Webhooks.EventInfo,``0,Deveel.Webhooks.MongoWebhook})">
+            <summary>
+            Registers a function that is used to convert the webhook
+            </summary>
+            <typeparam name="TWebhook">
+            The type of the webhook that is being delivered and that
+            should be converted to a <see cref="T:Deveel.Webhooks.MongoWebhook"/> object.
+            </typeparam>
+            <param name="converter">
+            The function that is used to convert the webhook
+            </param>
             <returns>
             Returns the current instance of the builder for chaining.
             </returns>

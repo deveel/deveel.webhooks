@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Deveel.Webhooks {
 	/// <summary>
@@ -24,22 +25,26 @@ namespace Deveel.Webhooks {
 		/// Gets or sets the code returned by the remote endpoint
 		/// when the delivery was attempted.
 		/// </summary>
+		[Column("response_code")]
 		public int? ResponseStatusCode { get; set; }
 
 		/// <summary>
 		/// Gets or sets the message returned by the remote endpoint
 		/// when the delivery was attempted.
 		/// </summary>
+		[Column("response_message")]
 		public string? ResponseMessage { get; set; }
 
 		/// <summary>
 		/// Gets or sets the time-stamp when the delivery was attempted.
 		/// </summary>
+		[Column("started_at")]
 		public DateTimeOffset StartedAt { get; set; }
 
 		/// <summary>
 		/// Gets or sets the time-stamp when the delivery attempt ended.
 		/// </summary>
+		[Column("ended_at")]
 		public DateTimeOffset? EndedAt { get; set; }
 	}
 }

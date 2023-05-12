@@ -22,7 +22,7 @@ namespace Deveel.Webhooks {
 	/// </summary>
 	public static class ServiceCollectionExtensions {
 		/// <summary>
-		/// Adds a <see cref="WebhookNotifierBuilder{TWebhook}"/> to the service collection.
+		/// Registers a webhook notification service into the service collection.
 		/// </summary>
 		/// <typeparam name="TWebhook">
 		/// The type of the webhook to notify.
@@ -43,6 +43,23 @@ namespace Deveel.Webhooks {
 			return builder;
 		}
 
+		/// <summary>
+		/// Registers a webhook notification service into the service collection,
+		/// using the specified options.
+		/// </summary>
+		/// <typeparam name="TWebhook">
+		/// The type of the webhook to notify to subscribers.
+		/// </typeparam>
+		/// <param name="services">
+		/// The service collection to add the builder to.
+		/// </param>
+		/// <param name="options">
+		/// The options to use to configure the notification service.
+		/// </param>
+		/// <returns>
+		/// Returns an instance of <see cref="WebhookNotifierBuilder{TWebhook}"/> that can be used
+		/// to further configure the notifier.
+		/// </returns>
 		public static WebhookNotifierBuilder<TWebhook> AddWebhookNotifier<TWebhook>(this IServiceCollection services, WebhookNotificationOptions<TWebhook> options)
 			where TWebhook : class {
 
@@ -51,6 +68,23 @@ namespace Deveel.Webhooks {
 			return services.AddWebhookNotifier<TWebhook>();
 		}
 
+		/// <summary>
+		/// Registers a webhook notification service into the service collection,
+		/// using the given function to configure the options.
+		/// </summary>
+		/// <typeparam name="TWebhook">
+		/// The type of the webhook to notify to subscribers.
+		/// </typeparam>
+		/// <param name="services">
+		/// The service collection to add the builder to.
+		/// </param>
+		/// <param name="configure">
+		/// A function used to configure the options.
+		/// </param>
+		/// <returns>
+		/// Returns an instance of <see cref="WebhookNotifierBuilder{TWebhook}"/> that can be used
+		/// to further configure the notifier.
+		/// </returns>
 		public static WebhookNotifierBuilder<TWebhook> AddWebhookNotifier<TWebhook>(this IServiceCollection services, Action<WebhookNotificationOptions<TWebhook>> configure)
 			where TWebhook : class {
 
@@ -60,6 +94,23 @@ namespace Deveel.Webhooks {
 			return services.AddWebhookNotifier<TWebhook>();
 		}
 
+		/// <summary>
+		/// Registers a webhook notification service into the service collection,
+		/// using the configuration defined in the specified section.
+		/// </summary>
+		/// <typeparam name="TWebhook">
+		/// The type of the webhook to notify to subscribers.
+		/// </typeparam>
+		/// <param name="services">
+		/// The service collection to add the builder to.
+		/// </param>
+		/// <param name="sectionPath">
+		/// The path to the configuration section to use to configure the options.
+		/// </param>
+		/// <returns>
+		/// Returns an instance of <see cref="WebhookNotifierBuilder{TWebhook}"/> that can be used
+		/// to further configure the notifier.
+		/// </returns>
 		public static WebhookNotifierBuilder<TWebhook> AddWebhookNotifier<TWebhook>(this IServiceCollection services, string sectionPath)
 			where TWebhook : class {
 
@@ -70,10 +121,11 @@ namespace Deveel.Webhooks {
 		}
 
 		/// <summary>
-		/// Adds a <see cref="WebhookNotifierBuilder{TWebhook}"/> to the service collection
+		/// Registers a webhook notification service into the service collection,
+		/// using a function to configure the notification features.
 		/// </summary>
 		/// <typeparam name="TWebhook">
-		/// The type of the webhook to notify.
+		/// The type of the webhook to notify to the subscribers.
 		/// </typeparam>
 		/// <param name="services">
 		/// The service collection to add the builder to.

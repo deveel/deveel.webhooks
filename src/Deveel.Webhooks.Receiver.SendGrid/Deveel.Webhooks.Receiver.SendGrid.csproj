@@ -15,7 +15,7 @@
     <PackageIcon>deveel-logo.png</PackageIcon>
     <RepositoryUrl>https://github.com/deveel/deveel.webhooks</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <PackageTags>webhooks receiver receivers aspnet core aspnetcore httpcontext httprequest sendgrid sg email mail</PackageTags>
+    <PackageTags>webhooks;webhook;receiver;receivers;aspnet;aspnetcore;httpcontext;httprequest;sendgrid;sg;email;mail</PackageTags>
     <Description>An implementation of the Deveel Webhooks ASP.NET Core Receiver that is able to receive webhooks and e-mails from SendGrid</Description>
     <PackageProjectUrl>https://deveel.com</PackageProjectUrl>
     <DocumentationFile>.\Deveel.Webhooks.Receiver.SendGrid.xml</DocumentationFile>

@@ -935,5 +935,149 @@
             can be used to configure the receiver.
             </returns>
         </member>
+        <member name="T:Deveel.Webhooks.WebhookReceiverBuilderExtensions">
+            <summary>
+            Extends the <see cref="T:Deveel.Webhooks.WebhookReceiverBuilder`1"/> to add the features to receive
+            webhooks from SendGrid.
+            </summary>
+        </member>
+        <member name="M:Deveel.Webhooks.WebhookReceiverBuilderExtensions.HandleSendGridWebhook``1(Deveel.Webhooks.WebhookReceiverBuilder{Deveel.Webhooks.SendGrid.SendGridWebhook})">
+            <summary>
+            Adds a handler to the receiver to handle the incoming webhooks from SendGrid.
+            </summary>
+            <typeparam name="THandler">
+            The type of the handler to add to the receiver.
+            </typeparam>
+            <param name="builder">
+            The builder to add the handler to.
+            </param>
+            <returns>
+            Returns the same instance of the <paramref name="builder"/> to allow chaining.
+            </returns>
+        </member>
+        <member name="M:Deveel.Webhooks.WebhookReceiverBuilderExtensions.HandleSendGrid(Deveel.Webhooks.WebhookReceiverBuilder{Deveel.Webhooks.SendGrid.SendGridWebhook},System.Func{Deveel.Webhooks.SendGrid.SendGridWebhook,System.Threading.Tasks.Task})">
+            <summary>
+            Adds a handler to the receiver to handle the incoming webhooks from SendGrid.
+            </summary>
+            <param name="builder">
+            The builder to add the handler to.
+            </param>
+            <param name="handler">
+            The delegate to handle the incoming webhook.
+            </param>
+            <returns>
+            Returns the same instance of the <paramref name="builder"/> to allow chaining.
+            </returns>
+        </member>
+        <member name="M:Deveel.Webhooks.WebhookReceiverBuilderExtensions.HandleSendGrid``1(Deveel.Webhooks.WebhookReceiverBuilder{Deveel.Webhooks.SendGrid.SendGridWebhook},System.Func{Deveel.Webhooks.SendGrid.SendGridWebhook,``0,System.Threading.Tasks.Task})">
+            <summary>
+            Adds a handler to the receiver to handle the incoming webhooks from SendGrid.
+            </summary>
+            <typeparam name="T1">The type of the first argument of the handler</typeparam>
+            <param name="builder">
+            The builder to add the handler to.
+            </param>
+            <param name="handler">
+            The delegate to handle the incoming webhook.
+            </param>
+            <returns>
+            Returns the same instance of the <paramref name="builder"/> to allow chaining.
+            </returns>
+        </member>
+        <member name="M:Deveel.Webhooks.WebhookReceiverBuilderExtensions.HandleSendGrid``2(Deveel.Webhooks.WebhookReceiverBuilder{Deveel.Webhooks.SendGrid.SendGridWebhook},System.Func{Deveel.Webhooks.SendGrid.SendGridWebhook,``0,``1,System.Threading.Tasks.Task})">
+            <summary>
+            Adds a handler to the receiver to handle the incoming webhooks from SendGrid.
+            </summary>
+            <typeparam name="T1">The type of the first argument of the handler</typeparam>
+            <typeparam name="T2">The type of the second argument of the handler</typeparam>
+            <param name="builder">
+            The builder to add the handler to.
+            </param>
+            <param name="handler">
+            The delegate to handle the incoming webhook.
+            </param>
+            <returns>
+            Returns the same instance of the <paramref name="builder"/> to allow chaining.
+            </returns>
+        </member>
+        <member name="M:Deveel.Webhooks.WebhookReceiverBuilderExtensions.HandleSendGrid``3(Deveel.Webhooks.WebhookReceiverBuilder{Deveel.Webhooks.SendGrid.SendGridWebhook},System.Func{Deveel.Webhooks.SendGrid.SendGridWebhook,``0,``1,``2,System.Threading.Tasks.Task})">
+            <summary>
+            Adds a handler to the receiver to handle the incoming webhooks from SendGrid.
+            </summary>
+            <typeparam name="T1">The type of the first argument of the handler</typeparam>
+            <typeparam name="T2">The type of the second argument of the handler</typeparam>
+            <typeparam name="T3">The type of the third argument of the handler</typeparam>
+            <param name="builder">
+            The builder to add the handler to.
+            </param>
+            <param name="handler">
+            The delegate to handle the incoming webhook.
+            </param>
+            <returns>
+            Returns the same instance of the <paramref name="builder"/> to allow chaining.
+            </returns>
+        </member>
+        <member name="M:Deveel.Webhooks.WebhookReceiverBuilderExtensions.HandleSendGrid(Deveel.Webhooks.WebhookReceiverBuilder{Deveel.Webhooks.SendGrid.SendGridWebhook},System.Action{Deveel.Webhooks.SendGrid.SendGridWebhook})">
+            <summary>
+            Adds a handler to the receiver to handle the incoming webhooks from SendGrid.
+            </summary>
+            <param name="builder">
+            The builder to add the handler to.
+            </param>
+            <param name="handler">
+            The delegate to handle the incoming webhook.
+            </param>
+            <returns>
+            Returns the same instance of the <paramref name="builder"/> to allow chaining.
+            </returns>
+        </member>
+        <member name="M:Deveel.Webhooks.WebhookReceiverBuilderExtensions.HandleSendGrid``1(Deveel.Webhooks.WebhookReceiverBuilder{Deveel.Webhooks.SendGrid.SendGridWebhook},System.Action{Deveel.Webhooks.SendGrid.SendGridWebhook,``0})">
+            <summary>
+            Adds a handler to the receiver to handle the incoming webhooks from SendGrid.
+            </summary>
+            <typeparam name="T1">The type of the first argument of the handler</typeparam>
+            <param name="builder">
+            The builder to add the handler to.
+            </param>
+            <param name="handler">
+            The delegate to handle the incoming webhook.
+            </param>
+            <returns>
+            Returns the same instance of the <paramref name="builder"/> to allow chaining.
+            </returns>
+        </member>
+        <member name="M:Deveel.Webhooks.WebhookReceiverBuilderExtensions.HandleSendGrid``2(Deveel.Webhooks.WebhookReceiverBuilder{Deveel.Webhooks.SendGrid.SendGridWebhook},System.Action{Deveel.Webhooks.SendGrid.SendGridWebhook,``0,``1})">
+            <summary>
+            Adds a handler to the receiver to handle the incoming webhooks from SendGrid.
+            </summary>
+            <typeparam name="T1">The type of the first argument of the handler</typeparam>
+            <typeparam name="T2">The type of the second argument of the handler</typeparam>
+            <param name="builder">
+            The builder to add the handler to.
+            </param>
+            <param name="handler">
+            The delegate to handle the incoming webhook.
+            </param>
+            <returns>
+            Returns the same instance of the <paramref name="builder"/> to allow chaining.
+            </returns>
+        </member>
+        <member name="M:Deveel.Webhooks.WebhookReceiverBuilderExtensions.HandleSendGrid``3(Deveel.Webhooks.WebhookReceiverBuilder{Deveel.Webhooks.SendGrid.SendGridWebhook},System.Action{Deveel.Webhooks.SendGrid.SendGridWebhook,``0,``1,``2})">
+            <summary>
+            Adds a handler to the receiver to handle the incoming webhooks from SendGrid.
+            </summary>
+            <typeparam name="T1">The type of the first argument of the handler</typeparam>
+            <typeparam name="T2">The type of the second argument of the handler</typeparam>
+            <typeparam name="T3">The type of the third argument of the handler</typeparam>
+            <param name="builder">
+            The builder to add the handler to.
+            </param>
+            <param name="handler">
+            The delegate to handle the incoming webhook.
+            </param>
+            <returns>
+            Returns the same instance of the <paramref name="builder"/> to allow chaining.
+            </returns>
+        </member>
     </members>
 </doc>

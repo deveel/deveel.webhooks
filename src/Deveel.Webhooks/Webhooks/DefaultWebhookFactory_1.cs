@@ -54,7 +54,7 @@ namespace Deveel.Webhooks {
 		/// Returns a data object that is carried by the webhook
 		/// through the <see cref="Webhook.Data"/> property.
 		/// </returns>
-		protected virtual object CreateData(IWebhookSubscription subscription, EventInfo eventInfo) {
+		protected virtual object? CreateData(IWebhookSubscription subscription, EventInfo eventInfo) {
 			return eventInfo.Data;
 		}
 

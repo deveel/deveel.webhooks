@@ -16,6 +16,11 @@
 #pragma warning disable CS8618
 
 
+using System.ComponentModel.DataAnnotations.Schema;
+
+using MongoDB.Bson.Serialization.Attributes;
+using MongoDB.Bson.Serialization.Options;
+
 namespace Deveel.Webhooks {
     /// <summary>
     /// An object that represents the information about a receiver
@@ -26,6 +31,7 @@ namespace Deveel.Webhooks {
 		/// Gets or sets the URL endpoint where the webhook
 		/// was delivered.
 		/// </summary>
+		[Column("destination_url")]
 		public string DestinationUrl { get; set; }
 
 		IEnumerable<KeyValuePair<string, string>> IWebhookReceiver.Headers => Headers;
@@ -34,12 +40,15 @@ namespace Deveel.Webhooks {
 		/// Gets or sets the list of headers that were sent
 		/// alongside the webhook, if any.
 		/// </summary>
+		[Column("headers")]
+		[BsonDictionaryOptions(DictionaryRepresentation.Document)]
 		public IDictionary<string, string> Headers { get; set; }
 
 		/// <summary>
 		/// Gets or sets the format of the body of the webhook
 		/// (either 'json' or 'xml')
 		/// </summary>
+		[Column("body_format")]
 		public string BodyFormat { get; set; }
 
 		/// <summary>
@@ -47,6 +56,7 @@ namespace Deveel.Webhooks {
 		/// that triggered the delivery of the webhook (if the webhook
 		/// was actually notified from a subscription).
 		/// </summary>
+		[Column("subscription_id")]
 		public string? SubscriptionId { get; set; }
 
 		/// <summary>
@@ -54,6 +64,7 @@ namespace Deveel.Webhooks {
 		/// the delivery of the webhook (if the webhook was actually
 		/// notified from a subscription).
 		/// </summary>
+		[Column("subscription_name")]
 		public string? SubscriptionName { get; set; }
 	}
 }

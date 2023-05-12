@@ -17,7 +17,7 @@
     <PackageIcon>deveel-logo.png</PackageIcon>
     <RepositoryUrl>https://github.com/deveel/deveel.webhooks</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <PackageTags>webhook events event sender send delivery</PackageTags>
+    <PackageTags>webhooks;webhook;events;event;sender;send;delivery;http</PackageTags>
     <DocumentationFile>./Deveel.Webhooks.Sender.xml</DocumentationFile>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>

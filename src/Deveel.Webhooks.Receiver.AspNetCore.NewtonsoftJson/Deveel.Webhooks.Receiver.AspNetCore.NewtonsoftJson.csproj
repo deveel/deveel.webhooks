@@ -14,7 +14,7 @@
 		<PackageIcon>deveel-logo.png</PackageIcon>
 		<RepositoryUrl>https://github.com/deveel/deveel.webhooks</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
-		<PackageTags>webhooks receiver receivers aspnet core aspnetcore httpcontext httprequest newtonsoft json jsonparser</PackageTags>
+		<PackageTags>webhooks;webhook;receiver;receivers;aspnet;aspnetcore;httpcontext;httprequest;newtonsoft;json;jsonparser</PackageTags>
 		<Description>Extends the ASP.NET Core receivers with webhook parsers implemented using the Newtonsoft.Json library</Description>
 		<PackageProjectUrl>https://deveel.com</PackageProjectUrl>
 		<DocumentationFile>.\Deveel.Webhooks.Receiver.AspNetCore.NewtonsoftJson.xml</DocumentationFile>

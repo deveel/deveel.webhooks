@@ -39,6 +39,6 @@ namespace Deveel.Webhooks {
 		/// <summary>
 		/// Gets the data carried by the webhook to the receiver
 		/// </summary>
-		object Data { get; }
+		object? Data { get; }
 	}
 }

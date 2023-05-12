@@ -75,10 +75,24 @@
 		/// </summary>
 		public const string VerifyHttpMethod = "GET";
 
+		/// <summary>
+		/// The default value for the flag indicating if the sender should
+		/// challenge the receiver of the webhook during the verification
+		/// process (default: <c>false</c>).
+		/// </summary>
 		public const bool VerificationChallenge = false;
 
+		/// <summary>
+		/// If the verification challenge is enabled, this is the default name
+		/// of the query parameter that will be used to send the challenge
+		/// to the receiver (default: <c>challenge</c>).
+		/// </summary>
 		public const string ChallengeQueryParameterName = "challenge";
 
+		/// <summary>
+		/// The default location of the verification token in the HTTP request
+		/// (default: <see cref="VerificationTokenLocation.QueryString"/>).
+		/// </summary>
 		public const VerificationTokenLocation DefaultVerificationTokenLocation = VerificationTokenLocation.QueryString;
 	}
 }

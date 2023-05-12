@@ -15,6 +15,8 @@
 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 #pragma warning disable CS8618
 
+using System.ComponentModel.DataAnnotations.Schema;
+
 using MongoDB.Bson;
 
 namespace Deveel.Webhooks {
@@ -27,16 +29,19 @@ namespace Deveel.Webhooks {
 		/// <summary>
 		/// Gets or sets the identifier of the event / webhook notified.
 		/// </summary>
+		[Column("webhook_id")]
 		public string WebhookId { get; set; }
 
 		/// <summary>
 		/// Gets or sets the timestamp of the event.
 		/// </summary>
+		[Column("timestamp")]
 		public DateTimeOffset TimeStamp { get; set; }
 
 		/// <summary>
 		/// Gets or sets the type of the event.
 		/// </summary>
+		[Column("event_type")]
 		public string EventType { get; set; }
 
 		// TODO: convert this to a dynamic object?
@@ -45,6 +50,7 @@ namespace Deveel.Webhooks {
 		/// <summary>
 		/// Gets or sets the data of the event.
 		/// </summary>
+		[Column("data")]
 		public BsonDocument Data { get; set; }
 	}
 }

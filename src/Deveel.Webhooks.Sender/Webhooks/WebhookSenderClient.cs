@@ -58,6 +58,9 @@ namespace Deveel.Webhooks {
 		/// <param name="httpClientFactory">
 		/// The factory of HTTP clients to use for sending the requests.
 		/// </param>
+		/// <param name="logger">
+		/// A logger to use for logging the operations of the sender.
+		/// </param>
 		protected WebhookSenderClient(IHttpClientFactory? httpClientFactory, ILogger? logger) {
 			this.httpClientFactory = httpClientFactory;
 			Logger = logger ?? NullLogger.Instance;

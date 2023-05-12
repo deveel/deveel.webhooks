@@ -17,35 +17,162 @@ using System.Diagnostics.CodeAnalysis;
 using Deveel.Webhooks.SendGrid;
 
 namespace Deveel.Webhooks {
+	/// <summary>
+	/// Extends the <see cref="WebhookReceiverBuilder{TWebhook}"/> to add the features to receive
+	/// webhooks from SendGrid.
+	/// </summary>
 	[ExcludeFromCodeCoverage]
 	public static class WebhookReceiverBuilderExtensions {
+		/// <summary>
+		/// Adds a handler to the receiver to handle the incoming webhooks from SendGrid.
+		/// </summary>
+		/// <typeparam name="THandler">
+		/// The type of the handler to add to the receiver.
+		/// </typeparam>
+		/// <param name="builder">
+		/// The builder to add the handler to.
+		/// </param>
+		/// <returns>
+		/// Returns the same instance of the <paramref name="builder"/> to allow chaining.
+		/// </returns>
 		public static WebhookReceiverBuilder<SendGridWebhook> HandleSendGridWebhook<THandler>(this WebhookReceiverBuilder<SendGridWebhook> builder)
 			where THandler : class, IWebhookHandler<SendGridWebhook>
 			=> builder.AddHandler<THandler>();
 
+		/// <summary>
+		/// Adds a handler to the receiver to handle the incoming webhooks from SendGrid.
+		/// </summary>
+		/// <param name="builder">
+		/// The builder to add the handler to.
+		/// </param>
+		/// <param name="handler">
+		/// The delegate to handle the incoming webhook.
+		/// </param>
+		/// <returns>
+		/// Returns the same instance of the <paramref name="builder"/> to allow chaining.
+		/// </returns>
 		public static WebhookReceiverBuilder<SendGridWebhook> HandleSendGrid(this WebhookReceiverBuilder<SendGridWebhook> builder, Func<SendGridWebhook, Task> handler)
 			=> builder.HandleAsync(handler);
 
+		/// <summary>
+		/// Adds a handler to the receiver to handle the incoming webhooks from SendGrid.
+		/// </summary>
+		/// <typeparam name="T1">The type of the first argument of the handler</typeparam>
+		/// <param name="builder">
+		/// The builder to add the handler to.
+		/// </param>
+		/// <param name="handler">
+		/// The delegate to handle the incoming webhook.
+		/// </param>
+		/// <returns>
+		/// Returns the same instance of the <paramref name="builder"/> to allow chaining.
+		/// </returns>
 		public static WebhookReceiverBuilder<SendGridWebhook> HandleSendGrid<T1>(this WebhookReceiverBuilder<SendGridWebhook> builder, Func<SendGridWebhook, T1, Task> handler)
 			=> builder.HandleAsync(handler);
 
+		/// <summary>
+		/// Adds a handler to the receiver to handle the incoming webhooks from SendGrid.
+		/// </summary>
+		/// <typeparam name="T1">The type of the first argument of the handler</typeparam>
+		/// <typeparam name="T2">The type of the second argument of the handler</typeparam>
+		/// <param name="builder">
+		/// The builder to add the handler to.
+		/// </param>
+		/// <param name="handler">
+		/// The delegate to handle the incoming webhook.
+		/// </param>
+		/// <returns>
+		/// Returns the same instance of the <paramref name="builder"/> to allow chaining.
+		/// </returns>
 		public static WebhookReceiverBuilder<SendGridWebhook> HandleSendGrid<T1, T2>(this WebhookReceiverBuilder<SendGridWebhook> builder, Func<SendGridWebhook, T1, T2, Task> handler)
 			=> builder.HandleAsync(handler);
 
+		/// <summary>
+		/// Adds a handler to the receiver to handle the incoming webhooks from SendGrid.
+		/// </summary>
+		/// <typeparam name="T1">The type of the first argument of the handler</typeparam>
+		/// <typeparam name="T2">The type of the second argument of the handler</typeparam>
+		/// <typeparam name="T3">The type of the third argument of the handler</typeparam>
+		/// <param name="builder">
+		/// The builder to add the handler to.
+		/// </param>
+		/// <param name="handler">
+		/// The delegate to handle the incoming webhook.
+		/// </param>
+		/// <returns>
+		/// Returns the same instance of the <paramref name="builder"/> to allow chaining.
+		/// </returns>
 		public static WebhookReceiverBuilder<SendGridWebhook> HandleSendGrid<T1, T2, T3>(this WebhookReceiverBuilder<SendGridWebhook> builder, Func<SendGridWebhook, T1, T2, T3, Task> handler)
 			=> builder.HandleAsync(handler);
 
+		/// <summary>
+		/// Adds a handler to the receiver to handle the incoming webhooks from SendGrid.
+		/// </summary>
+		/// <param name="builder">
+		/// The builder to add the handler to.
+		/// </param>
+		/// <param name="handler">
+		/// The delegate to handle the incoming webhook.
+		/// </param>
+		/// <returns>
+		/// Returns the same instance of the <paramref name="builder"/> to allow chaining.
+		/// </returns>
 		public static WebhookReceiverBuilder<SendGridWebhook> HandleSendGrid(this WebhookReceiverBuilder<SendGridWebhook> builder, Action<SendGridWebhook> handler)
 			=> builder.Handle(handler);
 
+		/// <summary>
+		/// Adds a handler to the receiver to handle the incoming webhooks from SendGrid.
+		/// </summary>
+		/// <typeparam name="T1">The type of the first argument of the handler</typeparam>
+		/// <param name="builder">
+		/// The builder to add the handler to.
+		/// </param>
+		/// <param name="handler">
+		/// The delegate to handle the incoming webhook.
+		/// </param>
+		/// <returns>
+		/// Returns the same instance of the <paramref name="builder"/> to allow chaining.
+		/// </returns>
 		public static WebhookReceiverBuilder<SendGridWebhook> HandleSendGrid<T1>(this WebhookReceiverBuilder<SendGridWebhook> builder, Action<SendGridWebhook, T1> handler)
 			=> builder.Handle(handler);
 
+		/// <summary>
+		/// Adds a handler to the receiver to handle the incoming webhooks from SendGrid.
+		/// </summary>
+		/// <typeparam name="T1">The type of the first argument of the handler</typeparam>
+		/// <typeparam name="T2">The type of the second argument of the handler</typeparam>
+		/// <param name="builder">
+		/// The builder to add the handler to.
+		/// </param>
+		/// <param name="handler">
+		/// The delegate to handle the incoming webhook.
+		/// </param>
+		/// <returns>
+		/// Returns the same instance of the <paramref name="builder"/> to allow chaining.
+		/// </returns>
 		public static WebhookReceiverBuilder<SendGridWebhook> HandleSendGrid<T1, T2>(this WebhookReceiverBuilder<SendGridWebhook> builder, Action<SendGridWebhook, T1, T2> handler)
 			=> builder.Handle(handler);
 
+		/// <summary>
+		/// Adds a handler to the receiver to handle the incoming webhooks from SendGrid.
+		/// </summary>
+		/// <typeparam name="T1">The type of the first argument of the handler</typeparam>
+		/// <typeparam name="T2">The type of the second argument of the handler</typeparam>
+		/// <typeparam name="T3">The type of the third argument of the handler</typeparam>
+		/// <param name="builder">
+		/// The builder to add the handler to.
+		/// </param>
+		/// <param name="handler">
+		/// The delegate to handle the incoming webhook.
+		/// </param>
+		/// <returns>
+		/// Returns the same instance of the <paramref name="builder"/> to allow chaining.
+		/// </returns>
 		public static WebhookReceiverBuilder<SendGridWebhook> HandleSendGrid<T1, T2, T3>(this WebhookReceiverBuilder<SendGridWebhook> builder, Action<SendGridWebhook, T1, T2, T3> handler)
 			=> builder.Handle(handler);
+
+
+		//-- Emails
 
 		public static WebhookReceiverBuilder<SendGridEmail> HandleSendGridEmail<THandler>(this WebhookReceiverBuilder<SendGridEmail> builder)
 			where THandler : class, IWebhookHandler<SendGridEmail>

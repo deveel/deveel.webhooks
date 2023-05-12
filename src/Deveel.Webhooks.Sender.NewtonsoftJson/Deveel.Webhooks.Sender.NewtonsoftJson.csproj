@@ -15,8 +15,8 @@
 	  <PackageIcon>deveel-logo.png</PackageIcon>
 	  <RepositoryUrl>https://github.com/deveel/deveel.webhooks</RepositoryUrl>
 	  <RepositoryType>git</RepositoryType>
-	  <PackageTags>webhook webhooks sender senders newtonsoft json serializer json-serializer</PackageTags>
-	  <Description>Extends the senders with webhook serializer implemented using the Newtonsoft.Json library</Description>
+	  <PackageTags>webhooks;webhook;sender;senders;newtonsoft;json;serializer;json-serializer</PackageTags>
+	  <Description>Extends the senders with a webhook serializer implemented using the Newtonsoft.Json library</Description>
 	  <PackageProjectUrl>https://deveel.com</PackageProjectUrl>
 	  <DocumentationFile>.\Deveel.Webhooks.Sender.NewtonsoftJson.xml</DocumentationFile>
   </PropertyGroup>

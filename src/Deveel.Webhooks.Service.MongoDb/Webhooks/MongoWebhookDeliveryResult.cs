@@ -40,30 +40,36 @@ namespace Deveel.Webhooks {
 		/// Gets or sets the information on the event that
 		/// triggered the notification.
 		/// </summary>
+		[Column("event_info")]
 		public MongoEventInfo EventInfo { get; set; }
 
 		IEventInfo IWebhookDeliveryResult.EventInfo => EventInfo;
 
 		/// <inheritdoc/>
+		[Column("operation_id")]
 		public virtual string OperationId { get; set; }
 
-        /// <inheritdoc/>
+		/// <inheritdoc/>
+		[Column("receiver")]
         public virtual MongoWebhookReceiver Receiver { get; set; }
 
 		IWebhookReceiver IWebhookDeliveryResult.Receiver => Receiver;
 
-        /// <inheritdoc/>
+		/// <inheritdoc/>
+		[Column("webhook")]
 		public virtual MongoWebhook Webhook { get; set; }
 
         IEnumerable<IWebhookDeliveryAttempt> IWebhookDeliveryResult.DeliveryAttempts => DeliveryAttempts;
 
-        /// <inheritdoc/>
+		/// <inheritdoc/>
+		[Column("delivery_attempts")]
         public virtual List<MongoWebhookDeliveryAttempt> DeliveryAttempts { get; set; }
 
 		/// <summary>
 		/// Gets or sets the unique identifier of the tenant that owns
 		/// the webhook
 		/// </summary>
+		[Column("tenant_id")]
 		public string? TenantId { get; set; }
 	}
 }

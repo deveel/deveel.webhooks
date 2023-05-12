@@ -17,15 +17,10 @@
     <PackageIcon>deveel-logo.png</PackageIcon>
     <RepositoryUrl>https://github.com/deveel/deveel.webhooks</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <PackageTags>webhook event schema management subscriptions subscription</PackageTags>
+    <PackageTags>webhooks;webhook;event;management;subscription-management;subscriptions;subscription</PackageTags>
     <DocumentationFile>./Deveel.Webhooks.Service.xml</DocumentationFile>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
-
-  <ItemGroup>
-    <Compile Remove="Webhooks\IWebhookSubscriptionManagerProvider.cs" />
-    <Compile Remove="Webhooks\WebhookSubscriptionManagerProvider.cs" />
-  </ItemGroup>
 
   <ItemGroup>
     <None Include="..\..\deveel-logo.png">

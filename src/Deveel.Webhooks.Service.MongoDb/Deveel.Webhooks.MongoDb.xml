@@ -4,6 +4,36 @@
         <name>Deveel.Webhooks.MongoDb</name>
     </assembly>
     <members>
+        <member name="T:Deveel.Webhooks.DefaultMongoWebhookConverter`1">
+            <summary>
+            A default implementation of <see cref="T:Deveel.Webhooks.IMongoWebhookConverter`1"/> that
+            attempts to convert the given webhook object into a <see cref="T:Deveel.Webhooks.MongoWebhook"/>
+            </summary>
+            <typeparam name="TWebhook">
+            The type of the webhook to convert into a <see cref="T:Deveel.Webhooks.MongoWebhook"/>.
+            </typeparam>
+            <remarks>
+            This implementation is quite straightforward and it is configured to simply
+            map the properties and data of a given event and webhook object to be stored
+            into a <see cref="T:Deveel.Webhooks.MongoWebhook"/> object.
+            </remarks>
+        </member>
+        <member name="M:Deveel.Webhooks.DefaultMongoWebhookConverter`1.ConvertWebhook(Deveel.Webhooks.EventInfo,`0)">
+            <summary>
+            Converts the given <see cref="T:Deveel.Webhooks.EventInfo"/> and the webhook object into
+            a <see cref="T:Deveel.Webhooks.MongoWebhook"/> object.
+            </summary>
+            <param name="eventInfo">
+            The event information that is being notified.
+            </param>
+            <param name="webhook">
+            The webhook that was notified to the subscribers.
+            </param>
+            <returns>
+            Returns an instance of <see cref="T:Deveel.Webhooks.MongoWebhook"/> that represents the
+            webhook that can be stored into the database.
+            </returns>
+        </member>
         <member name="T:Deveel.Webhooks.IMongoDbWebhookContext">
             <summary>
             Represents an instance of the <see cref="T:MongoFramework.IMongoDbContext"/> that

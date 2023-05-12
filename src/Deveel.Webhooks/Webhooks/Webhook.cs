@@ -15,7 +15,6 @@
 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 #pragma warning disable CS8618
 
-using System;
 using System.Text.Json.Serialization;
 using System.Xml.Serialization;
 
@@ -59,7 +58,7 @@ namespace Deveel.Webhooks {
 		/// <inheritdoc/>
 		[JsonPropertyName("data")]
 		[XmlElement(ElementName = "data")]
-		public object Data { get; set; }
+		public object? Data { get; set; }
 
 		/// <inheritdoc/>
 		[JsonPropertyName("subscription_id")]

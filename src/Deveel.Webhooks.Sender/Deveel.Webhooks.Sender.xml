@@ -1403,10 +1403,10 @@
             <item>
             The sender attempts to send the webhook to the destination, retrying for so many times as specified in the destination:
             a first attempt is always made, and then the number of retries specified in the destination specification
-            (<see cref="P:Deveel.Webhooks.WebhookDestination.Retry"/>) or from the sender configuration (see <see cref="!:WebhookSenderOptions.Retry"/>).
+            (<see cref="P:Deveel.Webhooks.WebhookDestination.Retry"/>) or from the sender configuration (see <see cref="P:Deveel.Webhooks.WebhookSenderOptions`1.Retry"/>).
             </item>
             <item>
-            A general timeout is applied to the whole operation, if configured in the sender configuration (see <see cref="!:WebhookSenderOptions.Timeout"/>),
+            A general timeout is applied to the whole operation, if configured in the sender configuration (see <see cref="P:Deveel.Webhooks.WebhookSenderOptions`1.Timeout"/>),
             otherwise no timeout is applied.
             </item>
             </list>
@@ -1484,6 +1484,9 @@
             </summary>
             <param name="httpClientFactory">
             The factory of HTTP clients to use for sending the requests.
+            </param>
+            <param name="logger">
+            A logger to use for logging the operations of the sender.
             </param>
         </member>
         <member name="P:Deveel.Webhooks.WebhookSenderClient.Timeout">
@@ -1678,6 +1681,26 @@
         <member name="F:Deveel.Webhooks.WebhookSenderDefaults.VerifyHttpMethod">
             <summary>
             The default HTTP method to use for the verification request (default: <c>GET</c>).
+            </summary>
+        </member>
+        <member name="F:Deveel.Webhooks.WebhookSenderDefaults.VerificationChallenge">
+            <summary>
+            The default value for the flag indicating if the sender should
+            challenge the receiver of the webhook during the verification
+            process (default: <c>false</c>).
+            </summary>
+        </member>
+        <member name="F:Deveel.Webhooks.WebhookSenderDefaults.ChallengeQueryParameterName">
+            <summary>
+            If the verification challenge is enabled, this is the default name
+            of the query parameter that will be used to send the challenge
+            to the receiver (default: <c>challenge</c>).
+            </summary>
+        </member>
+        <member name="F:Deveel.Webhooks.WebhookSenderDefaults.DefaultVerificationTokenLocation">
+            <summary>
+            The default location of the verification token in the HTTP request
+            (default: <see cref="F:Deveel.Webhooks.VerificationTokenLocation.QueryString"/>).
             </summary>
         </member>
         <member name="T:Deveel.Webhooks.WebhookSenderException">

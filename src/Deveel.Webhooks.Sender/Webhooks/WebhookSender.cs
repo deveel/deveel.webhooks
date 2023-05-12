@@ -613,10 +613,10 @@ namespace Deveel.Webhooks {
 		/// <item>
 		/// The sender attempts to send the webhook to the destination, retrying for so many times as specified in the destination:
 		/// a first attempt is always made, and then the number of retries specified in the destination specification
-		/// (<see cref="WebhookDestination.Retry"/>) or from the sender configuration (see <see cref="WebhookSenderOptions.Retry"/>).
+		/// (<see cref="WebhookDestination.Retry"/>) or from the sender configuration (see <see cref="WebhookSenderOptions{TWebhook}.Retry"/>).
 		/// </item>
 		/// <item>
-		/// A general timeout is applied to the whole operation, if configured in the sender configuration (see <see cref="WebhookSenderOptions.Timeout"/>),
+		/// A general timeout is applied to the whole operation, if configured in the sender configuration (see <see cref="WebhookSenderOptions{TWebhook}.Timeout"/>),
 		/// otherwise no timeout is applied.
 		/// </item>
 		/// </list>

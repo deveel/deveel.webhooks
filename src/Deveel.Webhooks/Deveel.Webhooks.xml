@@ -460,7 +460,7 @@
         </member>
         <member name="M:Deveel.Webhooks.ServiceCollectionExtensions.AddWebhookNotifier``1(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
             <summary>
-            Adds a <see cref="T:Deveel.Webhooks.WebhookNotifierBuilder`1"/> to the service collection.
+            Registers a webhook notification service into the service collection.
             </summary>
             <typeparam name="TWebhook">
             The type of the webhook to notify.
@@ -473,12 +473,70 @@
             to further configure the notifier.
             </returns>
         </member>
-        <member name="M:Deveel.Webhooks.ServiceCollectionExtensions.AddWebhookNotifier``1(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Action{Deveel.Webhooks.WebhookNotifierBuilder{``0}})">
+        <member name="M:Deveel.Webhooks.ServiceCollectionExtensions.AddWebhookNotifier``1(Microsoft.Extensions.DependencyInjection.IServiceCollection,Deveel.Webhooks.WebhookNotificationOptions{``0})">
             <summary>
-            Adds a <see cref="T:Deveel.Webhooks.WebhookNotifierBuilder`1"/> to the service collection
+            Registers a webhook notification service into the service collection,
+            using the specified options.
             </summary>
             <typeparam name="TWebhook">
-            The type of the webhook to notify.
+            The type of the webhook to notify to subscribers.
+            </typeparam>
+            <param name="services">
+            The service collection to add the builder to.
+            </param>
+            <param name="options">
+            The options to use to configure the notification service.
+            </param>
+            <returns>
+            Returns an instance of <see cref="T:Deveel.Webhooks.WebhookNotifierBuilder`1"/> that can be used
+            to further configure the notifier.
+            </returns>
+        </member>
+        <member name="M:Deveel.Webhooks.ServiceCollectionExtensions.AddWebhookNotifier``1(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Action{Deveel.Webhooks.WebhookNotificationOptions{``0}})">
+            <summary>
+            Registers a webhook notification service into the service collection,
+            using the given function to configure the options.
+            </summary>
+            <typeparam name="TWebhook">
+            The type of the webhook to notify to subscribers.
+            </typeparam>
+            <param name="services">
+            The service collection to add the builder to.
+            </param>
+            <param name="configure">
+            A function used to configure the options.
+            </param>
+            <returns>
+            Returns an instance of <see cref="T:Deveel.Webhooks.WebhookNotifierBuilder`1"/> that can be used
+            to further configure the notifier.
+            </returns>
+        </member>
+        <member name="M:Deveel.Webhooks.ServiceCollectionExtensions.AddWebhookNotifier``1(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.String)">
+            <summary>
+            Registers a webhook notification service into the service collection,
+            using the configuration defined in the specified section.
+            </summary>
+            <typeparam name="TWebhook">
+            The type of the webhook to notify to subscribers.
+            </typeparam>
+            <param name="services">
+            The service collection to add the builder to.
+            </param>
+            <param name="sectionPath">
+            The path to the configuration section to use to configure the options.
+            </param>
+            <returns>
+            Returns an instance of <see cref="T:Deveel.Webhooks.WebhookNotifierBuilder`1"/> that can be used
+            to further configure the notifier.
+            </returns>
+        </member>
+        <member name="M:Deveel.Webhooks.ServiceCollectionExtensions.AddWebhookNotifier``1(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Action{Deveel.Webhooks.WebhookNotifierBuilder{``0}})">
+            <summary>
+            Registers a webhook notification service into the service collection,
+            using a function to configure the notification features.
+            </summary>
+            <typeparam name="TWebhook">
+            The type of the webhook to notify to the subscribers.
             </typeparam>
             <param name="services">
             The service collection to add the builder to.

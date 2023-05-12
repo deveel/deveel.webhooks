@@ -16,6 +16,8 @@
 #pragma warning disable CS8618
 
 
+using System.ComponentModel.DataAnnotations.Schema;
+
 namespace Deveel.Webhooks {
 	/// <summary>
 	/// Represents a webhook filter that is stored in a MongoDB storage.
@@ -25,11 +27,13 @@ namespace Deveel.Webhooks {
 		/// Gets or sets the expression used to filter the webhook
 		/// to be delivered to a receiver.
 		/// </summary>
+		[Column("expression")]
 		public string Expression { get; set; }
 
 		/// <summary>
 		/// Gets or sets the format of the expression
 		/// </summary>
+		[Column("format")]
 		public string Format { get; set; }
 	}
 }

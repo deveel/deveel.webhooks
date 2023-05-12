@@ -17,7 +17,7 @@
 		<PackageIcon>deveel-logo.png</PackageIcon>
 		<RepositoryUrl>https://github.com/deveel/deveel.webhooks</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
-		<PackageTags>webhook data mongodb mongo events event</PackageTags>
+		<PackageTags>webhooks;webhook;data;mongodb;mongo;subscription;subscriptions</PackageTags>
 		<DocumentationFile>./Deveel.Webhooks.MongoDb.xml</DocumentationFile>
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>
 	</PropertyGroup>

@@ -16,7 +16,7 @@
     <PackageIcon>deveel-logo.png</PackageIcon>
     <RepositoryUrl>https://github.com/deveel/deveel.webhooks</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <PackageTags>events webhooks abstractions core</PackageTags>
+    <PackageTags>events;webhooks;webhook;notification;notifier</PackageTags>
     <PackageProjectUrl>https://deveel.com</PackageProjectUrl>
     <DocumentationFile>./Deveel.Webhooks.xml</DocumentationFile>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>

@@ -1,7 +1,5 @@
-﻿using Deveel.Webhooks;
-using Deveel.Webhooks.Models;
+﻿using Deveel.Webhooks.Models;
 
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Deveel.Webhooks.Controllers {

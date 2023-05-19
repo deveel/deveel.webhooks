@@ -50,7 +50,7 @@ namespace Deveel.Webhooks {
 			return compiled;
 		}
 
-		private Func<object, bool> Compile(Type objType, IEnumerable<string> filters) {
+		private Func<object, bool> Compile(Type objType, IList<string> filters) {
 			var hasWildcard = filters.Any(WebhookFilter.IsWildcard);
 			if (hasWildcard)
 				return hook => true;
@@ -85,7 +85,7 @@ namespace Deveel.Webhooks {
 				if (obj is null)
 					return false;
 
-				var evalFilter = Compile(obj.GetType(), filter.Filters);
+				var evalFilter = Compile(obj.GetType(), filter.Filters?.ToList() ?? new List<string>());
 
 				var result = evalFilter(obj);
 

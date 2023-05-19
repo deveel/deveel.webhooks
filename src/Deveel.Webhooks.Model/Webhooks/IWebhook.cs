@@ -12,13 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using System.Collections.Generic;
-
 namespace Deveel.Webhooks {
 	/// <summary>
 	/// Notifies the occurrence of an event
-	/// and trasports related data
+	/// and transports related data
 	/// </summary>
 	public interface IWebhook {
 		/// <summary>

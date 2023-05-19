@@ -11,7 +11,7 @@
     <Authors>antonello</Authors>
     <Company>Deveel AS</Company>
     <Copyright>Copyright (C) 2021-2023 Deveel AS</Copyright>
-    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <PackageIcon>deveel-logo.png</PackageIcon>
     <RepositoryUrl>https://github.com/deveel/deveel.webhooks</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
@@ -19,14 +19,16 @@
     <Description>An implementation of the Deveel Webhooks ASP.NET Core Receiver that is able to receive webhooks and e-mails from SendGrid</Description>
     <PackageProjectUrl>https://deveel.com</PackageProjectUrl>
     <DocumentationFile>.\Deveel.Webhooks.Receiver.SendGrid.xml</DocumentationFile>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <IncludeSymbols>true</IncludeSymbols>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <DeterministicBuilds>true</DeterministicBuilds>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <DebugType>embedded</DebugType>
   </PropertyGroup>
 
   <ItemGroup>
     <None Include="..\..\deveel-logo.png">
-      <Pack>True</Pack>
-      <PackagePath></PackagePath>
-    </None>
-    <None Include="..\..\LICENSE">
       <Pack>True</Pack>
       <PackagePath></PackagePath>
     </None>
@@ -41,6 +43,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All"/>
     <PackageReference Include="Macross.Json.Extensions" Version="3.0.0" />
   </ItemGroup>
 </Project>

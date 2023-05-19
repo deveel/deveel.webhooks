@@ -11,23 +11,23 @@
     <Authors>antonello</Authors>
     <Company>Deveel AS</Company>
     <Copyright>Copyright (C) 2021-2023 Deveel AS</Copyright>
-    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <PackageIcon>deveel-logo.png</PackageIcon>
     <RepositoryUrl>https://github.com/deveel/deveel.webhooks</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <PackageTags>webhooks;webhppk;receiver;receivers;aspnet;aspnetcore;httpcontext;httprequest;facebook;messenger;message;fb</PackageTags>
+    <PackageTags>webhooks;webhook;receiver;receivers;aspnet;aspnetcore;httpcontext;httprequest;facebook;messenger;message;fb</PackageTags>
     <Description>An implementation of the Deveel Webhooks ASP.NET Core Receiver that is able to receive webhooks from Facebook</Description>
     <PackageProjectUrl>https://deveel.com</PackageProjectUrl>
     <DocumentationFile>.\Deveel.Webhooks.Receiver.Facebook.xml</DocumentationFile>
-
+    <IncludeSymbols>true</IncludeSymbols>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <DeterministicBuilds>true</DeterministicBuilds>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <DebugType>embedded</DebugType>
   </PropertyGroup>
 
   <ItemGroup>
     <None Include="..\..\deveel-logo.png">
-      <Pack>True</Pack>
-      <PackagePath></PackagePath>
-    </None>
-    <None Include="..\..\LICENSE">
       <Pack>True</Pack>
       <PackagePath></PackagePath>
     </None>
@@ -42,6 +42,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All"/>
     <PackageReference Include="Macross.Json.Extensions" Version="3.0.0" />
   </ItemGroup>
 </Project>

@@ -16,7 +16,7 @@ namespace Deveel.Webhooks.Controllers {
 
 		[HttpGet("{id}")]
 		[ProducesResponseType(typeof(MongoWebhookSubscription), 200)]
-		public async Task<IActionResult> GetAsync([FromRoute] string id) {
+		public async Task<IActionResult> Get([FromRoute] string id) {
 			var subscription = await subscriptionManager.FindByIdAsync(id);
 			if (subscription == null)
 				return NotFound();
@@ -26,16 +26,16 @@ namespace Deveel.Webhooks.Controllers {
 
 		[HttpPost]
 		[ProducesResponseType(typeof(MongoWebhookSubscription), 201)]
-		public async Task<IActionResult> PostAsync([FromBody] WebhookSubscriptionModel model) {
+		public async Task<IActionResult> Post([FromBody] WebhookSubscriptionModel model) {
 			var subscription = model.AsEntity();
 			await subscriptionManager.CreateAsync(subscription);
 
-			return CreatedAtAction(nameof(GetAsync), new {id = subscription.Id}, subscription.AsModel());
+			return CreatedAtAction(nameof(Get), new {id = subscription.Id}, subscription.AsModel());
 		}
 
 		[HttpPut("{id}")]
 		[ProducesResponseType(typeof(MongoWebhookSubscription), 200)]
-		public async Task<IActionResult> PutAsync([FromRoute] string id, [FromBody] WebhookSubscriptionModel model) {
+		public async Task<IActionResult> Put([FromRoute] string id, [FromBody] WebhookSubscriptionModel model) {
 			var subscription = await subscriptionManager.FindByIdAsync(id);
 			if (subscription == null)
 				return NotFound();
@@ -49,7 +49,7 @@ namespace Deveel.Webhooks.Controllers {
 
 		[HttpDelete("{id}")]
 		[ProducesResponseType(204)]
-		public async Task<IActionResult> DeleteAsync([FromRoute] string id) {
+		public async Task<IActionResult> Delete([FromRoute] string id) {
 			var subscription = await subscriptionManager.FindByIdAsync(id);
 			if (subscription == null)
 				return NotFound();
@@ -60,7 +60,7 @@ namespace Deveel.Webhooks.Controllers {
 
 		[HttpGet]
 		[ProducesResponseType(typeof(WebhookSubscriptionPageModel), 200)]
-		public async Task<IActionResult> GetPageAsync([FromQuery] int? page, [FromQuery] int? size) {
+		public async Task<IActionResult> GetPage([FromQuery] int? page, [FromQuery] int? size) {
 			var query = new PagedQuery<MongoWebhookSubscription>(page ?? 1, size ?? 10);
 
 			var pageResult = await subscriptionManager.GetPageAsync(query);

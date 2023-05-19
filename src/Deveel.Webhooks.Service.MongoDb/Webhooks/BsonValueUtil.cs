@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 using MongoDB.Bson;
 
@@ -63,7 +58,7 @@ namespace Deveel.Webhooks {
 				return BsonValue.Create(value);
 
 			if (value is DateTimeOffset dateTimeOffset)
-				return new BsonArray(new BsonValue[] {
+				return new BsonArray(new [] {
 					BsonValue.Create(dateTimeOffset.UtcDateTime),
 					BsonValue.Create(dateTimeOffset.Offset.Minutes)
 				});

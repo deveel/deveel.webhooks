@@ -43,7 +43,7 @@
         <member name="T:Deveel.Webhooks.IWebhook">
             <summary>
             Notifies the occurrence of an event
-            and trasports related data
+            and transports related data
             </summary>
         </member>
         <member name="P:Deveel.Webhooks.IWebhook.Id">

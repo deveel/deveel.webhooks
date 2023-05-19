@@ -15,9 +15,18 @@
 using System.Reflection;
 using System.Reflection.Emit;
 
-namespace Deveel.Webhooks {
+namespace Deveel.Webhooks.Types {
 	static class TypeCreator {
 		private static int anonymousCounter = 0;
+
+		private static readonly ModuleBuilder TypesModule;
+
+		static TypeCreator() {
+			var assemblyName = new AssemblyName("Deveel.Webhooks.AnonymousTypes");
+			var assemblyBuilder = AssemblyBuilder.DefineDynamicAssembly(assemblyName, AssemblyBuilderAccess.Run);
+			
+			TypesModule = assemblyBuilder.DefineDynamicModule("AnonymousTypes");
+		}
 
 		private static void CreateProperty(TypeBuilder typeBuilder, string propertyName, Type propertyType) {
 			var fieldBuilder = typeBuilder.DefineField($"_{propertyName}", propertyType, FieldAttributes.Private);
@@ -51,16 +60,13 @@ namespace Deveel.Webhooks {
 		private const string Namespace = "Deveel.Webhooks.Types";
 
 		private static Type? CreateType(Dictionary<string, Type> propertyTypes) {
-			var assemblyName = new AssemblyName("Deveel.Webhooks.AnonymousTypes");
-			var assemblyBuilder = AssemblyBuilder.DefineDynamicAssembly(assemblyName, AssemblyBuilderAccess.Run);
-			var moduleBuilder = assemblyBuilder.DefineDynamicModule("AnonymousTypes");
 			var typeAtts = TypeAttributes.Public |
 				TypeAttributes.AnsiClass |
 				TypeAttributes.AutoClass |
 				TypeAttributes.AutoLayout |
 				TypeAttributes.BeforeFieldInit;
 
-			var typeBuilder = moduleBuilder.DefineType($"{Namespace}._Anonynous_{anonymousCounter++}", typeAtts);
+			var typeBuilder = TypesModule.DefineType($"{Namespace}._Anonynous_{anonymousCounter++}", typeAtts);
 
 			foreach (var propertyType in propertyTypes) {
 				string propertyName = propertyType.Key;

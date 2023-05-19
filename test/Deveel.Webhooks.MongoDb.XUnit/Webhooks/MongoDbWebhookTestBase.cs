@@ -18,9 +18,6 @@ using Deveel.Util;
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Abstractions;
-
-using Mongo2Go;
 
 using MongoDB.Driver;
 

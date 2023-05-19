@@ -12,22 +12,30 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.Extensions.Logging.Abstractions;
+using System.Text;
 
-using Mongo2Go;
+using EphemeralMongo;
 
 namespace Deveel.Webhooks {
 	public class MongoTestCluster : IDisposable {
-		private readonly MongoDbRunner mongo;
+		private readonly IMongoRunner mongo;
 
 		public MongoTestCluster() {
-			mongo = MongoDbRunner.Start(logger: NullLogger.Instance);
+			mongo = MongoRunner.Run(new MongoRunnerOptions {
+				KillMongoProcessesWhenCurrentProcessExits = true
+			});
+
+			var connString = new StringBuilder(mongo.ConnectionString);
+			if (!connString[^1].Equals('/'))
+				connString.Append('/');
+			
+			ConnectionString = connString.ToString();
 		}
 
-		public string ConnectionString => mongo.ConnectionString;
+		public string ConnectionString { get; }
 
 		public void Dispose() {
-			mongo.Dispose();
+			mongo?.Dispose();
 		}
 	}
 }

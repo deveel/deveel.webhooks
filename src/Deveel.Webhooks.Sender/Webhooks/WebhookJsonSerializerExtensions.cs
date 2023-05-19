@@ -15,6 +15,8 @@
 using System.Text;
 using System.Text.Json;
 
+using Deveel.Webhooks.Types;
+
 namespace Deveel.Webhooks {
 	/// <summary>
 	/// Extends the <see cref="IWebhookJsonSerializer{TWebhook}"/> interface
@@ -81,7 +83,7 @@ namespace Deveel.Webhooks {
 			where TWebhook : class {
 
 			try {
-				Func<TWebhook, CancellationToken, Task<object?>> serialize = async (w, ct) => {
+				async Task<object?> Serialize(TWebhook w, CancellationToken ct) {
 					using var stream = new MemoryStream();
 					await serializer.SerializeAsync(stream, webhook, cancellationToken);
 					stream.Position = 0;
@@ -89,9 +91,9 @@ namespace Deveel.Webhooks {
 					var jsonElement = await JsonSerializer.DeserializeAsync<JsonElement>(stream, cancellationToken: cancellationToken);
 
 					return ToAnonymousType(jsonElement);
-				};
+				}
 
-				return await WebhookTypeCache.Default.GetOrCreateAsync(webhook, serialize, cancellationToken);
+				return await WebhookTypeCache.Default.GetOrCreateAsync(webhook, Serialize, cancellationToken);
 			} catch (Exception ex) {
 				throw new WebhookSerializationException("It was not possible to serialize the webhook", ex);
 			}

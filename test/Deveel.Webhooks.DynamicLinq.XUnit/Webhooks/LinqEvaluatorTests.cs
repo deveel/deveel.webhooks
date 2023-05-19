@@ -75,6 +75,28 @@ namespace Deveel.Webhooks {
 		}
 
 		[Fact]
+		public async Task EvaluateComplexWebhook() {
+			var webhook = new TestWebhookWithComplexData {
+				Id = "123",
+				WebhookName = "test",
+				Data = new EventData {
+					Count = 10
+				},
+				EventType = new EventType {
+					StreamType = "test",
+					TypeName = "test",
+					Version = "1.0"
+				}
+			};
+
+			var evaluator = LinqWebhookFilterEvaluator<TestWebhookWithComplexData>.Default;
+			var filter = WebhookSubscriptionFilter.Create("linq", "data.count == 10 && event_type.type == \"test\"");
+			var result = await evaluator.MatchesAsync(filter, webhook, default);
+
+			Assert.True(result);
+		}
+
+		[Fact]
 		public async Task EvaluateNotLinq() {
 			await Assert.ThrowsAsync<ArgumentException>(() => evaluator.MatchesAsync(WebhookSubscriptionFilter.Create("json", "event_name == \"data.created\""), new TestWebhook()));
 		}
@@ -88,6 +110,36 @@ namespace Deveel.Webhooks {
 
 			[JsonExtensionData]
 			public IDictionary<string, JsonElement>? Data { get; set; }
+		}
+
+		class TestWebhookWithComplexData {
+			[JsonPropertyName("id")]
+			public string Id { get; set; }
+			
+			[JsonPropertyName("name")]
+			public string WebhookName { get; set; }
+			
+			[JsonPropertyName(("data"))]
+			public EventData Data { get; set; }
+			
+			[JsonPropertyName("event_type")]
+			public EventType EventType { get; set; }
+		}
+
+		class EventData {
+			[JsonPropertyName("count")] 
+			public int Count { get; set; }
+		}
+
+		class EventType {
+			[JsonPropertyName("stream_type")]
+			public string StreamType { get; set; }
+			
+			[JsonPropertyName("type")]
+			public string TypeName { get; set; }
+			
+			[JsonPropertyName("version")]
+			public string Version { get; set; }
 		}
 	}
 }

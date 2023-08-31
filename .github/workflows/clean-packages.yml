@@ -73,3 +73,43 @@ jobs:
           package-type: 'nuget'
           min-versions-to-keep: 15
           delete-only-pre-release-versions: "true"
+
+      - name: "Clean Old Deveel.Webhooks.DynamicLinq Nuget Packages"
+        uses: actions/delete-package-versions@v4
+        with:
+          package-name: 'Deveel.Webhooks.DynamicLinq'
+          package-type: 'nuget'
+          min-versions-to-keep: 15
+          delete-only-pre-release-versions: "true"
+
+      - name: "Clean Old Deveel.Webhooks.Receiver.Facebook Nuget Packages"
+        uses: actions/delete-package-versions@v4
+        with:
+          package-name: 'Deveel.Webhooks.Receiver.Facebook'
+          package-type: 'nuget'
+          min-versions-to-keep: 15
+          delete-only-pre-release-versions: "true"
+
+      - name: "Clean Old Deveel.Webhooks.Receiver.Twilio Nuget Packages"
+        uses: actions/delete-package-versions@v4
+        with:
+          package-name: 'Deveel.Webhooks.Receiver.Twilio'
+          package-type: 'nuget'
+          min-versions-to-keep: 15
+          delete-only-pre-release-versions: "true"
+
+      - name: "Clean Old Deveel.Webhooks.Receiver.SendGrid Nuget Packages"
+        uses: actions/delete-package-versions@v4
+        with:
+          package-name: 'Deveel.Webhooks.Receiver.SendGrid'
+          package-type: 'nuget'
+          min-versions-to-keep: 15
+          delete-only-pre-release-versions: "true"
+
+      - name: "Clean Old Deveel.Webhooks.Signers Nuget Packages"
+        uses: actions/delete-package-versions@v4
+        with:
+          package-name: 'Deveel.Webhooks.Signers'
+          package-type: 'nuget'
+          min-versions-to-keep: 15
+          delete-only-pre-release-versions: "true"

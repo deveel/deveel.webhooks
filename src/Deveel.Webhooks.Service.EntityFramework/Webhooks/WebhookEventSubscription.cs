@@ -12,30 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
 namespace Deveel.Webhooks {
-	/// <summary>
-	/// Notifies the occurrence of an event
-	/// and transports related data
-	/// </summary>
-	public interface IWebhook {
-		/// <summary>
-		/// Gets an unique identifier of the event
-		/// </summary>
-		string? Id { get; }
+    [Table("webhook_subscription_events")]
+    public class WebhookEventSubscription {
+        [Key, Column("id"), DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int? Id { get; set; }
 
-		/// <summary>
-		/// Gets the exact time of the event occurrence.
-		/// </summary>
-		DateTimeOffset TimeStamp { get; }
+        [Required, Column("event_type")]
+        public string EventType { get; set; }
 
-		/// <summary>
-		/// Gets the type of the event
-		/// </summary>
-		string EventType { get; }
+        [Required, Column("subscription_id")]
+        public string SubscriptionId { get; set; }
 
-		/// <summary>
-		/// Gets the data carried by the webhook to the receiver
-		/// </summary>
-		object? Data { get; }
-	}
+        //[ForeignKey(nameof(SubscriptionId))]
+        public virtual WebhookSubscriptionEntity Subscription { get; set; }
+    }
 }

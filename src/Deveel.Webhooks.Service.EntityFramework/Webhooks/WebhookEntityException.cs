@@ -13,29 +13,18 @@
 // limitations under the License.
 
 namespace Deveel.Webhooks {
-	/// <summary>
-	/// Notifies the occurrence of an event
-	/// and transports related data
-	/// </summary>
-	public interface IWebhook {
-		/// <summary>
-		/// Gets an unique identifier of the event
-		/// </summary>
-		string? Id { get; }
+    /// <summary>
+    /// Represents an error that occurs during the management
+    /// of webhook entities in a database.
+    /// </summary>
+    public class WebhookEntityException : WebhookException {
+        public WebhookEntityException() {
+        }
 
-		/// <summary>
-		/// Gets the exact time of the event occurrence.
-		/// </summary>
-		DateTimeOffset TimeStamp { get; }
+        public WebhookEntityException(string message) : base(message) {
+        }
 
-		/// <summary>
-		/// Gets the type of the event
-		/// </summary>
-		string EventType { get; }
-
-		/// <summary>
-		/// Gets the data carried by the webhook to the receiver
-		/// </summary>
-		object? Data { get; }
-	}
+        public WebhookEntityException(string message, Exception innerException) : base(message, innerException) {
+        }
+    }
 }

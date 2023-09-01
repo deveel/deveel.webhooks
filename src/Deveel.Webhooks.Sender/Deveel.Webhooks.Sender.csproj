@@ -2,44 +2,13 @@
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-    <VersionPrefix>2.0.1</VersionPrefix>
     <RootNamespace>Deveel</RootNamespace>
-    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-    <Authors>antonello</Authors>
-    <Company>Deveel AS</Company>
     <Description>Provides services for the sending of Webhooks to receivers</Description>
-    <Copyright>Copyright (C) 2021-2023 Deveel AS</Copyright>
-    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
-    <PackageProjectUrl>https://deveel.com</PackageProjectUrl>
-    <PackageIcon>deveel-logo.png</PackageIcon>
-    <RepositoryUrl>https://github.com/deveel/deveel.webhooks</RepositoryUrl>
-    <RepositoryType>git</RepositoryType>
     <PackageTags>webhooks;webhook;events;event;sender;send;delivery;http</PackageTags>
     <DocumentationFile>./Deveel.Webhooks.Sender.xml</DocumentationFile>
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <IncludeSymbols>true</IncludeSymbols>
-    <EmbedUntrackedSources>true</EmbedUntrackedSources>
-    <DeterministicBuilds>true</DeterministicBuilds>
-    <PublishRepositoryUrl>true</PublishRepositoryUrl>
-    <DebugType>embedded</DebugType>
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="..\..\deveel-logo.png">
-      <Pack>True</Pack>
-      <PackagePath></PackagePath>
-    </None>
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="..\..\apl-2.licenseheader" Link="apl-2.licenseheader" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="6.0.0" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="6.0.0" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="6.0.0" />

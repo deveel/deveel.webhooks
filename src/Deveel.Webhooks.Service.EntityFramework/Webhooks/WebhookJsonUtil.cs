@@ -12,30 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Text.Json;
+using System.Text.Json.Serialization;
+
 namespace Deveel.Webhooks {
-	/// <summary>
-	/// Notifies the occurrence of an event
-	/// and transports related data
-	/// </summary>
-	public interface IWebhook {
-		/// <summary>
-		/// Gets an unique identifier of the event
-		/// </summary>
-		string? Id { get; }
+    internal static class WebhookJsonUtil {
+        public static string? AsJson(object? data) {
+            if (data == null)
+                return null;
 
-		/// <summary>
-		/// Gets the exact time of the event occurrence.
-		/// </summary>
-		DateTimeOffset TimeStamp { get; }
+            if (data is string str)
+                return str;
 
-		/// <summary>
-		/// Gets the type of the event
-		/// </summary>
-		string EventType { get; }
-
-		/// <summary>
-		/// Gets the data carried by the webhook to the receiver
-		/// </summary>
-		object? Data { get; }
-	}
+            return JsonSerializer.Serialize(data, new JsonSerializerOptions {
+                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault
+            });
+        }
+    }
 }

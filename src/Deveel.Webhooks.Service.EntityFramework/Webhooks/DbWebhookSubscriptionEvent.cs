@@ -13,15 +13,13 @@
 // limitations under the License.
 
 namespace Deveel.Webhooks {
-    public class WebhookReceiverHeader {
+    public class DbWebhookSubscriptionEvent {
         public int? Id { get; set; }
 
-        public string Key { get; set; }
+        public string EventType { get; set; }
 
-        public string Value { get; set; }
+        public string SubscriptionId { get; set; }
 
-        public virtual WebhookReceiverEntity Receiver { get; set; }
-
-        public int? ReceiverId { get; set; }
+        public virtual DbWebhookSubscription Subscription { get; set; }
     }
 }

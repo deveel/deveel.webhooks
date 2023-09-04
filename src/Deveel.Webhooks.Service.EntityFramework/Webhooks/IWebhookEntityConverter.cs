@@ -14,6 +14,6 @@
 
 namespace Deveel.Webhooks {
     public interface IWebhookEntityConverter<TWebhook> where TWebhook : class {
-        WebhookEntity ConvertWebhook(EventInfo eventInfo, TWebhook webhook);
+        DbWebhook ConvertWebhook(EventInfo eventInfo, TWebhook webhook);
     }
 }

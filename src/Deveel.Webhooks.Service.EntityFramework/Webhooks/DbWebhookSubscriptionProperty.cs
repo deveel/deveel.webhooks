@@ -12,28 +12,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-
 namespace Deveel.Webhooks {
-    [Table("webhook_subscription_properties")]
-    public class WebhookSubscriptionProperty {
-        [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity), Column("id")]
+    // [Table("webhook_subscription_properties")]
+    public class DbWebhookSubscriptionProperty {
+        //[Key, DatabaseGenerated(DatabaseGeneratedOption.Identity), Column("id")]
         public int Id { get; set; }
 
-        [Required, Column("key")]
+        //[Required, Column("key")]
         public string Key { get; set; }
 
-        [Column("value")]
+        //[Column("value")]
         public string? Value { get; set; }
 
-        [Required, Column("value_type")]
+        //[Required, Column("value_type")]
         public string ValueType { get; set; }
 
         // [ForeignKey(nameof(SubscriptionId))]
-        public virtual WebhookSubscriptionEntity? Subscription { get; set; }
+        public virtual DbWebhookSubscription? Subscription { get; set; }
 
-        [Required, Column("subscription_id")]
+        // [Required, Column("subscription_id")]
         public string? SubscriptionId { get; set; }
 
         public object? GetValue() {

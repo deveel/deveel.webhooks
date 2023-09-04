@@ -13,10 +13,19 @@
 // limitations under the License.
 
 namespace Deveel.Webhooks {
+    /// <summary>
+    /// A default implementation of <see cref="IWebhookEntityConverter{TWebhook}"/> that
+    /// converts a <see cref="IWebhook"/> object into a <see cref="DbWebhook"/>
+    /// to be stored in the database.
+    /// </summary>
+    /// <typeparam name="TWebhook">
+    /// The type of the webhook object to be converted.
+    /// </typeparam>
     public class DefaultWebhookEntityConverter<TWebhook> : IWebhookEntityConverter<TWebhook> where TWebhook : class {
-        public WebhookEntity ConvertWebhook(EventInfo eventInfo, TWebhook webhook) {
+        /// <inheritdoc/>
+        public DbWebhook ConvertWebhook(EventInfo eventInfo, TWebhook webhook) {
             if (webhook is IWebhook obj) {
-                return new WebhookEntity {
+                return new DbWebhook {
                     WebhookId = obj.Id,
                     EventType = obj.EventType,
                     Data = WebhookJsonUtil.AsJson(obj.Data),
@@ -24,7 +33,7 @@ namespace Deveel.Webhooks {
                 };
             }
 
-            return new WebhookEntity {
+            return new DbWebhook {
                 EventType = eventInfo.EventType,
                 TimeStamp = eventInfo.TimeStamp,
                 WebhookId = eventInfo.Id,

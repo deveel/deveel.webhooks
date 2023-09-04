@@ -15,25 +15,48 @@
 using Microsoft.EntityFrameworkCore;
 
 namespace Deveel.Webhooks {
+    /// <summary>
+    /// An implementation of <see cref="IWebhookSubscriptionStore{TSubscription}"/> that
+    /// uses an <see cref="DbContext"/> to store the subscriptions.
+    /// </summary>
+    /// <typeparam name="TSubscription">
+    /// The type of the subscription entity to be stored.
+    /// </typeparam>
+    /// <seealso cref="IWebhookSubscriptionStore{TSubscription}"/>"/>
     public class EntityWebhookSubscriptionStrore<TSubscription> : 
         IWebhookSubscriptionStore<TSubscription>,
         IWebhookSubscriptionQueryableStore<TSubscription>,
         IWebhookSubscriptionPagedStore<TSubscription>
-        where TSubscription : WebhookSubscriptionEntity {
+        where TSubscription : DbWebhookSubscription {
         private readonly WebhookDbContext context;
 
+        /// <summary>
+        /// Constructs the store by using the given <see cref="WebhookDbContext"/>.
+        /// </summary>
+        /// <param name="context">
+        /// The database context to be used to store the subscriptions.
+        /// </param>
+        /// <exception cref="ArgumentNullException">
+        /// Thrown when the given <paramref name="context"/> is <c>null</c>.
+        /// </exception>
         public EntityWebhookSubscriptionStrore(WebhookDbContext context) {
             this.context = context ?? throw new ArgumentNullException(nameof(context));
         }
 
+        /// <summary>
+        /// Gets the set of subscriptions stored in the database.
+        /// </summary>
         protected DbSet<TSubscription> Subscriptions => context.Set<TSubscription>();
 
+        /// <inheritdoc/>
         public IQueryable<TSubscription> AsQueryable() => Subscriptions.AsQueryable();
 
+        /// <inheritdoc/>
         public Task<string?> GetIdAsync(TSubscription subscription, CancellationToken cancellationToken) {
             return Task.FromResult(subscription.Id);
         }
 
+        /// <inheritdoc/>
         public async Task<int> CountAllAsync(CancellationToken cancellationToken = default) {
             try {
                 return await Subscriptions.CountAsync(cancellationToken);
@@ -42,6 +65,7 @@ namespace Deveel.Webhooks {
             }
         }
 
+        /// <inheritdoc/>
         public async Task<TSubscription?> FindByIdAsync(string id, CancellationToken cancellationToken = default) {
             try {
                 return await Subscriptions.FindAsync(new object[] { id }, cancellationToken);
@@ -50,6 +74,7 @@ namespace Deveel.Webhooks {
             }
         }
 
+        /// <inheritdoc/>
         public async Task CreateAsync(TSubscription subscription, CancellationToken cancellationToken = default) {
             try {
                 subscription.CreatedAt = DateTimeOffset.UtcNow;
@@ -61,6 +86,7 @@ namespace Deveel.Webhooks {
             }
         }
 
+        /// <inheritdoc/>
         public async Task UpdateAsync(TSubscription subscription, CancellationToken cancellationToken = default) {
             try {
                 subscription.UpdatedAt = DateTimeOffset.UtcNow;
@@ -72,6 +98,7 @@ namespace Deveel.Webhooks {
             }
         }
 
+        /// <inheritdoc/>
         public async Task DeleteAsync(TSubscription subscription, CancellationToken cancellationToken = default) {
             try {
                 Subscriptions.Remove(subscription);
@@ -81,6 +108,7 @@ namespace Deveel.Webhooks {
             }
         }
 
+        /// <inheritdoc/>
         public async Task<IList<TSubscription>> GetByEventTypeAsync(string eventType, bool? activeOnly, CancellationToken cancellationToken = default) {
             try {
                 IQueryable<TSubscription> query = Subscriptions.Where(x => x.Events.Any(y => y.EventType == eventType));
@@ -93,6 +121,7 @@ namespace Deveel.Webhooks {
             }
         }
 
+        /// <inheritdoc/>
         public Task SetStatusAsync(TSubscription subscription, WebhookSubscriptionStatus status, CancellationToken cancellationToken) {
             cancellationToken.ThrowIfCancellationRequested();
 
@@ -100,6 +129,7 @@ namespace Deveel.Webhooks {
             return Task.CompletedTask;
         }
 
+        /// <inheritdoc/>
         public async Task<PagedResult<TSubscription>> GetPageAsync(PagedQuery<TSubscription> query, CancellationToken cancellationToken) {
             var dbSet = Subscriptions.AsQueryable();
             if (query.Predicate != null)

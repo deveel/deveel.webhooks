@@ -12,28 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-
 namespace Deveel.Webhooks {
-    [Table("webhook_delivery_results")]
-    public class WebhookDeliveryResultEntity : IWebhookDeliveryResult {
-        [Key, Column("id"), DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+    public class DbWebhookDeliveryResult : IWebhookDeliveryResult {
         public int? Id { get; set; }
 
-        [Required, Column("operation_id")]
         public string OperationId { get; set; }
 
         IEventInfo IWebhookDeliveryResult.EventInfo => EventInfo;
 
-        public virtual EventInfoEntity EventInfo { get; set; }
+        public virtual DbEventInfo EventInfo { get; set; }
 
-        [Required, Column("event_id")]
         public string EventId { get; set; }
 
         public int? EventInfoId { get; set; }
 
-        public virtual WebhookEntity Webhook { get; set; }
+        public virtual DbWebhook Webhook { get; set; }
 
         public int? WebhookId { get; set; }
 
@@ -41,13 +34,12 @@ namespace Deveel.Webhooks {
 
         IWebhookReceiver IWebhookDeliveryResult.Receiver => Receiver;
 
-        public virtual WebhookReceiverEntity Receiver { get; set; }
+        public virtual DbWebhookReceiver Receiver { get; set; }
 
-        [Column("receiver_id")]
         public int? ReceiverId { get; set; }
 
         IEnumerable<IWebhookDeliveryAttempt> IWebhookDeliveryResult.DeliveryAttempts => DeliveryAttempts.AsReadOnly();
 
-        public virtual List<WebhookDeliveryAttemptEntity> DeliveryAttempts { get; set; }
+        public virtual List<DbWebhookDeliveryAttempt> DeliveryAttempts { get; set; }
     }
 }

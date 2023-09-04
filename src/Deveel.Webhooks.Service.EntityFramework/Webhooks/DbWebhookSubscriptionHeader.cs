@@ -16,28 +16,21 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Deveel.Webhooks {
-    [Table("webhook_receivers")]
-    public class WebhookReceiverEntity : IWebhookReceiver {
+    [Table("webhook_subscription_headers")]
+    public class DbWebhookSubscriptionHeader {
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity), Column("id")]
-        public int? Id { get; set; }
+        public int Id { get; set; }
 
-        [Column("subscription_id")]
+        [Required, Column("key")]
+        public string Key { get; set; }
+
+        [Required, Column("value")]
+        public string Value { get; set; }
+
+        // [ForeignKey(nameof(SubscriptionId))]
+        public virtual DbWebhookSubscription? Subscription { get; set; }
+
+        [Required, Column("subscription_id")]
         public string? SubscriptionId { get; set; }
-
-        public virtual WebhookSubscriptionEntity? Subscription { get; set; }
-
-        [Column("name")]
-        public string? SubscriptionName { get; set; }
-
-        [Required, Column("url")]
-        public string DestinationUrl { get; set; }
-
-        IEnumerable<KeyValuePair<string, string>> IWebhookReceiver.Headers
-            => Headers?.ToDictionary(x => x.Key, y => y.Value);
-
-        public virtual List<WebhookReceiverHeader> Headers { get; set; }
-
-        [Column("body_format")]
-        public string BodyFormat { get; set; }
     }
 }

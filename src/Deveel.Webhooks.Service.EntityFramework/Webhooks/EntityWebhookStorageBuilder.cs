@@ -17,7 +17,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Deveel.Webhooks {
-    public sealed class EntityWebhookStorageBuilder<TSubscription> where TSubscription : WebhookSubscriptionEntity {
+    /// <summary>
+    /// A builder for configuring the storage of webhook subscriptions
+    /// </summary>
+    /// <typeparam name="TSubscription"></typeparam>
+    public sealed class EntityWebhookStorageBuilder<TSubscription> where TSubscription : DbWebhookSubscription {
         private readonly WebhookSubscriptionBuilder<TSubscription> builder;
         
         internal EntityWebhookStorageBuilder(WebhookSubscriptionBuilder<TSubscription> builder) {
@@ -26,25 +30,46 @@ namespace Deveel.Webhooks {
             AddDefaultStorage();
         }
 
+        /// <summary>
+        /// Gets the <see cref="IServiceCollection"/> that is used to
+        /// register the services for the storage.
+        /// </summary>
         public IServiceCollection Services => builder.Services;
 
         private void AddDefaultStorage() {
             Services.TryAddScoped<IWebhookSubscriptionStore<TSubscription>, EntityWebhookSubscriptionStrore<TSubscription>>();
             Services.TryAddScoped<EntityWebhookSubscriptionStrore<TSubscription>>();
 
-            if (typeof(TSubscription) == typeof(WebhookSubscriptionEntity)) {
-                Services.TryAddScoped<IWebhookSubscriptionStore<WebhookSubscriptionEntity>, EntityWebhookSubscriptionStrore>();
-                Services.TryAddScoped<EntityWebhookSubscriptionStrore<WebhookSubscriptionEntity>>();
+            if (typeof(TSubscription) == typeof(DbWebhookSubscription)) {
+                Services.TryAddScoped<IWebhookSubscriptionStore<DbWebhookSubscription>, EntityWebhookSubscriptionStrore>();
+                Services.TryAddScoped<EntityWebhookSubscriptionStrore<DbWebhookSubscription>>();
                 Services.AddScoped<EntityWebhookSubscriptionStrore>();
             }
 
-            Services.TryAddScoped<IWebhookDeliveryResultStore<WebhookDeliveryResultEntity>, EntityWebhookDeliveryResultStore>();
+            Services.TryAddScoped<IWebhookDeliveryResultStore<DbWebhookDeliveryResult>, EntityWebhookDeliveryResultStore>();
             Services.AddScoped<EntityWebhookDeliveryResultStore>();
-            Services.TryAddScoped<EntityWebhookDeliveryResultStore<WebhookDeliveryResultEntity>>();
+            Services.TryAddScoped<EntityWebhookDeliveryResultStore<DbWebhookDeliveryResult>>();
 
             Services.TryAddSingleton(typeof(IWebhookEntityConverter<>), typeof(DefaultWebhookEntityConverter<>));
         }
 
+        /// <summary>
+        /// Registers the given type of DB context to be used for
+        /// backing the storage of webhook subscriptions.
+        /// </summary>
+        /// <typeparam name="TContext">
+        /// A type of <see cref="WebhookDbContext"/> that is used to store
+        /// the webhook subscriptions.
+        /// </typeparam>
+        /// <param name="options">
+        /// An optional action to configure the options of the context.
+        /// </param>
+        /// <param name="lifetime">
+        /// An optional value that specifies the lifetime of the context.
+        /// </param>
+        /// <returns>
+        /// Returns the current instance of the builder for chaining.
+        /// </returns>
         public EntityWebhookStorageBuilder<TSubscription> UseContext<TContext>(Action<DbContextOptionsBuilder>? options = null, ServiceLifetime lifetime = ServiceLifetime.Scoped)
             where TContext : WebhookDbContext {
             if (typeof(TContext) != typeof(WebhookDbContext)) {
@@ -56,6 +81,19 @@ namespace Deveel.Webhooks {
             return this;
         }
 
+        /// <summary>
+        /// Registers the default type of DB context to be used for
+        /// backing the storage of webhook subscriptions.
+        /// </summary>
+        /// <param name="options">
+        /// An optional action to configure the options of the context.
+        /// </param>
+        /// <param name="lifetime">
+        /// An optional value that specifies the lifetime of the context.
+        /// </param>
+        /// <returns>
+        /// Returns the current instance of the builder for chaining.
+        /// </returns>
         public EntityWebhookStorageBuilder<TSubscription> UseContext(Action<DbContextOptionsBuilder>? options = null, ServiceLifetime lifetime = ServiceLifetime.Scoped)
             => UseContext<WebhookDbContext>(options, lifetime);
 
@@ -65,7 +103,7 @@ namespace Deveel.Webhooks {
         /// </summary>
         /// <typeparam name="TStore">
         /// The type of the storage to use for storing the webhook subscriptions,
-        /// that is derived from <see cref="MongoDbWebhookSubscriptionStrore"/>.
+        /// that is derived from <see cref="EntityWebhookSubscriptionStrore"/>.
         /// </typeparam>
         /// <returns>
         /// Returns the current instance of the builder for chaining.

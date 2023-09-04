@@ -15,12 +15,12 @@
 namespace Deveel.Webhooks {
     public static class WebhookSubscriptionBuilderExtensions {
         public static EntityWebhookStorageBuilder<TSubscription> UseEntityFramework<TSubscription>(this WebhookSubscriptionBuilder<TSubscription> builder)
-            where TSubscription : WebhookSubscriptionEntity {
+            where TSubscription : DbWebhookSubscription {
             return new EntityWebhookStorageBuilder<TSubscription>(builder);
         }
 
         public static WebhookSubscriptionBuilder<TSubscription> UseEntityFramework<TSubscription>(this WebhookSubscriptionBuilder<TSubscription> builder, Action<EntityWebhookStorageBuilder<TSubscription>> configure)
-            where TSubscription : WebhookSubscriptionEntity {
+            where TSubscription : DbWebhookSubscription {
             var storageBuilder = builder.UseEntityFramework();
             configure(storageBuilder);
             return builder;

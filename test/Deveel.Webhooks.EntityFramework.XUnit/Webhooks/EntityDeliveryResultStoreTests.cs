@@ -8,29 +8,29 @@ using Xunit.Abstractions;
 
 namespace Deveel.Webhooks {
     public class EntityDeliveryResultStoreTests : EntityWebhookTestBase {
-        private readonly Faker<WebhookDeliveryResultEntity> faker;
-        private readonly List<WebhookDeliveryResultEntity> results;
+        private readonly Faker<DbWebhookDeliveryResult> faker;
+        private readonly List<DbWebhookDeliveryResult> results;
 
         public EntityDeliveryResultStoreTests(SqliteTestDatabase sqlite, ITestOutputHelper outputHelper) : base(sqlite, outputHelper) {
 
-            var receiver = new Faker<WebhookReceiverEntity>()
+            var receiver = new Faker<DbWebhookReceiver>()
                 .RuleFor(x => x.BodyFormat, f => f.Random.ListItem(new[] { "json", "xml" }))
                 .RuleFor(x => x.DestinationUrl, f => f.Internet.Url())
                 // .RuleFor(x => x.SubscriptionId, f => f.Random.Guid().OrNull(f)?.ToString())
                 .RuleFor(x => x.SubscriptionName, f => f.Name.JobType());
 
-            var webhook = new Faker<WebhookEntity>()
+            var webhook = new Faker<DbWebhook>()
                 .RuleFor(x => x.EventType, f => f.Random.ListItem(new[] { "data.created", "data.deleted", "data.updated" }))
                 .RuleFor(x => x.WebhookId, f => f.Random.Guid().ToString())
                 .RuleFor(x => x.TimeStamp, f => f.Date.PastOffset(1))
                 .RuleFor(x => x.Data, "{ \"data-type\", \"test\" }");
 
-            var attempt = new Faker<WebhookDeliveryAttemptEntity>()
+            var attempt = new Faker<DbWebhookDeliveryAttempt>()
                 .RuleFor(x => x.ResponseStatusCode, f => f.Random.ListItem(new int?[] { 200, 201, 204, 400, 404, 500, null }))
                 .RuleFor(x => x.StartedAt, (f, a) => f.Date.PastOffset())
                 .RuleFor(x => x.EndedAt, (f, a) => a.StartedAt.AddMilliseconds(200).OrNull(f));
 
-            var eventInfo = new Faker<EventInfoEntity>()
+            var eventInfo = new Faker<DbEventInfo>()
                 .RuleFor(x => x.EventId, f => f.Random.Guid().ToString())
                 .RuleFor(x => x.EventType, f => f.Random.ListItem(new[] { "created", "deleted", "updated" }))
                 .RuleFor(x => x.DataVersion, "1.0")
@@ -42,7 +42,7 @@ namespace Deveel.Webhooks {
                     users = f.Random.ListItems(new string[]{ "user1", "user2" })
                 }));
 
-            faker = new Faker<WebhookDeliveryResultEntity>()
+            faker = new Faker<DbWebhookDeliveryResult>()
                 .RuleFor(x => x.OperationId, f => f.Random.Guid().ToString())
                 .RuleFor(x => x.EventInfo, f => eventInfo.Generate())
                 .RuleFor(x => x.Receiver, f => receiver.Generate())
@@ -50,11 +50,11 @@ namespace Deveel.Webhooks {
                 .RuleFor(x => x.DeliveryAttempts, f => attempt.Generate(2))
                 .FinishWith((f, x) => x.EventId = x.EventInfo.EventId);
 
-            results = new List<WebhookDeliveryResultEntity>();
+            results = new List<DbWebhookDeliveryResult>();
         }
 
-        private IWebhookDeliveryResultStore<WebhookDeliveryResultEntity> Store
-            => Services.GetRequiredService<IWebhookDeliveryResultStore<WebhookDeliveryResultEntity>>();
+        private IWebhookDeliveryResultStore<DbWebhookDeliveryResult> Store
+            => Services.GetRequiredService<IWebhookDeliveryResultStore<DbWebhookDeliveryResult>>();
 
         public override async Task InitializeAsync() {
             await base.InitializeAsync();
@@ -68,11 +68,11 @@ namespace Deveel.Webhooks {
             }
         }
 
-        private Task CreateAttemptAsync(WebhookDeliveryResultEntity attempt) {
+        private Task CreateAttemptAsync(DbWebhookDeliveryResult attempt) {
             return Store.CreateAsync(attempt, default);
         }
 
-        private WebhookDeliveryResultEntity NextRandom()
+        private DbWebhookDeliveryResult NextRandom()
             => results[Random.Shared.Next(0, results.Count - 1)];
 
         [Fact]

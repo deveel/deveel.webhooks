@@ -7,18 +7,18 @@ using Xunit.Abstractions;
 
 namespace Deveel.Webhooks {
     public class WebhookSubscriptionManagementTests : EntityWebhookTestBase {
-        private IList<WebhookSubscriptionEntity> subscriptions;
-        private Faker<WebhookSubscriptionEntity> faker;
+        private IList<DbWebhookSubscription> subscriptions;
+        private Faker<DbWebhookSubscription> faker;
 
         public WebhookSubscriptionManagementTests(SqliteTestDatabase sqlite, ITestOutputHelper outputHelper) 
             : base(sqlite, outputHelper) {
             //var subsEvents = new Faker<WebhookEventSubscription>()
             //    .RuleFor(x => x.EventType, f => f.Random.ListItem(new[] { "data.created", "data.deleted", "data.updated" }));
 
-            faker = new Faker<WebhookSubscriptionEntity>()
+            faker = new Faker<DbWebhookSubscription>()
                 .RuleFor(x => x.Name, f => f.Name.JobTitle())
                 .RuleFor(x => x.Events, f => {
-                    var f2 = new Faker<WebhookEventSubscription>()
+                    var f2 = new Faker<DbWebhookSubscriptionEvent>()
                         .RuleFor(x => x.EventType, f => f.Random.ListItem(new[] { "data.created", "data.deleted", "data.updated" }));
 
                     return f2.Generate(2);
@@ -26,18 +26,18 @@ namespace Deveel.Webhooks {
                 .RuleFor(x => x.Format, f => f.Random.ListItem(new[] { "json", "xml" }))
                 .RuleFor(x => x.DestinationUrl, f => f.Internet.UrlWithPath("https"))
                 .RuleFor(x => x.Status, f => f.Random.Enum<WebhookSubscriptionStatus>())
-                .RuleFor(x => x.Filters, f => new List<WebhookFilterEntity> {
-                    new WebhookFilterEntity{ Format = "linq", Expression = WebhookFilter.Wildcard }
+                .RuleFor(x => x.Filters, f => new List<DbWebhookFilter> {
+                    new DbWebhookFilter{ Format = "linq", Expression = WebhookFilter.Wildcard }
                 });
 
-            subscriptions = new List<WebhookSubscriptionEntity>();
+            subscriptions = new List<DbWebhookSubscription>();
         }
 
-        private WebhookSubscriptionManager<WebhookSubscriptionEntity> Manager
-            => Services.GetRequiredService<WebhookSubscriptionManager<WebhookSubscriptionEntity>>();
+        private WebhookSubscriptionManager<DbWebhookSubscription> Manager
+            => Services.GetRequiredService<WebhookSubscriptionManager<DbWebhookSubscription>>();
 
-        protected IWebhookSubscriptionStore<WebhookSubscriptionEntity> Store
-            => Services.GetRequiredService<IWebhookSubscriptionStore<WebhookSubscriptionEntity>>();
+        protected IWebhookSubscriptionStore<DbWebhookSubscription> Store
+            => Services.GetRequiredService<IWebhookSubscriptionStore<DbWebhookSubscription>>();
 
         public override async Task InitializeAsync() {
             await base.InitializeAsync();
@@ -51,7 +51,7 @@ namespace Deveel.Webhooks {
             }
         }
 
-        private WebhookSubscriptionEntity RandomSubscription()
+        private DbWebhookSubscription RandomSubscription()
             => subscriptions[Random.Shared.Next(0, subscriptions.Count - 1)];
 
         [Fact]
@@ -123,7 +123,7 @@ namespace Deveel.Webhooks {
 
             Assert.True(Manager.SupportsPaging);
 
-            var query = new PagedQuery<WebhookSubscriptionEntity>(1, 10);
+            var query = new PagedQuery<DbWebhookSubscription>(1, 10);
             var result = await Manager.GetPageAsync(query);
 
             Assert.NotNull(result);

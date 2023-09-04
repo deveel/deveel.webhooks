@@ -12,22 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-
 namespace Deveel.Webhooks {
-    [Table("webhook_subscription_events")]
-    public class WebhookEventSubscription {
-        [Key, Column("id"), DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+    public class DbWebhookDeliveryAttempt : IWebhookDeliveryAttempt {
         public int? Id { get; set; }
 
-        [Required, Column("event_type")]
-        public string EventType { get; set; }
+        public int? ResponseStatusCode { get; set; }
 
-        [Required, Column("subscription_id")]
-        public string SubscriptionId { get; set; }
+        public string? ResponseMessage { get; set; }
 
-        //[ForeignKey(nameof(SubscriptionId))]
-        public virtual WebhookSubscriptionEntity Subscription { get; set; }
+        public DateTimeOffset StartedAt { get; set; }
+
+        public DateTimeOffset? EndedAt { get; set; }
+
+        public int? DeliveryResultId { get; set; }
+
+        public virtual DbWebhookDeliveryResult DeliveryResult { get; set; }
     }
 }

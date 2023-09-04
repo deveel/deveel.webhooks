@@ -12,36 +12,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-
 namespace Deveel.Webhooks {
-    [Table("event_info")]
-    public class EventInfoEntity : IEventInfo {
-        [Key, Column("id"), DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+    public class DbEventInfo : IEventInfo {
         public int? Id { get; set; }
 
-        [Required, Column("subject")]
         public string Subject { get; set; }
 
-        [Required, Column("event_type")]
         public string EventType { get; set;}
 
-        [Required, Column("event_id")]
         public string EventId { get; set; }
 
         string IEventInfo.Id => EventId;
 
-        [Required, Column("timestamp")]
         public DateTimeOffset TimeStamp { get; set; }
 
-        [Column("data_version")]
         public string? DataVersion { get; set; }
 
         // TODO: Convert from JSON
         object? IEventInfo.Data => Data;
 
-        [Column("data")]
         public string? Data { get; set; }
     }
 }

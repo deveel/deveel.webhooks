@@ -13,19 +13,15 @@
 // limitations under the License.
 
 namespace Deveel.Webhooks {
-    public class WebhookDeliveryAttemptEntity : IWebhookDeliveryAttempt {
+    public class DbWebhookReceiverHeader {
         public int? Id { get; set; }
 
-        public int? ResponseStatusCode { get; set; }
+        public string Key { get; set; }
 
-        public string? ResponseMessage { get; set; }
+        public string Value { get; set; }
 
-        public DateTimeOffset StartedAt { get; set; }
+        public virtual DbWebhookReceiver Receiver { get; set; }
 
-        public DateTimeOffset? EndedAt { get; set; }
-
-        public int? DeliveryResultId { get; set; }
-
-        public virtual WebhookDeliveryResultEntity DeliveryResult { get; set; }
+        public int? ReceiverId { get; set; }
     }
 }

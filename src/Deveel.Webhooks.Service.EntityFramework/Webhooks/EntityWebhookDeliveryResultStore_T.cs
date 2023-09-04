@@ -15,12 +15,24 @@
 using Microsoft.EntityFrameworkCore;
 
 namespace Deveel.Webhooks {
+    /// <summary>
+    /// An implementation of <see cref="IWebhookDeliveryResultStore"/> that
+    /// uses an Entity Framework Core <see cref="DbContext"/> to store the
+    /// delivery results of a webhook.
+    /// </summary>
+    /// <typeparam name="TResult">
+    /// The type of delivery result to be stored in the database.
+    /// </typeparam>
     public class EntityWebhookDeliveryResultStore<TResult> : 
         IWebhookDeliveryResultStore<TResult>,
         IWebhookDeliveryResultQueryableStore<TResult>
-        where TResult : WebhookDeliveryResultEntity {
+        where TResult : DbWebhookDeliveryResult {
         private readonly WebhookDbContext context;
 
+        /// <summary>
+        /// Constructs the store with the given <see cref="WebhookDbContext"/>.
+        /// </summary>
+        /// <param name="context"></param>
         public EntityWebhookDeliveryResultStore(WebhookDbContext context) {
             this.context = context;
         }
@@ -57,7 +69,6 @@ namespace Deveel.Webhooks {
         /// <inheritdoc/>
         public async Task<bool> DeleteAsync(TResult result, CancellationToken cancellationToken) {
             try {
-                // TODO: verify that the result was registered in the context
                 var entry = Results.Entry(result);
                 
                 if (entry == null)

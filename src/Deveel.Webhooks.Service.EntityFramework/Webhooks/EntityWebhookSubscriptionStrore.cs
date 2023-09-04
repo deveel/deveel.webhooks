@@ -13,7 +13,12 @@
 // limitations under the License.
 
 namespace Deveel.Webhooks {
-    public class EntityWebhookSubscriptionStrore : EntityWebhookSubscriptionStrore<WebhookSubscriptionEntity> {
+    /// <summary>
+    /// A default implementation of <see cref="IWebhookEntityConverter{TWebhook}"/> that
+    /// stores a <see cref="DbWebhookSubscription"/> in the database.
+    /// </summary>
+    public class EntityWebhookSubscriptionStrore : EntityWebhookSubscriptionStrore<DbWebhookSubscription> {
+        /// <inheritdoc/>
         public EntityWebhookSubscriptionStrore(WebhookDbContext context) : base(context) {
         }
     }

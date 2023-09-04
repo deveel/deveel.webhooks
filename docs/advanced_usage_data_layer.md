@@ -1,5 +1,5 @@
 <!--
- Copyright 2022 Deveel
+ Copyright 2022-2023 Deveel
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -77,3 +77,44 @@ namespace Example {
 }
 
 ```
+
+## Entity Framework Core Layer
+
+Another implementation of the storage contract layer provided within the framework is based on the '[Entity Framework Core](https://docs.microsoft.com/en-us/ef/core/)' database systems.
+
+To enable this capability in your application, install the `Deveel.Webhook.EntityFrameworkCore` library.
+
+``` xml
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+	<TargetFramework>netcoreapp3.1</TargetFramework>
+	...
+
+  </PropertyGroup>
+
+  <ItemGroup>
+	<PackageReference Include="Deveel.Webhooks.EntityFrameworkCore" Version="2.0.2-beta" />
+	...
+  </ItemGroup>
+</Project>
+```
+
+_**Note**: Since the package references the core `Deveel.Webhooks` library, this will also be restored and its functions will be available_
+
+At this point you can configure your application to include the Entity Framework Core layer as this:
+
+``` csharp
+namespace Example {
+  public class Startup {
+	public void ConfigureServices(IServiceCollection services) {
+	  services.AddWebhooks()
+		.UseEntityFramework(ef => ef.UseDbContext(options => options.UseSqlServer("MyWebhookDb");));
+    }
+  }
+}
+```
+
+With the above configuration, the Entity Framework Core layer will use the default implementation of the `WebhookDbContext`, which is based on the `DbContext` class of the Entity Framework Core, configuring the database to use the `SqlServer` provider.
+
+Other database providers can be used by providing the appropriate configuration to the `UseDbContext` method, which accepts a `DbContextOptionsBuilder` instance.

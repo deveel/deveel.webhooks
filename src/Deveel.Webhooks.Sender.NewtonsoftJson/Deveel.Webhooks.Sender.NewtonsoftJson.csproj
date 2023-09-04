@@ -35,16 +35,16 @@
     </ItemGroup>
 
     <ItemGroup>
-        <None Include="..\..\apl-2.licenseheader" Link="apl-2.licenseheader"/>
+        <None Include="..\..\apl-2.licenseheader" Link="apl-2.licenseheader" />
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All"/>
-        <PackageReference Include="Newtonsoft.Json" Version="13.0.3"/>
+        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
+        <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Deveel.Webhooks.Sender\Deveel.Webhooks.Sender.csproj"/>
+        <ProjectReference Include="..\Deveel.Webhooks.Sender\Deveel.Webhooks.Sender.csproj" />
     </ItemGroup>
 
 </Project>

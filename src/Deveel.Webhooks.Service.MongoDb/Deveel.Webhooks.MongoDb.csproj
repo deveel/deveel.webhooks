@@ -28,7 +28,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <Compile Remove="Webhooks\MongoDbWebhookStorageBuilderImpl.cs"/>
+        <Compile Remove="Webhooks\MongoDbWebhookStorageBuilderImpl.cs" />
     </ItemGroup>
 
     <ItemGroup>
@@ -39,17 +39,17 @@
     </ItemGroup>
 
     <ItemGroup>
-        <None Include="..\..\apl-2.licenseheader" Link="apl-2.licenseheader"/>
+        <None Include="..\..\apl-2.licenseheader" Link="apl-2.licenseheader" />
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All"/>
-        <PackageReference Include="Finbuckle.MultiTenant" Version="6.10.0"/>
-        <PackageReference Include="MongoFramework" Version="0.28.1"/>
+        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
+        <PackageReference Include="Finbuckle.MultiTenant" Version="6.10.0" />
+        <PackageReference Include="MongoFramework" Version="0.28.1" />
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Deveel.Webhooks.Service\Deveel.Webhooks.Service.csproj"/>
+        <ProjectReference Include="..\Deveel.Webhooks.Service\Deveel.Webhooks.Service.csproj" />
     </ItemGroup>
 
 </Project>

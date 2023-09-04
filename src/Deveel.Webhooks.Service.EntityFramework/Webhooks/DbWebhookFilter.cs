@@ -13,15 +13,31 @@
 // limitations under the License.
 
 namespace Deveel.Webhooks {
+	/// <summary>
+	/// An implementation of <see cref="IWebhookFilter"/> that can
+	/// be used to store the filter in a database.
+	/// </summary>
     public class DbWebhookFilter : IWebhookFilter {
+		/// <summary>
+		/// Gets or sets the database identifier of the filter entity.
+		/// </summary>
         public int? Id { get; set; }
 
+		/// <inheritdoc/>
         public string Expression { get; set; }
 
+		/// <inheritdoc/>
         public string Format { get; set; }
 
+		/// <summary>
+		/// Gets or sets the database identifier of the entity that 
+		/// describes the subscription
+		/// </summary>
         public string? SubscriptionId { get; set; }
 
+		/// <summary>
+		/// Gets or sets the database entity that describes the subscription
+		/// </summary>
         public virtual DbWebhookSubscription Subscription { get; set; }
     }
 }

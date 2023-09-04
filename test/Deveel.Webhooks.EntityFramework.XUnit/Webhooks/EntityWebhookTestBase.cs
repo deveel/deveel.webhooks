@@ -22,6 +22,8 @@ namespace Deveel.Webhooks {
 
         protected IServiceProvider Services { get; }
 
+		protected string ConnectionString => sqlite.ConnectionString;
+
         private IServiceProvider BuildServiceProvider() {
             var services = new ServiceCollection();
 
@@ -37,8 +39,12 @@ namespace Deveel.Webhooks {
         }
 
         protected virtual void ConfigureWebhookService(WebhookSubscriptionBuilder<DbWebhookSubscription> builder) {
-            builder.UseEntityFramework(ef => ef.UseContext(options => options.UseSqlite(sqlite.ConnectionString)));
+            builder.UseEntityFramework(ConfigureWebhookEntityFramework);
         }
+
+		protected virtual void ConfigureWebhookEntityFramework(EntityWebhookStorageBuilder<DbWebhookSubscription> builder) {
+			builder.UseContext(options => options.UseSqlite(sqlite.ConnectionString));
+		}
 
         protected virtual void ConfigureServices(IServiceCollection services) {
             

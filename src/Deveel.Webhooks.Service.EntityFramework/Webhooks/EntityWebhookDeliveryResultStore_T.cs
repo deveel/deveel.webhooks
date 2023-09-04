@@ -15,15 +15,15 @@
 using Microsoft.EntityFrameworkCore;
 
 namespace Deveel.Webhooks {
-    /// <summary>
-    /// An implementation of <see cref="IWebhookDeliveryResultStore"/> that
-    /// uses an Entity Framework Core <see cref="DbContext"/> to store the
-    /// delivery results of a webhook.
-    /// </summary>
-    /// <typeparam name="TResult">
-    /// The type of delivery result to be stored in the database.
-    /// </typeparam>
-    public class EntityWebhookDeliveryResultStore<TResult> : 
+	/// <summary>
+	/// An implementation of <see cref="IWebhookDeliveryResultStore{TResult}"/> that
+	/// uses an Entity Framework Core <see cref="DbContext"/> to store the
+	/// delivery results of a webhook.
+	/// </summary>
+	/// <typeparam name="TResult">
+	/// The type of delivery result to be stored in the database.
+	/// </typeparam>
+	public class EntityWebhookDeliveryResultStore<TResult> : 
         IWebhookDeliveryResultStore<TResult>,
         IWebhookDeliveryResultQueryableStore<TResult>
         where TResult : DbWebhookDeliveryResult {

@@ -13,14 +13,28 @@
 // limitations under the License.
 
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 
 namespace Deveel.Webhooks {
+	/// <summary>
+	/// An implementation of a <see cref="DbContext"/> that provides
+	/// schema and mapping for the storage system.
+	/// </summary>
     public class WebhookDbContext : DbContext {
+		/// <inheritdoc/>
         public WebhookDbContext(DbContextOptions<WebhookDbContext> options) : base(options) {
         }
 
+		/// <summary>
+		/// Gets or sets the set a <c>DbSet</c> that provides query access to
+		/// the <see cref="DbWebhookSubscription"/> entities.
+		/// </summary>
         public virtual DbSet<DbWebhookSubscription> Subscriptions { get; set; }
 
+		/// <summary>
+		/// Gets or sets the set a <c>DbSet</c> that provides query access to
+		/// the <see cref="DbWebhookDeliveryResult"/> entities.
+		/// </summary>
         public virtual DbSet<DbWebhookDeliveryResult> DeliveryResults { get; set; }
 
         /// <inheritdoc/>

@@ -2,6 +2,7 @@
 
 using Bogus;
 
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
 using Xunit.Abstractions;
@@ -47,8 +48,7 @@ namespace Deveel.Webhooks {
                 .RuleFor(x => x.EventInfo, f => eventInfo.Generate())
                 .RuleFor(x => x.Receiver, f => receiver.Generate())
                 .RuleFor(x => x.Webhook, f => webhook.Generate())
-                .RuleFor(x => x.DeliveryAttempts, f => attempt.Generate(2))
-                .FinishWith((f, x) => x.EventId = x.EventInfo.EventId);
+                .RuleFor(x => x.DeliveryAttempts, f => attempt.Generate(2));
 
             results = new List<DbWebhookDeliveryResult>();
         }
@@ -56,7 +56,7 @@ namespace Deveel.Webhooks {
         private IWebhookDeliveryResultStore<DbWebhookDeliveryResult> Store
             => Services.GetRequiredService<IWebhookDeliveryResultStore<DbWebhookDeliveryResult>>();
 
-        public override async Task InitializeAsync() {
+		public override async Task InitializeAsync() {
             await base.InitializeAsync();
 
             var fakes = faker.Generate(112).ToList();

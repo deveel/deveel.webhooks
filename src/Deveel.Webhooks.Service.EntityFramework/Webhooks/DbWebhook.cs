@@ -18,10 +18,13 @@ namespace Deveel.Webhooks {
     /// </summary>
     public class DbWebhook : IWebhook {
         /// <summary>
-        /// Gets or sets the unique identifier of the webhook
+        /// Gets or sets the database unique identifier of the webhook entity
         /// </summary>
         public int? Id { get; set; }
 
+		/// <summary>
+		/// Gets or sets the unique identifier of the webhook
+		/// </summary>
         public string? WebhookId { get; set; }
 
         string? IWebhook.Id => WebhookId;

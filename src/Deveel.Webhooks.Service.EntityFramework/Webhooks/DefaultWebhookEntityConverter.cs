@@ -28,7 +28,7 @@ namespace Deveel.Webhooks {
                 return new DbWebhook {
                     WebhookId = obj.Id,
                     EventType = obj.EventType,
-                    Data = WebhookJsonUtil.AsJson(obj.Data),
+                    Data = WebhookJsonUtil.ToJson(obj.Data),
                     TimeStamp = obj.TimeStamp
                 };
             }
@@ -37,7 +37,7 @@ namespace Deveel.Webhooks {
                 EventType = eventInfo.EventType,
                 TimeStamp = eventInfo.TimeStamp,
                 WebhookId = eventInfo.Id,
-                Data = WebhookJsonUtil.AsJson(webhook)
+                Data = WebhookJsonUtil.ToJson(webhook)
             };
         }
     }

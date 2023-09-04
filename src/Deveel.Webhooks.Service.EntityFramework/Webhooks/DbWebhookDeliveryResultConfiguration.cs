@@ -2,7 +2,11 @@
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Deveel.Webhooks {
+	/// <summary>
+	/// The configuration of the <see cref="DbWebhookDeliveryResult"/> entity
+	/// </summary>
     public class DbWebhookDeliveryResultConfiguration : IEntityTypeConfiguration<DbWebhookDeliveryResult> {
+		/// <inheritdoc/>
         public virtual void Configure(EntityTypeBuilder<DbWebhookDeliveryResult> builder) {
             builder.ToTable("webhook_delivery_results");
 
@@ -18,10 +22,6 @@ namespace Deveel.Webhooks {
                 .HasMaxLength(36)
                 .IsRequired();
 
-            builder.Property(x => x.EventInfoId)
-                .HasColumnName("event_info_id")
-                .IsRequired();
-
             builder.Property(x => x.EventId)
                 .HasColumnName("event_id")
                 .IsRequired();
@@ -31,7 +31,7 @@ namespace Deveel.Webhooks {
 
             builder.HasOne(x => x.EventInfo)
                 .WithMany()
-                .HasForeignKey(x => x.EventInfoId)
+                .HasForeignKey(x => x.EventId)
                 .OnDelete(DeleteBehavior.SetNull);
 
             builder.HasOne(x => x.Receiver)

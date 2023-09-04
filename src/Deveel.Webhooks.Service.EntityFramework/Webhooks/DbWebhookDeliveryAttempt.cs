@@ -13,19 +13,39 @@
 // limitations under the License.
 
 namespace Deveel.Webhooks {
+	/// <summary>
+	/// An implementation of <see cref="IWebhookDeliveryAttempt"/> that
+	/// is used to store the delivery attempts in a database.
+	/// </summary>
     public class DbWebhookDeliveryAttempt : IWebhookDeliveryAttempt {
+		/// <summary>
+		/// Gets or sets the identifier of the delivery attempt
+		/// in the database.
+		/// </summary>
         public int? Id { get; set; }
 
+		/// <inheritdoc/>
         public int? ResponseStatusCode { get; set; }
 
+		/// <inheritdoc/>
         public string? ResponseMessage { get; set; }
 
+		/// <inheritdoc/>
         public DateTimeOffset StartedAt { get; set; }
 
+		/// <inheritdoc/>
         public DateTimeOffset? EndedAt { get; set; }
 
+		/// <summary>
+		/// Gets or sets a reference to the <see cref="DbWebhookDeliveryResult"/>
+		/// that represents the scope of the delivery attempt.
+		/// </summary>
         public int? DeliveryResultId { get; set; }
 
+		/// <summary>
+		/// Gets or sets the <see cref="DbWebhookDeliveryResult"/> that
+		/// represents the scope of the delivery attempt.
+		/// </summary>
         public virtual DbWebhookDeliveryResult DeliveryResult { get; set; }
     }
 }

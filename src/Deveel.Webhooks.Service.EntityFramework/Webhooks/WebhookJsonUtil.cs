@@ -17,7 +17,7 @@ using System.Text.Json.Serialization;
 
 namespace Deveel.Webhooks {
     internal static class WebhookJsonUtil {
-        public static string? AsJson(object? data) {
+        public static string? ToJson(object? data) {
             if (data == null)
                 return null;
 

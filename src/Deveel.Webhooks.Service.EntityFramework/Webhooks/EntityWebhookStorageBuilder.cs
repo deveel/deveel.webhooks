@@ -20,15 +20,20 @@ namespace Deveel.Webhooks {
     /// <summary>
     /// A builder for configuring the storage of webhook subscriptions
     /// </summary>
-    /// <typeparam name="TSubscription"></typeparam>
+    /// <typeparam name="TSubscription">
+	/// The type of the <see cref="DbWebhookSubscription"/> entity to use
+	/// </typeparam>
     public sealed class EntityWebhookStorageBuilder<TSubscription> where TSubscription : DbWebhookSubscription {
         private readonly WebhookSubscriptionBuilder<TSubscription> builder;
         
-        internal EntityWebhookStorageBuilder(WebhookSubscriptionBuilder<TSubscription> builder) {
+        internal EntityWebhookStorageBuilder(WebhookSubscriptionBuilder<TSubscription> builder, Type? resultType = null) {
+			ResultType = resultType;
             this.builder = builder;
 
             AddDefaultStorage();
         }
+
+		public Type? ResultType { get; private set; }
 
         /// <summary>
         /// Gets the <see cref="IServiceCollection"/> that is used to
@@ -46,11 +51,13 @@ namespace Deveel.Webhooks {
                 Services.AddScoped<EntityWebhookSubscriptionStrore>();
             }
 
-            Services.TryAddScoped<IWebhookDeliveryResultStore<DbWebhookDeliveryResult>, EntityWebhookDeliveryResultStore>();
-            Services.AddScoped<EntityWebhookDeliveryResultStore>();
-            Services.TryAddScoped<EntityWebhookDeliveryResultStore<DbWebhookDeliveryResult>>();
+			if (ResultType != null && ResultType == typeof(DbWebhookDeliveryResult)) {
+				Services.TryAddScoped<IWebhookDeliveryResultStore<DbWebhookDeliveryResult>, EntityWebhookDeliveryResultStore>();
+				Services.AddScoped<EntityWebhookDeliveryResultStore>();
+				Services.TryAddScoped<EntityWebhookDeliveryResultStore<DbWebhookDeliveryResult>>();
+			}
 
-            Services.TryAddSingleton(typeof(IWebhookEntityConverter<>), typeof(DefaultWebhookEntityConverter<>));
+			Services.TryAddSingleton(typeof(IWebhookEntityConverter<>), typeof(DefaultWebhookEntityConverter<>));
         }
 
         /// <summary>
@@ -116,5 +123,31 @@ namespace Deveel.Webhooks {
             return this;
         }
 
+		public EntityWebhookStorageBuilder<TSubscription> UseResultType(Type type) {
+			if (type is null) 
+				throw new ArgumentNullException(nameof(type));
+
+			if (!typeof(DbWebhookDeliveryResult).IsAssignableFrom(type))
+				throw new ArgumentException($"The given type '{type}' is not a valid result type");
+
+			ResultType = type;
+
+			return this;
+		}
+
+		public EntityWebhookStorageBuilder<TSubscription> UseResultStore(Type storeType) {
+			if (ResultType == null)
+				throw new InvalidOperationException("No result type was specified for the storage");
+
+			var resultStoreType = typeof(IWebhookDeliveryResultStore<>).MakeGenericType(ResultType);
+
+			if (!resultStoreType.IsAssignableFrom(storeType))
+				throw new ArgumentException($"The given type '{storeType}' is not a valid result store");
+
+			Services.AddScoped(resultStoreType, storeType);
+			Services.AddScoped(storeType);
+
+			return this;
+		}
     }
 }

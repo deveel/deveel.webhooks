@@ -95,12 +95,12 @@ namespace Deveel.Webhooks {
 
         [Fact]
         public async Task GetExistingSubscription() {
-            var subscriptionId = RandomSubscription().Id.ToString();
+            var subscriptionId = RandomSubscription().Id!.ToString();
 
             var subscription = await Manager.FindByIdAsync(subscriptionId);
 
             Assert.NotNull(subscription);
-            Assert.Equal(subscriptionId, subscription.Id.ToString());
+            Assert.Equal(subscriptionId, subscription.Id!.ToString());
             Assert.NotEmpty(subscription.Events);
             Assert.NotNull(subscription.Filters);
             Assert.NotEmpty(subscription.Filters);
@@ -130,8 +130,8 @@ namespace Deveel.Webhooks {
             Assert.NotEmpty(result.Items);
             Assert.Equal(subscriptions.Count, result.TotalCount);
             Assert.Equal(totalPages, result.TotalPages);
-            Assert.Equal(subscriptions[0].Id.ToString(), result.Items[0].Id.ToString());
-            Assert.Equal(subscriptions[1].Id.ToString(), result.Items[1].Id.ToString());
+            Assert.Equal(subscriptions[0].Id!.ToString(), result.Items[0].Id!.ToString());
+            Assert.Equal(subscriptions[1].Id!.ToString(), result.Items[1].Id!.ToString());
         }
 
         [Fact]

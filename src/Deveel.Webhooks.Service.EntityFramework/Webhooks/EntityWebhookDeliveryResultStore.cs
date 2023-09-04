@@ -12,14 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Microsoft.EntityFrameworkCore;
+
 namespace Deveel.Webhooks {
-    /// <summary>
-    /// An implementation of <see cref="IWebhookDeliveryResultStore"/> that
-    /// uses an Entity Framework Core <see cref="DbContext"/> to store the
-    /// delivery results of a webhook of type <see cref="DbWebhookDeliveryResult"/>.
-    /// </summary>
-    /// <seealso cref="EntityWebhookDeliveryResultStore{TResult}"/>
-    public sealed class EntityWebhookDeliveryResultStore : EntityWebhookDeliveryResultStore<DbWebhookDeliveryResult> {
+	/// <summary>
+	/// An implementation of <see cref="IWebhookDeliveryResultStore{TResult}"/> that
+	/// uses an Entity Framework Core <see cref="DbContext"/> to store the
+	/// delivery results of a webhook of type <see cref="DbWebhookDeliveryResult"/>.
+	/// </summary>
+	/// <seealso cref="EntityWebhookDeliveryResultStore{TResult}"/>
+	public sealed class EntityWebhookDeliveryResultStore : EntityWebhookDeliveryResultStore<DbWebhookDeliveryResult> {
+		/// <inheritdoc/>
         public EntityWebhookDeliveryResultStore(WebhookDbContext context) : base(context) {
         }
     }

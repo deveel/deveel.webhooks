@@ -47,12 +47,13 @@ The following tutorials will guide you through the basic usage of the framework,
 
 A more advanced usage of the framework is possible by implementing custom components that can be used to extend the framework functionalities.
 
-| Topic                                                             | Description                                                                    |
-| ----------------------------------------------------------------- | ------------------------------------------------------------------------------ |
-| **[Filtering Subscriptions](advanced_usage_filters.md)**          | Allow subscribers to filter webhooks on dynamic parameters                     |
-| **[Custom Data Factories](advanced_usage_custom_datafactory.md)** | Implement a component that transforms event data                               |
-| **[Custom Receivers](advanced_usage_custom_receiver.md)**         | Implement parsers for receiving webhooks                                       |
-| **[Using Data Layers](advanced_usage_data_layer.md)**             | Use different data layers for the persistence of the webhook information model |
+| Topic                                                             | Description                                                                              |
+| ----------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| **[Filtering Subscriptions](advanced_usage_filters.md)**          | Allow subscribers to filter webhooks on dynamic parameters                               |
+| **[Custom Data Factories](advanced_usage_custom_datafactory.md)** | Implement a component that transforms event data                                         |
+| **[Custom Receivers](advanced_usage_custom_receiver.md)**         | Implement parsers for receiving webhooks                                                 |
+| **[Using MongoDB Data Layers](advanced_usage_mongodb.md)**        | Use the MongoDB data layer for the persistence of the webhook information model          |
+| **[Using Entity Framework Data Layers](advanced_usage_ef.md)**    | Use the Entity Framework data layer for the persistence of the webhook information model |
 
 ## Receivers
 

@@ -135,6 +135,76 @@
             that triggered the delivery of the webhook.
             </summary>
         </member>
+        <member name="P:Deveel.Webhooks.DbWebhookDeliveryResult.EventId">
+            <summary>
+            Gets or sets the database identifier of the event that triggered
+            the delivery of the webhook.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.DbWebhookDeliveryResult.Webhook">
+            <summary>
+            Gets or sets the database entity that describes the webhook
+            that was delivered.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.DbWebhookDeliveryResult.WebhookId">
+            <summary>
+            Gets or sets the database identifier of the webhook that was delivered
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.DbWebhookDeliveryResult.Receiver">
+            <summary>
+            Gets or sets the database entity that describes the receiver
+            of the webhook.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.DbWebhookDeliveryResult.ReceiverId">
+            <summary>
+            Gets or sets the database identifier of the receiver of the webhook.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.DbWebhookDeliveryResult.DeliveryAttempts">
+            <summary>
+            Gets or sets the list of delivery attempts that were made to deliver
+            the webhook.
+            </summary>
+        </member>
+        <member name="T:Deveel.Webhooks.DbWebhookDeliveryResultConfiguration">
+            <summary>
+            The configuration of the <see cref="T:Deveel.Webhooks.DbWebhookDeliveryResult"/> entity
+            </summary>
+        </member>
+        <member name="M:Deveel.Webhooks.DbWebhookDeliveryResultConfiguration.Configure(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder{Deveel.Webhooks.DbWebhookDeliveryResult})">
+            <inheritdoc/>
+        </member>
+        <member name="T:Deveel.Webhooks.DbWebhookFilter">
+            <summary>
+            An implementation of <see cref="T:Deveel.Webhooks.IWebhookFilter"/> that can
+            be used to store the filter in a database.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.DbWebhookFilter.Id">
+            <summary>
+            Gets or sets the database identifier of the filter entity.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.DbWebhookFilter.Expression">
+            <inheritdoc/>
+        </member>
+        <member name="P:Deveel.Webhooks.DbWebhookFilter.Format">
+            <inheritdoc/>
+        </member>
+        <member name="P:Deveel.Webhooks.DbWebhookFilter.SubscriptionId">
+            <summary>
+            Gets or sets the database identifier of the entity that 
+            describes the subscription
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.DbWebhookFilter.Subscription">
+            <summary>
+            Gets or sets the database entity that describes the subscription
+            </summary>
+        </member>
         <member name="T:Deveel.Webhooks.DbWebhookFilterConfiguration">
             <summary>
             The configuration of the <see cref="T:Deveel.Webhooks.DbWebhookFilter"/> entity
@@ -191,9 +261,9 @@
         <member name="M:Deveel.Webhooks.DbWebhookSubscriptionPropertyConfiguration.Configure(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder{Deveel.Webhooks.DbWebhookSubscriptionProperty})">
             <inheritdoc/>
         </member>
-        <member name="T:Deveel.Webhooks.DefaultWebhookEntityConverter`1">
+        <member name="T:Deveel.Webhooks.DefaultDbWebhookConverter`1">
             <summary>
-            A default implementation of <see cref="T:Deveel.Webhooks.IWebhookEntityConverter`1"/> that
+            A default implementation of <see cref="T:Deveel.Webhooks.IDbWebhookConverter`1"/> that
             converts a <see cref="T:Deveel.Webhooks.IWebhook"/> object into a <see cref="T:Deveel.Webhooks.DbWebhook"/>
             to be stored in the database.
             </summary>
@@ -201,20 +271,23 @@
             The type of the webhook object to be converted.
             </typeparam>
         </member>
-        <member name="M:Deveel.Webhooks.DefaultWebhookEntityConverter`1.ConvertWebhook(Deveel.Webhooks.EventInfo,`0)">
+        <member name="M:Deveel.Webhooks.DefaultDbWebhookConverter`1.ConvertWebhook(Deveel.Webhooks.EventInfo,`0)">
             <inheritdoc/>
         </member>
         <member name="T:Deveel.Webhooks.EntityWebhookDeliveryResultStore">
             <summary>
-            An implementation of <see cref="!:IWebhookDeliveryResultStore"/> that
-            uses an Entity Framework Core <see cref="!:DbContext"/> to store the
+            An implementation of <see cref="T:Deveel.Webhooks.IWebhookDeliveryResultStore`1"/> that
+            uses an Entity Framework Core <see cref="T:Microsoft.EntityFrameworkCore.DbContext"/> to store the
             delivery results of a webhook of type <see cref="T:Deveel.Webhooks.DbWebhookDeliveryResult"/>.
             </summary>
             <seealso cref="T:Deveel.Webhooks.EntityWebhookDeliveryResultStore`1"/>
         </member>
+        <member name="M:Deveel.Webhooks.EntityWebhookDeliveryResultStore.#ctor(Deveel.Webhooks.WebhookDbContext)">
+            <inheritdoc/>
+        </member>
         <member name="T:Deveel.Webhooks.EntityWebhookDeliveryResultStore`1">
             <summary>
-            An implementation of <see cref="!:IWebhookDeliveryResultStore"/> that
+            An implementation of <see cref="T:Deveel.Webhooks.IWebhookDeliveryResultStore`1"/> that
             uses an Entity Framework Core <see cref="T:Microsoft.EntityFrameworkCore.DbContext"/> to store the
             delivery results of a webhook.
             </summary>
@@ -314,7 +387,7 @@
         </member>
         <member name="T:Deveel.Webhooks.EntityWebhookSubscriptionStrore">
             <summary>
-            A default implementation of <see cref="T:Deveel.Webhooks.IWebhookEntityConverter`1"/> that
+            A default implementation of <see cref="T:Deveel.Webhooks.IDbWebhookConverter`1"/> that
             stores a <see cref="T:Deveel.Webhooks.DbWebhookSubscription"/> in the database.
             </summary>
         </member>
@@ -376,6 +449,29 @@
         </member>
         <member name="M:Deveel.Webhooks.EntityWebhookSubscriptionStrore`1.GetPageAsync(Deveel.Webhooks.PagedQuery{`0},System.Threading.CancellationToken)">
             <inheritdoc/>
+        </member>
+        <member name="T:Deveel.Webhooks.IDbWebhookConverter`1">
+            <summary>
+            A service that converts a <see cref="T:Deveel.Webhooks.IWebhook"/> object into a <see cref="T:Deveel.Webhooks.DbWebhook"/>
+            that can be stored in the database.
+            </summary>
+            <typeparam name="TWebhook">
+            The type of the webhook object to be converted.
+            </typeparam>
+        </member>
+        <member name="M:Deveel.Webhooks.IDbWebhookConverter`1.ConvertWebhook(Deveel.Webhooks.EventInfo,`0)">
+            <summary>
+            Converts the given <paramref name="webhook"/> into a <see cref="T:Deveel.Webhooks.DbWebhook"/>
+            </summary>
+            <param name="eventInfo">
+            The <see cref="T:Deveel.Webhooks.EventInfo"/> that describes the event that triggered the webhook.
+            </param>
+            <param name="webhook">
+            The webhook object to be converted.
+            </param>
+            <returns>
+            Returns an instance of <see cref="T:Deveel.Webhooks.DbWebhook"/> that can be stored in the database.
+            </returns>
         </member>
         <member name="T:Deveel.Webhooks.WebhookDbContext">
             <summary>
@@ -462,6 +558,29 @@
             <param name="configure">
             An action that receives an instance of <see cref="T:Deveel.Webhooks.EntityWebhookStorageBuilder`1"/>
             to configure the storage system.
+            </param>
+            <returns>
+            Returns the same instance of <see cref="T:Deveel.Webhooks.WebhookSubscriptionBuilder`1"/>
+            as the input, to allow chaining of calls.
+            </returns>
+        </member>
+        <member name="M:Deveel.Webhooks.WebhookSubscriptionBuilderExtensions.UseEntityFramework``2(Deveel.Webhooks.WebhookSubscriptionBuilder{``0},System.Action{Deveel.Webhooks.EntityWebhookStorageBuilder{``0}})">
+            <summary>
+            Instructs the builder to use Entity Framework as the storage system
+            </summary>
+            <typeparam name="TSubscription">
+            The type of the <see cref="T:Deveel.Webhooks.DbWebhookSubscription"/> entity to use
+            </typeparam>
+            <typeparam name="TResult">
+            The type of the <see cref="T:Deveel.Webhooks.DbWebhookDeliveryResult"/> entity to use
+            </typeparam>
+            <param name="builder">
+            The instance of the <see cref="T:Deveel.Webhooks.WebhookSubscriptionBuilder`1"/> to
+            extend with the Entity Framework storage system.
+            </param>
+            <param name="configure">
+            An action that receives an instance of <see cref="T:Deveel.Webhooks.EntityWebhookStorageBuilder`1"/>
+            as input to configure the storage system.
             </param>
             <returns>
             Returns the same instance of <see cref="T:Deveel.Webhooks.WebhookSubscriptionBuilder`1"/>

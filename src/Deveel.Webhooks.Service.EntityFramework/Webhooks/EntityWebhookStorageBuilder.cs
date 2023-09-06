@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Finbuckle.MultiTenant;
+
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -57,7 +59,7 @@ namespace Deveel.Webhooks {
 				Services.TryAddScoped<EntityWebhookDeliveryResultStore<DbWebhookDeliveryResult>>();
 			}
 
-			Services.TryAddSingleton(typeof(IWebhookEntityConverter<>), typeof(DefaultWebhookEntityConverter<>));
+			Services.TryAddSingleton(typeof(IDbWebhookConverter<>), typeof(DefaultDbWebhookConverter<>));
         }
 
         /// <summary>

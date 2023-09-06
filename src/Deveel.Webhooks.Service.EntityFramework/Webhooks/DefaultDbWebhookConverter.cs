@@ -14,14 +14,14 @@
 
 namespace Deveel.Webhooks {
     /// <summary>
-    /// A default implementation of <see cref="IWebhookEntityConverter{TWebhook}"/> that
+    /// A default implementation of <see cref="IDbWebhookConverter{TWebhook}"/> that
     /// converts a <see cref="IWebhook"/> object into a <see cref="DbWebhook"/>
     /// to be stored in the database.
     /// </summary>
     /// <typeparam name="TWebhook">
     /// The type of the webhook object to be converted.
     /// </typeparam>
-    public class DefaultWebhookEntityConverter<TWebhook> : IWebhookEntityConverter<TWebhook> where TWebhook : class {
+    public class DefaultDbWebhookConverter<TWebhook> : IDbWebhookConverter<TWebhook> where TWebhook : class {
         /// <inheritdoc/>
         public DbWebhook ConvertWebhook(EventInfo eventInfo, TWebhook webhook) {
             if (webhook is IWebhook obj) {

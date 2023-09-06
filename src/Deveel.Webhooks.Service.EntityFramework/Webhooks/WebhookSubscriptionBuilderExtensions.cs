@@ -81,6 +81,27 @@ namespace Deveel.Webhooks {
             where TSubscription : DbWebhookSubscription
 			=> UseEntityFramework<TSubscription, DbWebhookDeliveryResult>(builder, configure);
 
+		/// <summary>
+		/// Instructs the builder to use Entity Framework as the storage system
+		/// </summary>
+		/// <typeparam name="TSubscription">
+		/// The type of the <see cref="DbWebhookSubscription"/> entity to use
+		/// </typeparam>
+		/// <typeparam name="TResult">
+		/// The type of the <see cref="DbWebhookDeliveryResult"/> entity to use
+		/// </typeparam>
+		/// <param name="builder">
+		/// The instance of the <see cref="WebhookSubscriptionBuilder{TSubscription}"/> to
+		/// extend with the Entity Framework storage system.
+		/// </param>
+		/// <param name="configure">
+		/// An action that receives an instance of <see cref="EntityWebhookStorageBuilder{TSubscription}"/>
+		/// as input to configure the storage system.
+		/// </param>
+		/// <returns>
+		/// Returns the same instance of <see cref="WebhookSubscriptionBuilder{TSubscription}"/>
+		/// as the input, to allow chaining of calls.
+		/// </returns>
 		public static WebhookSubscriptionBuilder<TSubscription> UseEntityFramework<TSubscription, TResult>(this WebhookSubscriptionBuilder<TSubscription> builder, Action<EntityWebhookStorageBuilder<TSubscription>> configure)
 			where TSubscription : DbWebhookSubscription
 			where TResult : DbWebhookDeliveryResult {

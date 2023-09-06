@@ -14,7 +14,7 @@
 
 namespace Deveel.Webhooks {
     /// <summary>
-    /// A default implementation of <see cref="IWebhookEntityConverter{TWebhook}"/> that
+    /// A default implementation of <see cref="IDbWebhookConverter{TWebhook}"/> that
     /// stores a <see cref="DbWebhookSubscription"/> in the database.
     /// </summary>
     public class EntityWebhookSubscriptionStrore : EntityWebhookSubscriptionStrore<DbWebhookSubscription> {

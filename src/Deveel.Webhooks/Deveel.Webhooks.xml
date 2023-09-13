@@ -141,6 +141,11 @@
             Gets the data transported by the event.
             </summary>
         </member>
+        <member name="P:Deveel.Webhooks.EventInfo.Properties">
+            <summary>
+            Gets a set of properties that are associated to the event.
+            </summary>
+        </member>
         <member name="T:Deveel.Webhooks.EventInfoExtensions">
             <summary>
             Provides a utility methods to extend the functions of implementations
@@ -216,75 +221,6 @@
             <returns>
             Returns the value of the given path, or <c>null</c> if not found.
             </returns>
-        </member>
-        <member name="T:Deveel.Webhooks.ITenantWebhookNotifier`1">
-            <summary>
-            A service that resolves subscriptions to events, prepares
-            and delivers webhooks to the subscribers owned by
-            a specific tenant.
-            </summary>
-            <typeparam name="TWebhook">The type of the webhook that is delivered</typeparam>
-            <remarks>
-            Implementations of this interface resolve subscriptions to events
-            that are owned by a specific tenant, explicitly set. To make this
-            to happen the service might invoke a discovery service that
-            will first resolve the storage context of the tenant.
-            </remarks>
-        </member>
-        <member name="M:Deveel.Webhooks.ITenantWebhookNotifier`1.NotifyAsync(System.String,Deveel.Webhooks.EventInfo,System.Threading.CancellationToken)">
-            <summary>
-            Notifies to the subscribers the occurrence of the
-            given event.
-            </summary>
-            <param name="tenantId">The scope of the tenant holding the subscriptions
-            to the given event.</param>
-            <param name="eventInfo">The ifnormation of the event that occurred.</param>
-            <param name="cancellationToken"></param>
-            <returns>
-            Returns an object that describes the aggregated final result of 
-            the notification process executed.
-            </returns>
-        </member>
-        <member name="T:Deveel.Webhooks.ITenantWebhookSubscriptionResolver">
-            <summary>
-            Provides a contract for the resolution of subscriptions to events
-            owned by a specific tenant.
-            </summary>
-            <remarks>
-            This service is primarily used by the <see cref="T:Deveel.Webhooks.TenantWebhookNotifier`1"/>
-            implementation, to delegate the resolution of subscriptions to a specific
-            type of event types.
-            </remarks>
-        </member>
-        <member name="M:Deveel.Webhooks.ITenantWebhookSubscriptionResolver.ResolveSubscriptionsAsync(System.String,System.String,System.Boolean,System.Threading.CancellationToken)">
-            <summary>
-            Resolves all the subscriptions to an event in the scope
-            of a given tenant.
-            </summary>
-            <param name="tenantId">The identifier of the tenant owning
-            the subscriptions.</param>
-            <param name="eventType">The type of event that has occurred.</param>
-            <param name="activeOnly">A flag indicating whether only active
-            subscriptions should be returned.</param>
-            <param name="cancellationToken"></param>
-            <returns>
-            Returns a list of <see cref="T:Deveel.Webhooks.IWebhookSubscription"/> instances
-            that are matching the given basic conditions.
-            </returns>
-        </member>
-        <member name="T:Deveel.Webhooks.ITenantWebhookSubscriptionResolver`1">
-            <summary>
-            Defines the contract for a resolver of a <see cref="T:Deveel.Webhooks.IWebhookSubscription"/>
-            that is specific to a given webhook type.
-            </summary>
-            <typeparam name="TWebhook">
-            The type of the webhook that is scoped for the resolver.
-            </typeparam>
-            <remarks>
-            Implementations of this version of the interface are 
-            segregated to the scope of the webhook type.
-            </remarks>
-            <seealso cref="T:Deveel.Webhooks.ITenantWebhookSubscriptionResolver"/>
         </member>
         <member name="T:Deveel.Webhooks.IWebhookDeliveryResultLogger`1">
             <summary>
@@ -406,12 +342,15 @@
             type of event types.
             </remarks>
         </member>
-        <member name="M:Deveel.Webhooks.IWebhookSubscriptionResolver.ResolveSubscriptionsAsync(System.String,System.Boolean,System.Threading.CancellationToken)">
+        <member name="M:Deveel.Webhooks.IWebhookSubscriptionResolver.ResolveSubscriptionsAsync(Deveel.Webhooks.IEventInfo,System.Boolean,System.Threading.CancellationToken)">
             <summary>
             Resolves all the subscriptions to an event in the scope
             of a given tenant.
             </summary>
-            <param name="eventType">The type of event that has occurred.</param>
+            <param name="eventInfo">
+            The information of the event to which the subscriptions
+            are listening to.
+            </param>
             <param name="activeOnly">A flag indicating whether only active
             subscriptions should be returned.</param>
             <param name="cancellationToken">
@@ -547,60 +486,6 @@
             <returns>
             Returns the instance of <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/> to allow chaining of calls.
             </returns>
-        </member>
-        <member name="T:Deveel.Webhooks.TenantWebhookNotifier`1">
-            <summary>
-            The default implementation of the webhook notifier
-            that addresses specific tenants
-            </summary>
-        </member>
-        <member name="M:Deveel.Webhooks.TenantWebhookNotifier`1.#ctor(Microsoft.Extensions.Options.IOptions{Deveel.Webhooks.WebhookNotificationOptions{`0}},Deveel.Webhooks.IWebhookSender{`0},Deveel.Webhooks.IWebhookFactory{`0},Deveel.Webhooks.ITenantWebhookSubscriptionResolver{`0},System.Collections.Generic.IEnumerable{Deveel.Webhooks.IWebhookFilterEvaluator{`0}},Deveel.Webhooks.IWebhookDeliveryResultLogger{`0},Microsoft.Extensions.Logging.ILogger{Deveel.Webhooks.TenantWebhookNotifier{`0}})">
-            <summary>
-            Constructs the notifier with the given services.
-            </summary>
-            <param name="options">
-            The configuration options of the notifier.
-            </param>
-            <param name="sender">
-            The service used to send the webhook.
-            </param>
-            <param name="subscriptionResolver">
-            A service used to resolve the subscriptions owned by a
-            tanant that will be notified
-            </param>
-            <param name="webhookFactory">
-            A service used to create the webhook to send.
-            </param>
-            <param name="filterEvaluators">
-            A collection of services used to filter the webhooks to
-            be delivered
-            </param>
-            <param name="deliveryResultLogger">
-            A service used to log the delivery result of the webhook.
-            </param>
-            <param name="logger">
-            A logger used to log the activity of the notifier.
-            </param>
-        </member>
-        <member name="M:Deveel.Webhooks.TenantWebhookNotifier`1.ResolveSubscriptionsAsync(System.String,Deveel.Webhooks.EventInfo,System.Threading.CancellationToken)">
-            <summary>
-            Resolves the subscriptions that should be notified for the given event.
-            </summary>
-            <param name="tenantId">
-            The identifier of the tenant for which the event was raised.
-            </param>
-            <param name="eventInfo">
-            The information about the event that was raised.
-            </param>
-            <param name="cancellationToken">
-            A cancellation token that can be used to cancel the operation.
-            </param>
-            <returns>
-            Returns a list of subscriptions that should be notified for the given event.
-            </returns>
-        </member>
-        <member name="M:Deveel.Webhooks.TenantWebhookNotifier`1.NotifyAsync(System.String,Deveel.Webhooks.EventInfo,System.Threading.CancellationToken)">
-            <inheritdoc/>
         </member>
         <member name="T:Deveel.Webhooks.Webhook">
             <summary>
@@ -837,7 +722,7 @@
             The type of the webhook that is scoped for the notifier.
             </typeparam>
         </member>
-        <member name="M:Deveel.Webhooks.WebhookNotifier`1.#ctor(Microsoft.Extensions.Options.IOptions{Deveel.Webhooks.WebhookNotificationOptions{`0}},Deveel.Webhooks.IWebhookSender{`0},Deveel.Webhooks.IWebhookFactory{`0},Deveel.Webhooks.IWebhookSubscriptionResolver{`0},System.Collections.Generic.IEnumerable{Deveel.Webhooks.IWebhookFilterEvaluator{`0}},Deveel.Webhooks.IWebhookDeliveryResultLogger{`0},Microsoft.Extensions.Logging.ILogger{Deveel.Webhooks.TenantWebhookNotifier{`0}})">
+        <member name="M:Deveel.Webhooks.WebhookNotifier`1.#ctor(Microsoft.Extensions.Options.IOptions{Deveel.Webhooks.WebhookNotificationOptions{`0}},Deveel.Webhooks.IWebhookSender{`0},Deveel.Webhooks.IWebhookFactory{`0},Deveel.Webhooks.IWebhookSubscriptionResolver{`0},System.Collections.Generic.IEnumerable{Deveel.Webhooks.IWebhookFilterEvaluator{`0}},Deveel.Webhooks.IWebhookDeliveryResultLogger{`0},Microsoft.Extensions.Logging.ILogger{Deveel.Webhooks.WebhookNotifier{`0}})">
             <summary>
             Constructs the notifier with the given sender and factory.
             </summary>
@@ -1159,29 +1044,6 @@
             Returns an instance of the builder to allow chaining.
             </returns>
         </member>
-        <member name="M:Deveel.Webhooks.WebhookNotifierBuilder`1.UseTenantNotifier``1(Microsoft.Extensions.DependencyInjection.ServiceLifetime)">
-            <summary>
-            Registers a notifier service to use.
-            </summary>
-            <typeparam name="TNotifier">
-            The type of the notifier to use.
-            </typeparam>
-            <param name="lifetime">
-            An optional value that specifies the lifetime of the service (by default
-            set to <see cref="F:Microsoft.Extensions.DependencyInjection.ServiceLifetime.Scoped"/>).
-            </param>
-            <returns>
-            Returns an instance of the builder to allow chaining.
-            </returns>
-        </member>
-        <member name="M:Deveel.Webhooks.WebhookNotifierBuilder`1.UseTenantNotifier">
-            <summary>
-            Registers the default notifier service to use.
-            </summary>
-            <returns>
-            Returns an instance of the builder to allow chaining.
-            </returns>
-        </member>
         <member name="M:Deveel.Webhooks.WebhookNotifierBuilder`1.UseWebhookFactory``1(Microsoft.Extensions.DependencyInjection.ServiceLifetime)">
             <summary>
             Registers a factory service to use to create the webhook.
@@ -1210,36 +1072,6 @@
             <returns>
             Returns an instance of the builder to allow chaining.
             </returns>
-        </member>
-        <member name="M:Deveel.Webhooks.WebhookNotifierBuilder`1.UseTenantSubscriptionResolver(System.Type,Microsoft.Extensions.DependencyInjection.ServiceLifetime)">
-            <summary>
-            Registers a service that resolves the subscriptions to the
-            notification of events.
-            </summary>
-            <param name="resolverType">
-            The type of the resolver to register.
-            </param>
-            <param name="lifetime">
-            An optional value that specifies the lifetime of the service (by default
-            set to <see cref="F:Microsoft.Extensions.DependencyInjection.ServiceLifetime.Scoped"/>).
-            </param>
-            <returns>
-            Returns an instance of the builder to allow chaining.
-            </returns>
-        </member>
-        <member name="M:Deveel.Webhooks.WebhookNotifierBuilder`1.UseTenantSubscriptionResolver``1(Microsoft.Extensions.DependencyInjection.ServiceLifetime)">
-            <summary>
-            Registers a service that resolves the subscriptions to the
-            notification of events.
-            </summary>
-            <typeparam name="TResolver">
-            The type of the resolver to register.
-            </typeparam>
-            <param name="lifetime">
-            An optional value that specifies the lifetime of the service (by default
-            set to <see cref="F:Microsoft.Extensions.DependencyInjection.ServiceLifetime.Scoped"/>).
-            </param>
-            <returns></returns>
         </member>
         <member name="M:Deveel.Webhooks.WebhookNotifierBuilder`1.UseSubscriptionResolver(System.Type,Microsoft.Extensions.DependencyInjection.ServiceLifetime)">
             <summary>

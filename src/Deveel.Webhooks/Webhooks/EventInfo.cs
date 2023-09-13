@@ -65,6 +65,8 @@ namespace Deveel.Webhooks {
 
 			Id = String.IsNullOrWhiteSpace(id) ? Guid.NewGuid().ToString("N") : id;
 			TimeStamp = timeStamp ?? DateTimeOffset.UtcNow;
+
+			Properties = new Dictionary<string, object?>();
 		}
 
 		/// <summary>
@@ -98,5 +100,10 @@ namespace Deveel.Webhooks {
 		/// Gets the data transported by the event.
 		/// </summary>
 		public object? Data { get; }
+
+		/// <summary>
+		/// Gets a set of properties that are associated to the event.
+		/// </summary>
+		public IDictionary<string, object?> Properties { get; }
 	}
 }

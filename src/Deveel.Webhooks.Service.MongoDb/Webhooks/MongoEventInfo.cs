@@ -4,6 +4,8 @@
 using System.ComponentModel.DataAnnotations.Schema;
 
 using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
+using MongoDB.Bson.Serialization.Options;
 
 namespace Deveel.Webhooks {
 	/// <summary>
@@ -38,5 +40,10 @@ namespace Deveel.Webhooks {
 		/// <inheritdoc/>
 		[Column("data")]
 		public virtual BsonDocument EventData { get; set; }
+
+		/// <inheritdoc/>
+		[Column("properties")]
+		[BsonDictionaryOptions(DictionaryRepresentation.ArrayOfDocuments)]
+		public virtual IDictionary<string, object?> Properties { get; set; } = new Dictionary<string, object?>();
 	}
 }

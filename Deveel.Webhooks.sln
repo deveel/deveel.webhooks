@@ -18,6 +18,9 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Deveel.Webhooks.DynamicLinq", "src\Deveel.Webhooks.DynamicLinq\Deveel.Webhooks.DynamicLinq.csproj", "{69EA8584-6336-4A62-BE73-DE04DC6EE8E1}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{57F6404B-1FCC-473F-A189-ABC9D640CC0E}"
+	ProjectSection(SolutionItems) = preProject
+		src\Directory.Build.props = src\Directory.Build.props
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{07F23FF6-2FE1-4072-BF37-9238E3750AA1}"
 EndProject
@@ -65,7 +68,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Deveel.Webhooks.Receiver.Ne
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Deveel.Webhooks.EntityFramework", "src\Deveel.Webhooks.Service.EntityFramework\Deveel.Webhooks.EntityFramework.csproj", "{4E446714-8685-4C03-8A1C-455902116D11}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Deveel.Webhooks.EntityFramework.XUnit", "test\Deveel.Webhooks.EntityFramework.XUnit\Deveel.Webhooks.EntityFramework.XUnit.csproj", "{F846F3B1-6856-4377-AD2A-5575C36DC158}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Deveel.Webhooks.EntityFramework.XUnit", "test\Deveel.Webhooks.EntityFramework.XUnit\Deveel.Webhooks.EntityFramework.XUnit.csproj", "{F846F3B1-6856-4377-AD2A-5575C36DC158}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

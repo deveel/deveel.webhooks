@@ -37,26 +37,5 @@ namespace Deveel.Webhooks {
 			return builder
 				.UseDefaultSubscriptionResolver(typeof(MongoWebhookSubscription));
 		}
-
-		/// <summary>
-		/// Registers the MongoDB storage for resolving
-		/// webhook subscriptions to the notifier.
-		/// </summary>
-		/// <typeparam name="TWebhook">
-		/// The type of the webhook to be notified.
-		/// </typeparam>
-		/// <param name="builder">
-		/// The builder of the notifier service where to register
-		/// the resolver.
-		/// </param>
-		/// <returns>
-		/// Returns the builder to continue the configuration.
-		/// </returns>
-		public static WebhookNotifierBuilder<TWebhook> UseMongoTenantSubscriptionResolver<TWebhook>(this WebhookNotifierBuilder<TWebhook> builder)
-			where TWebhook : class {
-			return builder
-				.UseDefaultTenantSubscriptionResolver(typeof(MongoWebhookSubscription));
-		}
-
 	}
 }

@@ -13,37 +13,19 @@
 // limitations under the License.
 
 namespace Deveel.Webhooks {
-    // [Table("webhook_subscription_properties")]
     public class DbWebhookSubscriptionProperty {
-        //[Key, DatabaseGenerated(DatabaseGeneratedOption.Identity), Column("id")]
         public int Id { get; set; }
 
-        //[Required, Column("key")]
         public string Key { get; set; }
 
-        //[Column("value")]
         public string? Value { get; set; }
 
-        //[Required, Column("value_type")]
         public string ValueType { get; set; }
 
-        // [ForeignKey(nameof(SubscriptionId))]
         public virtual DbWebhookSubscription? Subscription { get; set; }
 
-        // [Required, Column("subscription_id")]
         public string? SubscriptionId { get; set; }
 
-        public object? GetValue() {
-            if (Value == null)
-                return null;
-
-            return ValueType switch {
-                "string" => Value,
-                "int" => int.Parse(Value),
-                "bool" => bool.Parse(Value),
-                "number" => double.Parse(Value),
-                _ => Value
-            };
-        }
+		public object? GetValue() => DbWebhookValueUtil.GetValue(Value, ValueType);
     }
 }

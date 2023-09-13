@@ -4,6 +4,8 @@
 
 		public string UserId { get; set; }
 
+		public IDictionary<string, object?> Properties { get; set; }
+
 		string IEventInfo.Subject => "user";
 
 		string IEventInfo.EventType => "created";

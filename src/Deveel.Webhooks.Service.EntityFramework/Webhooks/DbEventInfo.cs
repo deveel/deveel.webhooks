@@ -50,5 +50,13 @@ namespace Deveel.Webhooks {
 		/// Gets or sets the JSON representation of the event data.
 		/// </summary>
         public string? Data { get; set; }
+
+		/// <summary>
+		/// Gets or sets the list of properties associated to the event.
+		/// </summary>
+		public virtual List<DbEventProperty> Properties { get; set; }
+
+		IDictionary<string, object?> IEventInfo.Properties 
+			=> Properties.ToDictionary(x => x.Key, x => x.GetValue());
     }
 }

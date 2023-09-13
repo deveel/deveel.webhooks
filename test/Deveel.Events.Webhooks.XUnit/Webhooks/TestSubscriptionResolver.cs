@@ -12,10 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -28,9 +26,9 @@ namespace Deveel.Webhooks {
 		}
 
 
-		public Task<IList<IWebhookSubscription>> ResolveSubscriptionsAsync(string eventType, bool activeOnly, CancellationToken cancellationToken) {
+		public Task<IList<IWebhookSubscription>> ResolveSubscriptionsAsync(IEventInfo eventInfo, bool activeOnly, CancellationToken cancellationToken) {
 			var result = subscriptions.Where(x => (!activeOnly || x.Status == WebhookSubscriptionStatus.Active) &&
-				(x.EventTypes?.Any(y => y == eventType) ?? false))
+				(x.EventTypes?.Any(y => y == eventInfo.EventType) ?? false))
 				.ToList();
 
 			return Task.FromResult<IList<IWebhookSubscription>>(result);

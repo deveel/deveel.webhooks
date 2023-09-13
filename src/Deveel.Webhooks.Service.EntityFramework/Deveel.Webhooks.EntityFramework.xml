@@ -38,6 +38,11 @@
             Gets or sets the JSON representation of the event data.
             </summary>
         </member>
+        <member name="P:Deveel.Webhooks.DbEventInfo.Properties">
+            <summary>
+            Gets or sets the list of properties associated to the event.
+            </summary>
+        </member>
         <member name="T:Deveel.Webhooks.DbEventInfoConfiguration">
             <summary>
             The configuration of the <see cref="T:Deveel.Webhooks.DbEventInfo"/> entity

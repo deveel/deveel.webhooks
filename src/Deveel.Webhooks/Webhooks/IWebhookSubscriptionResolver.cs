@@ -26,7 +26,10 @@ namespace Deveel.Webhooks {
 		/// Resolves all the subscriptions to an event in the scope
 		/// of a given tenant.
 		/// </summary>
-		/// <param name="eventType">The type of event that has occurred.</param>
+		/// <param name="eventInfo">
+		/// The information of the event to which the subscriptions
+		/// are listening to.
+		/// </param>
 		/// <param name="activeOnly">A flag indicating whether only active
 		/// subscriptions should be returned.</param>
 		/// <param name="cancellationToken">
@@ -36,6 +39,6 @@ namespace Deveel.Webhooks {
 		/// Returns a list of <see cref="IWebhookSubscription"/> instances
 		/// that are matching the given basic conditions.
 		/// </returns>
-		Task<IList<IWebhookSubscription>> ResolveSubscriptionsAsync(string eventType, bool activeOnly, CancellationToken cancellationToken);
+		Task<IList<IWebhookSubscription>> ResolveSubscriptionsAsync(IEventInfo eventInfo, bool activeOnly, CancellationToken cancellationToken);
 	}
 }

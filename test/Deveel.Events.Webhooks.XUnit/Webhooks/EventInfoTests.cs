@@ -64,6 +64,8 @@ namespace Deveel.Webhooks {
 
 			public string TenantId { get; set; }
 
+			public IDictionary<string, object?> Properties { get; set; }
+
 			string IEventInfo.Subject => "user";
 
 			string IEventInfo.EventType => "created";
@@ -85,6 +87,8 @@ namespace Deveel.Webhooks {
 
 			public string TenantId { get; set; }
 
+			public IDictionary<string, object?> Properties { get; set; }
+
 			string IEventInfo.Subject => "user";
 
 			string IEventInfo.EventType => "deleted";
@@ -102,6 +106,8 @@ namespace Deveel.Webhooks {
 		}
 
 		class PingEvent : IEventInfo {
+			public IDictionary<string, object?> Properties { get; set; }
+
 			string IEventInfo.Subject => "system";
 
 			string IEventInfo.EventType => "ping";

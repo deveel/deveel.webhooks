@@ -33,5 +33,10 @@
 		/// Gets a set of data carried by the event
 		/// </summary>
 		object? Data { get; }
+
+		/// <summary>
+		/// Gets a set of properties that are associated to the event.
+		/// </summary>
+		IDictionary<string, object?> Properties { get; }
 	}
 }

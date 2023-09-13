@@ -40,6 +40,11 @@
             Gets a set of data carried by the event
             </summary>
         </member>
+        <member name="P:Deveel.Webhooks.IEventInfo.Properties">
+            <summary>
+            Gets a set of properties that are associated to the event.
+            </summary>
+        </member>
         <member name="T:Deveel.Webhooks.IWebhook">
             <summary>
             Notifies the occurrence of an event

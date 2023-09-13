@@ -48,10 +48,10 @@ namespace Deveel.Webhooks {
 		public WebhookSubscriptionResolver(
 			IWebhookSubscriptionStore<TSubscription> store,
 			IWebhookSubscriptionCache? cache = null,
-			ILogger<TenantWebhookSubscriptionResolver<TSubscription>>? logger = null) {
+			ILogger<WebhookSubscriptionResolver<TSubscription>>? logger = null) {
 			this.store = store;
 			this.cache = cache;
-			this.logger = logger ?? NullLogger<TenantWebhookSubscriptionResolver<TSubscription>>.Instance;
+			this.logger = logger ?? NullLogger<WebhookSubscriptionResolver<TSubscription>>.Instance;
 		}
 
 		private async Task<IList<IWebhookSubscription>?> GetCachedAsync(string eventType, CancellationToken cancellationToken) {
@@ -71,21 +71,24 @@ namespace Deveel.Webhooks {
 		}
 
 		/// <inheritdoc/>
-		public async Task<IList<IWebhookSubscription>> ResolveSubscriptionsAsync(string eventType, bool activeOnly, CancellationToken cancellationToken) {
+		public async Task<IList<IWebhookSubscription>> ResolveSubscriptionsAsync(IEventInfo eventInfo, bool activeOnly, CancellationToken cancellationToken) {
 			try {
-				var list = await GetCachedAsync(eventType, cancellationToken);
+				// TODO: have a cache key builder
+				var list = await GetCachedAsync(eventInfo.EventType, cancellationToken);
 
 				if (list == null) {
-					logger.LogTrace("No webhook subscriptions to event {EventType} of tenant {TenantId} were found in cache", eventType);
+					logger.LogTrace("No webhook subscriptions to event {EventType} of tenant {TenantId} were found in cache", eventInfo.EventType);
 
-					var result = await store.GetByEventTypeAsync(eventType, activeOnly, cancellationToken);
+					// TODO: make a more advanced query to use
+					//       also the properties of the event
+					var result = await store.GetByEventTypeAsync(eventInfo.EventType, activeOnly, cancellationToken);
 					list = result.Cast<IWebhookSubscription>().ToList();
 				}
 
 				return list;
 			} catch (Exception ex) {
-				logger.LogError(ex, "Error occurred while trying to resolve webhook subscriptions to event {EventType}", eventType);
-				throw;
+				logger.LogError(ex, "Error occurred while trying to resolve webhook subscriptions to event {EventType}", eventInfo.EventType);
+				throw new WebhookServiceException("Could not resolve the subscriptions: see the inner exception for details", ex);
 			}
 		}
 

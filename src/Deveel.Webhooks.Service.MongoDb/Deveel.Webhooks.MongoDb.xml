@@ -769,6 +769,9 @@
         <member name="P:Deveel.Webhooks.MongoEventInfo.EventData">
             <inheritdoc/>
         </member>
+        <member name="P:Deveel.Webhooks.MongoEventInfo.Properties">
+            <inheritdoc/>
+        </member>
         <member name="T:Deveel.Webhooks.MongoWebhook">
             <summary>
             An implementation of the <see cref="T:Deveel.Webhooks.IWebhook"/> that is backed by a MongoDB database.
@@ -989,22 +992,6 @@
             </summary>
         </member>
         <member name="M:Deveel.Webhooks.WebhookNotifierBuilderExtensions.UseMongoSubscriptionResolver``1(Deveel.Webhooks.WebhookNotifierBuilder{``0})">
-            <summary>
-            Registers the MongoDB storage for resolving
-            webhook subscriptions to the notifier.
-            </summary>
-            <typeparam name="TWebhook">
-            The type of the webhook to be notified.
-            </typeparam>
-            <param name="builder">
-            The builder of the notifier service where to register
-            the resolver.
-            </param>
-            <returns>
-            Returns the builder to continue the configuration.
-            </returns>
-        </member>
-        <member name="M:Deveel.Webhooks.WebhookNotifierBuilderExtensions.UseMongoTenantSubscriptionResolver``1(Deveel.Webhooks.WebhookNotifierBuilder{``0})">
             <summary>
             Registers the MongoDB storage for resolving
             webhook subscriptions to the notifier.

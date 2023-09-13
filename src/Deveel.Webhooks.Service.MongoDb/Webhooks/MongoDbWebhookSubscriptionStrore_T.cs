@@ -117,10 +117,10 @@ namespace Deveel.Webhooks {
 		}
 
 		/// <inheritdoc/>
-		public async Task<IList<TSubscription>> GetByEventTypeAsync(string eventType, bool activeOnly, CancellationToken cancellationToken) {
+		public async Task<IList<TSubscription>> GetByEventTypeAsync(string eventType, bool? activeOnly, CancellationToken cancellationToken) {
 			try {
 				var query = Subscriptions.Where(s => s.EventTypes.Any(y => y == eventType));
-				if (activeOnly)
+				if (activeOnly ?? false)
 					query = query.Where(s => s.Status == WebhookSubscriptionStatus.Active);
 
 				return await query.ToListAsync(cancellationToken);

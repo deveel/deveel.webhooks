@@ -61,7 +61,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Deveel.Webhooks.Receiver.Se
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Deveel.Webhooks.Receiver.SendGrid.XUnit", "src\Deveel.Webhooks.Receiver.SendGrid.XUnit\Deveel.Webhooks.Receiver.SendGrid.XUnit.csproj", "{26E14AA5-0154-43A2-BD14-DC9511FB68A7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Deveel.Webhooks.Receiver.NewtonsoftJson.XUnit", "test\Deveel.Webhooks.Receiver.NewtonsoftJson.XUnit\Deveel.Webhooks.Receiver.NewtonsoftJson.XUnit.csproj", "{47DFE1D1-57F0-4EFC-A9AC-9C12A791AEB7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Deveel.Webhooks.Receiver.NewtonsoftJson.XUnit", "test\Deveel.Webhooks.Receiver.NewtonsoftJson.XUnit\Deveel.Webhooks.Receiver.NewtonsoftJson.XUnit.csproj", "{47DFE1D1-57F0-4EFC-A9AC-9C12A791AEB7}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Deveel.Webhooks.EntityFramework", "src\Deveel.Webhooks.Service.EntityFramework\Deveel.Webhooks.EntityFramework.csproj", "{4E446714-8685-4C03-8A1C-455902116D11}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Deveel.Webhooks.EntityFramework.XUnit", "test\Deveel.Webhooks.EntityFramework.XUnit\Deveel.Webhooks.EntityFramework.XUnit.csproj", "{F846F3B1-6856-4377-AD2A-5575C36DC158}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -177,6 +181,14 @@ Global
 		{47DFE1D1-57F0-4EFC-A9AC-9C12A791AEB7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{47DFE1D1-57F0-4EFC-A9AC-9C12A791AEB7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{47DFE1D1-57F0-4EFC-A9AC-9C12A791AEB7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4E446714-8685-4C03-8A1C-455902116D11}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4E446714-8685-4C03-8A1C-455902116D11}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4E446714-8685-4C03-8A1C-455902116D11}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4E446714-8685-4C03-8A1C-455902116D11}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F846F3B1-6856-4377-AD2A-5575C36DC158}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F846F3B1-6856-4377-AD2A-5575C36DC158}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F846F3B1-6856-4377-AD2A-5575C36DC158}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F846F3B1-6856-4377-AD2A-5575C36DC158}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -209,6 +221,8 @@ Global
 		{1ABBB6ED-17CC-49BF-A50F-F13E137029A5} = {57F6404B-1FCC-473F-A189-ABC9D640CC0E}
 		{26E14AA5-0154-43A2-BD14-DC9511FB68A7} = {07F23FF6-2FE1-4072-BF37-9238E3750AA1}
 		{47DFE1D1-57F0-4EFC-A9AC-9C12A791AEB7} = {07F23FF6-2FE1-4072-BF37-9238E3750AA1}
+		{4E446714-8685-4C03-8A1C-455902116D11} = {57F6404B-1FCC-473F-A189-ABC9D640CC0E}
+		{F846F3B1-6856-4377-AD2A-5575C36DC158} = {07F23FF6-2FE1-4072-BF37-9238E3750AA1}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {E682A9F5-43D7-4D4C-82EA-953545B8F4DE}

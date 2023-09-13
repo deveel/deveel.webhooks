@@ -691,7 +691,7 @@
         <member name="M:Deveel.Webhooks.MongoDbWebhookSubscriptionStrore`1.FindByIdAsync(System.String,System.Threading.CancellationToken)">
             <inheritdoc/>
         </member>
-        <member name="M:Deveel.Webhooks.MongoDbWebhookSubscriptionStrore`1.GetByEventTypeAsync(System.String,System.Boolean,System.Threading.CancellationToken)">
+        <member name="M:Deveel.Webhooks.MongoDbWebhookSubscriptionStrore`1.GetByEventTypeAsync(System.String,System.Nullable{System.Boolean},System.Threading.CancellationToken)">
             <inheritdoc/>
         </member>
         <member name="M:Deveel.Webhooks.MongoDbWebhookSubscriptionStrore`1.GetPageAsync(Deveel.Webhooks.PagedQuery{`0},System.Threading.CancellationToken)">

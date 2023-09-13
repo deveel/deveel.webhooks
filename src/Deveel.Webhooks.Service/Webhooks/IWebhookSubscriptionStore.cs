@@ -130,7 +130,7 @@ namespace Deveel.Webhooks {
 		/// Returns a list of subscriptions that are listening
 		/// for a given event type.
 		/// </returns>
-		Task<IList<TSubscription>> GetByEventTypeAsync(string eventType, bool activeOnly, CancellationToken cancellationToken);
+		Task<IList<TSubscription>> GetByEventTypeAsync(string eventType, bool? activeOnly, CancellationToken cancellationToken = default);
 
 		/// <summary>
 		/// Sets the state of the given subscription.
@@ -147,6 +147,6 @@ namespace Deveel.Webhooks {
 		/// <returns>
 		/// Returns a task that completes when the status is set.
 		/// </returns>
-		Task SetStatusAsync(TSubscription subscription, WebhookSubscriptionStatus status, CancellationToken cancellationToken);
+		Task SetStatusAsync(TSubscription subscription, WebhookSubscriptionStatus status, CancellationToken cancellationToken = default);
 	}
 }

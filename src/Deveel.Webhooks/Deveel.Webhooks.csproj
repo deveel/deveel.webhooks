@@ -2,52 +2,18 @@
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
-    <Nullable>enable</Nullable>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <VersionPrefix>2.0.1</VersionPrefix>
     <RootNamespace>Deveel</RootNamespace>
     <Title>Deveel Webhooks</Title>
-    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-    <Authors>antonello</Authors>
-    <Company>Deveel AS</Company>
     <Description>Abstractions and utilities for the service management of webhooks senders</Description>
-    <Copyright>Copyright (C) 2021-2023 Deveel AS</Copyright>
-    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
-    <PackageIcon>deveel-logo.png</PackageIcon>
-    <RepositoryUrl>https://github.com/deveel/deveel.webhooks</RepositoryUrl>
-    <RepositoryType>git</RepositoryType>
     <PackageTags>events;webhooks;webhook;notification;notifier</PackageTags>
-    <PackageProjectUrl>https://deveel.com</PackageProjectUrl>
     <DocumentationFile>./Deveel.Webhooks.xml</DocumentationFile>
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <IncludeSymbols>true</IncludeSymbols>
-    <EmbedUntrackedSources>true</EmbedUntrackedSources>
-    <DeterministicBuilds>true</DeterministicBuilds>
-    <PublishRepositoryUrl>true</PublishRepositoryUrl>
-    <DebugType>embedded</DebugType>
   </PropertyGroup>
-
-  <PropertyGroup Condition="'$(GITHUB_ACTIONS)' == 'true'">
-    <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
-  </PropertyGroup>
-
-  <ItemGroup>
-    <None Include="..\..\deveel-logo.png">
-      <Pack>True</Pack>
-      <PackagePath></PackagePath>
-    </None>
-  </ItemGroup>
-
+	
 	<ItemGroup>
-		<None Include="..\..\apl-2.licenseheader" Link="apl-2.licenseheader" />
-	</ItemGroup>
-
-	<ItemGroup>
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All"/>
     <PackageReference Include="Microsoft.Extensions.Http" Version="6.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="6.0.0" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="6.0.0" />
-    <PackageReference Include="Polly" Version="7.2.3" />
+    <PackageReference Include="Polly" Version="7.2.4" />
     <PackageReference Include="Polly.Extensions.Http" Version="3.0.0" />
   </ItemGroup>
 

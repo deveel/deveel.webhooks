@@ -21,7 +21,7 @@ namespace Deveel.Webhooks {
 		/// <summary>
 		/// Gets an unique identifier of the event
 		/// </summary>
-		string Id { get; }
+		string? Id { get; }
 
 		/// <summary>
 		/// Gets the exact time of the event occurrence.

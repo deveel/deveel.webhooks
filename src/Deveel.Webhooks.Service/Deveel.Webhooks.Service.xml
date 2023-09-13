@@ -394,7 +394,7 @@
             Returns the total number of subscriptions in the store.
             </returns>
         </member>
-        <member name="M:Deveel.Webhooks.IWebhookSubscriptionStore`1.GetByEventTypeAsync(System.String,System.Boolean,System.Threading.CancellationToken)">
+        <member name="M:Deveel.Webhooks.IWebhookSubscriptionStore`1.GetByEventTypeAsync(System.String,System.Nullable{System.Boolean},System.Threading.CancellationToken)">
             <summary>
             Gets a list of all the subscriptions in the store
             that are listening for the given event type.

@@ -18,22 +18,41 @@
 using System.Text.Json.Serialization;
 
 namespace Deveel.Webhooks.SendGrid {
+	/// <summary>
+	/// Provides details about the spam report from
+	/// the SendGrid system.
+	/// </summary>
 	public sealed class SpamReportDetails {
+		/// <summary>
+		/// Gets the verdict of the spam report.
+		/// </summary>
 		[JsonPropertyName("verdict")]
 		public string Verdict { get; set; }
 
+		/// <summary>
+		/// Gets the score of the spam report.
+		/// </summary>
 		[JsonPropertyName("score")]
 		public double Score { get; set; }
 
+		/// <summary>
+		/// Gets the threshold of the spam report.
+		/// </summary>
 		[JsonPropertyName("threshold")]
 		public double Threshold { get; set; }
 
+		/// <summary>
+		/// Gets the policy used to evaluate the spam report.
+		/// </summary>
 		[JsonPropertyName("policy")]
 		public string Policy { get; set; }
 
 		[JsonPropertyName("bulkiness")]
 		public string Bulkiness { get; set; }
 
+		/// <summary>
+		/// Gets the rules used to evaluate the spam report.
+		/// </summary>
 		[JsonPropertyName("rules")]
 		public IList<SpamRuleDetails> Rules { get; set; }
 	}

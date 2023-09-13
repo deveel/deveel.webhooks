@@ -174,31 +174,256 @@ namespace Deveel.Webhooks {
 
 		//-- Emails
 
+		/// <summary>
+		/// Adds a handler to the receiver to handle the incoming e-mails from
+		/// the SendGrid system.
+		/// </summary>
+		/// <typeparam name="THandler">
+		/// The type of the handler to add to the receiver.
+		/// </typeparam>
+		/// <param name="builder">
+		/// The webhook receiver builder to add the handler to.
+		/// </param>
+		/// <remarks>
+		/// <para>
+		/// Incoming e-mails are not strictly webhooks, but they are sent by
+		/// SendGrid in a way that is very similar to webhooks (HTTP channel, 
+		/// JSON format), enough to allow taking advantage of the same 
+		/// infrastructure to handle them.
+		/// </para>
+		/// </remarks>
+		/// <returns>
+		/// Returns the same instance of the <paramref name="builder"/> to allow chaining.
+		/// </returns>
 		public static WebhookReceiverBuilder<SendGridEmail> HandleSendGridEmail<THandler>(this WebhookReceiverBuilder<SendGridEmail> builder)
 			where THandler : class, IWebhookHandler<SendGridEmail>
 			=> builder.AddHandler<THandler>();
 
+		/// <summary>
+		/// Adds a handler to the receiver to handle the incoming e-mails from
+		/// the SendGrid system.
+		/// </summary>
+		/// <param name="builder">
+		/// The webhook receiver builder to add the handler to.
+		/// </param>
+		/// <param name="handler">
+		/// A delegate that is invoked to handle the incoming e-mail.
+		/// </param>
+		/// <remarks>
+		/// <para>
+		/// Incoming e-mails are not strictly webhooks, but they are sent by
+		/// SendGrid in a way that is very similar to webhooks (HTTP channel, 
+		/// JSON format), enough to allow taking advantage of the same 
+		/// infrastructure to handle them.
+		/// </para>
+		/// </remarks>
+		/// <returns>
+		/// Returns the same instance of the <paramref name="builder"/> to allow chaining.
+		/// </returns>
 		public static WebhookReceiverBuilder<SendGridEmail> HandleSendGridEmail(this WebhookReceiverBuilder<SendGridEmail> builder, Func<SendGridEmail, Task> handler)
 			=> builder.HandleAsync(handler);
 
+		/// <summary>
+		/// Adds a handler to the receiver to handle the incoming e-mails from
+		/// the SendGrid system.
+		/// </summary>
+		/// <typeparam name="T1">
+		/// The type of the first argument of the handler.
+		/// </typeparam>
+		/// <param name="builder">
+		/// The webhook receiver builder to add the handler to.
+		/// </param>
+		/// <param name="handler">
+		/// A delegate that is invoked to handle the incoming e-mail.
+		/// </param>
+		/// <remarks>
+		/// <para>
+		/// Incoming e-mails are not strictly webhooks, but they are sent by
+		/// SendGrid in a way that is very similar to webhooks (HTTP channel, 
+		/// JSON format), enough to allow taking advantage of the same 
+		/// infrastructure to handle them.
+		/// </para>
+		/// </remarks>
+		/// <returns>
+		/// Returns the same instance of the <paramref name="builder"/> to allow chaining.
+		/// </returns>
 		public static WebhookReceiverBuilder<SendGridEmail> HandleSendGridEmail<T1>(this WebhookReceiverBuilder<SendGridEmail> builder, Func<SendGridEmail, T1, Task> handler)
 			=> builder.HandleAsync(handler);
 
+		/// <summary>
+		/// Adds a handler to the receiver to handle the incoming e-mails from
+		/// the SendGrid system.
+		/// </summary>
+		/// <typeparam name="T1">
+		/// The type of the first argument of the handler.
+		/// </typeparam>
+		/// <typeparam name="T2">
+		/// The type of the second argument of the handler.
+		/// </typeparam>
+		/// <param name="builder">
+		/// The webhook receiver builder to add the handler to.
+		/// </param>
+		/// <param name="handler">
+		/// A delegate that is invoked to handle the incoming e-mail.
+		/// </param>
+		/// <remarks>
+		/// <para>
+		/// Incoming e-mails are not strictly webhooks, but they are sent by
+		/// SendGrid in a way that is very similar to webhooks (HTTP channel, 
+		/// JSON format), enough to allow taking advantage of the same 
+		/// infrastructure to handle them.
+		/// </para>
+		/// </remarks>
+		/// <returns>
+		/// Returns the same instance of the <paramref name="builder"/> to allow chaining.
+		/// </returns>
 		public static WebhookReceiverBuilder<SendGridEmail> HandleSendGridEmail<T1, T2>(this WebhookReceiverBuilder<SendGridEmail> builder, Func<SendGridEmail, T1, T2, Task> handler)
 			=> builder.HandleAsync(handler);
 
+		/// <summary>
+		/// Adds a handler to the receiver to handle the incoming e-mails from
+		/// the SendGrid system.
+		/// </summary>
+		/// <typeparam name="T1">
+		/// The type of the first argument of the handler.
+		/// </typeparam>
+		/// <typeparam name="T2">
+		/// The type of the second argument of the handler.
+		/// </typeparam>
+		/// <typeparam name="T3">
+		/// The type of the third argument of the handler.
+		/// </typeparam>
+		/// <param name="builder">
+		/// The webhook receiver builder to add the handler to.
+		/// </param>
+		/// <param name="handler">
+		/// A delegate that is invoked to handle the incoming e-mail.
+		/// </param>
+		/// <remarks>
+		/// <para>
+		/// Incoming e-mails are not strictly webhooks, but they are sent by
+		/// SendGrid in a way that is very similar to webhooks (HTTP channel, 
+		/// JSON format), enough to allow taking advantage of the same 
+		/// infrastructure to handle them.
+		/// </para>
+		/// </remarks>
+		/// <returns>
+		/// Returns the same instance of the <paramref name="builder"/> to allow chaining.
+		/// </returns>
 		public static WebhookReceiverBuilder<SendGridEmail> HandleSendGridEmail<T1, T2, T3>(this WebhookReceiverBuilder<SendGridEmail> builder, Func<SendGridEmail, T1, T2, T3, Task> handler)
 			=> builder.HandleAsync(handler);
 
+		/// <summary>
+		/// Adds a handler to the receiver to handle the incoming e-mails from
+		/// the SendGrid system.
+		/// </summary>
+		/// <param name="builder">
+		/// The webhook receiver builder to add the handler to.
+		/// </param>
+		/// <param name="handler">
+		/// A delegate that is invoked to handle the incoming e-mail.
+		/// </param>
+		/// <remarks>
+		/// <para>
+		/// Incoming e-mails are not strictly webhooks, but they are sent by
+		/// SendGrid in a way that is very similar to webhooks (HTTP channel, 
+		/// JSON format), enough to allow taking advantage of the same 
+		/// infrastructure to handle them.
+		/// </para>
+		/// </remarks>
+		/// <returns>
+		/// Returns the same instance of the <paramref name="builder"/> to allow chaining.
+		/// </returns>
 		public static WebhookReceiverBuilder<SendGridEmail> HandleSendGridEmail(this WebhookReceiverBuilder<SendGridEmail> builder, Action<SendGridEmail> handler)
 			=> builder.Handle(handler);
 
+		/// <summary>
+		/// Adds a handler to the receiver to handle the incoming e-mails from
+		/// the SendGrid system.
+		/// </summary>
+		/// <typeparam name="T1">
+		/// The type of the first argument of the handler.
+		/// </typeparam>
+		/// <param name="builder">
+		/// The webhook receiver builder to add the handler to.
+		/// </param>
+		/// <param name="handler">
+		/// A delegate that is invoked to handle the incoming e-mail.
+		/// </param>
+		/// <remarks>
+		/// <para>
+		/// Incoming e-mails are not strictly webhooks, but they are sent by
+		/// SendGrid in a way that is very similar to webhooks (HTTP channel, 
+		/// JSON format), enough to allow taking advantage of the same 
+		/// infrastructure to handle them.
+		/// </para>
+		/// </remarks>
+		/// <returns>
+		/// Returns the same instance of the <paramref name="builder"/> to allow chaining.
+		/// </returns>
 		public static WebhookReceiverBuilder<SendGridEmail> HandleSendGridEmail<T1>(this WebhookReceiverBuilder<SendGridEmail> builder, Action<SendGridEmail, T1> handler)
 			=> builder.Handle(handler);
 
+		/// <summary>
+		/// Adds a handler to the receiver to handle the incoming e-mails from
+		/// the SendGrid system.
+		/// </summary>
+		/// <typeparam name="T1">
+		/// The type of the first argument of the handler.
+		/// </typeparam>
+		/// <typeparam name="T2">
+		/// The type of the second argument of the handler.
+		/// </typeparam>
+		/// <param name="builder">
+		/// The webhook receiver builder to add the handler to.
+		/// </param>
+		/// <param name="handler">
+		/// A delegate that is invoked to handle the incoming e-mail.
+		/// </param>
+		/// <remarks>
+		/// <para>
+		/// Incoming e-mails are not strictly webhooks, but they are sent by
+		/// SendGrid in a way that is very similar to webhooks (HTTP channel, 
+		/// JSON format), enough to allow taking advantage of the same 
+		/// infrastructure to handle them.
+		/// </para>
+		/// </remarks>
+		/// <returns>
+		/// Returns the same instance of the <paramref name="builder"/> to allow chaining.
+		/// </returns>
 		public static WebhookReceiverBuilder<SendGridEmail> HandleSendGridEmail<T1, T2>(this WebhookReceiverBuilder<SendGridEmail> builder, Action<SendGridEmail, T1, T2> handler)
 			=> builder.Handle(handler);
 
+		/// <summary>
+		/// Adds a handler to the receiver to handle the incoming e-mails from
+		/// the SendGrid system.
+		/// </summary>
+		/// <typeparam name="T1">
+		/// The type of the first argument of the handler.
+		/// </typeparam>
+		/// <typeparam name="T2">
+		/// The type of the second argument of the handler.
+		/// </typeparam>
+		/// <typeparam name="T3">
+		/// The type of the third argument of the handler.
+		/// </typeparam>
+		/// <param name="builder">
+		/// The webhook receiver builder to add the handler to.
+		/// </param>
+		/// <param name="handler">
+		/// A delegate that is invoked to handle the incoming e-mail.
+		/// </param>
+		/// <remarks>
+		/// <para>
+		/// Incoming e-mails are not strictly webhooks, but they are sent by
+		/// SendGrid in a way that is very similar to webhooks (HTTP channel, 
+		/// JSON format), enough to allow taking advantage of the same 
+		/// infrastructure to handle them.
+		/// </para>
+		/// </remarks>
+		/// <returns>
+		/// Returns the same instance of the <paramref name="builder"/> to allow chaining.
+		/// </returns>
 		public static WebhookReceiverBuilder<SendGridEmail> HandleSendGridEmail<T1, T2, T3>(this WebhookReceiverBuilder<SendGridEmail> builder, Action<SendGridEmail, T1, T2, T3> handler)
 			=> builder.Handle(handler);
 	}

@@ -24,7 +24,7 @@ namespace Deveel.Webhooks {
 		public SendGridWebhookTests(ITestOutputHelper outputHelper) : base(outputHelper) {
 		}
 
-		public IWebhookReceiver<SendGridWebhook> Receiver => Services.GetRequiredService<IWebhookReceiver<SendGridWebhook>>();
+		//public IWebhookReceiver<SendGridWebhook> Receiver => Services.GetRequiredService<IWebhookReceiver<SendGridWebhook>>();
 
 		protected override void AddReceiver(IServiceCollection services) {
 			services.AddSendGridReceiver(new SendGridReceiverOptions {

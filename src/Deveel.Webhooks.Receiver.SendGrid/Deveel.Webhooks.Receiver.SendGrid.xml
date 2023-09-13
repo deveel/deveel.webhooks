@@ -487,6 +487,36 @@
             Describes the envelope of a SendGrid email.
             </summary>
         </member>
+        <member name="P:Deveel.Webhooks.SendGrid.Envelope.To">
+            <summary>
+            Gets the list of recipients of the email.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.SendGrid.Envelope.From">
+            <summary>
+            Gets the sender of the email.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.SendGrid.Envelope.HeloDomain">
+            <summary>
+            Gets or sets the HELO domain of the email.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.SendGrid.Envelope.RemoteIp">
+            <summary>
+            Gets or sets the IP address of the sender.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.SendGrid.Envelope.Tls">
+            <summary>
+            Gets or sets the TLS status of the email.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.SendGrid.Envelope.CertError">
+            <summary>
+            Gets or sets the certificate error of the email.
+            </summary>
+        </member>
         <member name="T:Deveel.Webhooks.SendGrid.MatchedRule">
             <summary>
             Describes a rule that was matched by the SendGrid
@@ -871,6 +901,58 @@
             was a part of.
             </summary>
         </member>
+        <member name="T:Deveel.Webhooks.SendGrid.SpamReportDetails">
+            <summary>
+            Provides details about the spam report from
+            the SendGrid system.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.SendGrid.SpamReportDetails.Verdict">
+            <summary>
+            Gets the verdict of the spam report.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.SendGrid.SpamReportDetails.Score">
+            <summary>
+            Gets the score of the spam report.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.SendGrid.SpamReportDetails.Threshold">
+            <summary>
+            Gets the threshold of the spam report.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.SendGrid.SpamReportDetails.Policy">
+            <summary>
+            Gets the policy used to evaluate the spam report.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.SendGrid.SpamReportDetails.Rules">
+            <summary>
+            Gets the rules used to evaluate the spam report.
+            </summary>
+        </member>
+        <member name="T:Deveel.Webhooks.SendGrid.SpamRuleDetails">
+            <summary>
+            Provides the details about a rule used to evaluate
+            a spam report.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.SendGrid.SpamRuleDetails.Description">
+            <summary>
+            Gets or sets the description of the rule.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.SendGrid.SpamRuleDetails.Name">
+            <summary>
+            Gets or sets the name of the rule.
+            </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.SendGrid.SpamRuleDetails.Score">
+            <summary>
+            Gets or sets the score of the rule.
+            </summary>
+        </member>
         <member name="T:Deveel.Webhooks.ServiceCollectionExtensions">
             <summary>
             Extends the <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/> with methods to
@@ -1075,6 +1157,249 @@
             <param name="handler">
             The delegate to handle the incoming webhook.
             </param>
+            <returns>
+            Returns the same instance of the <paramref name="builder"/> to allow chaining.
+            </returns>
+        </member>
+        <member name="M:Deveel.Webhooks.WebhookReceiverBuilderExtensions.HandleSendGridEmail``1(Deveel.Webhooks.WebhookReceiverBuilder{Deveel.Webhooks.SendGrid.SendGridEmail})">
+            <summary>
+            Adds a handler to the receiver to handle the incoming e-mails from
+            the SendGrid system.
+            </summary>
+            <typeparam name="THandler">
+            The type of the handler to add to the receiver.
+            </typeparam>
+            <param name="builder">
+            The webhook receiver builder to add the handler to.
+            </param>
+            <remarks>
+            <para>
+            Incoming e-mails are not strictly webhooks, but they are sent by
+            SendGrid in a way that is very similar to webhooks (HTTP channel, 
+            JSON format), enough to allow taking advantage of the same 
+            infrastructure to handle them.
+            </para>
+            </remarks>
+            <returns>
+            Returns the same instance of the <paramref name="builder"/> to allow chaining.
+            </returns>
+        </member>
+        <member name="M:Deveel.Webhooks.WebhookReceiverBuilderExtensions.HandleSendGridEmail(Deveel.Webhooks.WebhookReceiverBuilder{Deveel.Webhooks.SendGrid.SendGridEmail},System.Func{Deveel.Webhooks.SendGrid.SendGridEmail,System.Threading.Tasks.Task})">
+            <summary>
+            Adds a handler to the receiver to handle the incoming e-mails from
+            the SendGrid system.
+            </summary>
+            <param name="builder">
+            The webhook receiver builder to add the handler to.
+            </param>
+            <param name="handler">
+            A delegate that is invoked to handle the incoming e-mail.
+            </param>
+            <remarks>
+            <para>
+            Incoming e-mails are not strictly webhooks, but they are sent by
+            SendGrid in a way that is very similar to webhooks (HTTP channel, 
+            JSON format), enough to allow taking advantage of the same 
+            infrastructure to handle them.
+            </para>
+            </remarks>
+            <returns>
+            Returns the same instance of the <paramref name="builder"/> to allow chaining.
+            </returns>
+        </member>
+        <member name="M:Deveel.Webhooks.WebhookReceiverBuilderExtensions.HandleSendGridEmail``1(Deveel.Webhooks.WebhookReceiverBuilder{Deveel.Webhooks.SendGrid.SendGridEmail},System.Func{Deveel.Webhooks.SendGrid.SendGridEmail,``0,System.Threading.Tasks.Task})">
+            <summary>
+            Adds a handler to the receiver to handle the incoming e-mails from
+            the SendGrid system.
+            </summary>
+            <typeparam name="T1">
+            The type of the first argument of the handler.
+            </typeparam>
+            <param name="builder">
+            The webhook receiver builder to add the handler to.
+            </param>
+            <param name="handler">
+            A delegate that is invoked to handle the incoming e-mail.
+            </param>
+            <remarks>
+            <para>
+            Incoming e-mails are not strictly webhooks, but they are sent by
+            SendGrid in a way that is very similar to webhooks (HTTP channel, 
+            JSON format), enough to allow taking advantage of the same 
+            infrastructure to handle them.
+            </para>
+            </remarks>
+            <returns>
+            Returns the same instance of the <paramref name="builder"/> to allow chaining.
+            </returns>
+        </member>
+        <member name="M:Deveel.Webhooks.WebhookReceiverBuilderExtensions.HandleSendGridEmail``2(Deveel.Webhooks.WebhookReceiverBuilder{Deveel.Webhooks.SendGrid.SendGridEmail},System.Func{Deveel.Webhooks.SendGrid.SendGridEmail,``0,``1,System.Threading.Tasks.Task})">
+            <summary>
+            Adds a handler to the receiver to handle the incoming e-mails from
+            the SendGrid system.
+            </summary>
+            <typeparam name="T1">
+            The type of the first argument of the handler.
+            </typeparam>
+            <typeparam name="T2">
+            The type of the second argument of the handler.
+            </typeparam>
+            <param name="builder">
+            The webhook receiver builder to add the handler to.
+            </param>
+            <param name="handler">
+            A delegate that is invoked to handle the incoming e-mail.
+            </param>
+            <remarks>
+            <para>
+            Incoming e-mails are not strictly webhooks, but they are sent by
+            SendGrid in a way that is very similar to webhooks (HTTP channel, 
+            JSON format), enough to allow taking advantage of the same 
+            infrastructure to handle them.
+            </para>
+            </remarks>
+            <returns>
+            Returns the same instance of the <paramref name="builder"/> to allow chaining.
+            </returns>
+        </member>
+        <member name="M:Deveel.Webhooks.WebhookReceiverBuilderExtensions.HandleSendGridEmail``3(Deveel.Webhooks.WebhookReceiverBuilder{Deveel.Webhooks.SendGrid.SendGridEmail},System.Func{Deveel.Webhooks.SendGrid.SendGridEmail,``0,``1,``2,System.Threading.Tasks.Task})">
+            <summary>
+            Adds a handler to the receiver to handle the incoming e-mails from
+            the SendGrid system.
+            </summary>
+            <typeparam name="T1">
+            The type of the first argument of the handler.
+            </typeparam>
+            <typeparam name="T2">
+            The type of the second argument of the handler.
+            </typeparam>
+            <typeparam name="T3">
+            The type of the third argument of the handler.
+            </typeparam>
+            <param name="builder">
+            The webhook receiver builder to add the handler to.
+            </param>
+            <param name="handler">
+            A delegate that is invoked to handle the incoming e-mail.
+            </param>
+            <remarks>
+            <para>
+            Incoming e-mails are not strictly webhooks, but they are sent by
+            SendGrid in a way that is very similar to webhooks (HTTP channel, 
+            JSON format), enough to allow taking advantage of the same 
+            infrastructure to handle them.
+            </para>
+            </remarks>
+            <returns>
+            Returns the same instance of the <paramref name="builder"/> to allow chaining.
+            </returns>
+        </member>
+        <member name="M:Deveel.Webhooks.WebhookReceiverBuilderExtensions.HandleSendGridEmail(Deveel.Webhooks.WebhookReceiverBuilder{Deveel.Webhooks.SendGrid.SendGridEmail},System.Action{Deveel.Webhooks.SendGrid.SendGridEmail})">
+            <summary>
+            Adds a handler to the receiver to handle the incoming e-mails from
+            the SendGrid system.
+            </summary>
+            <param name="builder">
+            The webhook receiver builder to add the handler to.
+            </param>
+            <param name="handler">
+            A delegate that is invoked to handle the incoming e-mail.
+            </param>
+            <remarks>
+            <para>
+            Incoming e-mails are not strictly webhooks, but they are sent by
+            SendGrid in a way that is very similar to webhooks (HTTP channel, 
+            JSON format), enough to allow taking advantage of the same 
+            infrastructure to handle them.
+            </para>
+            </remarks>
+            <returns>
+            Returns the same instance of the <paramref name="builder"/> to allow chaining.
+            </returns>
+        </member>
+        <member name="M:Deveel.Webhooks.WebhookReceiverBuilderExtensions.HandleSendGridEmail``1(Deveel.Webhooks.WebhookReceiverBuilder{Deveel.Webhooks.SendGrid.SendGridEmail},System.Action{Deveel.Webhooks.SendGrid.SendGridEmail,``0})">
+            <summary>
+            Adds a handler to the receiver to handle the incoming e-mails from
+            the SendGrid system.
+            </summary>
+            <typeparam name="T1">
+            The type of the first argument of the handler.
+            </typeparam>
+            <param name="builder">
+            The webhook receiver builder to add the handler to.
+            </param>
+            <param name="handler">
+            A delegate that is invoked to handle the incoming e-mail.
+            </param>
+            <remarks>
+            <para>
+            Incoming e-mails are not strictly webhooks, but they are sent by
+            SendGrid in a way that is very similar to webhooks (HTTP channel, 
+            JSON format), enough to allow taking advantage of the same 
+            infrastructure to handle them.
+            </para>
+            </remarks>
+            <returns>
+            Returns the same instance of the <paramref name="builder"/> to allow chaining.
+            </returns>
+        </member>
+        <member name="M:Deveel.Webhooks.WebhookReceiverBuilderExtensions.HandleSendGridEmail``2(Deveel.Webhooks.WebhookReceiverBuilder{Deveel.Webhooks.SendGrid.SendGridEmail},System.Action{Deveel.Webhooks.SendGrid.SendGridEmail,``0,``1})">
+            <summary>
+            Adds a handler to the receiver to handle the incoming e-mails from
+            the SendGrid system.
+            </summary>
+            <typeparam name="T1">
+            The type of the first argument of the handler.
+            </typeparam>
+            <typeparam name="T2">
+            The type of the second argument of the handler.
+            </typeparam>
+            <param name="builder">
+            The webhook receiver builder to add the handler to.
+            </param>
+            <param name="handler">
+            A delegate that is invoked to handle the incoming e-mail.
+            </param>
+            <remarks>
+            <para>
+            Incoming e-mails are not strictly webhooks, but they are sent by
+            SendGrid in a way that is very similar to webhooks (HTTP channel, 
+            JSON format), enough to allow taking advantage of the same 
+            infrastructure to handle them.
+            </para>
+            </remarks>
+            <returns>
+            Returns the same instance of the <paramref name="builder"/> to allow chaining.
+            </returns>
+        </member>
+        <member name="M:Deveel.Webhooks.WebhookReceiverBuilderExtensions.HandleSendGridEmail``3(Deveel.Webhooks.WebhookReceiverBuilder{Deveel.Webhooks.SendGrid.SendGridEmail},System.Action{Deveel.Webhooks.SendGrid.SendGridEmail,``0,``1,``2})">
+            <summary>
+            Adds a handler to the receiver to handle the incoming e-mails from
+            the SendGrid system.
+            </summary>
+            <typeparam name="T1">
+            The type of the first argument of the handler.
+            </typeparam>
+            <typeparam name="T2">
+            The type of the second argument of the handler.
+            </typeparam>
+            <typeparam name="T3">
+            The type of the third argument of the handler.
+            </typeparam>
+            <param name="builder">
+            The webhook receiver builder to add the handler to.
+            </param>
+            <param name="handler">
+            A delegate that is invoked to handle the incoming e-mail.
+            </param>
+            <remarks>
+            <para>
+            Incoming e-mails are not strictly webhooks, but they are sent by
+            SendGrid in a way that is very similar to webhooks (HTTP channel, 
+            JSON format), enough to allow taking advantage of the same 
+            infrastructure to handle them.
+            </para>
+            </remarks>
             <returns>
             Returns the same instance of the <paramref name="builder"/> to allow chaining.
             </returns>

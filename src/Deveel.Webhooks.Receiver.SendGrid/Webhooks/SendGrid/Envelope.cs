@@ -16,33 +16,46 @@
 #pragma warning disable CS8618
 
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Text.Json.Serialization;
-using System.Threading.Tasks;
 
 namespace Deveel.Webhooks.SendGrid {
 	/// <summary>
 	/// Describes the envelope of a SendGrid email.
 	/// </summary>
 	public sealed class Envelope {
+		/// <summary>
+		/// Gets the list of recipients of the email.
+		/// </summary>
 		[JsonPropertyName("to")]
 		public List<string> To { get; set; }
 
+		/// <summary>
+		/// Gets the sender of the email.
+		/// </summary>
 		[JsonPropertyName("from")]
 		public string From { get; set; }
 
+		/// <summary>
+		/// Gets or sets the HELO domain of the email.
+		/// </summary>
 		[JsonPropertyName("helo_domain")]
 		public string HeloDomain { get; set; }
 
+		/// <summary>
+		/// Gets or sets the IP address of the sender.
+		/// </summary>
 		[JsonPropertyName("remote_ip")]
 		public string RemoteIp { get; set; }
 
+		/// <summary>
+		/// Gets or sets the TLS status of the email.
+		/// </summary>
 		[JsonPropertyName("tls")]
 		public bool? Tls { get; set; }
 
+		/// <summary>
+		/// Gets or sets the certificate error of the email.
+		/// </summary>
 		[JsonPropertyName("cert_error")]
 		public string CertError { get; set; }
 	}

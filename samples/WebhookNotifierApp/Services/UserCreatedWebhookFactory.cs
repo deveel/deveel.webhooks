@@ -9,8 +9,8 @@ namespace Deveel.Webhooks.Services {
 		}
 
 		public async Task<IdentityWebhook> CreateAsync(IWebhookSubscription subscription, EventInfo eventInfo, CancellationToken cancellationToken = default) {
-			var userCreated = (UserCreatedEvent)eventInfo.Data;
-			var user = await userResolver.ResolveUserAsync(userCreated.UserId, cancellationToken);
+			var userCreated = (UserCreatedEvent?)eventInfo.Data;
+			var user = await userResolver.ResolveUserAsync(userCreated!.UserId, cancellationToken);
 
 			if (user == null)
 				throw new InvalidOperationException();

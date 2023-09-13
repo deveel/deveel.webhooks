@@ -68,7 +68,7 @@ namespace Deveel.Webhooks {
 
 			string IEventInfo.EventType => "created";
 
-			string IEventInfo.Id => null;
+			string IEventInfo.Id { get; } = Guid.NewGuid().ToString();
 
 			DateTimeOffset IEventInfo.TimeStamp => DateTimeOffset.UtcNow;
 
@@ -89,7 +89,7 @@ namespace Deveel.Webhooks {
 
 			string IEventInfo.EventType => "deleted";
 
-			string IEventInfo.Id => null;
+			string IEventInfo.Id { get; } = Guid.NewGuid().ToString();
 
 			DateTimeOffset IEventInfo.TimeStamp => DateTimeOffset.UtcNow;
 
@@ -106,7 +106,7 @@ namespace Deveel.Webhooks {
 
 			string IEventInfo.EventType => "ping";
 
-			string IEventInfo.Id => null;
+			string IEventInfo.Id { get; } = Guid.NewGuid().ToString();
 
 			DateTimeOffset IEventInfo.TimeStamp => DateTimeOffset.UtcNow;
 

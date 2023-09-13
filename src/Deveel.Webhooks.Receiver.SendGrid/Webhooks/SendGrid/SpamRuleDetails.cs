@@ -12,16 +12,32 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+#pragma warning disable CS8618
+
 using System.Text.Json.Serialization;
 
 namespace Deveel.Webhooks.SendGrid {
+	/// <summary>
+	/// Provides the details about a rule used to evaluate
+	/// a spam report.
+	/// </summary>
 	public sealed class SpamRuleDetails {
+		/// <summary>
+		/// Gets or sets the description of the rule.
+		/// </summary>
 		[JsonPropertyName("description")]
 		public string Description { get; set; }
 
+		/// <summary>
+		/// Gets or sets the name of the rule.
+		/// </summary>
 		[JsonPropertyName("name")]
 		public string Name { get; set; }
 
+		/// <summary>
+		/// Gets or sets the score of the rule.
+		/// </summary>
 		[JsonPropertyName("score")]
 		public double Score { get; set; }
 	}

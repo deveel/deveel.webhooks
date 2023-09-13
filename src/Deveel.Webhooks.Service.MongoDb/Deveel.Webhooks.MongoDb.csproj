@@ -10,7 +10,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <Compile Remove="Webhooks\MongoDbWebhookStorageBuilderImpl.cs"/>
+        <Compile Remove="Webhooks\MongoDbWebhookStorageBuilderImpl.cs" />
     </ItemGroup>
 
     <ItemGroup>
@@ -19,7 +19,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Deveel.Webhooks.Service\Deveel.Webhooks.Service.csproj"/>
+        <ProjectReference Include="..\Deveel.Webhooks.Service\Deveel.Webhooks.Service.csproj" />
     </ItemGroup>
 
 </Project>

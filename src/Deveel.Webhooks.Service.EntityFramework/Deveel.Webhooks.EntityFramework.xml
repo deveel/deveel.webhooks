@@ -332,6 +332,12 @@
             The type of the <see cref="T:Deveel.Webhooks.DbWebhookSubscription"/> entity to use
             </typeparam>
         </member>
+        <member name="P:Deveel.Webhooks.EntityWebhookStorageBuilder`1.ResultType">
+            <summary>
+            Gets the entity type to be used to store the results of 
+            webhook deliveries in the database.
+            </summary>
+        </member>
         <member name="P:Deveel.Webhooks.EntityWebhookStorageBuilder`1.Services">
             <summary>
             Gets the <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/> that is used to
@@ -349,6 +355,25 @@
             </typeparam>
             <param name="options">
             An optional action to configure the options of the context.
+            </param>
+            <param name="lifetime">
+            An optional value that specifies the lifetime of the context.
+            </param>
+            <returns>
+            Returns the current instance of the builder for chaining.
+            </returns>
+        </member>
+        <member name="M:Deveel.Webhooks.EntityWebhookStorageBuilder`1.UseContext``1(System.Action{Finbuckle.MultiTenant.ITenantInfo,Microsoft.EntityFrameworkCore.DbContextOptionsBuilder},Microsoft.Extensions.DependencyInjection.ServiceLifetime)">
+            <summary>
+            Registers the given type of DB context to be used for
+            backing the storage of webhook subscriptions.
+            </summary>
+            <typeparam name="TContext">
+            The type of the <see cref="T:Deveel.Webhooks.WebhookDbContext"/> to use.
+            </typeparam>
+            <param name="options">
+            A configuration action that receives an instance of <see cref="T:Finbuckle.MultiTenant.ITenantInfo"/>
+            that can be used to configure the options of the context.
             </param>
             <param name="lifetime">
             An optional value that specifies the lifetime of the context.
@@ -384,6 +409,25 @@
             <returns>
             Returns the current instance of the builder for chaining.
             </returns>
+        </member>
+        <member name="M:Deveel.Webhooks.EntityWebhookStorageBuilder`1.UseResultType(System.Type)">
+            <summary>
+            Configures the storage to use the given type of result.
+            </summary>
+            <param name="type">
+            The type of the result to use, that must be derived from
+            the <see cref="T:Deveel.Webhooks.DbWebhookDeliveryResult"/> type.
+            </param>
+            <returns>
+            Returns the current instance of the builder for chaining.
+            </returns>
+            <exception cref="T:System.ArgumentNullException">
+            Thrown when the given <paramref name="type"/> is <c>null</c>.
+            </exception>
+            <exception cref="T:System.ArgumentException">
+            Thrown when the given <paramref name="type"/> is not derived from
+            <see cref="T:Deveel.Webhooks.DbWebhookDeliveryResult"/>.
+            </exception>
         </member>
         <member name="T:Deveel.Webhooks.EntityWebhookSubscriptionStrore">
             <summary>

@@ -35,6 +35,10 @@ namespace Deveel.Webhooks {
             AddDefaultStorage();
         }
 
+		/// <summary>
+		/// Gets the entity type to be used to store the results of 
+		/// webhook deliveries in the database.
+		/// </summary>
 		public Type? ResultType { get; private set; }
 
         /// <summary>
@@ -90,6 +94,39 @@ namespace Deveel.Webhooks {
             return this;
         }
 
+		/// <summary>
+		/// Registers the given type of DB context to be used for
+		/// backing the storage of webhook subscriptions.
+		/// </summary>
+		/// <typeparam name="TContext">
+		/// The type of the <see cref="WebhookDbContext"/> to use.
+		/// </typeparam>
+		/// <param name="options">
+		/// A configuration action that receives an instance of <see cref="ITenantInfo"/>
+		/// that can be used to configure the options of the context.
+		/// </param>
+		/// <param name="lifetime">
+		/// An optional value that specifies the lifetime of the context.
+		/// </param>
+		/// <returns>
+		/// Returns the current instance of the builder for chaining.
+		/// </returns>
+		public EntityWebhookStorageBuilder<TSubscription> UseContext<TContext>(Action<ITenantInfo?, DbContextOptionsBuilder> options, ServiceLifetime lifetime = ServiceLifetime.Scoped) 
+			where TContext : WebhookDbContext {
+			var factory = (IServiceProvider sp, DbContextOptionsBuilder builder) => {
+				var tenantInfo = sp.GetService<IMultiTenantContext>()?.TenantInfo;
+				options(tenantInfo, builder);
+			};
+
+			if (typeof(TContext) != typeof(WebhookDbContext)) {
+				Services.AddDbContext<WebhookDbContext, TContext>(factory, lifetime);
+			} else {
+				Services.AddDbContext<WebhookDbContext>(factory, lifetime);
+			}
+
+			return this;
+		}
+
         /// <summary>
         /// Registers the default type of DB context to be used for
         /// backing the storage of webhook subscriptions.
@@ -125,6 +162,23 @@ namespace Deveel.Webhooks {
             return this;
         }
 
+		/// <summary>
+		/// Configures the storage to use the given type of result.
+		/// </summary>
+		/// <param name="type">
+		/// The type of the result to use, that must be derived from
+		/// the <see cref="DbWebhookDeliveryResult"/> type.
+		/// </param>
+		/// <returns>
+		/// Returns the current instance of the builder for chaining.
+		/// </returns>
+		/// <exception cref="ArgumentNullException">
+		/// Thrown when the given <paramref name="type"/> is <c>null</c>.
+		/// </exception>
+		/// <exception cref="ArgumentException">
+		/// Thrown when the given <paramref name="type"/> is not derived from
+		/// <see cref="DbWebhookDeliveryResult"/>.
+		/// </exception>
 		public EntityWebhookStorageBuilder<TSubscription> UseResultType(Type type) {
 			if (type is null) 
 				throw new ArgumentNullException(nameof(type));
@@ -136,6 +190,10 @@ namespace Deveel.Webhooks {
 
 			return this;
 		}
+
+		public EntityWebhookStorageBuilder<TSubscription> UseResult<TResult>()
+			where TResult : DbWebhookDeliveryResult
+			=> UseResultType(typeof(TResult));
 
 		public EntityWebhookStorageBuilder<TSubscription> UseResultStore(Type storeType) {
 			if (ResultType == null)

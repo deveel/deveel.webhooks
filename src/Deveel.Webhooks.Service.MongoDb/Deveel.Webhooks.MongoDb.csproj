@@ -14,8 +14,8 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Finbuckle.MultiTenant" Version="6.10.0"/>
-        <PackageReference Include="MongoFramework" Version="0.28.1"/>
+        <PackageReference Include="Finbuckle.MultiTenant" Version="6.12.0" />
+        <PackageReference Include="MongoFramework" Version="0.29.0" />
     </ItemGroup>
 
     <ItemGroup>

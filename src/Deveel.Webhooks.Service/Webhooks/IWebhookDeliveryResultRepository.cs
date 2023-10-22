@@ -15,31 +15,30 @@
 using System;
 using System.Threading.Tasks;
 using System.Threading;
+using Deveel.Data;
 
 namespace Deveel.Webhooks {
 	/// <summary>
-	/// Provides a contract for a store that can retrieve pages 
-	/// of webhook delivery
+	/// Provides a contract to store of webhook delivery results
 	/// </summary>
 	/// <typeparam name="TResult">
-	/// The type of the result of the delivery
+	/// The type of the result of the delivery of a webhook
 	/// </typeparam>
-	/// <seealso cref="IWebhookDeliveryResultStore{TResult}"/>
-	public interface IWebhookDeliveryResultPagedStore<TResult> : IWebhookDeliveryResultStore<TResult> where TResult : class, IWebhookDeliveryResult {
+	public interface IWebhookDeliveryResultRepository<TResult> : IRepository<TResult> where TResult : class, IWebhookDeliveryResult {
 		/// <summary>
-		/// Gets a page of webhook delivery results from the store
+		/// Finds a single delivery result by the identifier of the webhook
+		/// that was set during the notification process.
 		/// </summary>
-		/// <param name="query">
-		/// The query that defines the page to retrieve
+		/// <param name="webhookId">
+		/// The unique identifier of the webhook (<see cref="IWebhook.Id"/>)
 		/// </param>
 		/// <param name="cancellationToken">
 		/// A cancellation token to cancel the operation
 		/// </param>
 		/// <returns>
-		/// Returns a <see cref="PagedResult{TItem}"/> that contains the
-		/// items in the page and the total number of results in the store
-		/// for the given query.
+		/// Returns the instance of the result that is associated with the given webhook,
+		/// or <c>null</c> if not found
 		/// </returns>
-		Task<PagedResult<TResult>> GetPageAsync(PagedQuery<TResult> query, CancellationToken cancellationToken);
+		Task<TResult?> FindByWebhookIdAsync(string webhookId, CancellationToken cancellationToken);
 	}
 }

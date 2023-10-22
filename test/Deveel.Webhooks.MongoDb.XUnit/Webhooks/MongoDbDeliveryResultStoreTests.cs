@@ -14,6 +14,8 @@
 
 using Bogus;
 
+using Deveel.Data;
+
 using Microsoft.Extensions.DependencyInjection;
 
 using MongoDB.Bson;
@@ -25,7 +27,7 @@ namespace Deveel.Webhooks {
         private readonly Faker<MongoWebhookDeliveryResult> faker;
         private readonly List<MongoWebhookDeliveryResult> results;
 
-        public MongoDbDeliveryResultStoreTests(MongoTestCluster mongo, ITestOutputHelper outputHelper) : base(mongo, outputHelper) {
+        public MongoDbDeliveryResultStoreTests(MongoTestDatabase mongo, ITestOutputHelper outputHelper) : base(mongo, outputHelper) {
             var receiver = new Faker<MongoWebhookReceiver>()
                 .RuleFor(x => x.BodyFormat, f => f.Random.ListItem(new[] {"json","xml"}))
                 .RuleFor(x => x.DestinationUrl, f => f.Internet.Url())
@@ -63,8 +65,8 @@ namespace Deveel.Webhooks {
             results = new List<MongoWebhookDeliveryResult>();
         }
 
-        private IWebhookDeliveryResultStore<MongoWebhookDeliveryResult> Store
-            => Services.GetRequiredService<IWebhookDeliveryResultStore<MongoWebhookDeliveryResult>>();
+        private IWebhookDeliveryResultRepository<MongoWebhookDeliveryResult> Store
+            => Services.GetRequiredService<IWebhookDeliveryResultRepository<MongoWebhookDeliveryResult>>();
 
         public override async Task InitializeAsync() {
             await base.InitializeAsync();
@@ -79,27 +81,28 @@ namespace Deveel.Webhooks {
         }
 
         private Task CreateAttemptAsync(MongoWebhookDeliveryResult attempt) {
-            return Store.CreateAsync(attempt, default);
+            return Store.AddAsync(attempt, default);
         }
 
         private MongoWebhookDeliveryResult NextRandom()
             => results[Random.Shared.Next(0, results.Count - 1)];
 
         [Fact]
-        public async Task CreateNewResult() {
+        public async Task AddNewResult() {
             var result = faker.Generate();
 
-            var id = await Store.CreateAsync(result, default);
+            await Store.AddAsync(result);
 
-            Assert.NotNull(id);
-            Assert.Equal(id, result.Id.ToString());
+            Assert.NotEqual(ObjectId.Empty, result.Id);
+
+			// TODO: access the low-level database to get the document
         }
 
         [Fact]
         public async Task GetExistingResult() {
             var result = NextRandom();
 
-            var found = await Store.FindByIdAsync(result.Id.ToString(), default);
+            var found = await Store.FindByKeyAsync(result.Id);
 
             Assert.NotNull(found);
             Assert.Equal(result.Id, found.Id);
@@ -121,37 +124,38 @@ namespace Deveel.Webhooks {
         public async Task GetNotExistingResult() {
             var resultId = ObjectId.GenerateNewId();
 
-            var found = await Store.FindByIdAsync(resultId.ToString(), default);
+            var found = await Store.FindByKeyAsync(resultId);
 
             Assert.Null(found);
         }
 
         [Fact]
-        public async Task DeleteExistingResult() {
+        public async Task RemoveExistingResult() {
             var result = NextRandom();
 
-            var deleted = await Store.DeleteAsync(result, default);
+            var removed = await Store.RemoveAsync(result);
 
-            Assert.True(deleted);
+            Assert.True(removed);
 
-            var found = await Store.FindByIdAsync(result.Id.ToString(), default);
+            var found = await Store.FindByKeyAsync(result.Id);
 
             Assert.Null(found);
         }
 
         [Fact]
-        public async Task DeleteNotExistingResult() {
+        public async Task RemoveNotExistingResult() {
             var result = faker.Generate();
 
-            await Store.DeleteAsync(result, default);
+            var removed = await Store.RemoveAsync(result);
+			Assert.False(removed);
             
-            var found = await Store.FindByIdAsync(result.Id.ToString(), default);
+            var found = await Store.FindByKeyAsync(result.Id);
             Assert.Null(found);
         }
 
         [Fact]
         public async Task CountAll() {
-            var count = await Store.CountAllAsync(default);
+            var count = await Store.CountAllAsync();
 
             Assert.Equal(results.Count, count);
         }

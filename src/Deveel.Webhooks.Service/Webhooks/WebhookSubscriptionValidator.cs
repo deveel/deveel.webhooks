@@ -13,6 +13,10 @@
 // limitations under the License.
 
 using System;
+using System.ComponentModel.DataAnnotations;
+using System.Runtime.CompilerServices;
+
+using Deveel.Data;
 
 namespace Deveel.Webhooks {
 	/// <summary>
@@ -39,24 +43,42 @@ namespace Deveel.Webhooks {
 		/// Returns a <see cref="WebhookValidationResult"/> that indicates
 		/// whether the subscription is valid or not.
 		/// </returns>
-		public virtual async Task<WebhookValidationResult> ValidateAsync(WebhookSubscriptionManager<TSubscription> manager, TSubscription subscription, CancellationToken cancellationToken) {
+		public virtual async IAsyncEnumerable<ValidationResult> ValidateAsync(EntityManager<TSubscription> manager, TSubscription subscription, [EnumeratorCancellation] CancellationToken cancellationToken) {
 			cancellationToken.ThrowIfCancellationRequested();
 
-            if (String.IsNullOrWhiteSpace(subscription.DestinationUrl))
-                return WebhookValidationResult.Failed("The destination URL of the webhook is missing");
-
-            if (!Uri.TryCreate(subscription.DestinationUrl, UriKind.Absolute, out var url))
-                return WebhookValidationResult.Failed("The destination URL format is invalid");
-
-            // TODO: obtain the configuration of supported delivery channels: for the moment only HTTP(S)
-            // in future implementations we might extend this to support more channels
-            if (url.Scheme != Uri.UriSchemeHttps &&
-                url.Scheme != Uri.UriSchemeHttp)
-                return WebhookValidationResult.Failed($"URL scheme '{url.Scheme}' not supported");
+			if (!ValidateUrl(subscription, out var result))
+				yield return result!;
 
 			await Task.CompletedTask;
+		}
 
-            return WebhookValidationResult.Success;
+		private static bool ValidateUrl(TSubscription subscription, out ValidationResult? result) {
+			if (String.IsNullOrWhiteSpace(subscription.DestinationUrl)) {
+				result = new ValidationResult("The destination URL of the webhook is missing");
+				return false;
+			}
+
+			if (!Uri.TryCreate(subscription.DestinationUrl, UriKind.Absolute, out var url)) {
+				result = new ValidationResult("The destination URL format is invalid");
+				return false;
+			}
+
+			if (url == null) {
+				result = new ValidationResult("The destination URL format is invalid");
+				return false;
+			}
+
+			// TODO: obtain the configuration of supported delivery channels: for the moment only HTTP(S)
+			// in future implementations we might extend this to support more channels
+
+			if (url.Scheme != Uri.UriSchemeHttps &&
+				url.Scheme != Uri.UriSchemeHttp) {
+				result = new ValidationResult($"URL scheme '{url.Scheme}' not supported");
+				return false;
+			}
+
+			result = null;
+			return true;
 		}
 	}
 }

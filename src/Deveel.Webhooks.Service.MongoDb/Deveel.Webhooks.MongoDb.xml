@@ -72,20 +72,41 @@
             is used to store the subscriptions and delivery results.
             </summary>
         </member>
-        <member name="M:Deveel.Webhooks.MongoDbWebhookContext.#ctor(Microsoft.Extensions.Options.IOptions{Deveel.Webhooks.MongoDbWebhookOptions})">
+        <member name="M:Deveel.Webhooks.MongoDbWebhookContext.#ctor(Deveel.Data.IMongoDbConnection{Deveel.Webhooks.MongoDbWebhookContext})">
             <summary>
             Creates an instance of the context with the given options.
             </summary>
-            <param name="options">
-            The options used to connect to the database.
+            <param name="connection">
             </param>
         </member>
-        <member name="P:Deveel.Webhooks.MongoDbWebhookContext.Options">
-            <summary>
-            Gets the options used to connect to the database.
-            </summary>
-        </member>
         <member name="M:Deveel.Webhooks.MongoDbWebhookContext.OnConfigureMapping(MongoFramework.MappingBuilder)">
+            <inheritdoc/>
+        </member>
+        <member name="T:Deveel.Webhooks.MongoDbWebhookDeliveryResultRepositoryProvider`2">
+            <summary>
+            Provides an implementation of the <see cref="T:Deveel.Webhooks.IWebhookDeliveryResultRepositoryProvider`1"/>
+            that is resolving instances of <see cref="T:Deveel.Webhooks.MongoDbWebhookDeliveryResultStore`1"/> based
+            on the tenant identifier.
+            </summary>
+            <typeparam name="TTenantInfo">
+            The type of tenant that owns the connection to the MongoDB database
+            </typeparam>
+            <typeparam name="TResult">
+            The type of the result that is stored in the database.
+            </typeparam>
+        </member>
+        <member name="M:Deveel.Webhooks.MongoDbWebhookDeliveryResultRepositoryProvider`2.#ctor(System.Collections.Generic.IEnumerable{Finbuckle.MultiTenant.IMultiTenantStore{`0}},Microsoft.Extensions.Logging.ILoggerFactory)">
+            <summary>
+            Constructs the provider with the given tenant store.
+            </summary>
+            <param name="tenantStore">
+            The store that is used to resolve the tenant information.
+            </param>
+        </member>
+        <member name="M:Deveel.Webhooks.MongoDbWebhookDeliveryResultRepositoryProvider`2.GetRepositoryAsync(System.String,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Deveel.Webhooks.MongoDbWebhookDeliveryResultRepositoryProvider`2.CreateRepository(Deveel.Webhooks.MongoDbWebhookTenantContext)">
             <inheritdoc/>
         </member>
         <member name="T:Deveel.Webhooks.MongoDbWebhookDeliveryResultLogger`2">
@@ -100,7 +121,7 @@
             The type of delivery result to log.
             </typeparam>
         </member>
-        <member name="M:Deveel.Webhooks.MongoDbWebhookDeliveryResultLogger`2.#ctor(Deveel.Webhooks.IWebhookDeliveryResultStoreProvider{`1},Deveel.Webhooks.IMongoWebhookConverter{`0},Microsoft.Extensions.Logging.ILogger{Deveel.Webhooks.MongoDbWebhookDeliveryResultLogger{`0,`1}})">
+        <member name="M:Deveel.Webhooks.MongoDbWebhookDeliveryResultLogger`2.#ctor(Deveel.Webhooks.IWebhookDeliveryResultRepositoryProvider{`1},Deveel.Webhooks.IMongoWebhookConverter{`0},Microsoft.Extensions.Logging.ILogger{Deveel.Webhooks.MongoDbWebhookDeliveryResultLogger{`0,`1}})">
             <summary>
             Constructs the logger with the given store provider
             used to resolve the MongoDB storage for the log.
@@ -204,11 +225,11 @@
         </member>
         <member name="T:Deveel.Webhooks.MongoDbWebhookDeliveryResultStore">
             <summary>
-            A default implementation of the <see cref="T:Deveel.Webhooks.IWebhookDeliveryResultStore`1"/>
+            A default implementation of the <see cref="T:Deveel.Webhooks.IWebhookDeliveryResultRepository`1"/>
             that uses the <see cref="T:Deveel.Webhooks.MongoWebhookDeliveryResult"/> as the entity
             </summary>
         </member>
-        <member name="M:Deveel.Webhooks.MongoDbWebhookDeliveryResultStore.#ctor(Deveel.Webhooks.IMongoDbWebhookContext)">
+        <member name="M:Deveel.Webhooks.MongoDbWebhookDeliveryResultStore.#ctor(Deveel.Webhooks.MongoDbWebhookContext)">
             <summary>
             Constructs the store with the given context.
             </summary>
@@ -218,34 +239,31 @@
         </member>
         <member name="T:Deveel.Webhooks.MongoDbWebhookDeliveryResultStoreProvider`1">
             <summary>
-            Provides an implementation of the <see cref="T:Deveel.Webhooks.IWebhookDeliveryResultStore`1"/>
+            Provides an implementation of the <see cref="T:Deveel.Webhooks.IWebhookDeliveryResultRepository`1"/>
             that is backed by a MongoDB database.
             </summary>
             <typeparam name="TTenantInfo">
             The type of the tenant information.
             </typeparam>
         </member>
-        <member name="M:Deveel.Webhooks.MongoDbWebhookDeliveryResultStoreProvider`1.#ctor(Microsoft.Extensions.Options.IOptions{Deveel.Webhooks.MongoDbWebhookOptions},Finbuckle.MultiTenant.IMultiTenantStore{`0})">
+        <member name="M:Deveel.Webhooks.MongoDbWebhookDeliveryResultStoreProvider`1.#ctor(System.Collections.Generic.IEnumerable{Finbuckle.MultiTenant.IMultiTenantStore{`0}},Microsoft.Extensions.Logging.ILoggerFactory)">
             <summary>
             Constructs the store with the given store.
             </summary>
-            <param name="options">
-            The set of options that are used to configure the connection to the store.
-            </param>
             <param name="tenantStore">
             The store that provides access to the tenants.
             </param>
         </member>
         <member name="T:Deveel.Webhooks.MongoDbWebhookDeliveryResultStore`1">
             <summary>
-            Provides an implementation of the <see cref="T:Deveel.Webhooks.IWebhookDeliveryResultStore`1"/>
+            Provides an implementation of the <see cref="T:Deveel.Webhooks.IWebhookDeliveryResultRepository`1"/>
             that is backed by a MongoDB database.
             </summary>
             <typeparam name="TResult">
             The type of the result that is stored in the database.
             </typeparam>
         </member>
-        <member name="M:Deveel.Webhooks.MongoDbWebhookDeliveryResultStore`1.#ctor(Deveel.Webhooks.IMongoDbWebhookContext)">
+        <member name="M:Deveel.Webhooks.MongoDbWebhookDeliveryResultStore`1.#ctor(Deveel.Webhooks.IMongoDbWebhookContext,Microsoft.Extensions.Logging.ILogger{Deveel.Webhooks.MongoDbWebhookDeliveryResultStore{`0}})">
             <summary>
             Constructs the store with the given context.
             </summary>
@@ -258,142 +276,8 @@
             Gets the set of results stored in the database.
             </summary>
         </member>
-        <member name="M:Deveel.Webhooks.MongoDbWebhookDeliveryResultStore`1.AsQueryable">
-            <inheritdoc/>
-        </member>
-        <member name="M:Deveel.Webhooks.MongoDbWebhookDeliveryResultStore`1.CountAllAsync(System.Threading.CancellationToken)">
-            <inheritdoc/>
-        </member>
-        <member name="M:Deveel.Webhooks.MongoDbWebhookDeliveryResultStore`1.CreateAsync(`0,System.Threading.CancellationToken)">
-            <inheritdoc/>
-        </member>
-        <member name="M:Deveel.Webhooks.MongoDbWebhookDeliveryResultStore`1.DeleteAsync(`0,System.Threading.CancellationToken)">
-            <inheritdoc/>
-        </member>
-        <member name="M:Deveel.Webhooks.MongoDbWebhookDeliveryResultStore`1.FindByIdAsync(System.String,System.Threading.CancellationToken)">
-            <inheritdoc/>
-        </member>
         <member name="M:Deveel.Webhooks.MongoDbWebhookDeliveryResultStore`1.FindByWebhookIdAsync(System.String,System.Threading.CancellationToken)">
             <inheritdoc/>
-        </member>
-        <member name="T:Deveel.Webhooks.MongoDbWebhookDeliveryResultStoreProvider`2">
-            <summary>
-            Provides an implementation of the <see cref="T:Deveel.Webhooks.IWebhookDeliveryResultStoreProvider`1"/>
-            that is resolving instances of <see cref="T:Deveel.Webhooks.MongoDbWebhookDeliveryResultStore`1"/> based
-            on the tenant identifier.
-            </summary>
-            <typeparam name="TTenantInfo">
-            The type of tenant that owns the connection to the MongoDB database
-            </typeparam>
-            <typeparam name="TResult">
-            The type of the result that is stored in the database.
-            </typeparam>
-        </member>
-        <member name="M:Deveel.Webhooks.MongoDbWebhookDeliveryResultStoreProvider`2.#ctor(Microsoft.Extensions.Options.IOptions{Deveel.Webhooks.MongoDbWebhookOptions},Finbuckle.MultiTenant.IMultiTenantStore{`0})">
-            <summary>
-            Constructs the provider with the given tenant store.
-            </summary>
-            <param name="options">
-            The configured options for the connection to the MongoDB database.
-            </param>
-            <param name="tenantStore">
-            The store that is used to resolve the tenant information.
-            </param>
-        </member>
-        <member name="M:Deveel.Webhooks.MongoDbWebhookDeliveryResultStoreProvider`2.Finalize">
-            <summary>
-            Destroys the instance of the provider.
-            </summary>
-        </member>
-        <member name="M:Deveel.Webhooks.MongoDbWebhookDeliveryResultStoreProvider`2.ThrowIfDisposed">
-            <summary>
-            Throws an exception if the instance of the provider is disposed.
-            </summary>
-            <exception cref="T:System.ObjectDisposedException">
-            Thrown when the instance of the provider is disposed.
-            </exception>
-        </member>
-        <member name="M:Deveel.Webhooks.MongoDbWebhookDeliveryResultStoreProvider`2.GetTenantStore(System.String)">
-            <inheritdoc/>
-        </member>
-        <member name="M:Deveel.Webhooks.MongoDbWebhookDeliveryResultStoreProvider`2.Dispose(System.Boolean)">
-            <summary>
-            Disposes the instance of the provider.
-            </summary>
-            <param name="disposing">
-            A flag indicating if the provider is disposing.
-            </param>
-        </member>
-        <member name="M:Deveel.Webhooks.MongoDbWebhookDeliveryResultStoreProvider`2.Dispose">
-            <inheritdoc/>
-        </member>
-        <member name="T:Deveel.Webhooks.MongoDbWebhookOptions">
-            <summary>
-            
-            </summary>
-        </member>
-        <member name="P:Deveel.Webhooks.MongoDbWebhookOptions.ConnectionString">
-            <summary>
-            Gets or sets the connection string to the MongoDB database,
-            when not in a multi-tenant context.
-            </summary>
-        </member>
-        <member name="P:Deveel.Webhooks.MongoDbWebhookOptions.DatabaseName">
-            <summary>
-            A default name of the database to use when not
-            provided in the connection string.
-            </summary>
-        </member>
-        <member name="M:Deveel.Webhooks.MongoDbWebhookOptions.BuildMongoUrl(System.String)">
-            <summary>
-            Builds a URL to a mongo server using the connection string
-            provided and the configurations set in this object.
-            </summary>
-            <param name="connectionString">
-            The connection string to the MongoDB database.
-            </param>
-            <returns>
-            Returns an instance of <see cref="T:MongoDB.Driver.MongoUrl"/> that is
-            used to connect to the database server.
-            </returns>
-            <exception cref="T:System.ArgumentException"></exception>
-        </member>
-        <member name="M:Deveel.Webhooks.MongoDbWebhookOptions.BuildMongoUrl">
-            <summary>
-            Builds a URL to a mongo server using the configurations
-            provided by this object.
-            </summary>
-            <returns>
-            Returns an instance of <see cref="T:MongoDB.Driver.MongoUrl"/> that is
-            configured from the options set
-            </returns>
-            <exception cref="T:System.ArgumentException">
-            Thrown if the connection string to the database is not specified or
-            if the name of the database is not specified.
-            </exception>
-        </member>
-        <member name="M:Deveel.Webhooks.MongoDbWebhookOptions.BuildConnection">
-            <summary>
-            Builds a connection to a mongo server using the configurations
-            provided by this object.
-            </summary>
-            <returns>
-            Returns a new instance of <see cref="T:MongoFramework.MongoDbConnection"/> that
-            is used to connect to the database server.
-            </returns>
-        </member>
-        <member name="M:Deveel.Webhooks.MongoDbWebhookOptions.BuildConnection(System.String)">
-            <summary>
-            Builds a connection to a mongo server using the connection string
-            provided and the configurations set in this object.
-            </summary>
-            <param name="connectionString">
-            The connection string to the MongoDB database.
-            </param>
-            <returns>
-            Returns a new instance of <see cref="T:MongoFramework.MongoDbConnection"/> that
-            is used to connect to the database server.
-            </returns>
         </member>
         <member name="T:Deveel.Webhooks.MongoDbWebhookStorageBuilder`1">
             <summary>
@@ -402,30 +286,6 @@
             <typeparam name="TSubscription">
             The type of the subscription entity to store in the database.
             </typeparam>
-        </member>
-        <member name="M:Deveel.Webhooks.MongoDbWebhookStorageBuilder`1.Configure(System.String)">
-            <summary>
-            Configures the MongoDB storage context using a section
-            from the application configuration.
-            </summary>
-            <param name="sectionPath">
-            The path to the section in the configuration that contains
-            the connection string to the MongoDB database.
-            </param>
-            <returns>
-            Returns this instance of the builder for chaining.
-            </returns>
-        </member>
-        <member name="M:Deveel.Webhooks.MongoDbWebhookStorageBuilder`1.Configure(System.Action{Deveel.Webhooks.MongoDbWebhookOptions})">
-            <summary>
-            Configures the MongoDB storage context using the given function
-            </summary>
-            <param name="configure">
-            The configuration function to use to configure the storage context.
-            </param>
-            <returns>
-            Returns the current instance of the builder for chaining.
-            </returns>
         </member>
         <member name="M:Deveel.Webhooks.MongoDbWebhookStorageBuilder`1.WithConnectionString(System.String)">
             <summary>
@@ -479,7 +339,7 @@
             </summary>
             <typeparam name="TStore">
             The type of the storage to use for storing the webhook subscriptions,
-            that is derived from <see cref="T:Deveel.Webhooks.MongoDbWebhookSubscriptionStrore"/>.
+            that is derived from <see cref="T:Deveel.Webhooks.MongoDbWebhookSubscriptionRepository"/>.
             </typeparam>
             <returns>
             Returns the current instance of the builder for chaining.
@@ -577,20 +437,31 @@
             The default name of the collection that stores the delivery results.
             </summary>
         </member>
-        <member name="T:Deveel.Webhooks.MongoDbWebhookSubscriptionStoreProvider`1">
+        <member name="T:Deveel.Webhooks.MongoDbWebhookSubscriptionRepository">
             <summary>
-            A default implementation of the <see cref="T:Deveel.Webhooks.IWebhookSubscriptionStoreProvider`1"/>
+            Provides an implementation of the <see cref="T:Deveel.Webhooks.IWebhookSubscriptionRepository`1"/>
+            </summary>
+        </member>
+        <member name="M:Deveel.Webhooks.MongoDbWebhookSubscriptionRepository.#ctor(Deveel.Webhooks.IMongoDbWebhookContext,Microsoft.Extensions.Logging.ILogger{Deveel.Webhooks.MongoDbWebhookSubscriptionRepository})">
+            <inheritdoc/>
+        </member>
+        <member name="T:Deveel.Webhooks.MongoDbWebhookSubscriptionRepositoryProvider`2">
+            <summary>
+            A default implementation of the <see cref="T:Deveel.Webhooks.IWebhookSubscriptionRepositoryProvider`1"/>
             </summary>
             <typeparam name="TTenantInfo">
             The type of the tenant information.
             </typeparam>
         </member>
-        <member name="M:Deveel.Webhooks.MongoDbWebhookSubscriptionStoreProvider`1.#ctor(Microsoft.Extensions.Options.IOptions{Deveel.Webhooks.MongoDbWebhookOptions},Finbuckle.MultiTenant.IMultiTenantStore{`0})">
+        <member name="M:Deveel.Webhooks.MongoDbWebhookSubscriptionRepositoryProvider`2.#ctor(System.Collections.Generic.IEnumerable{Finbuckle.MultiTenant.IMultiTenantStore{`1}},Microsoft.Extensions.Logging.ILoggerFactory)">
             <inheritdoc/>
         </member>
-        <member name="T:Deveel.Webhooks.MongoDbWebhookSubscriptionStoreProvider`2">
+        <member name="M:Deveel.Webhooks.MongoDbWebhookSubscriptionRepositoryProvider`2.GetRepositoryAsync(System.String,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="T:Deveel.Webhooks.MongoDbWebhookSubscriptionRepositoryProvider`3">
             <summary>
-            A service that implements the <see cref="T:Deveel.Webhooks.IWebhookSubscriptionStoreProvider`1"/>
+            A service that implements the <see cref="T:Deveel.Webhooks.IWebhookSubscriptionRepositoryProvider`1"/>
             contract to resolve a store for a given tenant.
             </summary>
             <typeparam name="TTenantInfo">
@@ -600,55 +471,17 @@
             The type of the subscription to store.
             </typeparam>
         </member>
-        <member name="M:Deveel.Webhooks.MongoDbWebhookSubscriptionStoreProvider`2.#ctor(Microsoft.Extensions.Options.IOptions{Deveel.Webhooks.MongoDbWebhookOptions},Finbuckle.MultiTenant.IMultiTenantStore{`0})">
+        <member name="M:Deveel.Webhooks.MongoDbWebhookSubscriptionRepositoryProvider`3.#ctor(System.Collections.Generic.IEnumerable{Finbuckle.MultiTenant.IMultiTenantStore{`2}},Microsoft.Extensions.Logging.ILoggerFactory)">
             <summary>
             Constructs a new instance of the store provider.
             </summary>
-            <param name="options">
-            The set of options that are used to configure the connection to the store.
-            </param>
             <param name="tenantStore">
             The store that provides access to the tenants information.
             </param>
         </member>
-        <member name="M:Deveel.Webhooks.MongoDbWebhookSubscriptionStoreProvider`2.Finalize">
+        <member name="T:Deveel.Webhooks.MongoDbWebhookSubscriptionRepository`1">
             <summary>
-            Destroyes the provider.
-            </summary>
-        </member>
-        <member name="M:Deveel.Webhooks.MongoDbWebhookSubscriptionStoreProvider`2.ThrowIfDisposed">
-            <summary>
-            Throws an exception if the provider instance was disposed.
-            </summary>
-            <exception cref="T:System.ObjectDisposedException">
-            Thrown when the provider instance was disposed.
-            </exception>
-        </member>
-        <member name="M:Deveel.Webhooks.MongoDbWebhookSubscriptionStoreProvider`2.GetTenantStore(System.String)">
-            <inheritdoc/>
-        </member>
-        <member name="M:Deveel.Webhooks.MongoDbWebhookSubscriptionStoreProvider`2.Dispose(System.Boolean)">
-            <summary>
-            Disposes the provider instance.
-            </summary>
-            <param name="disposing">
-            A flag indicating if the provider is disposing.
-            </param>
-        </member>
-        <member name="M:Deveel.Webhooks.MongoDbWebhookSubscriptionStoreProvider`2.Dispose">
-            <inheritdoc/>
-        </member>
-        <member name="T:Deveel.Webhooks.MongoDbWebhookSubscriptionStrore">
-            <summary>
-            Provides an implementation of the <see cref="T:Deveel.Webhooks.IWebhookSubscriptionStore`1"/>
-            </summary>
-        </member>
-        <member name="M:Deveel.Webhooks.MongoDbWebhookSubscriptionStrore.#ctor(Deveel.Webhooks.IMongoDbWebhookContext)">
-            <inheritdoc/>
-        </member>
-        <member name="T:Deveel.Webhooks.MongoDbWebhookSubscriptionStrore`1">
-            <summary>
-            Provides an implementation of the <see cref="T:Deveel.Webhooks.IWebhookSubscriptionStore`1"/>
+            Provides an implementation of the <see cref="T:Deveel.Webhooks.IWebhookSubscriptionRepository`1"/>
             that is backed by a MongoDB database.
             </summary>
             <typeparam name="TSubscription">
@@ -656,7 +489,7 @@
             derived from <see cref="T:Deveel.Webhooks.MongoWebhookSubscription"/>.
             </typeparam>
         </member>
-        <member name="M:Deveel.Webhooks.MongoDbWebhookSubscriptionStrore`1.#ctor(Deveel.Webhooks.IMongoDbWebhookContext)">
+        <member name="M:Deveel.Webhooks.MongoDbWebhookSubscriptionRepository`1.#ctor(Deveel.Webhooks.IMongoDbWebhookContext,Microsoft.Extensions.Logging.ILogger{Deveel.Webhooks.MongoDbWebhookSubscriptionRepository{`0}})">
             <summary>
             Constructs the store with the given context.
             </summary>
@@ -667,82 +500,31 @@
             Thrown when the given <paramref name="context"/> is <c>null</c>.
             </exception>
         </member>
-        <member name="P:Deveel.Webhooks.MongoDbWebhookSubscriptionStrore`1.Subscriptions">
+        <member name="P:Deveel.Webhooks.MongoDbWebhookSubscriptionRepository`1.Subscriptions">
             <summary>
             Gets a set that is used to access the webhook subscriptions
             stored in the database.
             </summary>
         </member>
-        <member name="M:Deveel.Webhooks.MongoDbWebhookSubscriptionStrore`1.AsQueryable">
+        <member name="M:Deveel.Webhooks.MongoDbWebhookSubscriptionRepository`1.AsQueryable">
             <inheritdoc/>
         </member>
-        <member name="M:Deveel.Webhooks.MongoDbWebhookSubscriptionStrore`1.CountAllAsync(System.Threading.CancellationToken)">
+        <member name="M:Deveel.Webhooks.MongoDbWebhookSubscriptionRepository`1.SetDestinationUrlAsync(`0,System.String,System.Threading.CancellationToken)">
             <inheritdoc/>
         </member>
-        <member name="M:Deveel.Webhooks.MongoDbWebhookSubscriptionStrore`1.GetIdAsync(`0,System.Threading.CancellationToken)">
+        <member name="M:Deveel.Webhooks.MongoDbWebhookSubscriptionRepository`1.GetByEventTypeAsync(System.String,System.Nullable{System.Boolean},System.Threading.CancellationToken)">
             <inheritdoc/>
         </member>
-        <member name="M:Deveel.Webhooks.MongoDbWebhookSubscriptionStrore`1.CreateAsync(`0,System.Threading.CancellationToken)">
+        <member name="M:Deveel.Webhooks.MongoDbWebhookSubscriptionRepository`1.SetStatusAsync(`0,Deveel.Webhooks.WebhookSubscriptionStatus,System.Threading.CancellationToken)">
             <inheritdoc/>
         </member>
-        <member name="M:Deveel.Webhooks.MongoDbWebhookSubscriptionStrore`1.DeleteAsync(`0,System.Threading.CancellationToken)">
-            <inheritdoc/>
-        </member>
-        <member name="M:Deveel.Webhooks.MongoDbWebhookSubscriptionStrore`1.FindByIdAsync(System.String,System.Threading.CancellationToken)">
-            <inheritdoc/>
-        </member>
-        <member name="M:Deveel.Webhooks.MongoDbWebhookSubscriptionStrore`1.GetByEventTypeAsync(System.String,System.Nullable{System.Boolean},System.Threading.CancellationToken)">
-            <inheritdoc/>
-        </member>
-        <member name="M:Deveel.Webhooks.MongoDbWebhookSubscriptionStrore`1.GetPageAsync(Deveel.Webhooks.PagedQuery{`0},System.Threading.CancellationToken)">
-            <inheritdoc/>
-        </member>
-        <member name="M:Deveel.Webhooks.MongoDbWebhookSubscriptionStrore`1.SetStatusAsync(`0,Deveel.Webhooks.WebhookSubscriptionStatus,System.Threading.CancellationToken)">
-            <inheritdoc/>
-        </member>
-        <member name="M:Deveel.Webhooks.MongoDbWebhookSubscriptionStrore`1.UpdateAsync(`0,System.Threading.CancellationToken)">
-            <inheritdoc/>
-        </member>
-        <member name="T:Deveel.Webhooks.MongoDbWebhookTenantContext`1">
+        <member name="T:Deveel.Webhooks.MongoDbWebhookTenantContext">
             <summary>
             Represents a multi-tenant MongoDB context that can be used to
             access to tenant-specific databases
             </summary>
-            <typeparam name="TTenantInfo">
-            The type of the tenant information.
-            </typeparam>
         </member>
-        <member name="M:Deveel.Webhooks.MongoDbWebhookTenantContext`1.#ctor(Microsoft.Extensions.Options.IOptions{Deveel.Webhooks.MongoDbWebhookOptions},Finbuckle.MultiTenant.IMultiTenantContext{`0})">
-            <summary>
-            Constructs the context with the given options and the current tenant
-            retrieved from the provided <see cref="T:Finbuckle.MultiTenant.IMultiTenantContext`1"/>.
-            </summary>
-            <param name="options">
-            The set of options that are used to configure the connection to the store.
-            </param>
-            <param name="multiTenantContext">
-            The context that provides access to the current tenant.
-            </param>
-            <exception cref="T:System.ArgumentNullException">
-            Thrown when either the <paramref name="options"/> or the <paramref name="multiTenantContext"/>
-            are <c>null</c>, or when it is not possible to retrieve the tenant information from the context.
-            </exception>
-        </member>
-        <member name="P:Deveel.Webhooks.MongoDbWebhookTenantContext`1.Options">
-            <summary>
-            Gets the set of options that are used to configure the connection to the store.
-            </summary>
-        </member>
-        <member name="M:Deveel.Webhooks.MongoDbWebhookTenantContext`1.AfterDetectChanges">
-            <inheritdoc/>
-        </member>
-        <member name="M:Deveel.Webhooks.MongoDbWebhookTenantContext`1.Attach``1(``0)">
-            <inheritdoc/>
-        </member>
-        <member name="M:Deveel.Webhooks.MongoDbWebhookTenantContext`1.AttachRange``1(System.Collections.Generic.IEnumerable{``0})">
-            <inheritdoc/>
-        </member>
-        <member name="M:Deveel.Webhooks.MongoDbWebhookTenantContext`1.OnConfigureMapping(MongoFramework.MappingBuilder)">
+        <member name="M:Deveel.Webhooks.MongoDbWebhookTenantContext.OnConfigureMapping(MongoFramework.MappingBuilder)">
             <inheritdoc/>
         </member>
         <member name="T:Deveel.Webhooks.MongoEventInfo">

@@ -27,7 +27,7 @@ namespace Deveel.Webhooks {
 	/// </typeparam>
 	public class TenantWebhookSubscriptionResolver<TSubscription> : ITenantWebhookSubscriptionResolver
 		where TSubscription : class, IWebhookSubscription {
-		private readonly IWebhookSubscriptionStoreProvider<TSubscription> storeProvider;
+		private readonly IWebhookSubscriptionRepositoryProvider<TSubscription> storeProvider;
 		private readonly IWebhookSubscriptionCache? cache;
 		private ILogger logger;
 
@@ -46,7 +46,7 @@ namespace Deveel.Webhooks {
 		/// An optional logger to be used to log the operations.
 		/// </param>
 		public TenantWebhookSubscriptionResolver(
-			IWebhookSubscriptionStoreProvider<TSubscription> storeProvider,
+			IWebhookSubscriptionRepositoryProvider<TSubscription> storeProvider,
 			IWebhookSubscriptionCache? cache = null,
 			ILogger<TenantWebhookSubscriptionResolver<TSubscription>>? logger = null) {
 			this.storeProvider = storeProvider;
@@ -78,7 +78,7 @@ namespace Deveel.Webhooks {
 				if (list == null) {
 					logger.LogTrace("No webhook subscriptions to event {EventType} of tenant {TenantId} were found in cache", eventType, tenantId);
 
-					var store = storeProvider.GetTenantStore(tenantId);
+					var store = await storeProvider.GetRepositoryAsync(tenantId, cancellationToken);
 					var result = await store.GetByEventTypeAsync(eventType, activeOnly, cancellationToken);
 					list = result.Cast<IWebhookSubscription>().ToList();
 				}

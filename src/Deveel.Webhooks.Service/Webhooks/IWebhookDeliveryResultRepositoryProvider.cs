@@ -14,6 +14,8 @@
 
 using System;
 
+using Deveel.Data;
+
 namespace Deveel.Webhooks {
 	/// <summary>
 	/// A service that provides a resolution mechanism for stores 
@@ -22,19 +24,24 @@ namespace Deveel.Webhooks {
 	/// <typeparam name="TResult">
 	/// The type of the result of the delivery of a webhook.
 	/// </typeparam>
-	public interface IWebhookDeliveryResultStoreProvider<TResult> where TResult : class, IWebhookDeliveryResult {
+	public interface IWebhookDeliveryResultRepositoryProvider<TResult> : IRepositoryProvider<TResult> 
+		where TResult : class, IWebhookDeliveryResult {
 		/// <summary>
-		/// Gets the store of delivery results for the given tenant.
+		/// Gets the repository of delivery results for the given tenant.
 		/// </summary>
 		/// <param name="tenantId">
-		/// The identifier of the tenant owning the store.
+		/// The identifier of the tenant owning the repository.
+		/// </param>
+		/// <param name="cancellationToken">
+		/// A cancellation token used to cancel the operation.
 		/// </param>
 		/// <returns>
-		/// Returns the store of webhook delivery results for the given tenant.
+		/// Returns the repository of webhook delivery results for 
+		/// the given tenant.
 		/// </returns>
 		/// <exception cref="WebhookServiceException">
-		/// Thrown if the store cannot be resolved for the given tenant.
+		/// Thrown if the repository cannot be resolved for the given tenant.
 		/// </exception>
-		IWebhookDeliveryResultStore<TResult> GetTenantStore(string tenantId);
+		new Task<IWebhookDeliveryResultRepository<TResult>> GetRepositoryAsync(string tenantId, CancellationToken cancellationToken = default);
 	}
 }

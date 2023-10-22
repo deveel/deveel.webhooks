@@ -15,6 +15,8 @@
 using System.Net;
 using System.Net.Http.Json;
 
+using Deveel.Data;
+
 using Finbuckle.MultiTenant;
 
 using Microsoft.Extensions.DependencyInjection;
@@ -28,17 +30,17 @@ namespace Deveel.Webhooks {
 
 		private readonly string tenantId = Guid.NewGuid().ToString();
 
-		private IWebhookSubscriptionStoreProvider<MongoWebhookSubscription> webhookStoreProvider;
-		private IWebhookDeliveryResultStoreProvider<MongoWebhookDeliveryResult> deliveryResultStoreProvider;
+		private IWebhookSubscriptionRepositoryProvider<MongoWebhookSubscription> webhookStoreProvider;
+		private IWebhookDeliveryResultRepositoryProvider<MongoWebhookDeliveryResult> deliveryResultStoreProvider;
 		private ITenantWebhookNotifier<Webhook> notifier;
 
 		private Webhook? lastWebhook;
 		private HttpResponseMessage? testResponse;
 
-		public MultiTenantWebhookDeliveryResultLoggingTests(MongoTestCluster mongo, ITestOutputHelper outputHelper) 
+		public MultiTenantWebhookDeliveryResultLoggingTests(MongoTestDatabase mongo, ITestOutputHelper outputHelper) 
 			: base(mongo, outputHelper) {
-			webhookStoreProvider = Services.GetRequiredService<IWebhookSubscriptionStoreProvider<MongoWebhookSubscription>>();
-			deliveryResultStoreProvider = Services.GetRequiredService<IWebhookDeliveryResultStoreProvider<MongoWebhookDeliveryResult>>();
+			webhookStoreProvider = Services.GetRequiredService<IWebhookSubscriptionRepositoryProvider<MongoWebhookSubscription>>();
+			deliveryResultStoreProvider = Services.GetRequiredService<IWebhookDeliveryResultRepositoryProvider<MongoWebhookDeliveryResult>>();
 			notifier = Services.GetRequiredService<ITenantWebhookNotifier<Webhook>>();
 		}
 
@@ -51,7 +53,8 @@ namespace Deveel.Webhooks {
 						Name = "Test Tenant",
 						ConnectionString = $"{ConnectionString}webhooks"
 					});
-				});
+				})
+				.WithStaticStrategy(tenantId);
 
 			builder
 				.UseSubscriptionManager()
@@ -117,8 +120,8 @@ namespace Deveel.Webhooks {
 
 			subscription.TenantId = tenantId;
 
-			var store = webhookStoreProvider.GetTenantStore(tenantId);
-			await store.CreateAsync(subscription, default);
+			var store = webhookStoreProvider.GetRepository(tenantId);
+			await store.AddAsync(subscription, default);
 
 			return subscription.Id.ToString();
 		}
@@ -158,7 +161,7 @@ namespace Deveel.Webhooks {
 			Assert.Equal(notification.Id, lastWebhook.Id);
 			Assert.Equal(notification.TimeStamp.ToUnixTimeMilliseconds(), lastWebhook.TimeStamp.ToUnixTimeMilliseconds());
 
-			var store = deliveryResultStoreProvider.GetTenantStore(tenantId);
+			var store = await deliveryResultStoreProvider.GetRepositoryAsync(tenantId);
 			var storedResult = await store.FindByWebhookIdAsync(webhookResult.Webhook.Id, default);
 
 			Assert.NotNull(storedResult);

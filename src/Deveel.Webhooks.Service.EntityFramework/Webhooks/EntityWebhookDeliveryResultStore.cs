@@ -16,7 +16,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Deveel.Webhooks {
 	/// <summary>
-	/// An implementation of <see cref="IWebhookDeliveryResultStore{TResult}"/> that
+	/// An implementation of <see cref="IWebhookDeliveryResultRepository{TResult}"/> that
 	/// uses an Entity Framework Core <see cref="DbContext"/> to store the
 	/// delivery results of a webhook of type <see cref="DbWebhookDeliveryResult"/>.
 	/// </summary>

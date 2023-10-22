@@ -27,7 +27,7 @@ namespace Deveel.Webhooks {
 	/// </typeparam>
 	public class WebhookSubscriptionResolver<TSubscription> : IWebhookSubscriptionResolver
 		where TSubscription : class, IWebhookSubscription {
-		private readonly IWebhookSubscriptionStore<TSubscription> store;
+		private readonly IWebhookSubscriptionRepository<TSubscription> store;
 		private readonly IWebhookSubscriptionCache? cache;
 		private ILogger logger;
 
@@ -46,7 +46,7 @@ namespace Deveel.Webhooks {
 		/// An optional logger to be used to log the operations.
 		/// </param>
 		public WebhookSubscriptionResolver(
-			IWebhookSubscriptionStore<TSubscription> store,
+			IWebhookSubscriptionRepository<TSubscription> store,
 			IWebhookSubscriptionCache? cache = null,
 			ILogger<TenantWebhookSubscriptionResolver<TSubscription>>? logger = null) {
 			this.store = store;

@@ -1,6 +1,9 @@
-﻿using System.Text.Json;
+﻿using System.Runtime.Serialization;
+using System.Text.Json;
 
 using Bogus;
+
+using Deveel.Data;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -53,8 +56,8 @@ namespace Deveel.Webhooks {
             results = new List<DbWebhookDeliveryResult>();
         }
 
-        private IWebhookDeliveryResultStore<DbWebhookDeliveryResult> Store
-            => Services.GetRequiredService<IWebhookDeliveryResultStore<DbWebhookDeliveryResult>>();
+        private IWebhookDeliveryResultRepository<DbWebhookDeliveryResult> Store
+            => Services.GetRequiredService<IWebhookDeliveryResultRepository<DbWebhookDeliveryResult>>();
 
 		public override async Task InitializeAsync() {
             await base.InitializeAsync();
@@ -62,14 +65,14 @@ namespace Deveel.Webhooks {
             var fakes = faker.Generate(112).ToList();
 
             foreach (var attempt in fakes) {
-                await CreateAttemptAsync(attempt);
+                await AddAttemptAsync(attempt);
 
                 results.Add(attempt);
             }
         }
 
-        private Task CreateAttemptAsync(DbWebhookDeliveryResult attempt) {
-            return Store.CreateAsync(attempt, default);
+        private Task AddAttemptAsync(DbWebhookDeliveryResult attempt) {
+            return Store.AddAsync(attempt, default);
         }
 
         private DbWebhookDeliveryResult NextRandom()
@@ -79,17 +82,16 @@ namespace Deveel.Webhooks {
         public async Task CreateNewResult() {
             var result = faker.Generate();
 
-            var id = await Store.CreateAsync(result, default);
+            await Store.AddAsync(result);
 
-            Assert.NotNull(id);
-            Assert.Equal(id, result.Id.ToString());
+			Assert.NotNull(result.Id);
         }
 
         [Fact]
         public async Task GetExistingResult() {
             var result = NextRandom();
 
-            var found = await Store.FindByIdAsync(result.Id.ToString(), default);
+            var found = await Store.FindByKeyAsync(result.Id!);
 
             Assert.NotNull(found);
             Assert.Equal(result.Id, found.Id);
@@ -111,36 +113,38 @@ namespace Deveel.Webhooks {
         public async Task GetNotExistingResult() {
             var resultId = Random.Shared.Next(results.Max(x => x.Id!.Value) + 1, Int32.MaxValue);
 
-            var found = await Store.FindByIdAsync(resultId.ToString(), default);
+            var found = await Store.FindByKeyAsync(resultId!);
 
             Assert.Null(found);
         }
 
         [Fact]
-        public async Task DeleteExistingResult() {
+        public async Task RemoveExistingResult() {
             var result = NextRandom();
 
-            var deleted = await Store.DeleteAsync(result, default);
+            var deleted = await Store.RemoveAsync(result);
 
             Assert.True(deleted);
 
-            var found = await Store.FindByIdAsync(result.Id.ToString(), default);
+            var found = await Store.FindByKeyAsync(result.Id!);
 
             Assert.Null(found);
         }
 
         [Fact]
-        public async Task DeleteNotExistingResult() {
+        public async Task RemoveNotExistingResult() {
             var resultId = Random.Shared.Next(results.Max(x => x.Id!.Value) + 1, Int32.MaxValue);
             var result = faker.Generate();
             result.Id = resultId;
 
-            await Assert.ThrowsAsync<WebhookEntityException>(() => Store.DeleteAsync(result, default));
+            var removed = await Store.RemoveAsync(result);
+
+			Assert.False(removed);
         }
 
         [Fact]
         public async Task CountAll() {
-            var count = await Store.CountAllAsync(default);
+            var count = await Store.CountAllAsync();
 
             Assert.Equal(results.Count, count);
         }
@@ -149,7 +153,7 @@ namespace Deveel.Webhooks {
         public async Task GetByWebhookId() {
             var result = NextRandom();
 
-            var found = await Store.FindByWebhookIdAsync(result.Webhook.WebhookId, default);
+            var found = await Store.FindByWebhookIdAsync(result.Webhook.WebhookId!, default);
 
             Assert.NotNull(found);
             Assert.Equal(result.Id, found.Id);

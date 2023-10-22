@@ -19,22 +19,22 @@ using Microsoft.Extensions.Options;
 
 namespace Deveel.Webhooks {
 	/// <summary>
-	/// Provides an implementation of the <see cref="IWebhookDeliveryResultRepository{TResult}"/>
-	/// that is backed by a MongoDB database.
+	/// A default implementation of the <see cref="IWebhookSubscriptionRepositoryProvider{TSubscription}"/>
 	/// </summary>
 	/// <typeparam name="TTenantInfo">
 	/// The type of the tenant information.
 	/// </typeparam>
-    public class MongoDbWebhookDeliveryResultStoreProvider<TTenantInfo> : MongoDbWebhookDeliveryResultRepositoryProvider<TTenantInfo, MongoWebhookDeliveryResult>
+	public class MongoDbWebhookSubscriptionRepositoryProvider<TContext, TTenantInfo> : MongoDbWebhookSubscriptionRepositoryProvider<TContext, MongoWebhookSubscription, TTenantInfo>,
+		IWebhookSubscriptionRepositoryProvider<MongoWebhookSubscription>
+		where TContext : class, IMongoDbWebhookContext
 		where TTenantInfo : class, ITenantInfo, new() {
-		/// <summary>
-		/// Constructs the store with the given store.
-		/// </summary>
-		/// <param name="tenantStore">
-		/// The store that provides access to the tenants.
-		/// </param>
-		public MongoDbWebhookDeliveryResultStoreProvider(IEnumerable<IMultiTenantStore<TTenantInfo>> tenantStore, ILoggerFactory? loggerFactory = null) 
+		/// <inheritdoc/>
+		public MongoDbWebhookSubscriptionRepositoryProvider(IEnumerable<IMultiTenantStore<TTenantInfo>> tenantStore, ILoggerFactory? loggerFactory = null) 
 			: base(tenantStore, loggerFactory) {
 		}
+
+		/// <inheritdoc/>
+		public new async Task<IWebhookSubscriptionRepository<MongoWebhookSubscription>> GetRepositoryAsync(string tenantId, CancellationToken cancellationToken = default) 
+			=> (IWebhookSubscriptionRepository<MongoWebhookSubscription>) (await base.GetRepositoryAsync(tenantId));
 	}
 }

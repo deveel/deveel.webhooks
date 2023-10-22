@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Deveel.Data;
+
 using Finbuckle.MultiTenant;
 
 using Microsoft.Extensions.Configuration;
@@ -28,37 +30,13 @@ namespace Deveel.Webhooks {
 					webhooks.UseMongoDb("mongodb://127.0.0.1:2709/my_db"))
 				.BuildServiceProvider();
 
-			var context = provider.GetService<IMongoDbWebhookContext>();
+			var context = provider.GetService<MongoDbWebhookContext>();
 			Assert.NotNull(context);
-			Assert.IsNotType<MongoDbWebhookTenantContext<TenantInfo>>(context);
+			Assert.IsNotType<MongoDbWebhookTenantContext>(context);
 			Assert.NotNull(context.Connection);
 			
-			var dbConnection = Assert.IsType<MongoDbConnection>(context.Connection);
+			var dbConnection = Assert.IsType<MongoDbConnection<MongoDbWebhookContext>>(context.Connection);
 			Assert.Equal("mongodb://127.0.0.1:2709/my_db", dbConnection.Url.ToString());
-		}
-
-		[Fact]
-		public static void ConfigurationPattern() {
-			var config = new ConfigurationBuilder()
-				.AddInMemoryCollection(new Dictionary<string, string> {
-					{ "MongoDb:Webhooks:ConnectionString", "mongodb://127.0.0.1:2709/test" },
-				});
-
-			var provider = new ServiceCollection()
-				.AddSingleton<IConfiguration>(config.Build())
-				.AddWebhookSubscriptions<MongoWebhookSubscription>(webhooks => {
-					webhooks.UseMongoDb(mongo => mongo.Configure("MongoDb:Webhooks"));
-				})
-				.BuildServiceProvider();
-
-			var context = provider.GetService<IMongoDbWebhookContext>();
-			Assert.NotNull(context);
-			Assert.IsNotType<MongoDbWebhookTenantContext<TenantInfo>>(context);
-			Assert.NotNull(context.Connection);
-
-			var dbConnection = Assert.IsType<MongoDbConnection>(context.Connection);
-
-			Assert.Equal("mongodb://127.0.0.1:2709/test", dbConnection.Url.ToString());
 		}
 
 		[Fact]
@@ -75,13 +53,14 @@ namespace Deveel.Webhooks {
 				})
 				.BuildServiceProvider();
 
-			var context = provider.GetService<IMongoDbWebhookContext>();
+			var context = provider.GetService<MongoDbWebhookContext>();
 			Assert.NotNull(context);
-			Assert.IsNotType<MongoDbWebhookTenantContext<TenantInfo>>(context);
+			Assert.IsNotType<MongoDbWebhookTenantContext>(context);
 			Assert.NotNull(context.Connection);
 
-			var dbConnection = Assert.IsType<MongoDbConnection>(context.Connection);
+			var dbConnection = Assert.IsType<MongoDbConnection<MongoDbWebhookContext>>(context.Connection);
 
+			Assert.NotNull(dbConnection.Url);
 			Assert.Equal("mongodb://127.0.0.1:2709/my_db", dbConnection.Url.ToString());
 		}
 
@@ -95,15 +74,15 @@ namespace Deveel.Webhooks {
 					}))
 				.BuildServiceProvider();
 
-			var store = provider.GetService<IWebhookSubscriptionStore<MongoWebhookSubscription>>();
+			var store = provider.GetService<IWebhookSubscriptionRepository<MongoWebhookSubscription>>();
 			Assert.NotNull(store);
 			Assert.IsType<MyMongoDbWebhookSubscriptionStore>(store);
 		}
 
 		#region MyMongoDbWebhookSubscriptionStore
 
-		class MyMongoDbWebhookSubscriptionStore : MongoDbWebhookSubscriptionStrore {
-			public MyMongoDbWebhookSubscriptionStore(IMongoDbWebhookContext context) : base(context) {
+		class MyMongoDbWebhookSubscriptionStore : MongoDbWebhookSubscriptionRepository {
+			public MyMongoDbWebhookSubscriptionStore(MongoDbWebhookContext context) : base(context) {
 			}
 		}
 

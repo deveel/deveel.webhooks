@@ -12,6 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Deveel.Data;
+
+using Finbuckle.MultiTenant;
+
 using Microsoft.Extensions.Options;
 
 using MongoFramework;
@@ -25,18 +29,11 @@ namespace Deveel.Webhooks {
         /// <summary>
         /// Creates an instance of the context with the given options.
         /// </summary>
-        /// <param name="options">
-        /// The options used to connect to the database.
-        /// </param>
-		public MongoDbWebhookContext(IOptions<MongoDbWebhookOptions> options) 
-			: base(options.Value.BuildConnection()) {
-            Options = options.Value;
+		/// <param name="connection">
+		/// </param>
+		public MongoDbWebhookContext(IMongoDbConnection<MongoDbWebhookContext> connection) 
+			: base(connection) {
         }
-
-        /// <summary>
-        /// Gets the options used to connect to the database.
-        /// </summary>
-        public MongoDbWebhookOptions Options { get; }
 
         /// <inheritdoc/>
         protected override void OnConfigureMapping(MappingBuilder mappingBuilder) {

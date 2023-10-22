@@ -1,5 +1,7 @@
 ﻿using Bogus;
 
+using Deveel.Data;
+
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -36,8 +38,8 @@ namespace Deveel.Webhooks {
         private WebhookSubscriptionManager<DbWebhookSubscription> Manager
             => Services.GetRequiredService<WebhookSubscriptionManager<DbWebhookSubscription>>();
 
-        protected IWebhookSubscriptionStore<DbWebhookSubscription> Store
-            => Services.GetRequiredService<IWebhookSubscriptionStore<DbWebhookSubscription>>();
+        protected IWebhookSubscriptionRepository<DbWebhookSubscription> Store
+            => Services.GetRequiredService<IWebhookSubscriptionRepository<DbWebhookSubscription>>();
 
         public override async Task InitializeAsync() {
             await base.InitializeAsync();
@@ -45,7 +47,7 @@ namespace Deveel.Webhooks {
             var fakes = faker.Generate(112).ToList();
 
             foreach (var subscription in fakes) {
-                await Store.CreateAsync(subscription, default);
+                await Store.AddAsync(subscription);
 
                 subscriptions.Add(subscription);
             }
@@ -58,7 +60,7 @@ namespace Deveel.Webhooks {
         public async Task AddSubscription() {
             var subscription = faker.Generate();
 
-            var subscriptionId = await Manager.CreateAsync(subscription);
+            var subscriptionId = await Manager.AddAsync(subscription);
 
             Assert.NotNull(subscriptionId);
             Assert.Null(subscription.TenantId);
@@ -75,29 +77,30 @@ namespace Deveel.Webhooks {
             var subscription = faker.Generate();
             subscription.DestinationUrl = url;
 
-            var error = await Assert.ThrowsAsync<WebhookSubscriptionValidationException>(
-                () => Manager.CreateAsync(subscription));
+            var result = await Manager.AddAsync(subscription);
 
-            Assert.NotNull(error);
-            Assert.NotNull(error.Errors);
-            Assert.NotEmpty(error.Errors);
-            Assert.Single(error.Errors);
+			Assert.False(result.IsSuccess());
+			Assert.True(result.IsError());
+
+			Assert.NotNull(result.Error);
+			var error = Assert.IsType<EntityValidationError>(result.Error);
+			Assert.NotNull(error.ValidationResults);
         }
 
         [Fact]
         public async Task RemoveExistingSubscription() {
             var subscription = RandomSubscription();
 
-            var result = await Manager.DeleteAsync(subscription);
+            var result = await Manager.RemoveAsync(subscription);
 
-            Assert.True(result);
+            Assert.True(result.IsSuccess());
         }
 
         [Fact]
         public async Task GetExistingSubscription() {
             var subscriptionId = RandomSubscription().Id!.ToString();
 
-            var subscription = await Manager.FindByIdAsync(subscriptionId);
+            var subscription = await Manager.FindByKeyAsync(subscriptionId);
 
             Assert.NotNull(subscription);
             Assert.Equal(subscriptionId, subscription.Id!.ToString());
@@ -112,7 +115,7 @@ namespace Deveel.Webhooks {
         public async Task GetNotExistingSubscription() {
             var subscriptionId = Guid.NewGuid().ToString();
 
-            var subscription = await Manager.FindByIdAsync(subscriptionId);
+            var subscription = await Manager.FindByKeyAsync(subscriptionId);
 
             Assert.Null(subscription);
         }
@@ -123,12 +126,13 @@ namespace Deveel.Webhooks {
 
             Assert.True(Manager.SupportsPaging);
 
-            var query = new PagedQuery<DbWebhookSubscription>(1, 10);
+            var query = new PageQuery<DbWebhookSubscription>(1, 10);
             var result = await Manager.GetPageAsync(query);
 
             Assert.NotNull(result);
+			Assert.NotNull(result.Items);
             Assert.NotEmpty(result.Items);
-            Assert.Equal(subscriptions.Count, result.TotalCount);
+            Assert.Equal(subscriptions.Count, result.TotalItems);
             Assert.Equal(totalPages, result.TotalPages);
             Assert.Equal(subscriptions[0].Id!.ToString(), result.Items[0].Id!.ToString());
             Assert.Equal(subscriptions[1].Id!.ToString(), result.Items[1].Id!.ToString());
@@ -157,7 +161,7 @@ namespace Deveel.Webhooks {
 
             var result = await Manager.EnableAsync(subscription);
 
-            Assert.True(result);
+            Assert.True(result.IsSuccess());
 
             Assert.Equal(WebhookSubscriptionStatus.Active, subscription.Status);
         }
@@ -168,7 +172,7 @@ namespace Deveel.Webhooks {
 
             var result = await Manager.EnableAsync(subscription);
 
-            Assert.False(result);
+            Assert.False(result.IsSuccess());
             Assert.Equal(WebhookSubscriptionStatus.Active, subscription.Status);
         }
 
@@ -178,7 +182,7 @@ namespace Deveel.Webhooks {
 
             var result = await Manager.DisableAsync(subscription);
 
-            Assert.True(result);
+            Assert.True(result.IsSuccess());
             Assert.Equal(WebhookSubscriptionStatus.Suspended, subscription.Status);
 
             await Manager.UpdateAsync(subscription);
@@ -190,7 +194,7 @@ namespace Deveel.Webhooks {
 
             var result = await Manager.DisableAsync(subscription);
 
-            Assert.False(result);
+            Assert.False(result.IsSuccess());
             Assert.Equal(WebhookSubscriptionStatus.Suspended, subscription.Status);
         }
 

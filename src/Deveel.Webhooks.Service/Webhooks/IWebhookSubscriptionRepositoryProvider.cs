@@ -14,6 +14,8 @@
 
 using System;
 
+using Deveel.Data;
+
 namespace Deveel.Webhooks {
 	/// <summary>
 	/// A service that resolves a store of webhook subscriptions 
@@ -22,7 +24,7 @@ namespace Deveel.Webhooks {
 	/// <typeparam name="TSubscription">
 	/// The type of subscription that is stored in the store
 	/// </typeparam>
-	public interface IWebhookSubscriptionStoreProvider<TSubscription>
+	public interface IWebhookSubscriptionRepositoryProvider<TSubscription> : IRepositoryProvider<TSubscription>
 		where TSubscription : class, IWebhookSubscription {
 		/// <summary>
 		/// Gets the store for the given tenant
@@ -30,10 +32,13 @@ namespace Deveel.Webhooks {
 		/// <param name="tenantId">
 		/// The unique identifier of the tenant owning the store.
 		/// </param>
+		/// <param name="cancellationToken">
+		/// A cancellation token used to cancel the operation.
+		/// </param>
 		/// <returns>
-		/// Returns an instance of <see cref="IWebhookSubscriptionStore{TSubscription}"/>
+		/// Returns an instance of <see cref="IWebhookSubscriptionRepository{TSubscription}"/>
 		/// that is used to store the subscriptions for the given tenant.
 		/// </returns>
-		IWebhookSubscriptionStore<TSubscription> GetTenantStore(string tenantId);
+		new Task<IWebhookSubscriptionRepository<TSubscription>> GetRepositoryAsync(string tenantId, CancellationToken cancellationToken = default);
 	}
 }

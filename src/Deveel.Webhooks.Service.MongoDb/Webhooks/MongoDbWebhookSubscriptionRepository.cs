@@ -12,30 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Text;
-
-using EphemeralMongo;
+using Microsoft.Extensions.Logging;
 
 namespace Deveel.Webhooks {
-	public class MongoTestCluster : IDisposable {
-		private readonly IMongoRunner mongo;
-
-		public MongoTestCluster() {
-			mongo = MongoRunner.Run(new MongoRunnerOptions {
-				KillMongoProcessesWhenCurrentProcessExits = true
-			});
-
-			var connString = new StringBuilder(mongo.ConnectionString);
-			if (!connString[^1].Equals('/'))
-				connString.Append('/');
-			
-			ConnectionString = connString.ToString();
-		}
-
-		public string ConnectionString { get; }
-
-		public void Dispose() {
-			mongo?.Dispose();
+    /// <summary>
+    /// Provides an implementation of the <see cref="IWebhookSubscriptionRepository{TSubscription}"/>
+    /// </summary>
+    public class MongoDbWebhookSubscriptionRepository : MongoDbWebhookSubscriptionRepository<MongoWebhookSubscription> {
+        /// <inheritdoc/>
+		public MongoDbWebhookSubscriptionRepository(IMongoDbWebhookContext context, ILogger<MongoDbWebhookSubscriptionRepository>? logger = null) 
+			: base(context, logger) {
 		}
 	}
 }

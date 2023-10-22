@@ -12,6 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Deveel.Data;
+
+using Microsoft.Extensions.Logging;
+
 using MongoDB.Bson;
 using MongoDB.Driver;
 
@@ -20,17 +24,15 @@ using MongoFramework.Linq;
 
 namespace Deveel.Webhooks {
 	/// <summary>
-	/// Provides an implementation of the <see cref="IWebhookDeliveryResultStore{TResult}"/>
+	/// Provides an implementation of the <see cref="IWebhookDeliveryResultRepository{TResult}"/>
 	/// that is backed by a MongoDB database.
 	/// </summary>
 	/// <typeparam name="TResult">
 	/// The type of the result that is stored in the database.
 	/// </typeparam>
-	public class MongoDbWebhookDeliveryResultStore<TResult> :
-		IWebhookDeliveryResultStore<TResult>,
-		IWebhookDeliveryResultQueryableStore<TResult>
+	public class MongoDbWebhookDeliveryResultStore<TResult> : MongoRepository<TResult>,
+		IWebhookDeliveryResultRepository<TResult>
 		where TResult : MongoWebhookDeliveryResult {
-		private readonly IMongoDbWebhookContext context;
 
 		/// <summary>
 		/// Constructs the store with the given context.
@@ -38,66 +40,14 @@ namespace Deveel.Webhooks {
 		/// <param name="context">
 		/// The context to the MongoDB database.
 		/// </param>
-		public MongoDbWebhookDeliveryResultStore(IMongoDbWebhookContext context) {
-			this.context = context ?? throw new ArgumentNullException(nameof(context));
+		public MongoDbWebhookDeliveryResultStore(IMongoDbWebhookContext context, ILogger<MongoDbWebhookDeliveryResultStore<TResult>>? logger = null) 
+			: base(context, logger) {
 		}
 
 		/// <summary>
 		/// Gets the set of results stored in the database.
 		/// </summary>
-		protected IMongoDbSet<TResult> Results => context.Set<TResult>();
-
-		/// <inheritdoc/>
-		public IQueryable<TResult> AsQueryable() => Results.AsQueryable();
-
-		/// <inheritdoc/>
-		public async Task<int> CountAllAsync(CancellationToken cancellationToken) {
-			try {
-				return await Results.CountAsync(cancellationToken);
-			} catch (Exception ex) {
-				throw new WebhookMongoException("Unable to count the number of results", ex);
-			}
-		}
-
-		/// <inheritdoc/>
-		public async Task<string> CreateAsync(TResult result, CancellationToken cancellationToken) {
-			try {
-				Results.Add(result);
-				await Results.Context.SaveChangesAsync(cancellationToken);
-
-				return result.Id.ToString();
-			} catch (Exception ex) {
-				throw new WebhookMongoException("Unable to add the given result to the database", ex);
-			}
-		}
-
-		/// <inheritdoc/>
-		public async Task<bool> DeleteAsync(TResult result, CancellationToken cancellationToken) {
-			try {
-				// TODO: verify that the result was registered in the context
-				Results.Remove(result);
-				await Results.Context.SaveChangesAsync(cancellationToken);
-
-				return true;
-			} catch (Exception ex) {
-				throw new WebhookMongoException("Unable to delete the result from the database", ex);
-			}
-		}
-
-		/// <inheritdoc/>
-		public async Task<TResult?> FindByIdAsync(string id, CancellationToken cancellationToken) {
-			if (string.IsNullOrWhiteSpace(id))
-				throw new ArgumentNullException(nameof(id));
-
-			if (!ObjectId.TryParse(id, out var objId))
-				throw new ArgumentException("The given id is not a valid ObjectId", nameof(id));
-
-			try {
-				return await Results.FindAsync(objId);
-			} catch (Exception ex) {
-				throw new WebhookMongoException("An error occurred while looking up for a result", ex);
-			}
-		}
+		protected IMongoDbSet<TResult> Results => base.DbSet;
 
 		/// <inheritdoc/>
 		public async Task<TResult?> FindByWebhookIdAsync(string webhookId, CancellationToken cancellationToken) {

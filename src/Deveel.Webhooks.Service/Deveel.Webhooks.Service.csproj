@@ -9,7 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Deveel.Repository.Manager" Version="1.2.5" />
+    <PackageReference Include="Deveel.Repository.Manager" Version="1.2.6-6618971964" />
     <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.2.2" />
   </ItemGroup>
 

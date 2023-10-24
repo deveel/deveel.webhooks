@@ -25,7 +25,7 @@ namespace Deveel.Webhooks {
 	/// <typeparam name="TTenantInfo">
 	/// The type of the tenant information.
 	/// </typeparam>
-    public class MongoDbWebhookDeliveryResultStoreProvider<TTenantInfo> : MongoDbWebhookDeliveryResultRepositoryProvider<TTenantInfo, MongoWebhookDeliveryResult>
+    public class MongoDbWebhookDeliveryResultRepositoryProvider<TTenantInfo> : MongoDbWebhookDeliveryResultRepositoryProvider<TTenantInfo, MongoWebhookDeliveryResult>
 		where TTenantInfo : class, ITenantInfo, new() {
 		/// <summary>
 		/// Constructs the store with the given store.
@@ -33,7 +33,7 @@ namespace Deveel.Webhooks {
 		/// <param name="tenantStore">
 		/// The store that provides access to the tenants.
 		/// </param>
-		public MongoDbWebhookDeliveryResultStoreProvider(IEnumerable<IMultiTenantStore<TTenantInfo>> tenantStore, ILoggerFactory? loggerFactory = null) 
+		public MongoDbWebhookDeliveryResultRepositoryProvider(IEnumerable<IMultiTenantStore<TTenantInfo>> tenantStore, ILoggerFactory? loggerFactory = null) 
 			: base(tenantStore, loggerFactory) {
 		}
 	}

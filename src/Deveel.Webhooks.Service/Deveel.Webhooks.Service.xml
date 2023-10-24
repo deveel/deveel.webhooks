@@ -438,6 +438,13 @@
             Returns this instance of the <see cref="T:Deveel.Webhooks.WebhookSubscriptionBuilder`1"/>.
             </returns>
         </member>
+        <member name="T:Deveel.Webhooks.WebhookSubscriptionErrorCodes">
+            <summary>
+            Provides a list of the possible error codes
+            that can be returned by an operation of
+            management of webhook subscriptions.
+            </summary>
+        </member>
         <member name="T:Deveel.Webhooks.WebhookSubscriptionManager`1">
             <summary>
             A manager of webhook subscriptions that provides a set of operations
@@ -459,17 +466,45 @@
             An optional service to be used to validate webhook subscriptions 
             before creating or updating them.
             </param>
+            <param name="services">
+            A service provider used to resolve services used by the manager.
+            </param>
             <param name="logger">
             A logger to be used to log messages informing on the operations
             of the manager.
             </param>
-            <exception cref="T:System.ArgumentNullException"></exception>
         </member>
         <member name="P:Deveel.Webhooks.WebhookSubscriptionManager`1.Subscriptions">
             <summary>
             When the store supports queries, this gets a queryable
             object used to query the subscriptions.
             </summary>
+        </member>
+        <member name="P:Deveel.Webhooks.WebhookSubscriptionManager`1.SubscriptionRepository">
+            <summary>
+            Gets an instance of the repository that implements 
+            the webhook subscriptions operations.
+            </summary>
+        </member>
+        <member name="M:Deveel.Webhooks.WebhookSubscriptionManager`1.AreEqual(`0,`0)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Deveel.Webhooks.WebhookSubscriptionManager`1.GetByEventTypeAsync(System.String,System.Nullable{System.Boolean})">
+            <summary>
+            Gets the list of subscriptions that are listening for a given 
+            event type.
+            </summary>
+            <param name="eventType">
+            The event type to get the subscriptions for.
+            </param>
+            <param name="activeOnly">
+            Indicates whether only active subscriptions should be returned.
+            </param>
+            <returns>
+            Returns a list of subscriptions that are listening for a given 
+            event type.
+            </returns>
+            <exception cref="T:Deveel.Webhooks.WebhookException"></exception>
         </member>
         <member name="M:Deveel.Webhooks.WebhookSubscriptionManager`1.SetStatusAsync(`0,Deveel.Webhooks.WebhookSubscriptionStatus)">
             <summary>
@@ -598,41 +633,8 @@
             A cancellation token used to cancel the validation
             </param>
             <returns>
-            Returns a <see cref="T:Deveel.Webhooks.WebhookValidationResult"/> that indicates
-            whether the subscription is valid or not.
-            </returns>
-        </member>
-        <member name="T:Deveel.Webhooks.WebhookValidationResult">
-            <summary>
-            Represents the result of a validation of a webhook subscription.
-            </summary>
-        </member>
-        <member name="P:Deveel.Webhooks.WebhookValidationResult.Errors">
-            <summary>
-            Gets a list of errors that occurred during the validation.
-            </summary>
-        </member>
-        <member name="P:Deveel.Webhooks.WebhookValidationResult.Successful">
-            <summary>
-            Gets a value indicating whether the validation was successful.
-            </summary>
-        </member>
-        <member name="F:Deveel.Webhooks.WebhookValidationResult.Success">
-            <summary>
-            Gets an instance of the <see cref="T:Deveel.Webhooks.WebhookValidationResult"/> that
-            indicates a successful validation.
-            </summary>
-        </member>
-        <member name="M:Deveel.Webhooks.WebhookValidationResult.Failed(System.String[])">
-            <summary>
-            Creates a new instance of a failed validation.
-            </summary>
-            <param name="errors">
-            A list of errors that occurred during the validation.
-            </param>
-            <returns>
-            Returns a new instance of <see cref="T:Deveel.Webhooks.WebhookValidationResult"/>
-            that represents a failed validation.
+            Returns an <see cref="T:System.Collections.Generic.IAsyncEnumerable`1"/> that yields
+            all the validation results.
             </returns>
         </member>
     </members>

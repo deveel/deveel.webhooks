@@ -57,14 +57,13 @@ namespace Deveel.Webhooks {
 		/// <inheritdoc/>
 		public IQueryable<TSubscription> AsQueryable() => Subscriptions.AsQueryable();
 
-		///// <inheritdoc/>
-		//public Task<int> CountAllAsync(CancellationToken cancellationToken = default) {
-		//	try {
-		//		return Subscriptions.CountAsync(cancellationToken);
-		//	} catch (Exception ex) {
-		//		throw new WebhookMongoException("Could not count the subscriptions", ex);
-		//	}
-		//}
+		/// <inheritdoc/>
+		public Task<string> GetDestinationUrlAsync(TSubscription subscription, CancellationToken cancellationToken = default) {
+			ThrowIfDisposed();
+			cancellationToken.ThrowIfCancellationRequested();
+
+			return Task.FromResult(subscription.DestinationUrl);
+		}
 
 		/// <inheritdoc/>
 		public Task SetDestinationUrlAsync(TSubscription subscription, string url, CancellationToken cancellationToken = default) {
@@ -87,6 +86,14 @@ namespace Deveel.Webhooks {
 			} catch (Exception ex) {
 				throw new WebhookMongoException("Unable to look for subscriptions to events", ex);
 			}
+		}
+
+		/// <inheritdoc/>
+		public Task<WebhookSubscriptionStatus> GetStatusAsync(TSubscription subscription, CancellationToken cancellationToken = default) {
+			ThrowIfDisposed();
+			cancellationToken.ThrowIfCancellationRequested();
+
+			return Task.FromResult(subscription.Status);
 		}
 
 		/// <inheritdoc/>

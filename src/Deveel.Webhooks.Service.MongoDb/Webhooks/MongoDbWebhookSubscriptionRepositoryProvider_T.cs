@@ -17,7 +17,6 @@ using Deveel.Data;
 using Finbuckle.MultiTenant;
 
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 
 namespace Deveel.Webhooks {
 	/// <summary>
@@ -30,7 +29,7 @@ namespace Deveel.Webhooks {
 	/// <typeparam name="TSubscription">
 	/// The type of the subscription to store.
 	/// </typeparam>
-    public class MongoDbWebhookSubscriptionRepositoryProvider<TContext, TSubscription, TTenantInfo> :
+	public class MongoDbWebhookSubscriptionRepositoryProvider<TContext, TSubscription, TTenantInfo> :
 		MongoRepositoryProvider<TContext, TSubscription, TTenantInfo>,
 		IWebhookSubscriptionRepositoryProvider<TSubscription>, IDisposable
 		where TContext : class, IMongoDbWebhookContext
@@ -48,9 +47,11 @@ namespace Deveel.Webhooks {
 		}
 
 
+		/// <inheritdoc/>
 		protected override MongoRepository<TSubscription> CreateRepository(TContext context)
 			=> new MongoDbWebhookSubscriptionRepository<TSubscription>(context, LoggerFactory?.CreateLogger<MongoDbWebhookSubscriptionRepository<TSubscription>>());
 
+		/// <inheritdoc/>
 		public new async Task<IWebhookSubscriptionRepository<TSubscription>> GetRepositoryAsync(string tenantId, CancellationToken cancellationToken = default) 
 			=> (IWebhookSubscriptionRepository<TSubscription>)(await base.GetRepositoryAsync(tenantId));
 	}

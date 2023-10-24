@@ -1,4 +1,8 @@
-﻿using Deveel.Data;
+﻿using System.Security.Principal;
+
+using Bogus;
+
+using Deveel.Data;
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -20,9 +24,23 @@ namespace Deveel.Webhooks {
 
 		protected IReadOnlyList<TSubscription> Subscriptions { get; private set; }
 
-		protected abstract IReadOnlyList<TSubscription> GenerateSubscriptions(int count);
+		protected abstract Faker<TSubscription> Faker { get; }
 
-		protected TSubscription GenerateSubscription() => GenerateSubscriptions(1)[0];
+		protected IReadOnlyList<TSubscription> GenerateSubscriptions(int count) => Faker.Generate(count);
+
+		protected TSubscription GenerateSubscription(Func<TSubscription, bool>? condition = null, int maxRetries = 100) {
+			var subscription = Faker.Generate();
+			var retry = 0;
+
+			while (true) {
+				if (condition == null || condition(subscription))
+					return subscription;
+
+				subscription = Faker.Generate();
+				if (++retry > maxRetries)
+					throw new InvalidOperationException("Unable to generate the subscription mock");
+			}
+		}
 
 		protected WebhookSubscriptionManager<TSubscription> Manager 
 			=> Scope.ServiceProvider.GetRequiredService<WebhookSubscriptionManager<TSubscription>>();
@@ -58,6 +76,10 @@ namespace Deveel.Webhooks {
 			await repository.AddRangeAsync(Subscriptions);
 		}
 
+		protected virtual async Task ClearAsync(IRepository<TSubscription> repository) {
+			await repository.RemoveRangeAsync(Subscriptions);
+		}
+
 		async Task IAsyncLifetime.InitializeAsync() {
 			Subscriptions = GenerateSubscriptions(120);
 
@@ -71,8 +93,8 @@ namespace Deveel.Webhooks {
 			await SeedAsync(Repository);
 		}
 
-		protected virtual Task DisposeAsync() {
-			return Task.CompletedTask;
+		protected async virtual Task DisposeAsync() {
+			await ClearAsync(Repository);
 		}
 
 		async Task IAsyncLifetime.DisposeAsync() {
@@ -86,11 +108,14 @@ namespace Deveel.Webhooks {
 		public async Task AddSubscription() {
 			var subscription = GenerateSubscription();
 
-			await Manager.AddAsync(subscription);
+			var result = await Manager.AddAsync(subscription);
+
+			Assert.True(result.IsSuccess());
 
 			Assert.NotNull(subscription.SubscriptionId);
 
-			var found = await Repository.FindByKeyAsync(subscription.SubscriptionId);
+			var key = Repository.GetEntityKey(subscription);
+			var found = await Repository.FindByKeyAsync(key);
 
 			Assert.NotNull(found);
 			Assert.Equal(subscription.SubscriptionId, found.SubscriptionId);
@@ -122,7 +147,7 @@ namespace Deveel.Webhooks {
 			Assert.NotNull(error);
 			Assert.NotNull(error.ValidationResults);
 			Assert.NotEmpty(error.ValidationResults);
-			Assert.Single(error.ValidationResults);
+			Assert.Contains(error.ValidationResults, x => x.MemberNames.Contains(nameof(IWebhookSubscription.DestinationUrl)));
 		}
 
 		[Fact]
@@ -198,6 +223,68 @@ namespace Deveel.Webhooks {
 
 			Assert.NotNull(found);
 			Assert.Equal(WebhookSubscriptionStatus.Active, found.Status);
+		}
+
+		[Fact]
+		public async Task ActivateActiveSubscription() {
+			var subscription = Subscriptions.Random(x => x.Status == WebhookSubscriptionStatus.Active);
+
+			var result = await Manager.SetStatusAsync(subscription, WebhookSubscriptionStatus.Active);
+
+			Assert.False(result.IsSuccess());
+			Assert.True(result.IsNotModified());
+		}
+
+		[Fact]
+		public async Task SuspendSubscription() {
+			var subscription = Subscriptions.Random(x => x.Status == WebhookSubscriptionStatus.Active);
+
+			var key = Repository.GetEntityKey(subscription);
+			Assert.NotNull(key);
+
+			var result = await Manager.SetStatusAsync(subscription, WebhookSubscriptionStatus.Suspended);
+
+			Assert.True(result.IsSuccess());
+
+			var found = await Repository.FindByKeyAsync(key);
+
+			Assert.NotNull(found);
+			Assert.Equal(WebhookSubscriptionStatus.Suspended, found.Status);
+		}
+
+		[Fact]
+		public async Task GetSimplePage() {
+			var totalPages = (int)Math.Ceiling(Subscriptions.Count / (double)10);
+
+			Assert.True(Manager.SupportsPaging);
+
+			var query = new PageQuery<TSubscription>(1, 10);
+			var result = await Manager.GetPageAsync(query);
+
+			Assert.NotNull(result);
+			Assert.NotNull(result.Items);
+			Assert.NotEmpty(result.Items);
+			Assert.Equal(Subscriptions.Count, result.TotalItems);
+			Assert.Equal(totalPages, result.TotalPages);
+		}
+
+		[Fact]
+		public async Task GetPageWithFilter() {
+			var items = Subscriptions.Where(x => x.Status == WebhookSubscriptionStatus.Active).ToList();
+			var totalPages = (int)Math.Ceiling(items.Count / (double)10);
+
+			Assert.True(Manager.SupportsPaging);
+
+			var query = new PageQuery<TSubscription>(1, 10)
+				.Where(x => x.Status == WebhookSubscriptionStatus.Active);
+
+			var result = await Manager.GetPageAsync(query);
+
+			Assert.NotNull(result);
+			Assert.NotNull(result.Items);
+			Assert.NotEmpty(result.Items);
+			Assert.Equal(items.Count, result.TotalItems);
+			Assert.Equal(totalPages, result.TotalPages);
 		}
 	}
 }

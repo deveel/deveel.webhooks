@@ -23,7 +23,7 @@ using SharpCompress.Compressors.PPMd;
 namespace Deveel.Webhooks {
 	/// <summary>
 	/// Provides an implementation of the <see cref="IWebhookDeliveryResultRepositoryProvider{TResult}"/>
-	/// that is resolving instances of <see cref="MongoDbWebhookDeliveryResultStore{TResult}"/> based
+	/// that is resolving instances of <see cref="MongoDbWebhookDeliveryResultRepository{TResult}"/> based
 	/// on the tenant identifier.
 	/// </summary>
 	/// <typeparam name="TTenantInfo">
@@ -52,6 +52,6 @@ namespace Deveel.Webhooks {
 
 		/// <inheritdoc/>
 		protected override MongoRepository<TResult> CreateRepository(MongoDbWebhookTenantContext context)
-			=> new MongoDbWebhookDeliveryResultStore<TResult>(context, LoggerFactory?.CreateLogger<MongoDbWebhookDeliveryResultStore<TResult>>());
+			=> new MongoDbWebhookDeliveryResultRepository<TResult>(context, LoggerFactory?.CreateLogger<MongoDbWebhookDeliveryResultRepository<TResult>>());
 	}
 }

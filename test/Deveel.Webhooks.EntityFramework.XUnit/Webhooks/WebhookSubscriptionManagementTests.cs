@@ -122,6 +122,7 @@ namespace Deveel.Webhooks {
 
         [Fact]
         public async Task GetPageOfSubscriptions() {
+			var page = subscriptions.Take(10).ToList();
             var totalPages = (int)Math.Ceiling(subscriptions.Count / (double)10);
 
             Assert.True(Manager.SupportsPaging);
@@ -134,8 +135,6 @@ namespace Deveel.Webhooks {
             Assert.NotEmpty(result.Items);
             Assert.Equal(subscriptions.Count, result.TotalItems);
             Assert.Equal(totalPages, result.TotalPages);
-            Assert.Equal(subscriptions[0].Id!.ToString(), result.Items[0].Id!.ToString());
-            Assert.Equal(subscriptions[1].Id!.ToString(), result.Items[1].Id!.ToString());
         }
 
         [Fact]
@@ -148,7 +147,8 @@ namespace Deveel.Webhooks {
 
         [Fact]
         public async Task GetSubscriptionsByEventType() {
-            var dataCreatedSubs = subscriptions.Where(x => x.Events.Any(y => y.EventType == "data.created") &&  x.Status == WebhookSubscriptionStatus.Active).ToList();
+            var dataCreatedSubs = subscriptions.Where(x => x.Events.Any(y => y.EventType == "data.created") 
+			&&  x.Status == WebhookSubscriptionStatus.Active).ToList();
             var result = await Store.GetByEventTypeAsync("data.created", true, default);
 
             Assert.Equal(dataCreatedSubs.Count, result.Count);

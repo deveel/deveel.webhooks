@@ -26,7 +26,7 @@ namespace Deveel.Webhooks {
     /// The type of the subscription entity to be stored.
     /// </typeparam>
     /// <seealso cref="IWebhookSubscriptionRepository{TSubscription}"/>"/>
-    public class EntityWebhookSubscriptionStrore<TSubscription> : 
+    public class EntityWebhookSubscriptionRepository<TSubscription> : 
 		EntityRepository<TSubscription>,
         IWebhookSubscriptionRepository<TSubscription>
         where TSubscription : DbWebhookSubscription {
@@ -40,14 +40,43 @@ namespace Deveel.Webhooks {
         /// <exception cref="ArgumentNullException">
         /// Thrown when the given <paramref name="context"/> is <c>null</c>.
         /// </exception>
-        public EntityWebhookSubscriptionStrore(WebhookDbContext context, ILogger<EntityWebhookSubscriptionStrore<TSubscription>>? logger = null) 
+        public EntityWebhookSubscriptionRepository(WebhookDbContext context, ILogger<EntityWebhookSubscriptionRepository<TSubscription>>? logger = null) 
 			: base(context, logger) {
         }
 
-		/// <summary>
-		/// Gets the set of subscriptions stored in the database.
-		/// </summary>
-		protected DbSet<TSubscription> Subscriptions => base.Entities;
+		public override IQueryable<TSubscription> AsQueryable() {
+			return Context.Set<TSubscription>()
+				.Include(x => x.Filters)
+					.Include(x => x.Headers)
+					.Include(x => x.Events)
+					.Include(x => x.Properties);
+		}
+
+		private async Task<TSubscription> EnsureLoadedAsync(TSubscription subscription, CancellationToken cancellationToken) {
+			var entry = Context.Entry(subscription);
+			if (!entry.Collection(x => x.Headers).IsLoaded)
+				await entry.Collection(x => x.Headers).LoadAsync(cancellationToken);
+			if (!entry.Collection(x => x.Events).IsLoaded)
+				await entry.Collection(x => x.Events).LoadAsync(cancellationToken);
+			if (!entry.Collection(x => x.Filters).IsLoaded)
+				await entry.Collection(x => x.Filters).LoadAsync(cancellationToken);
+			if (!entry.Collection(x => x.Properties).IsLoaded)
+				await entry.Collection(x => x.Properties).LoadAsync(cancellationToken);
+
+			return subscription;
+		}
+
+		/// <inheritdoc/>
+		protected override async Task<TSubscription> OnEntityFoundByKeyAsync(object key, TSubscription entity, CancellationToken cancellationToken = default) 
+			=>  await EnsureLoadedAsync(entity, cancellationToken);
+
+		/// <inheritdoc/>
+		public Task<string> GetDestinationUrlAsync(TSubscription subscription, CancellationToken cancellationToken =  default) {
+			ThrowIfDisposed();
+			cancellationToken.ThrowIfCancellationRequested();
+
+			return Task.FromResult(subscription.DestinationUrl);
+		}
 
 		/// <inheritdoc/>
 		public Task SetDestinationUrlAsync(TSubscription subscription, string destinationUrl, CancellationToken cancellationToken) {
@@ -62,15 +91,25 @@ namespace Deveel.Webhooks {
         /// <inheritdoc/>
         public async Task<IList<TSubscription>> GetByEventTypeAsync(string eventType, bool? activeOnly, CancellationToken cancellationToken = default) {
             try {
-                IQueryable<TSubscription> query = Subscriptions.Where(x => x.Events.Any(y => y.EventType == eventType));
+				var query = new QueryBuilder<TSubscription>()
+					.Where(x => x.Events.Any(y => y.EventType == eventType));
+
                 if (activeOnly ?? false)
                     query = query.Where(x => x.Status == WebhookSubscriptionStatus.Active);
 
-                return await query.ToListAsync(cancellationToken);
+                return await base.FindAllAsync(query, cancellationToken);
             } catch (Exception ex) {
                 throw new WebhookEntityException($"Could not get the subscriptions for event type '{eventType}'", ex);
             }
         }
+
+		/// <inheritdoc/>
+		public Task<WebhookSubscriptionStatus> GetStatusAsync(TSubscription subscription, CancellationToken cancellationToken = default) {
+			ThrowIfDisposed();
+			cancellationToken.ThrowIfCancellationRequested();
+
+			return Task.FromResult(subscription.Status);
+		}
 
         /// <inheritdoc/>
         public Task SetStatusAsync(TSubscription subscription, WebhookSubscriptionStatus status, CancellationToken cancellationToken) {

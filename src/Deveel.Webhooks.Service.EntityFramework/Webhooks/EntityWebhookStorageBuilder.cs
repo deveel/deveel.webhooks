@@ -44,13 +44,13 @@ namespace Deveel.Webhooks {
         public IServiceCollection Services => builder.Services;
 
         private void AddDefaultStorage() {
-            Services.TryAddScoped<IWebhookSubscriptionRepository<TSubscription>, EntityWebhookSubscriptionStrore<TSubscription>>();
-            Services.TryAddScoped<EntityWebhookSubscriptionStrore<TSubscription>>();
+            Services.TryAddScoped<IWebhookSubscriptionRepository<TSubscription>, EntityWebhookSubscriptionRepository<TSubscription>>();
+            Services.TryAddScoped<EntityWebhookSubscriptionRepository<TSubscription>>();
 
             if (typeof(TSubscription) == typeof(DbWebhookSubscription)) {
-                Services.TryAddScoped<IWebhookSubscriptionRepository<DbWebhookSubscription>, EntityWebhookSubscriptionStrore>();
-                Services.TryAddScoped<EntityWebhookSubscriptionStrore<DbWebhookSubscription>>();
-                Services.AddScoped<EntityWebhookSubscriptionStrore>();
+                Services.TryAddScoped<IWebhookSubscriptionRepository<DbWebhookSubscription>, EntityWebhookSubscriptionRepository>();
+                Services.TryAddScoped<EntityWebhookSubscriptionRepository<DbWebhookSubscription>>();
+                Services.AddScoped<EntityWebhookSubscriptionRepository>();
             }
 
 			if (ResultType != null && ResultType == typeof(DbWebhookDeliveryResult)) {
@@ -112,13 +112,13 @@ namespace Deveel.Webhooks {
         /// </summary>
         /// <typeparam name="TStore">
         /// The type of the storage to use for storing the webhook subscriptions,
-        /// that is derived from <see cref="EntityWebhookSubscriptionStrore"/>.
+        /// that is derived from <see cref="EntityWebhookSubscriptionRepository"/>.
         /// </typeparam>
         /// <returns>
         /// Returns the current instance of the builder for chaining.
         /// </returns>
         public EntityWebhookStorageBuilder<TSubscription> UseSubscriptionStore<TStore>()
-            where TStore : EntityWebhookSubscriptionStrore<TSubscription> {
+            where TStore : EntityWebhookSubscriptionRepository<TSubscription> {
             Services.AddScoped<IWebhookSubscriptionRepository<TSubscription>, TStore>();
             Services.AddScoped<TStore>();
 

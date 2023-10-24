@@ -17,7 +17,9 @@ namespace Deveel.Webhooks {
 
 		public string ConnectionString => container.GetConnectionString();
 
-		public string GetConnectionString(string databaseName = "testdb") {
+		public const string DefaultDatabaseName = "testdb";
+
+		public string GetConnectionString(string databaseName = DefaultDatabaseName) {
 			var connectionString = container.GetConnectionString();
 
 			if (!String.IsNullOrWhiteSpace(databaseName)) {

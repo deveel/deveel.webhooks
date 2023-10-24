@@ -28,6 +28,7 @@ namespace Deveel.Webhooks {
 	/// </typeparam>
 	public interface IWebhookSubscriptionRepository<TSubscription> : IRepository<TSubscription>
 		where TSubscription : class, IWebhookSubscription {
+		Task<string> GetDestinationUrlAsync(TSubscription subscription, CancellationToken cancellationToken = default);
 
 		Task SetDestinationUrlAsync(TSubscription subscription, string url, CancellationToken cancellationToken = default);
 
@@ -50,6 +51,8 @@ namespace Deveel.Webhooks {
 		/// for a given event type.
 		/// </returns>
 		Task<IList<TSubscription>> GetByEventTypeAsync(string eventType, bool? activeOnly, CancellationToken cancellationToken = default);
+
+		Task<WebhookSubscriptionStatus> GetStatusAsync(TSubscription subscription, CancellationToken cancellationToken = default);
 
 		/// <summary>
 		/// Sets the state of the given subscription.

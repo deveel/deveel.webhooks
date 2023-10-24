@@ -14,10 +14,7 @@
 
 using Deveel.Data;
 
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc.ModelBinding.Binders;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Abstractions;
 
 namespace Deveel.Webhooks {
 	/// <summary>
@@ -40,11 +37,14 @@ namespace Deveel.Webhooks {
 		/// An optional service to be used to validate webhook subscriptions 
 		/// before creating or updating them.
 		/// </param>
+		/// <param name="services">
+		/// A service provider used to resolve services used by the manager.
+		/// </param>
 		/// <param name="logger">
 		/// A logger to be used to log messages informing on the operations
 		/// of the manager.
 		/// </param>
-		/// <exception cref="ArgumentNullException"></exception>
+		//TODO: add an Error Factory for Webhook Subscriptions
 		public WebhookSubscriptionManager(
 			IWebhookSubscriptionRepository<TSubscription> subscriptionStore,
 			IWebhookSubscriptionValidator<TSubscription>? validator = null,
@@ -59,6 +59,10 @@ namespace Deveel.Webhooks {
 		/// </summary>
 		public IQueryable<TSubscription> Subscriptions => base.Entities;
 
+		/// <summary>
+		/// Gets an instance of the repository that implements 
+		/// the webhook subscriptions operations.
+		/// </summary>
 		protected virtual IWebhookSubscriptionRepository<TSubscription> SubscriptionRepository {
 			get {
 				ThrowIfDisposed();
@@ -66,6 +70,35 @@ namespace Deveel.Webhooks {
 			}
 		}
 
+		// TODO: fix this in Deveel Repository, to configure if to 
+		//       compare the two entities and disable the comparison by default...
+		/// <inheritdoc/>
+		protected override bool AreEqual(TSubscription existing, TSubscription other) => false;
+
+		public virtual Task<WebhookSubscriptionStatus> GetStatusAsync(TSubscription subscription, CancellationToken? cancellationToken = null) {
+			try {
+				return SubscriptionRepository.GetStatusAsync(subscription, GetCancellationToken(cancellationToken));
+			} catch (Exception ex) {
+				Logger.LogError(ex, "Error while trying to get the status of subscription {SubscriptionId}", subscription.SubscriptionId);
+				throw new WebhookException("Error while trying to get the current status of the subscription", ex);
+			}
+		}
+
+		/// <summary>
+		/// Gets the list of subscriptions that are listening for a given 
+		/// event type.
+		/// </summary>
+		/// <param name="eventType">
+		/// The event type to get the subscriptions for.
+		/// </param>
+		/// <param name="activeOnly">
+		/// Indicates whether only active subscriptions should be returned.
+		/// </param>
+		/// <returns>
+		/// Returns a list of subscriptions that are listening for a given 
+		/// event type.
+		/// </returns>
+		/// <exception cref="WebhookException"></exception>
 		public virtual async Task<IList<TSubscription>> GetByEventTypeAsync(string eventType, bool? activeOnly) {
 			try {
 				return await SubscriptionRepository.GetByEventTypeAsync(eventType, activeOnly, CancellationToken);
@@ -93,7 +126,9 @@ namespace Deveel.Webhooks {
         /// </exception>
         public async Task<OperationResult> SetStatusAsync(TSubscription subscription, WebhookSubscriptionStatus status) {
             try {
-                if (subscription.Status == status) {
+				var currentStatus = await SubscriptionRepository.GetStatusAsync(subscription, CancellationToken);
+
+                if (currentStatus == status) {
                     Logger.LogTrace("The subscription {SubscriptionId} is already {Status}", subscription.SubscriptionId, status);
 					return OperationResult.NotModified;
                 }
@@ -102,13 +137,13 @@ namespace Deveel.Webhooks {
 
                 Logger.LogInformation("The status of subscription {SubscriptionId} was changed to {Status}", subscription.SubscriptionId, status);
 
-				return OperationResult.Success;
+				return await UpdateAsync(subscription);
             } catch (WebhookException ex) {
 				Logger.LogError(ex, "Error while trying to change the status of subscription {SubscriptionId}", subscription.SubscriptionId);
-				return OperationResult.Fail("WEBHOOK_UNKNOWN_ERROR", "Unhandled error while changing the status");
+				return Fail("WEBHOOK_UNKNOWN_ERROR", "Unhandled error while changing the status");
             } catch (Exception ex) {
                 Logger.LogError(ex, "Error while trying to change the state of subscription {SubscriptionId}", subscription.SubscriptionId);
-                throw new WebhookException("Could not change the state of the subscription", ex);
+				return Fail("WEBHOOK_UNKNOWN_ERROR", "Unhandled error while changing the status");
             }
         }
 

@@ -6,6 +6,8 @@
     <Nullable>enable</Nullable>
     <RootNamespace>Deveel</RootNamespace>
     <IsTestProject>false</IsTestProject>
+    <IsPackable>false</IsPackable>
+    <TestProject>false</TestProject>
   </PropertyGroup>
 
   <ItemGroup>

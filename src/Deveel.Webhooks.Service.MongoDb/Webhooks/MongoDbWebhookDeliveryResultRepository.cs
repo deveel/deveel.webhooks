@@ -17,14 +17,14 @@ namespace Deveel.Webhooks {
 	/// A default implementation of the <see cref="IWebhookDeliveryResultRepository{T}"/>
 	/// that uses the <see cref="MongoWebhookDeliveryResult"/> as the entity
 	/// </summary>
-    public class MongoDbWebhookDeliveryResultStore : MongoDbWebhookDeliveryResultStore<MongoWebhookDeliveryResult> {
+    public class MongoDbWebhookDeliveryResultRepository : MongoDbWebhookDeliveryResultRepository<MongoWebhookDeliveryResult> {
 		/// <summary>
 		/// Constructs the store with the given context.
 		/// </summary>
 		/// <param name="context">
 		/// The context to the MongoDB database.
 		/// </param>
-		public MongoDbWebhookDeliveryResultStore(MongoDbWebhookContext context) : base(context) {
+		public MongoDbWebhookDeliveryResultRepository(MongoDbWebhookContext context) : base(context) {
 		}
 	}
 }

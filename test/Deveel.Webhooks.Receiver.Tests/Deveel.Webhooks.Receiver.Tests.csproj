@@ -7,6 +7,7 @@
     <RootNamespace>Deveel</RootNamespace>
     <IsPackable>false</IsPackable>
     <IsTestProject>false</IsTestProject>
+    <TestProject>false</TestProject>
   </PropertyGroup>
 
   <ItemGroup>

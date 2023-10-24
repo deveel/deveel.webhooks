@@ -40,8 +40,8 @@ namespace Deveel.Webhooks {
 		/// A cancellation token used to cancel the validation
 		/// </param>
 		/// <returns>
-		/// Returns a <see cref="WebhookValidationResult"/> that indicates
-		/// whether the subscription is valid or not.
+		/// Returns an <see cref="IAsyncEnumerable{T}"/> that yields
+		/// all the validation results.
 		/// </returns>
 		public virtual async IAsyncEnumerable<ValidationResult> ValidateAsync(EntityManager<TSubscription> manager, TSubscription subscription, [EnumeratorCancellation] CancellationToken cancellationToken) {
 			cancellationToken.ThrowIfCancellationRequested();
@@ -49,22 +49,32 @@ namespace Deveel.Webhooks {
 			if (!ValidateUrl(subscription, out var result))
 				yield return result!;
 
-			await Task.CompletedTask;
+			await foreach (var statusValidation in ValidateStatusAsync((WebhookSubscriptionManager<TSubscription>)manager, subscription, cancellationToken))
+				yield return statusValidation;
+		}
+
+		private static async IAsyncEnumerable<ValidationResult> ValidateStatusAsync(WebhookSubscriptionManager<TSubscription> manager, TSubscription subscription, [EnumeratorCancellation] CancellationToken cancellationToken) {
+			// TODO: check if the entity is new or not, and if not new
+			//       check if the status is changed from the previous one
+			var newStatus = await manager.GetStatusAsync(subscription, cancellationToken);
+
+			if (newStatus == WebhookSubscriptionStatus.None)
+				yield return new ValidationResult("The subscription status is not valid", new[] { nameof(IWebhookSubscription.Status) });
 		}
 
 		private static bool ValidateUrl(TSubscription subscription, out ValidationResult? result) {
 			if (String.IsNullOrWhiteSpace(subscription.DestinationUrl)) {
-				result = new ValidationResult("The destination URL of the webhook is missing");
+				result = new ValidationResult("The destination URL of the webhook is missing", new[] { nameof(IWebhookSubscription.DestinationUrl) });
 				return false;
 			}
 
 			if (!Uri.TryCreate(subscription.DestinationUrl, UriKind.Absolute, out var url)) {
-				result = new ValidationResult("The destination URL format is invalid");
+				result = new ValidationResult("The destination URL format is invalid", new[] { nameof(IWebhookSubscription.DestinationUrl)});
 				return false;
 			}
 
 			if (url == null) {
-				result = new ValidationResult("The destination URL format is invalid");
+				result = new ValidationResult("The destination URL format is invalid", new[] { nameof(IWebhookSubscription.DestinationUrl) });
 				return false;
 			}
 
@@ -73,7 +83,7 @@ namespace Deveel.Webhooks {
 
 			if (url.Scheme != Uri.UriSchemeHttps &&
 				url.Scheme != Uri.UriSchemeHttp) {
-				result = new ValidationResult($"URL scheme '{url.Scheme}' not supported");
+				result = new ValidationResult($"URL scheme '{url.Scheme}' not supported", new[] { nameof(IWebhookSubscription.DestinationUrl) });
 				return false;
 			}
 

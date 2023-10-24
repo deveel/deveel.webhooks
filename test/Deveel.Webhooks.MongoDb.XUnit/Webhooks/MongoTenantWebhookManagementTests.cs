@@ -11,11 +11,12 @@ using Finbuckle.MultiTenant;
 using Microsoft.Extensions.DependencyInjection;
 
 using MongoDB.Bson;
+using MongoDB.Driver;
 
 using Xunit.Abstractions;
 
 namespace Deveel.Webhooks {
-	[Collection(nameof(MongoTestCollection))]
+	[Collection(nameof(MongoWebhookManagementTestCollection))]
 	public class MongoTenantWebhookManagementTests : WebhookManagementTestSuite<MongoWebhookSubscription> {
 		private readonly MongoTestDatabase mongo;
 		private readonly Faker<MongoWebhookSubscription> faker;
@@ -34,9 +35,9 @@ namespace Deveel.Webhooks {
 
 		protected string OtherTenantId { get; } = Guid.NewGuid().ToString();
 
-		protected override object GenerateSubscriptionKey() => ObjectId.GenerateNewId();
+		protected override Faker<MongoWebhookSubscription> Faker => faker;
 
-		protected override IReadOnlyList<MongoWebhookSubscription> GenerateSubscriptions(int count) => faker.Generate(count);
+		protected override object GenerateSubscriptionKey() => ObjectId.GenerateNewId();
 
 		protected IReadOnlyList<MongoWebhookSubscription> OtherSubscriptions { get; }
 
@@ -53,6 +54,12 @@ namespace Deveel.Webhooks {
 
 		protected override void ConfigureWebhookStorage(WebhookSubscriptionBuilder<MongoWebhookSubscription> options) {
 			options.UseMongoDb(db => db.UseMultiTenant());
+		}
+
+		protected override async Task DisposeAsync() {
+			var client = new MongoClient(mongo.GetConnectionString("webhooks1"));
+
+			await client.GetDatabase("webhooks1").DropCollectionAsync(MongoDbWebhookStorageConstants.SubscriptionCollectionName);
 		}
 	}
 }

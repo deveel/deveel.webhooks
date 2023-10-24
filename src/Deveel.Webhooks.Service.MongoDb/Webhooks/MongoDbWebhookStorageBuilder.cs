@@ -44,7 +44,7 @@ namespace Deveel.Webhooks {
 			Services.TryAddScoped<IMongoDbWebhookContext, MongoDbWebhookContext>();
 
 			Services.AddRepository<MongoDbWebhookSubscriptionRepository>();
-			Services.AddRepository<MongoDbWebhookDeliveryResultStore>();
+			Services.AddRepository<MongoDbWebhookDeliveryResultRepository>();
 
 			Services.TryAddSingleton(typeof(IMongoWebhookConverter<>), typeof(DefaultMongoWebhookConverter<>));
 		}
@@ -115,7 +115,7 @@ namespace Deveel.Webhooks {
 
 			Services.AddScoped<IMongoDbWebhookContext>(sp => sp.GetRequiredService<MongoDbWebhookTenantContext>());
 			Services.AddRepositoryProvider<MongoDbWebhookSubscriptionRepositoryProvider<MongoDbWebhookTenantContext, TTenantInfo>>();
-			Services.AddRepositoryProvider<MongoDbWebhookDeliveryResultStoreProvider<TTenantInfo>>();
+			Services.AddRepositoryProvider<MongoDbWebhookDeliveryResultRepositoryProvider<TTenantInfo>>();
 
             return this;
 		}
@@ -158,13 +158,13 @@ namespace Deveel.Webhooks {
 		/// </summary>
 		/// <typeparam name="TStore">
 		/// The type of the storage to use for storing the webhook delivery results,
-		/// derived from <see cref="MongoDbWebhookDeliveryResultStore"/>.
+		/// derived from <see cref="MongoDbWebhookDeliveryResultRepository"/>.
 		/// </typeparam>
 		/// <returns>
 		/// Returns the current instance of the builder for chaining.
 		/// </returns>
 		public MongoDbWebhookStorageBuilder<TSubscription> UseDeliveryResultStore<TStore>()
-			where TStore : MongoDbWebhookDeliveryResultStore {
+			where TStore : MongoDbWebhookDeliveryResultRepository {
 			Services.AddRepository<TStore>();
 			// Services.AddScoped<IWebhookDeliveryResultStore<MongoWebhookDeliveryResult>, TStore>();
 

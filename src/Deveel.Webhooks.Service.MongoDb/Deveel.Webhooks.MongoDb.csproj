@@ -14,7 +14,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="Deveel.Repository.MongoFramework" Version="1.2.6-6603323020" />
+      <PackageReference Include="Deveel.Repository.MongoFramework" Version="1.2.6-6618971964" />
     </ItemGroup>
 
     <ItemGroup>

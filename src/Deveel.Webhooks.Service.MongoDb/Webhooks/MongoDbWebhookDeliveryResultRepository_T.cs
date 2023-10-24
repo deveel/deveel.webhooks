@@ -30,7 +30,7 @@ namespace Deveel.Webhooks {
 	/// <typeparam name="TResult">
 	/// The type of the result that is stored in the database.
 	/// </typeparam>
-	public class MongoDbWebhookDeliveryResultStore<TResult> : MongoRepository<TResult>,
+	public class MongoDbWebhookDeliveryResultRepository<TResult> : MongoRepository<TResult>,
 		IWebhookDeliveryResultRepository<TResult>
 		where TResult : MongoWebhookDeliveryResult {
 
@@ -40,7 +40,7 @@ namespace Deveel.Webhooks {
 		/// <param name="context">
 		/// The context to the MongoDB database.
 		/// </param>
-		public MongoDbWebhookDeliveryResultStore(IMongoDbWebhookContext context, ILogger<MongoDbWebhookDeliveryResultStore<TResult>>? logger = null) 
+		public MongoDbWebhookDeliveryResultRepository(IMongoDbWebhookContext context, ILogger<MongoDbWebhookDeliveryResultRepository<TResult>>? logger = null) 
 			: base(context, logger) {
 		}
 

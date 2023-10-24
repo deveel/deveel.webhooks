@@ -3,19 +3,16 @@
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
+    <LangVersion>11.0</LangVersion>
     <Nullable>enable</Nullable>
     <RootNamespace>Deveel</RootNamespace>
     <IsPackable>false</IsPackable>
     <IsTestProject>true</IsTestProject>
-    <NoWarn>1701;1702;CS8618</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="RichardSzalay.MockHttp" Version="6.0.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\..\src\Deveel.Webhooks.Sender\Deveel.Webhooks.Sender.csproj" />
+    <ProjectReference Include="..\..\src\Deveel.Webhooks.Receiver.SendGrid\Deveel.Webhooks.Receiver.SendGrid.csproj" />
+    <ProjectReference Include="..\..\test\Deveel.Webhooks.Receiver.Tests\Deveel.Webhooks.Receiver.Tests.csproj" />
   </ItemGroup>
 
   <ItemGroup>

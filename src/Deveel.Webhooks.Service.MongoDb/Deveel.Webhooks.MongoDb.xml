@@ -524,10 +524,28 @@
         <member name="M:Deveel.Webhooks.MongoDbWebhookSubscriptionRepository`1.GetByEventTypeAsync(System.String,System.Nullable{System.Boolean},System.Threading.CancellationToken)">
             <inheritdoc/>
         </member>
+        <member name="M:Deveel.Webhooks.MongoDbWebhookSubscriptionRepository`1.GetEventTypesAsync(`0,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Deveel.Webhooks.MongoDbWebhookSubscriptionRepository`1.AddEventTypesAsync(`0,System.String[],System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Deveel.Webhooks.MongoDbWebhookSubscriptionRepository`1.RemoveEventTypesAsync(`0,System.String[],System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
         <member name="M:Deveel.Webhooks.MongoDbWebhookSubscriptionRepository`1.GetStatusAsync(`0,System.Threading.CancellationToken)">
             <inheritdoc/>
         </member>
         <member name="M:Deveel.Webhooks.MongoDbWebhookSubscriptionRepository`1.SetStatusAsync(`0,Deveel.Webhooks.WebhookSubscriptionStatus,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Deveel.Webhooks.MongoDbWebhookSubscriptionRepository`1.GetHeadersAsync(`0,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Deveel.Webhooks.MongoDbWebhookSubscriptionRepository`1.AddHeadersAsync(`0,System.Collections.Generic.IDictionary{System.String,System.String},System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Deveel.Webhooks.MongoDbWebhookSubscriptionRepository`1.RemoveHeadersAsync(`0,System.String[],System.Threading.CancellationToken)">
             <inheritdoc/>
         </member>
         <member name="T:Deveel.Webhooks.MongoDbWebhookTenantContext">

@@ -7,6 +7,7 @@
 	public static class WebhookSubscriptionErrorCodes {
 		public const string UnknownError = "WEBHOOK_SUBSCRIPTION_UNKNOWN_ERROR";
 		public const string SubscriptionInvalid = "WEBHOOK_SUBSCRIPTION_INVALID";
+		public const string InvalidStatus = "WEBHOOK_SUBSCRIPTION_STATUS_INVALID";
 		public const string SubscriptionNotFound = "WEBHOOK_SUBSCRIPTION_NOT_FOUND";
 	}
 }

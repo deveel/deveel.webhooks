@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
 using System.ComponentModel.DataAnnotations;
 using System.Runtime.CompilerServices;
 
@@ -49,17 +48,7 @@ namespace Deveel.Webhooks {
 			if (!ValidateUrl(subscription, out var result))
 				yield return result!;
 
-			await foreach (var statusValidation in ValidateStatusAsync((WebhookSubscriptionManager<TSubscription>)manager, subscription, cancellationToken))
-				yield return statusValidation;
-		}
-
-		private static async IAsyncEnumerable<ValidationResult> ValidateStatusAsync(WebhookSubscriptionManager<TSubscription> manager, TSubscription subscription, [EnumeratorCancellation] CancellationToken cancellationToken) {
-			// TODO: check if the entity is new or not, and if not new
-			//       check if the status is changed from the previous one
-			var newStatus = await manager.GetStatusAsync(subscription, cancellationToken);
-
-			if (newStatus == WebhookSubscriptionStatus.None)
-				yield return new ValidationResult("The subscription status is not valid", new[] { nameof(IWebhookSubscription.Status) });
+			await Task.CompletedTask;
 		}
 
 		private static bool ValidateUrl(TSubscription subscription, out ValidationResult? result) {

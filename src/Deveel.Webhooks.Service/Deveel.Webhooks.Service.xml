@@ -506,7 +506,7 @@
             </returns>
             <exception cref="T:Deveel.Webhooks.WebhookException"></exception>
         </member>
-        <member name="M:Deveel.Webhooks.WebhookSubscriptionManager`1.SetStatusAsync(`0,Deveel.Webhooks.WebhookSubscriptionStatus)">
+        <member name="M:Deveel.Webhooks.WebhookSubscriptionManager`1.SetStatusAsync(`0,Deveel.Webhooks.WebhookSubscriptionStatus,System.Nullable{System.Threading.CancellationToken})">
             <summary>
             Sets the new status of a subscription.
             </summary>
@@ -524,7 +524,7 @@
             an unhanded exception.
             </exception>
         </member>
-        <member name="M:Deveel.Webhooks.WebhookSubscriptionManager`1.DisableAsync(`0)">
+        <member name="M:Deveel.Webhooks.WebhookSubscriptionManager`1.DisableAsync(`0,System.Nullable{System.Threading.CancellationToken})">
             <summary>
             Disables a webhook subscription by setting its status to <see cref="F:Deveel.Webhooks.WebhookSubscriptionStatus.Suspended"/>.
             </summary>
@@ -535,9 +535,9 @@
             Returns <c>true</c> if the subscription was disabled, or <c>false</c>
             if the subscription was already disabled.
             </returns>
-            <seealso cref="M:Deveel.Webhooks.WebhookSubscriptionManager`1.SetStatusAsync(`0,Deveel.Webhooks.WebhookSubscriptionStatus)"/>
+            <seealso cref="M:Deveel.Webhooks.WebhookSubscriptionManager`1.SetStatusAsync(`0,Deveel.Webhooks.WebhookSubscriptionStatus,System.Nullable{System.Threading.CancellationToken})"/>
         </member>
-        <member name="M:Deveel.Webhooks.WebhookSubscriptionManager`1.EnableAsync(`0)">
+        <member name="M:Deveel.Webhooks.WebhookSubscriptionManager`1.EnableAsync(`0,System.Nullable{System.Threading.CancellationToken})">
             <summary>
             Enables a webhook subscription by setting its status to <see cref="F:Deveel.Webhooks.WebhookSubscriptionStatus.Active"/>.
             </summary>

@@ -58,7 +58,7 @@ namespace Deveel.Webhooks {
 		public IQueryable<TSubscription> AsQueryable() => Subscriptions.AsQueryable();
 
 		/// <inheritdoc/>
-		public Task<string> GetDestinationUrlAsync(TSubscription subscription, CancellationToken cancellationToken = default) {
+		public Task<string?> GetDestinationUrlAsync(TSubscription subscription, CancellationToken cancellationToken = default) {
 			ThrowIfDisposed();
 			cancellationToken.ThrowIfCancellationRequested();
 
@@ -89,6 +89,42 @@ namespace Deveel.Webhooks {
 		}
 
 		/// <inheritdoc/>
+		public Task<string[]> GetEventTypesAsync(TSubscription subscription, CancellationToken cancellationToken = default) {
+			ThrowIfDisposed();
+			cancellationToken.ThrowIfCancellationRequested();
+
+			return Task.FromResult(subscription.EventTypes?.ToArray() ?? Array.Empty<string>());
+		}
+
+		/// <inheritdoc/>
+		public Task AddEventTypesAsync(TSubscription subscription, string[] eventTypes, CancellationToken cancellationToken = default) {
+			ThrowIfDisposed();
+			cancellationToken.ThrowIfCancellationRequested();
+
+			if (subscription.EventTypes == null)
+				subscription.EventTypes = new List<string>();
+
+			subscription.EventTypes.AddRange(eventTypes);
+
+			return Task.CompletedTask;
+		}
+
+		/// <inheritdoc/>
+		public Task RemoveEventTypesAsync(TSubscription subscription, string[] eventTypes, CancellationToken cancellationToken = default) {
+			ThrowIfDisposed();
+			cancellationToken.ThrowIfCancellationRequested();
+
+			if (subscription.EventTypes == null)
+				return Task.CompletedTask;
+
+			foreach (var eventType in eventTypes) {
+				subscription.EventTypes.Remove(eventType);
+			}
+
+			return Task.CompletedTask;
+		}
+
+		/// <inheritdoc/>
 		public Task<WebhookSubscriptionStatus> GetStatusAsync(TSubscription subscription, CancellationToken cancellationToken = default) {
 			ThrowIfDisposed();
 			cancellationToken.ThrowIfCancellationRequested();
@@ -102,6 +138,44 @@ namespace Deveel.Webhooks {
 
 			subscription.Status = status;
 			subscription.LastStatusTime = DateTimeOffset.UtcNow;
+
+			return Task.CompletedTask;
+		}
+
+		/// <inheritdoc/>
+		public Task<IDictionary<string, string>> GetHeadersAsync(TSubscription subscription, CancellationToken cancellationToken = default) {
+			ThrowIfDisposed();
+			cancellationToken.ThrowIfCancellationRequested();
+
+			return Task.FromResult<IDictionary<string, string>>(subscription.Headers ?? new Dictionary<string, string>());
+		}
+
+		/// <inheritdoc/>
+		public Task AddHeadersAsync(TSubscription subscription, IDictionary<string, string> headers, CancellationToken cancellationToken = default) {
+			ThrowIfDisposed();
+			cancellationToken.ThrowIfCancellationRequested();
+
+			if (subscription.Headers == null)
+				subscription.Headers = new Dictionary<string, string>();
+
+			foreach (var header in headers) {
+				subscription.Headers[header.Key] = header.Value;
+			}
+
+			return Task.CompletedTask;
+		}
+
+		/// <inheritdoc/>
+		public Task RemoveHeadersAsync(TSubscription subscription, string[] headerNames, CancellationToken cancellationToken = default) {
+			ThrowIfDisposed();
+			cancellationToken.ThrowIfCancellationRequested();
+
+			if (subscription.Headers == null)
+				return Task.CompletedTask;
+
+			foreach (var headerName in headerNames) {
+				subscription.Headers.Remove(headerName);
+			}
 
 			return Task.CompletedTask;
 		}

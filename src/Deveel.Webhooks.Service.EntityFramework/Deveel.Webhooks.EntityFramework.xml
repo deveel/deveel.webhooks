@@ -421,6 +421,24 @@
         <member name="M:Deveel.Webhooks.EntityWebhookSubscriptionRepository`1.SetStatusAsync(`0,Deveel.Webhooks.WebhookSubscriptionStatus,System.Threading.CancellationToken)">
             <inheritdoc/>
         </member>
+        <member name="M:Deveel.Webhooks.EntityWebhookSubscriptionRepository`1.GetEventTypesAsync(`0,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Deveel.Webhooks.EntityWebhookSubscriptionRepository`1.AddEventTypesAsync(`0,System.String[],System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Deveel.Webhooks.EntityWebhookSubscriptionRepository`1.RemoveEventTypesAsync(`0,System.String[],System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Deveel.Webhooks.EntityWebhookSubscriptionRepository`1.GetHeadersAsync(`0,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Deveel.Webhooks.EntityWebhookSubscriptionRepository`1.AddHeadersAsync(`0,System.Collections.Generic.IDictionary{System.String,System.String},System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Deveel.Webhooks.EntityWebhookSubscriptionRepository`1.RemoveHeadersAsync(`0,System.String[],System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
         <member name="T:Deveel.Webhooks.IDbWebhookConverter`1">
             <summary>
             A service that converts a <see cref="T:Deveel.Webhooks.IWebhook"/> object into a <see cref="T:Deveel.Webhooks.DbWebhook"/>

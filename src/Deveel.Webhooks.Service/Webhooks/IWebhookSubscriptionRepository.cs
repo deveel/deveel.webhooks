@@ -28,7 +28,7 @@ namespace Deveel.Webhooks {
 	/// </typeparam>
 	public interface IWebhookSubscriptionRepository<TSubscription> : IRepository<TSubscription>
 		where TSubscription : class, IWebhookSubscription {
-		Task<string> GetDestinationUrlAsync(TSubscription subscription, CancellationToken cancellationToken = default);
+		Task<string?> GetDestinationUrlAsync(TSubscription subscription, CancellationToken cancellationToken = default);
 
 		Task SetDestinationUrlAsync(TSubscription subscription, string url, CancellationToken cancellationToken = default);
 
@@ -70,5 +70,17 @@ namespace Deveel.Webhooks {
 		/// Returns a task that completes when the status is set.
 		/// </returns>
 		Task SetStatusAsync(TSubscription subscription, WebhookSubscriptionStatus status, CancellationToken cancellationToken = default);
+
+		Task<string[]> GetEventTypesAsync(TSubscription subscription, CancellationToken cancellationToken = default);
+
+		Task AddEventTypesAsync(TSubscription subscription, string[] eventTypes, CancellationToken cancellationToken = default);
+
+		Task RemoveEventTypesAsync(TSubscription subscription, string[] eventTypes, CancellationToken cancellationToken = default);
+
+		Task<IDictionary<string, string>> GetHeadersAsync(TSubscription subscription, CancellationToken cancellationToken = default);
+
+		Task AddHeadersAsync(TSubscription subscription, IDictionary<string, string> headers, CancellationToken cancellationToken = default);
+
+		Task RemoveHeadersAsync(TSubscription subscription, string[] headerNames, CancellationToken cancellationToken = default);
 	}
 }

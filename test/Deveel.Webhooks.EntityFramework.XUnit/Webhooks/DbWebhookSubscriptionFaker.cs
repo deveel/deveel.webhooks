@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using Bogus;
+﻿using Bogus;
 
 namespace Deveel.Webhooks {
 	public class DbWebhookSubscriptionFaker : Faker<DbWebhookSubscription> {
@@ -25,6 +19,29 @@ namespace Deveel.Webhooks {
 					.RuleFor(x => x.EventType, f => f.PickRandom(EventTypes));
 
 				return f2.Generate(2);
+			});
+			RuleFor(x => x.Headers, f => {
+				var headers = new Dictionary<string, string>();
+				for (var i = 0; i < f.Random.Int(1, 5); i++) {
+					headers[f.Random.Word()] = f.Lorem.Word();
+				}
+
+				return headers.Select(x => new DbWebhookSubscriptionHeader {
+					Key = x.Key,
+					Value = x.Value
+				}).ToList();
+			});
+			RuleFor(x => x.Properties, f => {
+				var properties = new Dictionary<string, object?>();
+				for (var i = 0; i < f.Random.Int(1, 5); i++) {
+					properties[f.Random.Word()] = f.Random.Bool() ? f.Random.Word() : f.Random.Int();
+				}
+
+				return properties.Select(x => new DbWebhookSubscriptionProperty {
+					Key = x.Key,
+					Value = DbWebhookValueConvert.ConvertToString(x.Value),
+					ValueType = DbWebhookValueConvert.GetValueType(x.Value)
+				}).ToList();
 			});
 		}
 

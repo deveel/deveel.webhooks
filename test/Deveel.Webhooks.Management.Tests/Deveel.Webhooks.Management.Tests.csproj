@@ -7,14 +7,16 @@
     <RootNamespace>Deveel</RootNamespace>
     <IsTestProject>false</IsTestProject>
     <IsPackable>false</IsPackable>
-    <TestProject>false</TestProject>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Bogus" Version="34.0.2" />
+    <PackageReference Include="xunit" Version="2.5.3"/>
     <PackageReference Include="MartinCostello.Logging.XUnit" Version="0.3.0" />
-    <PackageReference Include="xunit.assert" Version="2.5.3" />
-    <PackageReference Include="xunit.core" Version="2.5.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectCapability Remove="TestContainer" />
   </ItemGroup>
 
   <ItemGroup>

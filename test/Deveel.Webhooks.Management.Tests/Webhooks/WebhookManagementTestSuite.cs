@@ -106,7 +106,7 @@ namespace Deveel.Webhooks {
 
 		[Fact]
 		public async Task AddSubscription() {
-			var subscription = GenerateSubscription();
+			var subscription = GenerateSubscription(x => x.Status == WebhookSubscriptionStatus.None);
 
 			var result = await Manager.AddAsync(subscription);
 
@@ -148,6 +148,92 @@ namespace Deveel.Webhooks {
 			Assert.NotNull(error.ValidationResults);
 			Assert.NotEmpty(error.ValidationResults);
 			Assert.Contains(error.ValidationResults, x => x.MemberNames.Contains(nameof(IWebhookSubscription.DestinationUrl)));
+		}
+
+		[Fact]
+		public async Task SetNewDestinationUrl() {
+			var subscription = Subscriptions.Random();
+
+			var result = await Manager.SetDestinationUrlAsync(subscription, "http://new.example.com");
+
+			Assert.True(result.IsSuccess());
+			Assert.False(result.IsError());
+
+			var key = Repository.GetEntityKey(subscription);
+			var updated = await Repository.FindByKeyAsync(key!);
+
+			Assert.NotNull(updated);
+			Assert.Equal("http://new.example.com", updated.DestinationUrl);
+		}
+
+		[Theory]
+		[InlineData("")]
+		[InlineData(null)]
+		[InlineData("ftp://dest.example.com")]
+		[InlineData("test data")]
+		public async Task SetInvalidDestinationUrl(string url) {
+			var subscription = Subscriptions.Random();
+
+			var result = await Manager.SetDestinationUrlAsync(subscription, url);
+
+			Assert.False(result.IsSuccess());
+			Assert.True(result.IsError());
+			Assert.True(result.IsValidationError());
+
+			var error = Assert.IsType<EntityValidationError>(result.Error);
+
+			Assert.NotNull(error);
+			Assert.NotNull(error.ValidationResults);
+			Assert.NotEmpty(error.ValidationResults);
+			Assert.Contains(error.ValidationResults, x => x.MemberNames.Contains(nameof(IWebhookSubscription.DestinationUrl)));
+		}
+
+		[Fact]
+		public async Task SetEventTypes_AddNew() {
+			var subscription = Subscriptions.Random();
+
+			var eventTypes = new List<string>(subscription.EventTypes);
+			eventTypes.Add("user.created");
+
+			var result = await Manager.SetEventTypesAsync(subscription, eventTypes.ToArray());
+
+			Assert.True(result.IsSuccess());
+			Assert.False(result.IsError());
+
+			var key = Repository.GetEntityKey(subscription);
+			var updated = await Repository.FindByKeyAsync(key!);
+
+			Assert.NotNull(updated);
+			Assert.Contains("user.created", updated.EventTypes);
+		}
+
+		[Fact]
+		public async Task SetEventTypes_Remove() {
+			var subscription = Subscriptions.Random(x => x.EventTypes.Count() > 1);
+
+			var eventTypeToRemove = subscription.EventTypes.ElementAt(0);
+			var newEvents = subscription.EventTypes.Skip(1).ToArray();
+
+			var result = await Manager.SetEventTypesAsync(subscription, newEvents.ToArray());
+
+			Assert.True(result.IsSuccess());
+			Assert.False(result.IsError());
+
+			var key = Repository.GetEntityKey(subscription);
+			var updated = await Repository.FindByKeyAsync(key!);
+
+			Assert.NotNull(updated);
+			Assert.DoesNotContain(eventTypeToRemove, updated.EventTypes);
+		}
+
+		[Fact]
+		public async Task SetEventTypes_SameEvents() {
+			var subscription = Subscriptions.Random();
+
+			var result = await Manager.SetEventTypesAsync(subscription, subscription.EventTypes.ToArray());
+
+			Assert.False(result.IsSuccess());
+			Assert.True(result.IsNotModified());
 		}
 
 		[Fact]
@@ -219,10 +305,10 @@ namespace Deveel.Webhooks {
 
 			Assert.True(result.IsSuccess());
 
-			var found = await Repository.FindByKeyAsync(key);
+			var updated = await Repository.FindByKeyAsync(key);
 
-			Assert.NotNull(found);
-			Assert.Equal(WebhookSubscriptionStatus.Active, found.Status);
+			Assert.NotNull(updated);
+			Assert.Equal(WebhookSubscriptionStatus.Active, updated.Status);
 		}
 
 		[Fact]
@@ -250,6 +336,42 @@ namespace Deveel.Webhooks {
 
 			Assert.NotNull(found);
 			Assert.Equal(WebhookSubscriptionStatus.Suspended, found.Status);
+		}
+
+		[Fact]
+		public async Task AddNewHeaders() {
+			var subscription = Subscriptions.Random();
+
+			var headers = new Dictionary<string, string> {
+				{"X-Test-Header", "test value"}
+			};
+
+			var result = await Manager.SetHeadersAsync(subscription, headers);
+
+			Assert.True(result.IsSuccess());
+
+			var key = Repository.GetEntityKey(subscription);
+			var updated = await Repository.FindByKeyAsync(key!);
+
+			Assert.NotNull(updated);
+
+			Assert.NotNull(updated.Headers);
+			Assert.NotEmpty(updated.Headers);
+			Assert.Contains(updated.Headers, x => x.Key == "X-Test-Header" && x.Value == "test value");
+		}
+
+		[Fact]
+		public async Task AddExistingHeaders() {
+			var subscription = Subscriptions.Random(x => x.Headers?.Any() ?? false);
+
+			var headers = subscription.Headers!.ToDictionary(x => x.Key, x => x.Value);
+
+			await Manager.SetHeadersAsync(subscription, headers);
+
+			var result = await Manager.SetHeadersAsync(subscription, headers);
+
+			Assert.False(result.IsSuccess());
+			Assert.True(result.IsNotModified());
 		}
 
 		[Fact]

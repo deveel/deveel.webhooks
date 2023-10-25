@@ -48,7 +48,7 @@ namespace Deveel.Webhooks {
 
 		/// <inheritdoc/>
 		[Column("destination_url")]
-        public string DestinationUrl { get; set; }
+        public string? DestinationUrl { get; set; }
 
 		/// <inheritdoc/>
 		[Column("secret")]

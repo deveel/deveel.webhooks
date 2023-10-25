@@ -7,6 +7,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <RootNamespace>Deveel</RootNamespace>
     <NoWarn>1701;1702;CS8618</NoWarn>
+    <IsTestProject>true</IsTestProject>
   </PropertyGroup>
 
   <ItemGroup>
@@ -17,10 +18,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Deveel.Webhooks.Receiver.TestApi\Deveel.Webhooks.Receiver.TestApi.csproj" />
+    <None Include="..\..\apl-2.licenseheader" Link="apl-2.licenseheader" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="..\..\apl-2.licenseheader" Link="apl-2.licenseheader" />
+    <ProjectReference Include="..\..\api\Deveel.Webhooks.Receiver.TestApi\Deveel.Webhooks.Receiver.TestApi.csproj" />
   </ItemGroup>
 </Project>

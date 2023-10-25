@@ -73,9 +73,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Deveel.Webhooks.Receiver.Se
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Deveel.Webhooks.XUnit", "test\Deveel.Webhooks.XUnit\Deveel.Webhooks.XUnit.csproj", "{EBD3DB50-0E90-47C7-9DD8-FBBAC8696CE1}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "api", "api", "{52BEDF28-1C9A-4A85-919B-665F7469953D}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Deveel.Webhooks.Receiver.TestApi", "api\Deveel.Webhooks.Receiver.TestApi\Deveel.Webhooks.Receiver.TestApi.csproj", "{1B06F75E-8EB0-4D7D-97D7-530802609AB6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Deveel.Webhooks.Receiver.TestApi", "test\Deveel.Webhooks.Receiver.TestApi\Deveel.Webhooks.Receiver.TestApi.csproj", "{4942C858-277D-438D-B822-92055B8E8DF7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -199,10 +197,10 @@ Global
 		{EBD3DB50-0E90-47C7-9DD8-FBBAC8696CE1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EBD3DB50-0E90-47C7-9DD8-FBBAC8696CE1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EBD3DB50-0E90-47C7-9DD8-FBBAC8696CE1}.Release|Any CPU.Build.0 = Release|Any CPU
-		{1B06F75E-8EB0-4D7D-97D7-530802609AB6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1B06F75E-8EB0-4D7D-97D7-530802609AB6}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1B06F75E-8EB0-4D7D-97D7-530802609AB6}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1B06F75E-8EB0-4D7D-97D7-530802609AB6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4942C858-277D-438D-B822-92055B8E8DF7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4942C858-277D-438D-B822-92055B8E8DF7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4942C858-277D-438D-B822-92055B8E8DF7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4942C858-277D-438D-B822-92055B8E8DF7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -237,8 +235,7 @@ Global
 		{535BB807-E068-42C3-A7CD-CF0B0E5C942E} = {07F23FF6-2FE1-4072-BF37-9238E3750AA1}
 		{E669EE13-1CBB-453D-B3B0-5DA3B0B51FE6} = {07F23FF6-2FE1-4072-BF37-9238E3750AA1}
 		{EBD3DB50-0E90-47C7-9DD8-FBBAC8696CE1} = {07F23FF6-2FE1-4072-BF37-9238E3750AA1}
-		{52BEDF28-1C9A-4A85-919B-665F7469953D} = {07F23FF6-2FE1-4072-BF37-9238E3750AA1}
-		{1B06F75E-8EB0-4D7D-97D7-530802609AB6} = {52BEDF28-1C9A-4A85-919B-665F7469953D}
+		{4942C858-277D-438D-B822-92055B8E8DF7} = {07F23FF6-2FE1-4072-BF37-9238E3750AA1}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {E682A9F5-43D7-4D4C-82EA-953545B8F4DE}

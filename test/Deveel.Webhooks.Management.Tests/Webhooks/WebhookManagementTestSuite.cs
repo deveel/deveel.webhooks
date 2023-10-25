@@ -212,7 +212,7 @@ namespace Deveel.Webhooks {
 			var subscription = Subscriptions.Random(x => x.EventTypes.Count() > 1);
 
 			var eventTypeToRemove = subscription.EventTypes.ElementAt(0);
-			var newEvents = subscription.EventTypes.Skip(1).ToArray();
+			var newEvents = subscription.EventTypes.Except(new[] {eventTypeToRemove});
 
 			var result = await Manager.SetEventTypesAsync(subscription, newEvents.ToArray());
 

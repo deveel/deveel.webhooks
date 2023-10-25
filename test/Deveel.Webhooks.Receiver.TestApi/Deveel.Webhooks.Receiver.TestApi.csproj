@@ -1,0 +1,24 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>Deveel.Webhooks</RootNamespace>
+    <IsTestProject>false</IsTestProject>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectCapability Remove="TestContainer" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Deveel.Webhooks.Receiver.AspNetCore.NewtonsoftJson\Deveel.Webhooks.Receiver.AspNetCore.NewtonsoftJson.csproj" />
+    <ProjectReference Include="..\..\src\Deveel.Webhooks.Receiver.AspNetCore\Deveel.Webhooks.Receiver.AspNetCore.csproj" />
+    <ProjectReference Include="..\..\test\Deveel.Webhooks.Receiver.Tests\Deveel.Webhooks.Receiver.Tests.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\apl-2.licenseheader" Link="apl-2.licenseheader" />
+  </ItemGroup>
+</Project>

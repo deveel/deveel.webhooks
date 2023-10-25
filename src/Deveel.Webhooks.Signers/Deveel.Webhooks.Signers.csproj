@@ -5,6 +5,5 @@
     <RootNamespace>Deveel</RootNamespace>
     <Description>Abstractions and default implementations of services used to sign Webhooks to ensure their validity</Description>
     <PackageTags>webhooks;webhook;event;events;signer;sha256;sha1;sha-256;sha-1</PackageTags>
-    <DocumentationFile>./Deveel.Webhooks.Signers.xml</DocumentationFile>
   </PropertyGroup>
 </Project>

@@ -5,7 +5,6 @@
         <RootNamespace>Deveel</RootNamespace>
         <PackageTags>webhooks;webhook;sender;senders;newtonsoft;json;serializer;json-serializer</PackageTags>
         <Description>Extends the senders with a webhook serializer implemented using the Newtonsoft.Json library</Description>
-        <DocumentationFile>.\Deveel.Webhooks.Sender.NewtonsoftJson.xml</DocumentationFile>
     </PropertyGroup>
 
     <ItemGroup>

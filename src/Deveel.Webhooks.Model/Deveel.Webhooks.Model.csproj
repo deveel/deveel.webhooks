@@ -5,7 +5,5 @@
     <RootNamespace>Deveel</RootNamespace>
     <Description>Abstractions defining the model of the Webhook domain within the Deveel Webhooks Framework</Description>
     <PackageTags>webhooks;webhook;events;model;abstractions</PackageTags>
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <DocumentationFile>./Deveel.Webhooks.Model.xml</DocumentationFile>
   </PropertyGroup>  
 </Project>

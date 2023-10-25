@@ -5,7 +5,6 @@
         <RootNamespace>Deveel</RootNamespace>
         <PackageTags>webhooks;webhook;receiver;receivers;aspnet;aspnetcore;httpcontext;httprequest;newtonsoft;json;jsonparser</PackageTags>
         <Description>Extends the ASP.NET Core receivers with webhook parsers implemented using the Newtonsoft.Json library</Description>
-        <DocumentationFile>.\Deveel.Webhooks.Receiver.AspNetCore.NewtonsoftJson.xml</DocumentationFile>
     </PropertyGroup>
 
     <ItemGroup>

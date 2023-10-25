@@ -5,7 +5,6 @@
     <RootNamespace>Deveel</RootNamespace>
     <Description>Provides services for the sending of Webhooks to receivers</Description>
     <PackageTags>webhooks;webhook;events;event;sender;send;delivery;http</PackageTags>
-    <DocumentationFile>./Deveel.Webhooks.Sender.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>

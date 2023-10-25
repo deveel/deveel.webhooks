@@ -398,6 +398,25 @@
             Returns the current instance of the builder for chaining.
             </returns>
         </member>
+        <member name="M:Deveel.Webhooks.EntityWebhookStorageBuilder`1.UseResultType(System.Type)">
+            <summary>
+            Configures the storage to use the given type of result.
+            </summary>
+            <param name="type">
+            The type of the result to use, that must be derived from
+            the <see cref="T:Deveel.Webhooks.DbWebhookDeliveryResult"/> type.
+            </param>
+            <returns>
+            Returns the current instance of the builder for chaining.
+            </returns>
+            <exception cref="T:System.ArgumentNullException">
+            Thrown when the given <paramref name="type"/> is <c>null</c>.
+            </exception>
+            <exception cref="T:System.ArgumentException">
+            Thrown when the given <paramref name="type"/> is not derived from
+            <see cref="T:Deveel.Webhooks.DbWebhookDeliveryResult"/>.
+            </exception>
+        </member>
         <member name="T:Deveel.Webhooks.EntityWebhookSubscriptionRepository">
             <summary>
             A default implementation of <see cref="T:Deveel.Webhooks.IDbWebhookConverter`1"/> that

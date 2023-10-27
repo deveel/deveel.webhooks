@@ -5,6 +5,7 @@ using Bogus;
 namespace Deveel.Webhooks {
 	public class DbWebhookFaker : Faker<DbWebhook> {
 		public DbWebhookFaker() {
+			RuleFor(x => x.WebhookId, f => f.Random.Guid().ToString());
 			RuleFor(x => x.EventType, f => f.PickRandom(EventTypes));
 			RuleFor(x => x.TimeStamp, f => f.Date.Past());
 			RuleFor(x => x.Data, (f, w) => GenerateData(f, w));

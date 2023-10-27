@@ -15,6 +15,7 @@
 using Deveel.Data;
 
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace Deveel.Webhooks {
 	/// <summary>
@@ -25,25 +26,17 @@ namespace Deveel.Webhooks {
 	/// <typeparam name="TResult">
 	/// The type of delivery result to be stored in the database.
 	/// </typeparam>
-	public class EntityWebhookDeliveryResultStore<TResult> : EntityRepository<TResult>,
+	public class EntityWebhookDeliveryResultRepository<TResult> : EntityRepository<TResult>,
         IWebhookDeliveryResultRepository<TResult>
         where TResult : DbWebhookDeliveryResult {
-        private readonly WebhookDbContext context;
 
         /// <summary>
         /// Constructs the store with the given <see cref="WebhookDbContext"/>.
         /// </summary>
         /// <param name="context"></param>
-        public EntityWebhookDeliveryResultStore(WebhookDbContext context) : base(context) {
-            this.context = context;
+        public EntityWebhookDeliveryResultRepository(WebhookDbContext context, ILogger<EntityWebhookDeliveryResultRepository<TResult>>? logger = null) 
+			: base(context, logger) {
         }
-
-        /// <summary>
-        /// Gets the set of results stored in the database.
-        /// </summary>
-        protected DbSet<TResult> Results => context.Set<TResult>();
-
-		protected override DbSet<TResult> Entities => Results;
 
         /// <inheritdoc/>
         public async Task<TResult?> FindByWebhookIdAsync(string webhookId, CancellationToken cancellationToken) {

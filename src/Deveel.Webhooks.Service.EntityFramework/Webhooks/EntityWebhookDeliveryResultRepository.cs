@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace Deveel.Webhooks {
 	/// <summary>
@@ -20,10 +21,11 @@ namespace Deveel.Webhooks {
 	/// uses an Entity Framework Core <see cref="DbContext"/> to store the
 	/// delivery results of a webhook of type <see cref="DbWebhookDeliveryResult"/>.
 	/// </summary>
-	/// <seealso cref="EntityWebhookDeliveryResultStore{TResult}"/>
-	public sealed class EntityWebhookDeliveryResultStore : EntityWebhookDeliveryResultStore<DbWebhookDeliveryResult> {
+	/// <seealso cref="EntityWebhookDeliveryResultRepository{TResult}"/>
+	public sealed class EntityWebhookDeliveryResultRepository : EntityWebhookDeliveryResultRepository<DbWebhookDeliveryResult> {
 		/// <inheritdoc/>
-        public EntityWebhookDeliveryResultStore(WebhookDbContext context) : base(context) {
+        public EntityWebhookDeliveryResultRepository(WebhookDbContext context, ILogger<EntityWebhookDeliveryResultRepository>? logger = null) 
+			: base(context, logger) {
         }
     }
 }

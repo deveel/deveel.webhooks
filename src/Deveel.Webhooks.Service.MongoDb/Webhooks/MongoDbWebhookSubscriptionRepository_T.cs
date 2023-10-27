@@ -55,9 +55,6 @@ namespace Deveel.Webhooks {
 		protected IMongoDbSet<TSubscription> Subscriptions => base.DbSet;
 
 		/// <inheritdoc/>
-		public IQueryable<TSubscription> AsQueryable() => Subscriptions.AsQueryable();
-
-		/// <inheritdoc/>
 		public Task<string?> GetDestinationUrlAsync(TSubscription subscription, CancellationToken cancellationToken = default) {
 			ThrowIfDisposed();
 			cancellationToken.ThrowIfCancellationRequested();
@@ -94,6 +91,24 @@ namespace Deveel.Webhooks {
 			cancellationToken.ThrowIfCancellationRequested();
 
 			return Task.FromResult(subscription.EventTypes?.ToArray() ?? Array.Empty<string>());
+		}
+
+		/// <inheritdoc/>
+		public Task<string?> GetSecretAsync(TSubscription subscription, CancellationToken cancellationToken = default) {
+			ThrowIfDisposed();
+			cancellationToken.ThrowIfCancellationRequested();
+
+			return Task.FromResult(subscription.Secret);
+		}
+
+		/// <inheritdoc/>
+		public Task SetSecretAsync(TSubscription subscription, string? secret, CancellationToken cancellationToken = default) {
+			ThrowIfDisposed();
+			cancellationToken.ThrowIfCancellationRequested();
+
+			subscription.Secret = secret;
+
+			return Task.CompletedTask;
 		}
 
 		/// <inheritdoc/>
@@ -137,7 +152,6 @@ namespace Deveel.Webhooks {
 			cancellationToken.ThrowIfCancellationRequested();
 
 			subscription.Status = status;
-			subscription.LastStatusTime = DateTimeOffset.UtcNow;
 
 			return Task.CompletedTask;
 		}
@@ -175,6 +189,45 @@ namespace Deveel.Webhooks {
 
 			foreach (var headerName in headerNames) {
 				subscription.Headers.Remove(headerName);
+			}
+
+			return Task.CompletedTask;
+		}
+
+		/// <inheritdoc/>
+		public Task<IDictionary<string, object>> GetPropertiesAsync(TSubscription subscription, CancellationToken cancellationToken = default) {
+			ThrowIfDisposed();
+			cancellationToken.ThrowIfCancellationRequested();
+
+			var props = subscription.Properties ?? new Dictionary<string, object>();
+			return Task.FromResult<IDictionary<string, object>>(props);
+		}
+
+		/// <inheritdoc/>
+		public Task AddPropertiesAsync(TSubscription subscription, IDictionary<string, object> properties, CancellationToken cancellationToken = default) {
+			ThrowIfDisposed();
+			cancellationToken.ThrowIfCancellationRequested();
+
+			if (subscription.Properties == null)
+				subscription.Properties = new Dictionary<string, object>();
+
+			foreach (var property in properties) {
+				subscription.Properties[property.Key] = property.Value;
+			}
+
+			return Task.CompletedTask;
+		}
+
+		/// <inheritdoc/>
+		public Task RemovePropertiesAsync(TSubscription subscription, string[] propertyNames, CancellationToken cancellationToken = default) {
+			ThrowIfDisposed();
+			cancellationToken.ThrowIfCancellationRequested();
+
+			if (subscription.Properties == null)
+				return Task.CompletedTask;
+
+			foreach (var propertyName in propertyNames) {
+				subscription.Properties.Remove(propertyName);
 			}
 
 			return Task.CompletedTask;

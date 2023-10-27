@@ -2,8 +2,13 @@
 
 namespace Deveel.Webhooks {
 	public class DbWebhookDeliveryResultFaker : Faker<DbWebhookDeliveryResult> {
-		public DbWebhookDeliveryResultFaker(int? eventId = null) {
-			RuleFor(x => x.EventId, eventId);
+		public DbWebhookDeliveryResultFaker(DbEventInfo? eventInfo = null) {
+			RuleFor(x => x.EventInfo, f => {
+				if (eventInfo != null)
+					return eventInfo;
+
+				return new DbEventInfoFaker().Generate();
+			});
 			RuleFor(x => x.OperationId, f => f.Random.Guid().ToString());
 			RuleFor(x => x.Webhook, f => new DbWebhookFaker().Generate());
 			RuleFor(x => x.Receiver, f => new DbWebhookReceiverFaker().Generate());

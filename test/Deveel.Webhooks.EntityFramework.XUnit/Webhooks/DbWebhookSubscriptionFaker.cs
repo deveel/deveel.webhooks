@@ -6,6 +6,7 @@ namespace Deveel.Webhooks {
 			RuleFor(x => x.Id, f => f.Random.Guid().ToString());
 			RuleFor(x => x.Name, f => f.Lorem.Word());
 			RuleFor(x => x.DestinationUrl, f => f.Internet.Url());
+			RuleFor(x => x.Secret, f => f.Internet.Password(20).OrNull(f));
 			RuleFor(x => x.Status, f => f.Random.Enum<WebhookSubscriptionStatus>());
 			RuleFor(x => x.Format, f => f.PickRandom<string>("json", "xml"));
 			RuleFor(x => x.Filters, f => new List<DbWebhookFilter> {

@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Microsoft.Extensions.Logging;
+
 namespace Deveel.Webhooks {
     /// <summary>
     /// A default implementation of <see cref="IDbWebhookConverter{TWebhook}"/> that
@@ -19,7 +21,8 @@ namespace Deveel.Webhooks {
     /// </summary>
     public class EntityWebhookSubscriptionRepository : EntityWebhookSubscriptionRepository<DbWebhookSubscription> {
         /// <inheritdoc/>
-        public EntityWebhookSubscriptionRepository(WebhookDbContext context) : base(context) {
+        public EntityWebhookSubscriptionRepository(WebhookDbContext context, ILogger<EntityWebhookSubscriptionRepository>? logger = null) 
+			: base(context, logger) {
         }
     }
 }

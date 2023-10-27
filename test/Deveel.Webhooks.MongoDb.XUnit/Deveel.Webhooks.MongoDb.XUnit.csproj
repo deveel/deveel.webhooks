@@ -19,6 +19,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\Deveel.Webhooks.DynamicLinq\Deveel.Webhooks.DynamicLinq.csproj" />
     <ProjectReference Include="..\..\src\Deveel.Webhooks.Service.MongoDb\Deveel.Webhooks.MongoDb.csproj" />
+    <ProjectReference Include="..\Deveel.Webhooks.DeliveryResultLogging.Tests\Deveel.Webhooks.DeliveryResultLogging.Tests.csproj" />
     <ProjectReference Include="..\Deveel.Webhooks.Management.Tests\Deveel.Webhooks.Management.Tests.csproj" />
   </ItemGroup>
 </Project>

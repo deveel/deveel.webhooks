@@ -115,7 +115,6 @@ namespace Deveel.Webhooks {
 		private async Task<string> CreateSubscriptionAsync(MongoWebhookSubscription subscription, bool enabled = true) {
 			if (enabled) {
 				subscription.Status = WebhookSubscriptionStatus.Active;
-				subscription.LastStatusTime = DateTime.Now;
 			}
 
 			subscription.TenantId = tenantId;

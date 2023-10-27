@@ -6,6 +6,7 @@ namespace Deveel.Webhooks {
 			RuleFor(x => x.TenantId, tenantId);
 			RuleFor(x => x.Name, f => f.Name.JobTitle());
 			RuleFor(x => x.EventTypes, f => f.Random.ListItems(EventTypes));
+			RuleFor(x => x.Secret, f => f.Internet.Password(20).OrNull(f));
 			RuleFor(x => x.Format, f => f.Random.ListItem(new[] { "json", "xml" }));
 			RuleFor(x => x.DestinationUrl, f => f.Internet.UrlWithPath("https"));
 			RuleFor(x => x.Status, f => f.Random.Enum<WebhookSubscriptionStatus>());

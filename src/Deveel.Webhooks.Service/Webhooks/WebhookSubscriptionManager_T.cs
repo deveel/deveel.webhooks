@@ -75,8 +75,6 @@ namespace Deveel.Webhooks {
 		/// <inheritdoc/>
 		protected override bool AreEqual(TSubscription existing, TSubscription other) => false;
 
-		internal object? GetSubscriptionId(TSubscription subscription) => GetEntityKey(subscription);
-
 		/// <inheritdoc/>
 		protected override IOperationError OperationError(string errorCode, string? message = null) {
 			errorCode = errorCode switch {
@@ -185,16 +183,6 @@ namespace Deveel.Webhooks {
 		public virtual Task<OperationResult> EnableAsync(TSubscription subscription, CancellationToken? cancellationToken = null) 
 			=> SetStatusAsync(subscription, WebhookSubscriptionStatus.Active, cancellationToken);
 
-		/// <inheritdoc/>
-		public virtual async Task<long> CountAllAsync() {
-			try {
-				return await base.CountAsync(QueryFilter.Empty);
-			} catch (Exception ex) {
-				Logger.LogUnknownError(ex);
-				throw new WebhookException("Could not count the subscriptions", ex);
-			}
-		}
-
 		public virtual async Task<OperationResult> SetEventTypesAsync(TSubscription subscription, string[] eventTypes, CancellationToken? cancellationToken = null) {
 			ThrowIfDisposed();
 
@@ -263,6 +251,43 @@ namespace Deveel.Webhooks {
 			} catch (Exception ex) {
 				Logger.LogUnknownSubscriptionError(ex, subscription.SubscriptionId);
 				return Fail(WebhookSubscriptionErrorCodes.UnknownError, "Unhandled error while setting the destination URL");
+			}
+		}
+
+		public async Task<OperationResult> SetSecretAsync(TSubscription subscription, string? secret, CancellationToken? cancellationToken = null) {
+			try {
+				var existing = await SubscriptionRepository.GetSecretAsync(subscription, GetCancellationToken(cancellationToken));
+				if (existing != null && existing.Equals(secret))
+					return OperationResult.NotModified;
+
+				await SubscriptionRepository.SetSecretAsync(subscription, secret, GetCancellationToken(cancellationToken));
+
+				return await UpdateAsync(subscription);
+			} catch (Exception ex) {
+				Logger.LogUnknownSubscriptionError(ex, subscription.SubscriptionId);
+				return Fail(WebhookSubscriptionErrorCodes.UnknownError, "Unhandled error while setting the secret");
+			}
+		}
+
+		public async Task<OperationResult> SetPropertiesAsync(TSubscription subscription, IDictionary<string, object> properties, CancellationToken? cancellationToken = null) {
+			try {
+				var existing = await SubscriptionRepository.GetPropertiesAsync(subscription, GetCancellationToken(cancellationToken));
+
+				var toAdd = properties.Where(x => !existing.ContainsKey(x.Key)).ToArray();
+				var toRemove = existing.Where(x => !properties.ContainsKey(x.Key)).ToArray();
+
+				if (toAdd.Length == 0 && toRemove.Length == 0)
+					return OperationResult.NotModified;
+
+				if (toAdd.Length > 0)
+					await SubscriptionRepository.AddPropertiesAsync(subscription, toAdd.ToDictionary(x => x.Key, x => x.Value), GetCancellationToken(cancellationToken));
+				if (toRemove.Length > 0)
+					await SubscriptionRepository.RemovePropertiesAsync(subscription, toRemove.Select(x => x.Key).ToArray(), GetCancellationToken(cancellationToken));
+
+				return await UpdateAsync(subscription);
+			} catch (Exception ex) {
+				Logger.LogUnknownSubscriptionError(ex, subscription.SubscriptionId);
+				return Fail(WebhookSubscriptionErrorCodes.UnknownError, "Unhandled error while setting the properties");
 			}
 		}
 	}

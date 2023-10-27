@@ -75,6 +75,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Deveel.Webhooks.XUnit", "te
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Deveel.Webhooks.Receiver.TestApi", "test\Deveel.Webhooks.Receiver.TestApi\Deveel.Webhooks.Receiver.TestApi.csproj", "{4942C858-277D-438D-B822-92055B8E8DF7}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Deveel.Webhooks.DeliveryResultLogging.Tests", "test\Deveel.Webhooks.DeliveryResultLogging.Tests\Deveel.Webhooks.DeliveryResultLogging.Tests.csproj", "{DDD9A4CB-AA5E-4C0B-87F3-CDC24F6A8DA0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -201,6 +203,10 @@ Global
 		{4942C858-277D-438D-B822-92055B8E8DF7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4942C858-277D-438D-B822-92055B8E8DF7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4942C858-277D-438D-B822-92055B8E8DF7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DDD9A4CB-AA5E-4C0B-87F3-CDC24F6A8DA0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DDD9A4CB-AA5E-4C0B-87F3-CDC24F6A8DA0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DDD9A4CB-AA5E-4C0B-87F3-CDC24F6A8DA0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DDD9A4CB-AA5E-4C0B-87F3-CDC24F6A8DA0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -236,6 +242,7 @@ Global
 		{E669EE13-1CBB-453D-B3B0-5DA3B0B51FE6} = {07F23FF6-2FE1-4072-BF37-9238E3750AA1}
 		{EBD3DB50-0E90-47C7-9DD8-FBBAC8696CE1} = {07F23FF6-2FE1-4072-BF37-9238E3750AA1}
 		{4942C858-277D-438D-B822-92055B8E8DF7} = {07F23FF6-2FE1-4072-BF37-9238E3750AA1}
+		{DDD9A4CB-AA5E-4C0B-87F3-CDC24F6A8DA0} = {07F23FF6-2FE1-4072-BF37-9238E3750AA1}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {E682A9F5-43D7-4D4C-82EA-953545B8F4DE}

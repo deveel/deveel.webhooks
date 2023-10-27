@@ -237,6 +237,50 @@ namespace Deveel.Webhooks {
 		}
 
 		[Fact]
+		public async Task SetNewSecret() {
+			var subscription = Subscriptions.Random();
+
+			var secret = new Faker().Internet.Password(20);
+
+			var result = await Manager.SetSecretAsync(subscription, secret);
+
+			Assert.True(result.IsSuccess());
+			Assert.False(result.IsError());
+
+			var key = Repository.GetEntityKey(subscription);
+			var updated = await Repository.FindByKeyAsync(key!);
+
+			Assert.NotNull(updated);
+			Assert.Equal(secret, updated.Secret);
+		}
+
+		[Fact]
+		public async Task SetSameSecret() {
+			var subscription = Subscriptions.Random(x => x.Secret != null);
+
+			var result = await Manager.SetSecretAsync(subscription, subscription.Secret);
+
+			Assert.False(result.IsSuccess());
+			Assert.True(result.IsNotModified());
+		}
+
+		[Fact]
+		public async Task RemoveSecret() {
+			var subscription = Subscriptions.Random(x => x.Secret != null);
+
+			var result = await Manager.SetSecretAsync(subscription, null);
+
+			Assert.True(result.IsSuccess());
+			Assert.False(result.IsError());
+
+			var key = Repository.GetEntityKey(subscription);
+			var updated = await Repository.FindByKeyAsync(key!);
+
+			Assert.NotNull(updated);
+			Assert.Null(updated.Secret);
+		}
+
+		[Fact]
 		public async Task FindExistingSubscription() {
 			var subscription = Subscriptions.Random();
 
@@ -375,6 +419,30 @@ namespace Deveel.Webhooks {
 		}
 
 		[Fact]
+		public async Task AddNewProperties() {
+			var subscription = Subscriptions.Random();
+
+			var properties = new Dictionary<string, object> {
+				{"testProperty", "test value"},
+				{ "testProperty2", 220 }
+			};
+
+			var result = await Manager.SetPropertiesAsync(subscription, properties);
+
+			Assert.True(result.IsSuccess());
+			Assert.False(result.IsNotModified());
+
+			var key = Repository.GetEntityKey(subscription);
+			var updated = await Repository.FindByKeyAsync(key!);
+
+			Assert.NotNull(updated);
+			Assert.NotNull(updated.Properties);
+			Assert.NotEmpty(updated.Properties);
+			Assert.Contains(updated.Properties, x => x.Key == "testProperty" && (string) x.Value == "test value");
+			Assert.Contains(updated.Properties, x => x.Key == "testProperty2" && (int) x.Value == 220);
+		}
+
+		[Fact]
 		public async Task GetSimplePage() {
 			var totalPages = (int)Math.Ceiling(Subscriptions.Count / (double)10);
 
@@ -407,6 +475,14 @@ namespace Deveel.Webhooks {
 			Assert.NotEmpty(result.Items);
 			Assert.Equal(items.Count, result.TotalItems);
 			Assert.Equal(totalPages, result.TotalPages);
+		}
+
+		[Fact]
+		public async Task CountAllSubscriptions() {
+			var subsCount = Subscriptions.Count;
+			var count = await Manager.CountAsync();
+
+			Assert.Equal(subsCount, count);
 		}
 	}
 }

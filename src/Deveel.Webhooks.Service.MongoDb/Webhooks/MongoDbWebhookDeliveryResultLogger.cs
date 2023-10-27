@@ -55,7 +55,7 @@ namespace Deveel.Webhooks {
 			IWebhookDeliveryResultRepositoryProvider<TResult> storeProvider, 
 			IMongoWebhookConverter<TWebhook>? webhookConverter = null,
 			ILogger<MongoDbWebhookDeliveryResultLogger<TWebhook, TResult>>? logger = null) {
-			StoreProvider = storeProvider;
+			RepositoryProvider = storeProvider;
             this.webhookConverter = webhookConverter;
             Logger = logger ?? NullLogger<MongoDbWebhookDeliveryResultLogger<TWebhook, TResult>>.Instance;
 		}
@@ -64,7 +64,7 @@ namespace Deveel.Webhooks {
 		/// Gets the provider used to resolve the MongoDB storage where to log
 		/// the delivery results.
 		/// </summary>
-		protected IWebhookDeliveryResultRepositoryProvider<TResult> StoreProvider { get; }
+		protected IWebhookDeliveryResultRepositoryProvider<TResult> RepositoryProvider { get; }
 
 		/// <summary>
 		/// Gets the logger used to log messages emitted by this service.
@@ -184,10 +184,8 @@ namespace Deveel.Webhooks {
 
 		/// <inheritdoc/>
 		public async Task LogResultAsync(EventInfo eventInfo, IWebhookSubscription subscription, WebhookDeliveryResult<TWebhook> result, CancellationToken cancellationToken) {
-			if (result is null) 
-				throw new ArgumentNullException(nameof(result));
-			if (subscription is null) 
-				throw new ArgumentNullException(nameof(subscription));
+			ArgumentNullException.ThrowIfNull(result, nameof(result));
+			ArgumentNullException.ThrowIfNull(subscription, nameof(subscription));
 
 			// TODO: we should support also non-multi-tenant scenarios...
 			if (String.IsNullOrWhiteSpace(subscription.TenantId))
@@ -199,7 +197,7 @@ namespace Deveel.Webhooks {
 			try {
 				var resultObj = ConvertResult(eventInfo, subscription, result);
 
-				var repository = await StoreProvider.GetRepositoryAsync(subscription.TenantId, cancellationToken);
+				var repository = await RepositoryProvider.GetRepositoryAsync(subscription.TenantId, cancellationToken);
 
 				await repository.AddAsync(resultObj, cancellationToken);
 			} catch (Exception ex) {

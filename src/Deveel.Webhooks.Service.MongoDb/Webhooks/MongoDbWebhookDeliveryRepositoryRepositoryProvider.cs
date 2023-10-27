@@ -32,7 +32,8 @@ namespace Deveel.Webhooks {
 	/// <typeparam name="TResult">
 	/// The type of the result that is stored in the database.
 	/// </typeparam>
-	public class MongoDbWebhookDeliveryResultRepositoryProvider<TTenantInfo, TResult> : MongoRepositoryProvider<MongoDbWebhookTenantContext, TResult, TTenantInfo>, IWebhookDeliveryResultRepositoryProvider<TResult>, IDisposable
+	public class MongoDbWebhookDeliveryResultRepositoryProvider<TTenantInfo, TResult> : MongoRepositoryProvider<MongoDbWebhookTenantContext, TResult, TTenantInfo>, 
+		IWebhookDeliveryResultRepositoryProvider<TResult>
 		where TTenantInfo : class, ITenantInfo, new()
 		where TResult : MongoWebhookDeliveryResult {
         /// <summary>

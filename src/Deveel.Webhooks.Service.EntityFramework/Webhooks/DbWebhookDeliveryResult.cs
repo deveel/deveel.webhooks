@@ -26,6 +26,8 @@ namespace Deveel.Webhooks {
 		/// <inheritdoc/>
         public string OperationId { get; set; }
 
+		public string? TenantId { get; set; }
+
         IEventInfo IWebhookDeliveryResult.EventInfo => EventInfo;
 
 		/// <summary>

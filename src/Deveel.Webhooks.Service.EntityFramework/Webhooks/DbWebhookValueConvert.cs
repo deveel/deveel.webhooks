@@ -40,8 +40,10 @@ namespace Deveel.Webhooks {
 
 			return valueType switch {
 				DbWebhookValueTypes.Boolean => ParseBoolean(value),
-				DbWebhookValueTypes.Integer => Int64.Parse(value, CultureInfo.InvariantCulture),
-				DbWebhookValueTypes.Number => Double.Parse(value, CultureInfo.InvariantCulture),
+				var x when x == DbWebhookValueTypes.Integer && Int32.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out var i32) => i32,
+				var x when x == DbWebhookValueTypes.Integer && Int64.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out var i64) => i64,
+				var x when x == DbWebhookValueTypes.Number && Double.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out var d) => d,
+				var x when x == DbWebhookValueTypes.Number && Single.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out var f) => f,
 				DbWebhookValueTypes.String => value,
 				DbWebhookValueTypes.DateTime => DateTime.Parse(value, CultureInfo.InvariantCulture),
 				_ => throw new NotSupportedException($"The value type '{valueType}' is not supported")

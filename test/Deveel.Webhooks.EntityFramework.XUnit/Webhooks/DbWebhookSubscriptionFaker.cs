@@ -16,10 +16,10 @@ namespace Deveel.Webhooks {
 				}
 			});
 			RuleFor(x => x.Events, f => {
-				var f2 = new Faker<DbWebhookSubscriptionEvent>()
-					.RuleFor(x => x.EventType, f => f.PickRandom(EventTypes));
-
-				return f2.Generate(2);
+				var eventTypes = f.PickRandom(EventTypes, f.Random.Int(1, 3));
+				return eventTypes.Select(x => new DbWebhookSubscriptionEvent {
+					EventType = x
+				}).ToList();
 			});
 			RuleFor(x => x.Headers, f => {
 				var headers = new Dictionary<string, string>();

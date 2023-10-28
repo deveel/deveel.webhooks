@@ -78,6 +78,18 @@ namespace Deveel.Webhooks {
 		/// </returns>
 		Task<IList<TSubscription>> GetByEventTypeAsync(string eventType, bool? activeOnly, CancellationToken cancellationToken = default);
 
+		/// <summary>
+		/// Gets the current status of the given subscription.
+		/// </summary>
+		/// <param name="subscription">
+		/// The instance of the subscription to get the status for.
+		/// </param>
+		/// <param name="cancellationToken">
+		/// A cancellation token used to cancel the operation.
+		/// </param>
+		/// <returns>
+		/// Returns the current status of the subscription.
+		/// </returns>
 		Task<WebhookSubscriptionStatus> GetStatusAsync(TSubscription subscription, CancellationToken cancellationToken = default);
 
 		/// <summary>

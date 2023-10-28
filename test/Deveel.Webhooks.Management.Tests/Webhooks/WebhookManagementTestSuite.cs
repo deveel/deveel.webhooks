@@ -189,6 +189,15 @@ namespace Deveel.Webhooks {
 		}
 
 		[Fact]
+		public async Task GetCurrentStatus() {
+			var subscription = Subscriptions.Random();
+
+			var status = await Manager.GetStatusAsync(subscription);
+
+			Assert.Equal(subscription.Status, status);
+		}
+
+		[Fact]
 		public async Task SetEventTypes_AddNew() {
 			var subscription = Subscriptions.Random();
 

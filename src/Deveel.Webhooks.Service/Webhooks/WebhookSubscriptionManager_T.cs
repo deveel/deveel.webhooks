@@ -87,6 +87,22 @@ namespace Deveel.Webhooks {
 			return base.OperationError(errorCode, message);
 		}
 
+		/// <summary>
+		/// Gets the current status of a given subscription.
+		/// </summary>
+		/// <param name="subscription">
+		/// The instance of the subscription to get the status.
+		/// </param>
+		/// <param name="cancellationToken">
+		/// A token used to cancel the operation.
+		/// </param>
+		/// <returns>
+		/// Returns the current status of the subscription.
+		/// </returns>
+		/// <exception cref="WebhookException">
+		/// Thrown if the status of the subscription could not be 
+		/// retrieved because of an unhanded exception.
+		/// </exception>
 		public virtual Task<WebhookSubscriptionStatus> GetStatusAsync(TSubscription subscription, CancellationToken? cancellationToken = null) {
 			try {
 				return SubscriptionRepository.GetStatusAsync(subscription, GetCancellationToken(cancellationToken));
@@ -183,6 +199,22 @@ namespace Deveel.Webhooks {
 		public virtual Task<OperationResult> EnableAsync(TSubscription subscription, CancellationToken? cancellationToken = null) 
 			=> SetStatusAsync(subscription, WebhookSubscriptionStatus.Active, cancellationToken);
 
+		/// <summary>
+		/// Sets the event types that a subscription is listening for.
+		/// </summary>
+		/// <param name="subscription">
+		/// The instance of the subscription to set the event types
+		/// that it is listening for.
+		/// </param>
+		/// <param name="eventTypes">
+		/// The list of event types that the subscription should listen for.
+		/// </param>
+		/// <param name="cancellationToken">
+		/// A token used to cancel the operation.
+		/// </param>
+		/// <returns>
+		/// Returns an object that represents the result of the operation.
+		/// </returns>
 		public virtual async Task<OperationResult> SetEventTypesAsync(TSubscription subscription, string[] eventTypes, CancellationToken? cancellationToken = null) {
 			ThrowIfDisposed();
 

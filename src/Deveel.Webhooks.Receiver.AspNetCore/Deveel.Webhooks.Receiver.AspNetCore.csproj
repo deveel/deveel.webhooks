@@ -1,20 +1,28 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-    <PropertyGroup>
-        <TargetFramework>net6.0</TargetFramework>
-        <RootNamespace>Deveel</RootNamespace>
-        <PackageTags>webhooks;webhooks;receiver;receivers;aspnet;aspnetcore;httprequest;middleware</PackageTags>
-        <Description>Provides an implementation of the webhook receivers supporting the ASP.NET Core infrastructure</Description>
-    </PropertyGroup>
+  <PropertyGroup>
+    <Title>Deveel Webhooks ASP.NET Core Receiver</Title>
+    <PackageTags>webhooks;webhooks;receiver;receivers;aspnet;aspnetcore;httprequest;middleware</PackageTags>
+    <Description>Provides an implementation of the webhook receivers supporting the ASP.NET Core infrastructure</Description>
+  </PropertyGroup>
 
-    <ItemGroup>
-      <FrameworkReference Include="Microsoft.AspNetCore.App"/>
-        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="6.0.0"/>
-        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="6.0.0"/>
-        <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="6.0.0"/>
-    </ItemGroup>
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App"/>
+  </ItemGroup>
+  
+  <ItemGroup Condition="'$(TargetFramework)' == 'net6.0'">
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="6.0.0"/>
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="6.0.0"/>
+    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="6.0.0"/>
+  </ItemGroup>
 
-    <ItemGroup>
-        <ProjectReference Include="..\Deveel.Webhooks.Signers\Deveel.Webhooks.Signers.csproj"/>
-    </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'net7.0'">
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="7.0.0"/>
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="7.0.0"/>
+    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="7.0.0"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Deveel.Webhooks.Signers\Deveel.Webhooks.Signers.csproj"/>
+  </ItemGroup>
 </Project>

@@ -1,18 +1,17 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-    <PropertyGroup>
-        <TargetFramework>net6.0</TargetFramework>
-        <RootNamespace>Deveel</RootNamespace>
-        <Description>An implementation of the Deveel Webhooks storage layer based on MongoDb</Description>
-        <PackageTags>webhooks;webhook;data;mongodb;mongo;subscription;subscriptions</PackageTags>
-    </PropertyGroup>
+  <PropertyGroup>
+    <Title>Deveel Webhooks MongoDB Data Layer</Title>
+    <Description>An implementation of the Deveel Webhooks storage layer based on MongoDb</Description>
+    <PackageTags>webhooks;webhook;data;mongodb;mongo;subscription;subscriptions</PackageTags>
+  </PropertyGroup>
 
-    <ItemGroup>
-      <PackageReference Include="Deveel.Repository.MongoFramework" Version="1.2.7" />
-    </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Deveel.Repository.MongoFramework" Version="1.2.7" />
+  </ItemGroup>
 
-    <ItemGroup>
-        <ProjectReference Include="..\Deveel.Webhooks.Service\Deveel.Webhooks.Service.csproj" />
-    </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Deveel.Webhooks.Service\Deveel.Webhooks.Service.csproj" />
+  </ItemGroup>
 
 </Project>

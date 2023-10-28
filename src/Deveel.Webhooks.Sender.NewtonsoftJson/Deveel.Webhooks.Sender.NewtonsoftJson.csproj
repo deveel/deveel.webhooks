@@ -1,18 +1,17 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-    <PropertyGroup>
-        <TargetFramework>net6.0</TargetFramework>
-        <RootNamespace>Deveel</RootNamespace>
-        <PackageTags>webhooks;webhook;sender;senders;newtonsoft;json;serializer;json-serializer</PackageTags>
-        <Description>Extends the senders with a webhook serializer implemented using the Newtonsoft.Json library</Description>
-    </PropertyGroup>
+  <PropertyGroup>
+    <Title>Deveel Webhooks Sender Newtonsoft JSON Serializer</Title>
+    <PackageTags>webhooks;webhook;sender;senders;newtonsoft;json;serializer;json-serializer</PackageTags>
+    <Description>Extends the senders with a webhook serializer implemented using the Newtonsoft.Json library</Description>
+  </PropertyGroup>
 
-    <ItemGroup>
-        <PackageReference Include="Newtonsoft.Json" Version="13.0.3"/>
-    </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3"/>
+  </ItemGroup>
 
-    <ItemGroup>
-        <ProjectReference Include="..\Deveel.Webhooks.Sender\Deveel.Webhooks.Sender.csproj" />
-    </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Deveel.Webhooks.Sender\Deveel.Webhooks.Sender.csproj" />
+  </ItemGroup>
 
 </Project>

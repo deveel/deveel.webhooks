@@ -1,15 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
-    <RootNamespace>Deveel</RootNamespace>
+    <Title>Deveel Webhooks Service</Title>
     <Description>Abstractions and default services for the management Webhook subscriptions and their resolution</Description>
     <PackageTags>webhooks;webhook;event;management;subscription-management;subscriptions;subscription</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Deveel.Repository.Manager" Version="1.2.7" />
-    <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.2.2" />
   </ItemGroup>
 
   <ItemGroup>

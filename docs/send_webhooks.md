@@ -1,30 +1,45 @@
-<!--
- Copyright 2022 Deveel
- 
- Licensed under the Apache License, Version 2.0 (the "License");
- you may not use this file except in compliance with the License.
- You may obtain a copy of the License at
- 
-     http://www.apache.org/licenses/LICENSE-2.0
- 
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
--->
-
 # Sending Webhooks
 
-The simple act of sending Webhooks to receivers is not depdenent from the existence of subscriptions, and can be executed throug direct invocations to instances of the `IWebhookSender` service.
+The simple act of sending Webhooks to receivers is not dependent on the existence of subscriptions and can be executed through direct invocations to instances of the `IWebhookSender` service.
 
-## Configuring the Webook Sender
+### Requirements
 
-Although a Webhook Sender can be instantiated, configured used directly, the framework provides a set of extension methods that can be used to configure the service in a more convenient way, especially in contexts that require the use of Dependency Injection.
+To use the sender functions in your applications, without any other additional feature (eg. _subscription management_, _notifications_, etc.) you must install the foundation library `Deveel.Webhooks.Sender`.
 
-Assuming you are working on a traditional _[ASP.NET application model](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/?view=aspnetcore-6.0&tabs=windows)_, you can start using the sender functions of this framework through the _Dependency Injection_ (DI) pattern, including a default implementation of the sender during the Startup of your application, by calling the `.AddWebhooks()` extension method provided by _Deveel Webhooks_, and optionally configuring the behavior of the delivery:
+You can do this by using the .NET command line on the root folder of your project
 
-``` csharp
+```bash
+dotnet add package Deveel.Webhooks.Sender
+```
+
+Alternatively, you can add a reference in your project file
+
+```xml
+<PackageReference Include="Deveel.Webhooks.Sender" Version="2.1.1" />>
+```
+
+### Registering the Webook Sender
+
+The most common way to use the Webhook Sender is to register it in the collection of services of your application, using the _dependency injection_ pattern.
+
+You can use one of the overloads of the extension method `.AddWebhookSender<TWebhook>()` to the `IServiceCollection` contract.
+
+For example:
+
+```csharp
+services.AddWebhookSender<MyWebhook>()
+    .Configure(options => {
+        // ...
+    });
+```
+
+The method will register a default implementation of the `IWebhookSender<TWebhook>`, returning a builder to further configure the behavior of the sender (even replacing the default implementation with a custom sender).
+
+#### Example Registration
+
+Assuming you are working on a traditional [_ASP.NET application model_](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/?view=aspnetcore-6.0\&tabs=windows), you can start using the sender functions of this framework through the _Dependency Injection_ (DI) pattern, including a default implementation of the sender during the Startup of your application, by calling the `.AddWebhooks()` extension method provided by _Deveel Webhooks_, and optionally configuring the behavior of the delivery:
+
+```csharp
 using System;
 
 using Microsoft.Extensions.Configuration;
@@ -59,11 +74,11 @@ namespace Example {
 
 ### Webhook Signatures
 
-A recommended practice for Webhooks is to sign the payloads of the messages, so that the receiver can verify the authenticity of the message. The framework provides a mechanism to sign the payloads of the messages, and to verify the signatures of the incoming messages.
+A recommended practice for Webhooks is to sign the payloads of the messages so that the receiver can verify the authenticity of the message. The framework provides a mechanism to sign the payloads of the messages and to verify the signatures of the incoming messages.
 
 The framework provides by default an implementation of a signature provider (the `IWebhookSigner` contract), that computes signatures using the 'HMAC-SHA-256' algorithm, but it is possible to add custom ones through the call to `.AddSigner<TSigner>()` of the service builder.
 
-``` csharp
+```csharp
 using System;
 
 using Microsoft.Extensions.Configuration;
@@ -95,7 +110,7 @@ The most common format for the payloads of Webhooks is the JSON format, but it i
 
 When initializing the sender, a default serializer for each format is added to the service, but it is possible to add custom ones through the call to `.UseJsonSerializer<TSerializer>()` or `.UseXmlSerializer<TSerializer>()` of the service builder.
 
-``` csharp
+```csharp
 
 using System;
 
@@ -125,11 +140,11 @@ namespace Example {
 
 ## Using the Webhook Sender
 
-At this point you can obtain from the service provider an instance of the `IWebhookSender<MyWebhook>` that is configured and ready to be used.
+At this point, you can obtain from the service provider an instance of the `IWebhookSender<MyWebhook>` that is configured and ready to be used.
 
 Assuming your application is using the _ASP.NET Core_ framework, you can inject the service in your controllers, and use it to send Webhooks to the receivers:
 
-``` csharp
+```csharp
 using System;
 
 using Deveel.Webhooks;
@@ -173,11 +188,11 @@ namespace Example {
 
 ### Webhook Destinations
 
-While the webhook represents a message that is sent to a receiver, the destination is the address of the receiver, complimented with additional configurations that can override the defaults set during the building of the sender service. 
+While the webhook represents a message that is sent to a receiver, the destination is the address of the receiver, complimented with additional configurations that can override the defaults set during the building of the sender service.
 
 In the context of _simple sending_ of Webhooks, the destination is represented by an instance of the `WebhookDestination` class.
 
-``` csharp
+```csharp
 
 var destination = new WebhookDestination("https://my-webhook-receiver.com/events/webhooks")
     .WithRetry(options => {

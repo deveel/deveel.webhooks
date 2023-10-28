@@ -1,28 +1,12 @@
-<!--
- Copyright 2022 Deveel
- 
- Licensed under the Apache License, Version 2.0 (the "License");
- you may not use this file except in compliance with the License.
- You may obtain a copy of the License at
- 
-     http://www.apache.org/licenses/LICENSE-2.0
- 
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
--->
-
-# Deveel Webhooks Frequently Asked Questions
+# Frequently Asked Questions
 
 ## Q: Why have you developed another Webhook management library
 
 A: We didn't have the ambition to develop this project, but rather to use some already available, anyway given the conditions we were in, we could not find any fitting alternative:
 
-* **[Microsoft's ASP.NET Webhook Framework](https://github.com/aspnet/WebHooks)**, before being retired, supported only the .NET 4.6 framework
-* **[Microsot's ASP.NET Core Webhook Framework](https://github.com/aspnet/AspLabs/tree/main/src/WebHooks)** was _demoted_ to an experimental project (within the scope of [AspNetLabs](https://github.com/aspnet/AspLabs) space), and anyway did not provide any capability for the management of subscriptions, or logging results of deliveries
-* **[ASP.NET Boilerplate (by Volosoft)](https://github.com/aspnetboilerplate/aspnetboilerplate)** provides functionalities for the management and sending of webhooks that are embedded into a more extended framework, that we didn't want to use in its entirety.
+* [**Microsoft's ASP.NET Webhook Framework**](https://github.com/aspnet/WebHooks), before being retired, supported only the .NET 4.6 framework
+* [**Microsot's ASP.NET Core Webhook Framework**](https://github.com/aspnet/AspLabs/tree/main/src/WebHooks) was _demoted_ to an experimental project (within the scope of [AspNetLabs](https://github.com/aspnet/AspLabs) space), and anyway did not provide any capability for the management of subscriptions, or logging results of deliveries
+* [**ASP.NET Boilerplate (by Volosoft)**](https://github.com/aspnetboilerplate/aspnetboilerplate) provides functionalities for the management and sending of webhooks that are embedded into a more extended framework, that we didn't want to use in its entirety.
 
 ## Q: Which .NET versions are supported by Deveel Webhooks?
 
@@ -42,7 +26,7 @@ A: As pointed out in the answer provided above (on the motivations of this proje
 
 A: Not at the moment, but any contribution is welcome... :)
 
-The data model of subscriptions and webhooks is not complex and should not be a challenge to contribute with alternatives (please refer to the [contributing guidelines](/CONTRIBUTING.md)).
+The data model of subscriptions and webhooks is not complex and should not be a challenge to contribute with alternatives (please refer to the [contributing guidelines](../CONTRIBUTING.md)).
 
 ## Q: Does Deveel Webhooks support webhook subscriptions?
 
@@ -88,9 +72,9 @@ A: No. It is a good idea to explore for future implementations.
 
 A: At the moment the framework supports the following external webhook providers:
 
-* **[Facebook](facebook_receiver.md)**
-* **[SendGrid](sendgrid_receiver.md)**
-* **[Twilio](twilio_receiver.md)**
+* [**Facebook**](receivers/facebook\_receiver.md)
+* [**SendGrid**](receivers/sendgrid\_receiver.md)
+* [**Twilio**](receivers/twilio\_receiver.md)
 
 Follow the issues of this project to see which providers are planned to be supported in the future.
 

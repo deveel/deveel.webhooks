@@ -1,19 +1,3 @@
-<!--
- Copyright 2022 Deveel
- 
- Licensed under the Apache License, Version 2.0 (the "License");
- you may not use this file except in compliance with the License.
- You may obtain a copy of the License at
- 
-     http://www.apache.org/licenses/LICENSE-2.0
- 
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
--->
-
 # Getting Started
 
 The overall design of this framework is open and extensible (implementing the traditional [Open-Closed Principle](https://en.wikipedia.org/wiki/Open%E2%80%93closed_principle)), that means base contracts can be extended, composed or replaced.
@@ -24,7 +8,7 @@ It is possible to use its components as they are provided, or use the base contr
 
 The overall set of libraries are available through [NuGet](https://nuget.org), and can be installed and restored easily once configured in your projects.
 
-At the moment (_May 2023_) they are developed as `.NET 6.0` and thus compatible with all the profiles of the .NET framework greater or equal than this.
+At the moment (_November 2023_) they are developed as `.NET 6.0` and thus compatible with all the profiles of the .NET framework greater or equal than this.
 
 The core library of the framework is `Deveel.Webhooks` and can be installed through the `dotnet` tool command line
 
@@ -44,7 +28,7 @@ Or by editing your `.csproj` file and adding a `<PackageReference>` entry.
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Deveel.Webhooks" Version="1.1.6" />
+    <PackageReference Include="Deveel.Webhooks" Version="2.1.1" />
     ...
   </ItemGroup>
 </Project>

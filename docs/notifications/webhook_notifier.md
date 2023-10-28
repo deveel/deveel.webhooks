@@ -1,30 +1,10 @@
-<!--
- Copyright 2022 Deveel
- 
- Licensed under the Apache License, Version 2.0 (the "License");
- you may not use this file except in compliance with the License.
- You may obtain a copy of the License at
- 
-     http://www.apache.org/licenses/LICENSE-2.0
- 
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
--->
+# WebhookNotifier
 
-# Webhook Notifications
+An default implementation of the `IWebhookNotifier<TWebhook>` service is provided by the framework, as the `WebhookNotifier` class, that executes the following steps:
 
-The notification process of a webhook introduces elements of automation, putting together the _[subscription management](basic_usage_management.md)_ and the _[sending of webhooks](basic_usage_send.md)_ processes, and an optional _[data transformation](advanced_usage_custom_datafactory.md)_ process (to resolve event information in a full formed object to be transferred).
-
-The _Deveel Webhook_ framework implements these functions through an instance of the `IWebhookNotifier` service, that uses a `IWebhookSubscriptionResolver` (by default backed by the subscription manager) and the `IWebhookSender` instance configured.
-
-Although the design of the framework allows the implementation of a custom `IWebhookNotifier`, a default implementation of the notifier service is provided through the `WebhookNotifier` class, that executes the following steps:
-
-1. The service firsts tries to resolve any webhook subscription matching the event type and the tenant identifier.
-2. Subsequently the service  tries to resolve any transformers (as `IWebhookDataFactory`) and trasnforms the event data into a new form.
-3. All the matching subscriptions are iterated and a webhook is constructed for each of them, using the event information, the subscription and the event data (or the result of a transformation, if any happened)
+1. The service firsts tries to resolve any webhook subscriptions matching the _event type_ and the _tenant identifier_ (_in case of multi-tenant scenarios_).
+2. Tries to resolve any service implementing `IWebhookDataFactory`, and trasnforms the event data into a new form (eg. _resolving a database record from an identifier_)
+3. All the matching subscriptions are iterated and a webhook object is constructed for each of them, using the _event metdata_ (eg. timestamp, stream name, type, etc.), the _subscription data_ and the _event data_ (or the result of a transformation, if any happened in the previous step)
 4. The webhook object is matched against the subscription as follows:
    a. Not active subscriptions are skipped and will not be notified
    b. If the subscription includes any filter, these ones are matched against the webhook object formed in the previous steps, to determine if the conditions defined by the subscription are met
@@ -54,7 +34,7 @@ namespace Example {
             // ... add any other service you need ...
 
             // this call adds the basic services for sending of webhooks
-            services.AddWebhookNotifier(webhooks => {
+            services.AddWebhookNotifier<MyWebhook>(webhooks => {
                 // This registers a subscription resolver that is backed
                 // by the a Mongo database (from the Deveel.Webhooks.Mongo package)
                 webhooks.UseMongoSubscriptionResolver();
@@ -62,12 +42,8 @@ namespace Example {
                 // for this implementation we use a Mongo database as
                 // persistent layer of the subscriptions
                 wekhooks.UseMongoDb(mongo => {
-                    mongo.SetConnectionString(Configuration
-                         .GetConnectionString("MongoWebhooks"))
-                         .SetDatabase("example_app")
-                         .SetSubscriptionsCollection("webhook_subs")
-                         // Optional: enables the storage the webhook delivery results
-                         .SetWebhooksCollection("webhooks_results");
+                    mongo.UseConnectionString(Configuration
+                         .GetConnectionString("MongoWebhooks"));
                 });
 
                 // Optional: add a filter engine that handles string-based "linq" filters
@@ -112,7 +88,7 @@ namespace Example {
 
         [HttpPost("{tenantId}")]
         public async Task<IActionResult> Post([FromRoute]string tenantId, [FromBody] EventModel webEvent) {
-            // The service requires an instance of EventInfo
+            // The service requires an instance of 'EventInfo'
             // to trigger the notification process and we assume
             // your EventModel class can create one
             var eventInfo = webEvent.AsEventInfo();
@@ -139,7 +115,9 @@ namespace Example {
 
 In order to resolve the subscriptions to a given event, the `IWebhookSubscriptionResolver` service is used: this service is responsible for the retrieval of the subscriptions that match the event type, in scope of a tenant.
 
-The framework provides a default implementation of this service, that is backed by the MongoDb database, included in the `Deveel.Webhooks.Mongo` package, but other implementations will be provided in the future.
+Some of the libraries implementing a persistent layer for the subscriptions, provide an implementation of the `IWebhookSubscriptionResolver` service, that can be used to resolve the subscriptions from the persistent layer.
+
+Future implementations of the contract might provide a way to resolve the subscriptions from a cache, or from a remote service.
 
 ## Logging Results
 

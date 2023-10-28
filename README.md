@@ -29,6 +29,7 @@ The libraries currently provided by the framework are the following:
 | **Deveel.Webhooks.Sender**              | [![Nuget](https://img.shields.io/nuget/v/Deveel.Webhooks.Sender?label=latest&logo=nuget)](https://www.nuget.org/packages/Deveel.Webhooks.Sender) | [![GitHub](https://img.shields.io/static/v1?label=GitHub&message=preview&color=yellow&logo=github)](https://github.com/deveel/deveel.webhooks/pkgs/nuget/Deveel.Webhooks.Sender) |
 | **Deveel.Webhooks.Service**             | [![Nuget](https://img.shields.io/nuget/v/Deveel.Webhooks.Service?label=NuGet&logo=nuget)](https://www.nuget.org/packages/Deveel.Webhooks.Service) |  [![GitHub](https://img.shields.io/static/v1?label=NuGet&message=preview&color=yellow&logo=github)](https://github.com/deveel/deveel.webhooks/pkgs/nuget/Deveel.Webhooks.Service) |
 | **Deveel.Webhooks.MongoDb**             | [![Nuget](https://img.shields.io/nuget/v/Deveel.Webhooks.MongoDb?label=NuGet&logo=nuget)](https://www.nuget.org/packages/Deveel.Webhooks.MongoDb) | [![GitHub](https://img.shields.io/static/v1?label=GitHub&message=preview&color=yellow&logo=github)](https://github.com/deveel/deveel.webhooks/pkgs/nuget/Deveel.Webhooks.MongoDb) |
+| **Deveel.Webhooks.EntityFramework**             | [![Nuget](https://img.shields.io/nuget/v/Deveel.Webhooks.EntityFramework?label=NuGet&logo=nuget)](https://www.nuget.org/packages/Deveel.Webhooks.EntityFramework) | [![GitHub](https://img.shields.io/static/v1?label=GitHub&message=preview&color=yellow&logo=github)](https://github.com/deveel/deveel.webhooks/pkgs/nuget/Deveel.Webhooks.EntityFramework) |
 | **Deveel.Webhooks.DynamicLinq**         | [![Nuget](https://img.shields.io/nuget/v/Deveel.Webhooks.DynamicLinq?label=NuGet&logo=nuget)](https://www.nuget.org/packages/Deveel.Webhooks.DynamicLinq) | [![GitHub](https://img.shields.io/static/v1?label=GitHub&message=preview&color=yellow&logo=github)](https://github.com/deveel/deveel.webhooks/pkgs/nuget/Deveel.Webhooks.DynamicLinq) |
 | **Deveel.Webhooks.Receiver.AspNetCore** | [![Nuget](https://img.shields.io/nuget/v/Deveel.Webhooks.Receiver.AspNetCore?label=NuGet&logo=nuget)](https://www.nuget.org/packages/Deveel.Webhooks.Receiver.AspNetCore) | [![GitHub](https://img.shields.io/static/v1?label=GitHub&message=preview&color=yellow&logo=github)](https://github.com/deveel/deveel.webhooks/pkgs/nuget/Deveel.Webhooks.Receiver.AspNetCore) |
 
@@ -54,11 +55,11 @@ While working on a .NET Core 3.1/.NET 5 _PaaS_ (_Platform-as-a-Service_) project
 * Microsoft's _experimental_ projects never implemented any capability of handling subscriptions, and eventually removing also the _sender_ capability, focusing exclusively on _receivers_
 * Alternative implementations providing similar capabilities are embedded and organic part of larger frameworks (like [ASP.NET Boilerplate](https://github.com/aspnetboilerplate/aspnetboilerplate)), that would have forced me to adopt the the entirety of such frameworks, beyond my design intentions
 
-## Usage Documentation
+## Documentation
 
-We would like to help you getting started with this framework and to eventually extend it: please refer to the **[Documentation](docs/README.md)** section that we have produced for you.
+We would like to help you getting started with this framework and to eventually extend it: please refer to the **[Documentation](docs/README.md)** section, or to the **[Gitbook](https://deveel.gitbook.io/webhooks)** website that we have produced for you.
 
-The easiest way to get started is to follow the **[Quick Start](docs/QUICKSTART.md)** guide, but you can also refer to the **[Frequently Asked Questions](docs/FAQS.md)** section to get answers to the most common questions.
+The easiest way to get started is to follow the **[Getting Started](docs/getting-started/README.md)** guide, but you can also refer to the **[Frequently Asked Questions](docs/FAQS.md)** section to get answers to the most common questions.
 
 ## Simple Usage Example
 

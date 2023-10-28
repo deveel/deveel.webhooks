@@ -41,4 +41,4 @@ jobs:
       run: dotnet pack --configuration Release --no-restore --no-build --include-symbols -p:PackageVersion=${{ inputs.version }} --output ./nuget
 
     - name: Push Packages to GitHub NuGet
-      run: dotnet nuget push ./nuget/**/*.nupkg --api-key ${{secrets.NUGET_API_KEY}} --source https://api.nuget.org/v3/index.json
+      run: dotnet nuget push ./nuget/**/*.nupkg --skip-duplicate --api-key ${{secrets.NUGET_API_KEY}} --source https://api.nuget.org/v3/index.json

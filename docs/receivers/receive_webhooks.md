@@ -14,7 +14,6 @@ Run this command on the root of your project to install the library from NuGet:
 dotnet add package Deveel.Webhooks.Receiver.AspNetCore
 ```
 
-
 ## Instrumenting the Application
 
 If you are using a traditional ASP.NET Core MVC application, you can register the webhook receiver service by modifying the `Startup` class as follows:
@@ -113,7 +112,6 @@ The above code registers the middleware in the application, and enables the appl
 
 The middlware will automatically scan for all the registered webhook receiver service configured, and will handle the received webhooks by invoking all the `IWebhookHandler<MyWebhook>` services registere.
 
-
 The middleware design allows to handle the webhooks without any prior registered handler, by specifying an handling delegate in the `MapWebhook` method:
 
 ```csharp
@@ -137,4 +135,4 @@ app.UseWebhookReceiver<MyWebhook>("/webhook", webhook => {
 
 ## Further Reading
 
-If you want to learn more and learn more advanced usage of the receivers, visit the [Advanced Usage of Receiver](advanced_usage_custom_receiver.md).
+If you want to learn more and learn more advanced usage of the receivers, visit the [Advanced Usage of Receiver](custom\_receiver.md).

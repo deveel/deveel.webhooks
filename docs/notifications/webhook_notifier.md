@@ -1,21 +1,18 @@
-# WebhookNotifier
+# The WebhookNotifier Service
 
 An default implementation of the `IWebhookNotifier<TWebhook>` service is provided by the framework, as the `WebhookNotifier` class, that executes the following steps:
 
 1. The service firsts tries to resolve any webhook subscriptions matching the _event type_ and the _tenant identifier_ (_in case of multi-tenant scenarios_).
 2. Tries to resolve any service implementing `IWebhookDataFactory`, and trasnforms the event data into a new form (eg. _resolving a database record from an identifier_)
 3. All the matching subscriptions are iterated and a webhook object is constructed for each of them, using the _event metdata_ (eg. timestamp, stream name, type, etc.), the _subscription data_ and the _event data_ (or the result of a transformation, if any happened in the previous step)
-4. The webhook object is matched against the subscription as follows:
-   a. Not active subscriptions are skipped and will not be notified
-   b. If the subscription includes any filter, these ones are matched against the webhook object formed in the previous steps, to determine if the conditions defined by the subscription are met
+4. The webhook object is matched against the subscription as follows: a. Not active subscriptions are skipped and will not be notified b. If the subscription includes any filter, these ones are matched against the webhook object formed in the previous steps, to determine if the conditions defined by the subscription are met
 5. Webhooks are sent to the receiving end-point of the subscription
-
 
 ## Using the Webhook Notifier (ASP.NET Core)
 
-Still assuming you are working on a traditional _[ASP.NET Core application model](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/?view=aspnetcore-6.0&tabs=windows)_, you can start using the notification functions of this framework through the _Dependency Injection_ (DI) pattern, including a default implementation of the sender during the Startup of your application, by calling the `.AddWebhookNotifier<MyWebhook>()` extension method provided by _Deveel Webhooks_, mixing the configurations of managament and delivery.
+Still assuming you are working on a traditional [_ASP.NET Core application model_](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/?view=aspnetcore-6.0\&tabs=windows), you can start using the notification functions of this framework through the _Dependency Injection_ (DI) pattern, including a default implementation of the sender during the Startup of your application, by calling the `.AddWebhookNotifier<MyWebhook>()` extension method provided by _Deveel Webhooks_, mixing the configurations of managament and delivery.
 
-``` csharp
+```csharp
 using System;
 
 using Deveel.Webhooks;
@@ -74,8 +71,7 @@ After this you will have an instance of `IWebhookNotiier<MyWebhook>` instance th
 
 _**Note**: Since in this example no `IWebhookDataFactory` instance has been registered, the webhook payload will contain the same data transported by the event._
 
-``` csharp
-
+```csharp
 namespace Example {
     [ApiController]
     [Route("webhook")]

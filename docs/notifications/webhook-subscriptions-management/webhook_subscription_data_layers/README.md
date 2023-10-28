@@ -1,8 +1,4 @@
-# Webhook Subscription Management Data Layers
-
-_**Note**: This part of the framework will sonn go through a major refactoring and the documentation as to be consider provisional_
-
----
+# Data Layers
 
 The persistence of information object for long term operations is based on the implementation of a set of contracts of the management domain of the service.
 
@@ -18,7 +14,6 @@ The main contracts used to implement this persistence are the following:
 | `IWebhookSubscriptionStoreProvider`   | Provides the means to instantiate a tenant-specific context owning the webhook subscriptions |
 | `IWebhookDeliveryResultStore`         | Implements the functions to manage the storage of webhook delivery results                   |
 | `IWebhookDeliveryResultStoreProvider` | Creates tenant-specific scopes for the storage of the webhook delivery results               |
-
 
 ## Subscription Resolution
 
@@ -36,9 +31,9 @@ Even if the logging mechanism doesn't require a specific database (it might be l
 
 The _Deveel Webhooks_ framework provides the following implementations of the storage:
 
-| Implementation                                   | Description                                                                                | Subscription Store | Delivery Logging     | Multi-Tenant         |
-| ------------------------------------------------ | ------------------------------------------------------------------------------------------ | :----------------: | :------------------: | :------------------: |
-| [`MongoDB Storage`](./advanced_usage_mongodb.md) | Implements the storage of the webhook subscriptions and delivery results using MongoDB     | :white_check_mark: | :white_check_mark:   | :white_check_mark:   |
-| [`Entity Framework`](./advanced_usage_ef.md)     | An implementation that stores subcriptions and delivery results using the Entity Framework | :white_check_mark: | :white_check_mark:   | :x:                  |
+| Implementation                                         | Description                                                                                |  Subscription Store  |   Delivery Logging   |     Multi-Tenant     |
+| ------------------------------------------------------ | ------------------------------------------------------------------------------------------ | :------------------: | :------------------: | :------------------: |
+| [`MongoDB Storage`](../../advanced\_usage\_mongodb.md) | Implements the storage of the webhook subscriptions and delivery results using MongoDB     | :white\_check\_mark: | :white\_check\_mark: | :white\_check\_mark: |
+| [`Entity Framework`](../../advanced\_usage\_ef.md)     | An implementation that stores subcriptions and delivery results using the Entity Framework | :white\_check\_mark: | :white\_check\_mark: |          :x:         |
 
 Refere to the specific documentation of each implementation for more details.

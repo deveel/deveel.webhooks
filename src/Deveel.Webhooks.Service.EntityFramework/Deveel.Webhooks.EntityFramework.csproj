@@ -11,7 +11,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Deveel.Repository.EntityFramework" Version="1.2.7-6657417435" />
+		<PackageReference Include="Deveel.Repository.EntityFramework" Version="1.2.7" />
 	</ItemGroup>
 
 	<ItemGroup>

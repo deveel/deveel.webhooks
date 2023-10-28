@@ -79,6 +79,9 @@
             Gets or sets the payload data of the webhook (as a JSON string)
             </summary>
         </member>
+        <member name="M:Deveel.Webhooks.DbWebhookConfiguration.Configure(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder{Deveel.Webhooks.DbWebhook})">
+            <inheritdoc/>
+        </member>
         <member name="T:Deveel.Webhooks.DbWebhookDeliveryAttempt">
             <summary>
             An implementation of <see cref="T:Deveel.Webhooks.IWebhookDeliveryAttempt"/> that
@@ -276,7 +279,7 @@
         </member>
         <member name="T:Deveel.Webhooks.EntityWebhookDeliveryResultStore">
             <summary>
-            An implementation of <see cref="T:Deveel.Webhooks.IWebhookDeliveryResultStore`1"/> that
+            An implementation of <see cref="T:Deveel.Webhooks.IWebhookDeliveryResultRepository`1"/> that
             uses an Entity Framework Core <see cref="T:Microsoft.EntityFrameworkCore.DbContext"/> to store the
             delivery results of a webhook of type <see cref="T:Deveel.Webhooks.DbWebhookDeliveryResult"/>.
             </summary>
@@ -287,7 +290,7 @@
         </member>
         <member name="T:Deveel.Webhooks.EntityWebhookDeliveryResultStore`1">
             <summary>
-            An implementation of <see cref="T:Deveel.Webhooks.IWebhookDeliveryResultStore`1"/> that
+            An implementation of <see cref="T:Deveel.Webhooks.IWebhookDeliveryResultRepository`1"/> that
             uses an Entity Framework Core <see cref="T:Microsoft.EntityFrameworkCore.DbContext"/> to store the
             delivery results of a webhook.
             </summary>
@@ -305,21 +308,6 @@
             <summary>
             Gets the set of results stored in the database.
             </summary>
-        </member>
-        <member name="M:Deveel.Webhooks.EntityWebhookDeliveryResultStore`1.AsQueryable">
-            <inheritdoc/>
-        </member>
-        <member name="M:Deveel.Webhooks.EntityWebhookDeliveryResultStore`1.CountAllAsync(System.Threading.CancellationToken)">
-            <inheritdoc/>
-        </member>
-        <member name="M:Deveel.Webhooks.EntityWebhookDeliveryResultStore`1.CreateAsync(`0,System.Threading.CancellationToken)">
-            <inheritdoc/>
-        </member>
-        <member name="M:Deveel.Webhooks.EntityWebhookDeliveryResultStore`1.DeleteAsync(`0,System.Threading.CancellationToken)">
-            <inheritdoc/>
-        </member>
-        <member name="M:Deveel.Webhooks.EntityWebhookDeliveryResultStore`1.FindByIdAsync(System.String,System.Threading.CancellationToken)">
-            <inheritdoc/>
         </member>
         <member name="M:Deveel.Webhooks.EntityWebhookDeliveryResultStore`1.FindByWebhookIdAsync(System.String,System.Threading.CancellationToken)">
             <inheritdoc/>
@@ -404,7 +392,7 @@
             </summary>
             <typeparam name="TStore">
             The type of the storage to use for storing the webhook subscriptions,
-            that is derived from <see cref="T:Deveel.Webhooks.EntityWebhookSubscriptionStrore"/>.
+            that is derived from <see cref="T:Deveel.Webhooks.EntityWebhookSubscriptionRepository"/>.
             </typeparam>
             <returns>
             Returns the current instance of the builder for chaining.
@@ -429,26 +417,26 @@
             <see cref="T:Deveel.Webhooks.DbWebhookDeliveryResult"/>.
             </exception>
         </member>
-        <member name="T:Deveel.Webhooks.EntityWebhookSubscriptionStrore">
+        <member name="T:Deveel.Webhooks.EntityWebhookSubscriptionRepository">
             <summary>
             A default implementation of <see cref="T:Deveel.Webhooks.IDbWebhookConverter`1"/> that
             stores a <see cref="T:Deveel.Webhooks.DbWebhookSubscription"/> in the database.
             </summary>
         </member>
-        <member name="M:Deveel.Webhooks.EntityWebhookSubscriptionStrore.#ctor(Deveel.Webhooks.WebhookDbContext)">
+        <member name="M:Deveel.Webhooks.EntityWebhookSubscriptionRepository.#ctor(Deveel.Webhooks.WebhookDbContext)">
             <inheritdoc/>
         </member>
-        <member name="T:Deveel.Webhooks.EntityWebhookSubscriptionStrore`1">
+        <member name="T:Deveel.Webhooks.EntityWebhookSubscriptionRepository`1">
             <summary>
-            An implementation of <see cref="T:Deveel.Webhooks.IWebhookSubscriptionStore`1"/> that
+            An implementation of <see cref="T:Deveel.Webhooks.IWebhookSubscriptionRepository`1"/> that
             uses an <see cref="T:Microsoft.EntityFrameworkCore.DbContext"/> to store the subscriptions.
             </summary>
             <typeparam name="TSubscription">
             The type of the subscription entity to be stored.
             </typeparam>
-            <seealso cref="T:Deveel.Webhooks.IWebhookSubscriptionStore`1"/>"/>
+            <seealso cref="T:Deveel.Webhooks.IWebhookSubscriptionRepository`1"/>"/>
         </member>
-        <member name="M:Deveel.Webhooks.EntityWebhookSubscriptionStrore`1.#ctor(Deveel.Webhooks.WebhookDbContext)">
+        <member name="M:Deveel.Webhooks.EntityWebhookSubscriptionRepository`1.#ctor(Deveel.Webhooks.WebhookDbContext,Microsoft.Extensions.Logging.ILogger{Deveel.Webhooks.EntityWebhookSubscriptionRepository{`0}})">
             <summary>
             Constructs the store by using the given <see cref="T:Deveel.Webhooks.WebhookDbContext"/>.
             </summary>
@@ -459,39 +447,40 @@
             Thrown when the given <paramref name="context"/> is <c>null</c>.
             </exception>
         </member>
-        <member name="P:Deveel.Webhooks.EntityWebhookSubscriptionStrore`1.Subscriptions">
-            <summary>
-            Gets the set of subscriptions stored in the database.
-            </summary>
-        </member>
-        <member name="M:Deveel.Webhooks.EntityWebhookSubscriptionStrore`1.AsQueryable">
+        <member name="M:Deveel.Webhooks.EntityWebhookSubscriptionRepository`1.OnEntityFoundByKeyAsync(System.Object,`0,System.Threading.CancellationToken)">
             <inheritdoc/>
         </member>
-        <member name="M:Deveel.Webhooks.EntityWebhookSubscriptionStrore`1.GetIdAsync(`0,System.Threading.CancellationToken)">
+        <member name="M:Deveel.Webhooks.EntityWebhookSubscriptionRepository`1.GetDestinationUrlAsync(`0,System.Threading.CancellationToken)">
             <inheritdoc/>
         </member>
-        <member name="M:Deveel.Webhooks.EntityWebhookSubscriptionStrore`1.CountAllAsync(System.Threading.CancellationToken)">
+        <member name="M:Deveel.Webhooks.EntityWebhookSubscriptionRepository`1.SetDestinationUrlAsync(`0,System.String,System.Threading.CancellationToken)">
             <inheritdoc/>
         </member>
-        <member name="M:Deveel.Webhooks.EntityWebhookSubscriptionStrore`1.FindByIdAsync(System.String,System.Threading.CancellationToken)">
+        <member name="M:Deveel.Webhooks.EntityWebhookSubscriptionRepository`1.GetByEventTypeAsync(System.String,System.Nullable{System.Boolean},System.Threading.CancellationToken)">
             <inheritdoc/>
         </member>
-        <member name="M:Deveel.Webhooks.EntityWebhookSubscriptionStrore`1.CreateAsync(`0,System.Threading.CancellationToken)">
+        <member name="M:Deveel.Webhooks.EntityWebhookSubscriptionRepository`1.GetStatusAsync(`0,System.Threading.CancellationToken)">
             <inheritdoc/>
         </member>
-        <member name="M:Deveel.Webhooks.EntityWebhookSubscriptionStrore`1.UpdateAsync(`0,System.Threading.CancellationToken)">
+        <member name="M:Deveel.Webhooks.EntityWebhookSubscriptionRepository`1.SetStatusAsync(`0,Deveel.Webhooks.WebhookSubscriptionStatus,System.Threading.CancellationToken)">
             <inheritdoc/>
         </member>
-        <member name="M:Deveel.Webhooks.EntityWebhookSubscriptionStrore`1.DeleteAsync(`0,System.Threading.CancellationToken)">
+        <member name="M:Deveel.Webhooks.EntityWebhookSubscriptionRepository`1.GetEventTypesAsync(`0,System.Threading.CancellationToken)">
             <inheritdoc/>
         </member>
-        <member name="M:Deveel.Webhooks.EntityWebhookSubscriptionStrore`1.GetByEventTypeAsync(System.String,System.Nullable{System.Boolean},System.Threading.CancellationToken)">
+        <member name="M:Deveel.Webhooks.EntityWebhookSubscriptionRepository`1.AddEventTypesAsync(`0,System.String[],System.Threading.CancellationToken)">
             <inheritdoc/>
         </member>
-        <member name="M:Deveel.Webhooks.EntityWebhookSubscriptionStrore`1.SetStatusAsync(`0,Deveel.Webhooks.WebhookSubscriptionStatus,System.Threading.CancellationToken)">
+        <member name="M:Deveel.Webhooks.EntityWebhookSubscriptionRepository`1.RemoveEventTypesAsync(`0,System.String[],System.Threading.CancellationToken)">
             <inheritdoc/>
         </member>
-        <member name="M:Deveel.Webhooks.EntityWebhookSubscriptionStrore`1.GetPageAsync(Deveel.Webhooks.PagedQuery{`0},System.Threading.CancellationToken)">
+        <member name="M:Deveel.Webhooks.EntityWebhookSubscriptionRepository`1.GetHeadersAsync(`0,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Deveel.Webhooks.EntityWebhookSubscriptionRepository`1.AddHeadersAsync(`0,System.Collections.Generic.IDictionary{System.String,System.String},System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Deveel.Webhooks.EntityWebhookSubscriptionRepository`1.RemoveHeadersAsync(`0,System.String[],System.Threading.CancellationToken)">
             <inheritdoc/>
         </member>
         <member name="T:Deveel.Webhooks.IDbWebhookConverter`1">

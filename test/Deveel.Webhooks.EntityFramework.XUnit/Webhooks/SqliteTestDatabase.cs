@@ -1,19 +1,22 @@
 ﻿using Microsoft.Data.Sqlite;
 
 namespace Deveel.Webhooks {
-    public class SqliteTestDatabase : IDisposable {
-        private readonly SqliteConnection connection;
+	public class SqliteTestDatabase : IDisposable {
+		public SqliteTestDatabase() {
+            Connection = new SqliteConnection("DataSource=:memory:");
+			if (Connection.State != System.Data.ConnectionState.Open)
+				Connection.Open();
 
-        public SqliteTestDatabase() {
-            connection = new SqliteConnection("Data Source=:memory:");
-            connection.Open();
+			Connection.EnableExtensions();
         }
 
-        public string ConnectionString => connection.ConnectionString;
+        public string ConnectionString => Connection.ConnectionString;
 
-        public void Dispose() {
-            connection.Close();
-            connection.Dispose();
+		public SqliteConnection Connection { get; }
+
+		public void Dispose() {
+            Connection?.Close();
+            Connection?.Dispose();
         }
     }
 }

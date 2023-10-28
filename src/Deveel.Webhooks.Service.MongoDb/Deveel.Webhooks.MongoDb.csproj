@@ -5,17 +5,10 @@
         <RootNamespace>Deveel</RootNamespace>
         <Description>An implementation of the Deveel Webhooks storage layer based on MongoDb</Description>
         <PackageTags>webhooks;webhook;data;mongodb;mongo;subscription;subscriptions</PackageTags>
-        <DocumentationFile>./Deveel.Webhooks.MongoDb.xml</DocumentationFile>
-        <GenerateDocumentationFile>true</GenerateDocumentationFile>
     </PropertyGroup>
 
     <ItemGroup>
-        <Compile Remove="Webhooks\MongoDbWebhookStorageBuilderImpl.cs" />
-    </ItemGroup>
-
-    <ItemGroup>
-        <PackageReference Include="Finbuckle.MultiTenant" Version="6.12.0" />
-        <PackageReference Include="MongoFramework" Version="0.29.0" />
+      <PackageReference Include="Deveel.Repository.MongoFramework" Version="1.2.6" />
     </ItemGroup>
 
     <ItemGroup>

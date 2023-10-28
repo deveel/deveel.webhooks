@@ -5,8 +5,6 @@
         <RootNamespace>Deveel</RootNamespace>
         <PackageTags>webhooks;webhooks;receiver;receivers;aspnet;aspnetcore;httprequest;middleware</PackageTags>
         <Description>Provides an implementation of the webhook receivers supporting the ASP.NET Core infrastructure</Description>
-        <DocumentationFile>.\Deveel.Webhooks.Receiver.AspNetCore.xml</DocumentationFile>
-        <GenerateDocumentationFile>true</GenerateDocumentationFile>
     </PropertyGroup>
 
     <ItemGroup>

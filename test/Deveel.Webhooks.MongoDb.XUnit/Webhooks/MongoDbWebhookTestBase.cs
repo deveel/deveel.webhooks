@@ -26,14 +26,17 @@ using Xunit.Abstractions;
 namespace Deveel.Webhooks {
 	[Collection(nameof(MongoTestCollection))]
 	public abstract class MongoDbWebhookTestBase : IAsyncLifetime {
-		private readonly MongoTestCluster mongo;
+		private readonly MongoTestDatabase mongo;
 
-		protected MongoDbWebhookTestBase(MongoTestCluster mongo, ITestOutputHelper outputHelper) {
+		protected MongoDbWebhookTestBase(MongoTestDatabase mongo, ITestOutputHelper outputHelper) {
 			this.mongo = mongo;
 			Services = BuildServiceProvider(outputHelper);
+			Scope = Services.CreateScope();
 		}
 
 		protected IServiceProvider Services { get; }
+
+		protected IServiceScope Scope { get; }
 
 		protected string ConnectionString => mongo.ConnectionString;
 
@@ -48,6 +51,8 @@ namespace Deveel.Webhooks {
 
 			await client.GetDatabase("webhooks").DropCollectionAsync(MongoDbWebhookStorageConstants.SubscriptionCollectionName);
 			await client.GetDatabase("webhooks").DropCollectionAsync(MongoDbWebhookStorageConstants.DeliveryResultsCollectionName);
+
+			Scope.Dispose();
 		}
 
 		private IServiceProvider BuildServiceProvider(ITestOutputHelper outputHelper) {

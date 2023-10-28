@@ -5,10 +5,10 @@
     <RootNamespace>Deveel</RootNamespace>
     <Description>Abstractions and default services for the management Webhook subscriptions and their resolution</Description>
     <PackageTags>webhooks;webhook;event;management;subscription-management;subscriptions;subscription</PackageTags>
-    <DocumentationFile>./Deveel.Webhooks.Service.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Deveel.Repository.Manager" Version="1.2.6" />
     <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.2.2" />
   </ItemGroup>
 

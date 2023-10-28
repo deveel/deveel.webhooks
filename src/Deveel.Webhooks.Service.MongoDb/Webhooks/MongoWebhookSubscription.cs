@@ -19,6 +19,8 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics.CodeAnalysis;
 
+using Deveel.Data;
+
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Bson.Serialization.Options;
@@ -32,7 +34,7 @@ namespace Deveel.Webhooks {
 	/// and that is stored in a MongoDB storage.
 	/// </summary>
 	[Table(MongoDbWebhookStorageConstants.SubscriptionCollectionName)]
-	public class MongoWebhookSubscription : IWebhookSubscription {
+	public class MongoWebhookSubscription : IWebhookSubscription, IHaveTimeStamp {
 		[ExcludeFromCodeCoverage]
 		string? IWebhookSubscription.SubscriptionId => Id.Equals(ObjectId.Empty) ? null : Id.ToString();
 
@@ -52,18 +54,11 @@ namespace Deveel.Webhooks {
 
 		/// <inheritdoc/>
 		[Column("secret")]
-        public string Secret { get; set; }
+        public string? Secret { get; set; }
 
 		/// <inheritdoc/>
 		[Column("status")]
         public WebhookSubscriptionStatus Status { get; set; }
-
-		/// <summary>
-		/// Gets or sets the time when the last status of the subscription
-		/// was set.
-		/// </summary>
-		[Column("last_status_time")]
-		public DateTimeOffset? LastStatusTime { get; set; }
 
 		/// <inheritdoc/>
 		[Column("tenant_id")]
@@ -102,9 +97,19 @@ namespace Deveel.Webhooks {
         [BsonDictionaryOptions(DictionaryRepresentation.ArrayOfDocuments)]
 		public IDictionary<string, object> Properties { get; set; }
 
+		DateTimeOffset? IHaveTimeStamp.CreatedAtUtc {
+			get => CreatedAt ?? DateTimeOffset.UtcNow;
+			set => CreatedAt = value;
+		}
+
 		/// <inheritdoc/>
 		[Column("created_at")]
         public DateTimeOffset? CreatedAt { get; set; }
+
+		DateTimeOffset? IHaveTimeStamp.UpdatedAtUtc {
+			get => UpdatedAt ?? DateTimeOffset.UtcNow;
+			set => UpdatedAt = value;
+		}
 
 		/// <inheritdoc/>
 		[Column("updated_at")]

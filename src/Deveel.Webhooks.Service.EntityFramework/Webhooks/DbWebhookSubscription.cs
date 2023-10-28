@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Diagnostics.CodeAnalysis;
+
 namespace Deveel.Webhooks {
     public class DbWebhookSubscription : IWebhookSubscription {
         public string? Id { get; set;}
@@ -48,8 +50,9 @@ namespace Deveel.Webhooks {
         IDictionary<string, string>? IWebhookSubscription.Headers =>
             Headers?.ToDictionary(x => x.Key, x => x.Value);
 
+		[ExcludeFromCodeCoverage]
         IDictionary<string, object>? IWebhookSubscription.Properties =>
-            Properties?.ToDictionary(x => x.Key, x => x.GetValue());
+            Properties?.ToDictionary(x => x.Key, x => DbWebhookValueConvert.Convert(x.Value, x.ValueType));
 
         public virtual List<DbWebhookSubscriptionHeader> Headers { get; set; }
 

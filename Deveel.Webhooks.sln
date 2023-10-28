@@ -5,8 +5,6 @@ VisualStudioVersion = 17.0.32112.339
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Deveel.Webhooks.Model", "src\Deveel.Webhooks.Model\Deveel.Webhooks.Model.csproj", "{9D710920-2A08-466C-94F0-3FD90E752A20}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Deveel.Webhooks.XUnit", "test\Deveel.Events.Webhooks.XUnit\Deveel.Webhooks.XUnit.csproj", "{CF170566-4653-4E7A-AC54-5A1F7594B71F}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Deveel.Webhooks", "src\Deveel.Webhooks\Deveel.Webhooks.csproj", "{6435EBAE-5E0A-446D-B4E4-D75FE89DFC99}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Deveel.Webhooks.Service", "src\Deveel.Webhooks.Service\Deveel.Webhooks.Service.csproj", "{D2A74CD1-202E-4F64-BAD8-88F37EB3805A}"
@@ -18,12 +16,16 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Deveel.Webhooks.DynamicLinq", "src\Deveel.Webhooks.DynamicLinq\Deveel.Webhooks.DynamicLinq.csproj", "{69EA8584-6336-4A62-BE73-DE04DC6EE8E1}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{57F6404B-1FCC-473F-A189-ABC9D640CC0E}"
+	ProjectSection(SolutionItems) = preProject
+		src\Directory.Build.props = src\Directory.Build.props
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{07F23FF6-2FE1-4072-BF37-9238E3750AA1}"
+	ProjectSection(SolutionItems) = preProject
+		test\Directory.Build.props = test\Directory.Build.props
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Deveel.Webhooks.Receiver.XUnit", "test\Deveel.Webhooks.Receiver.XUnit\Deveel.Webhooks.Receiver.XUnit.csproj", "{4BC8323C-74F7-407A-8A5A-EA595B5C5585}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Deveel.Webhooks.Receiver.TestApi", "test\Deveel.Webhooks.Receiver.TestApi\Deveel.Webhooks.Receiver.TestApi.csproj", "{CBAC02DA-EFF9-4458-99A2-DAF7ACFE607F}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Deveel.Webhooks.Receiver.AspNetCore.NewtonsoftJson", "src\Deveel.Webhooks.Receiver.AspNetCore.NewtonsoftJson\Deveel.Webhooks.Receiver.AspNetCore.NewtonsoftJson.csproj", "{F23E99C7-8228-4AEE-894B-CAA303686239}"
 EndProject
@@ -59,13 +61,21 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Deveel.Webhooks.Receiver.Tw
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Deveel.Webhooks.Receiver.SendGrid", "src\Deveel.Webhooks.Receiver.SendGrid\Deveel.Webhooks.Receiver.SendGrid.csproj", "{1ABBB6ED-17CC-49BF-A50F-F13E137029A5}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Deveel.Webhooks.Receiver.SendGrid.XUnit", "src\Deveel.Webhooks.Receiver.SendGrid.XUnit\Deveel.Webhooks.Receiver.SendGrid.XUnit.csproj", "{26E14AA5-0154-43A2-BD14-DC9511FB68A7}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Deveel.Webhooks.Receiver.NewtonsoftJson.XUnit", "test\Deveel.Webhooks.Receiver.NewtonsoftJson.XUnit\Deveel.Webhooks.Receiver.NewtonsoftJson.XUnit.csproj", "{47DFE1D1-57F0-4EFC-A9AC-9C12A791AEB7}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Deveel.Webhooks.EntityFramework", "src\Deveel.Webhooks.Service.EntityFramework\Deveel.Webhooks.EntityFramework.csproj", "{4E446714-8685-4C03-8A1C-455902116D11}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Deveel.Webhooks.EntityFramework.XUnit", "test\Deveel.Webhooks.EntityFramework.XUnit\Deveel.Webhooks.EntityFramework.XUnit.csproj", "{F846F3B1-6856-4377-AD2A-5575C36DC158}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Deveel.Webhooks.EntityFramework.XUnit", "test\Deveel.Webhooks.EntityFramework.XUnit\Deveel.Webhooks.EntityFramework.XUnit.csproj", "{F846F3B1-6856-4377-AD2A-5575C36DC158}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Deveel.Webhooks.Management.Tests", "test\Deveel.Webhooks.Management.Tests\Deveel.Webhooks.Management.Tests.csproj", "{535BB807-E068-42C3-A7CD-CF0B0E5C942E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Deveel.Webhooks.Receiver.SendGrid.XUnit", "test\Deveel.Webhooks.Receiver.SendGrid.XUnit\Deveel.Webhooks.Receiver.SendGrid.XUnit.csproj", "{E669EE13-1CBB-453D-B3B0-5DA3B0B51FE6}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Deveel.Webhooks.XUnit", "test\Deveel.Webhooks.XUnit\Deveel.Webhooks.XUnit.csproj", "{EBD3DB50-0E90-47C7-9DD8-FBBAC8696CE1}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Deveel.Webhooks.Receiver.TestApi", "test\Deveel.Webhooks.Receiver.TestApi\Deveel.Webhooks.Receiver.TestApi.csproj", "{4942C858-277D-438D-B822-92055B8E8DF7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Deveel.Webhooks.DeliveryResultLogging.Tests", "test\Deveel.Webhooks.DeliveryResultLogging.Tests\Deveel.Webhooks.DeliveryResultLogging.Tests.csproj", "{DDD9A4CB-AA5E-4C0B-87F3-CDC24F6A8DA0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -77,10 +87,6 @@ Global
 		{9D710920-2A08-466C-94F0-3FD90E752A20}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9D710920-2A08-466C-94F0-3FD90E752A20}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9D710920-2A08-466C-94F0-3FD90E752A20}.Release|Any CPU.Build.0 = Release|Any CPU
-		{CF170566-4653-4E7A-AC54-5A1F7594B71F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{CF170566-4653-4E7A-AC54-5A1F7594B71F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{CF170566-4653-4E7A-AC54-5A1F7594B71F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{CF170566-4653-4E7A-AC54-5A1F7594B71F}.Release|Any CPU.Build.0 = Release|Any CPU
 		{6435EBAE-5E0A-446D-B4E4-D75FE89DFC99}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{6435EBAE-5E0A-446D-B4E4-D75FE89DFC99}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6435EBAE-5E0A-446D-B4E4-D75FE89DFC99}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -105,10 +111,6 @@ Global
 		{4BC8323C-74F7-407A-8A5A-EA595B5C5585}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4BC8323C-74F7-407A-8A5A-EA595B5C5585}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4BC8323C-74F7-407A-8A5A-EA595B5C5585}.Release|Any CPU.Build.0 = Release|Any CPU
-		{CBAC02DA-EFF9-4458-99A2-DAF7ACFE607F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{CBAC02DA-EFF9-4458-99A2-DAF7ACFE607F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{CBAC02DA-EFF9-4458-99A2-DAF7ACFE607F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{CBAC02DA-EFF9-4458-99A2-DAF7ACFE607F}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F23E99C7-8228-4AEE-894B-CAA303686239}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{F23E99C7-8228-4AEE-894B-CAA303686239}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F23E99C7-8228-4AEE-894B-CAA303686239}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -173,10 +175,6 @@ Global
 		{1ABBB6ED-17CC-49BF-A50F-F13E137029A5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1ABBB6ED-17CC-49BF-A50F-F13E137029A5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1ABBB6ED-17CC-49BF-A50F-F13E137029A5}.Release|Any CPU.Build.0 = Release|Any CPU
-		{26E14AA5-0154-43A2-BD14-DC9511FB68A7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{26E14AA5-0154-43A2-BD14-DC9511FB68A7}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{26E14AA5-0154-43A2-BD14-DC9511FB68A7}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{26E14AA5-0154-43A2-BD14-DC9511FB68A7}.Release|Any CPU.Build.0 = Release|Any CPU
 		{47DFE1D1-57F0-4EFC-A9AC-9C12A791AEB7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{47DFE1D1-57F0-4EFC-A9AC-9C12A791AEB7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{47DFE1D1-57F0-4EFC-A9AC-9C12A791AEB7}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -189,20 +187,38 @@ Global
 		{F846F3B1-6856-4377-AD2A-5575C36DC158}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F846F3B1-6856-4377-AD2A-5575C36DC158}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F846F3B1-6856-4377-AD2A-5575C36DC158}.Release|Any CPU.Build.0 = Release|Any CPU
+		{535BB807-E068-42C3-A7CD-CF0B0E5C942E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{535BB807-E068-42C3-A7CD-CF0B0E5C942E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{535BB807-E068-42C3-A7CD-CF0B0E5C942E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{535BB807-E068-42C3-A7CD-CF0B0E5C942E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E669EE13-1CBB-453D-B3B0-5DA3B0B51FE6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E669EE13-1CBB-453D-B3B0-5DA3B0B51FE6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E669EE13-1CBB-453D-B3B0-5DA3B0B51FE6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E669EE13-1CBB-453D-B3B0-5DA3B0B51FE6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EBD3DB50-0E90-47C7-9DD8-FBBAC8696CE1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EBD3DB50-0E90-47C7-9DD8-FBBAC8696CE1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EBD3DB50-0E90-47C7-9DD8-FBBAC8696CE1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EBD3DB50-0E90-47C7-9DD8-FBBAC8696CE1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4942C858-277D-438D-B822-92055B8E8DF7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4942C858-277D-438D-B822-92055B8E8DF7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4942C858-277D-438D-B822-92055B8E8DF7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4942C858-277D-438D-B822-92055B8E8DF7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DDD9A4CB-AA5E-4C0B-87F3-CDC24F6A8DA0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DDD9A4CB-AA5E-4C0B-87F3-CDC24F6A8DA0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DDD9A4CB-AA5E-4C0B-87F3-CDC24F6A8DA0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DDD9A4CB-AA5E-4C0B-87F3-CDC24F6A8DA0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{9D710920-2A08-466C-94F0-3FD90E752A20} = {57F6404B-1FCC-473F-A189-ABC9D640CC0E}
-		{CF170566-4653-4E7A-AC54-5A1F7594B71F} = {07F23FF6-2FE1-4072-BF37-9238E3750AA1}
 		{6435EBAE-5E0A-446D-B4E4-D75FE89DFC99} = {57F6404B-1FCC-473F-A189-ABC9D640CC0E}
 		{D2A74CD1-202E-4F64-BAD8-88F37EB3805A} = {57F6404B-1FCC-473F-A189-ABC9D640CC0E}
 		{9796303D-5EFF-4942-A563-6B53C4FE6904} = {57F6404B-1FCC-473F-A189-ABC9D640CC0E}
 		{6E1CC992-53F1-4536-96C5-751C8AFBD015} = {57F6404B-1FCC-473F-A189-ABC9D640CC0E}
 		{69EA8584-6336-4A62-BE73-DE04DC6EE8E1} = {57F6404B-1FCC-473F-A189-ABC9D640CC0E}
 		{4BC8323C-74F7-407A-8A5A-EA595B5C5585} = {07F23FF6-2FE1-4072-BF37-9238E3750AA1}
-		{CBAC02DA-EFF9-4458-99A2-DAF7ACFE607F} = {07F23FF6-2FE1-4072-BF37-9238E3750AA1}
 		{F23E99C7-8228-4AEE-894B-CAA303686239} = {57F6404B-1FCC-473F-A189-ABC9D640CC0E}
 		{1DCF1C21-75A9-4119-92EE-7B639B6F75A8} = {57F6404B-1FCC-473F-A189-ABC9D640CC0E}
 		{BFEB625F-8667-44FC-AFD8-0777ED99E0D8} = {07F23FF6-2FE1-4072-BF37-9238E3750AA1}
@@ -219,10 +235,14 @@ Global
 		{93064573-8270-469B-8592-4485845C8BCB} = {57F6404B-1FCC-473F-A189-ABC9D640CC0E}
 		{416B6496-0170-45CB-99A6-9AE2BA3D7FDC} = {07F23FF6-2FE1-4072-BF37-9238E3750AA1}
 		{1ABBB6ED-17CC-49BF-A50F-F13E137029A5} = {57F6404B-1FCC-473F-A189-ABC9D640CC0E}
-		{26E14AA5-0154-43A2-BD14-DC9511FB68A7} = {07F23FF6-2FE1-4072-BF37-9238E3750AA1}
 		{47DFE1D1-57F0-4EFC-A9AC-9C12A791AEB7} = {07F23FF6-2FE1-4072-BF37-9238E3750AA1}
 		{4E446714-8685-4C03-8A1C-455902116D11} = {57F6404B-1FCC-473F-A189-ABC9D640CC0E}
 		{F846F3B1-6856-4377-AD2A-5575C36DC158} = {07F23FF6-2FE1-4072-BF37-9238E3750AA1}
+		{535BB807-E068-42C3-A7CD-CF0B0E5C942E} = {07F23FF6-2FE1-4072-BF37-9238E3750AA1}
+		{E669EE13-1CBB-453D-B3B0-5DA3B0B51FE6} = {07F23FF6-2FE1-4072-BF37-9238E3750AA1}
+		{EBD3DB50-0E90-47C7-9DD8-FBBAC8696CE1} = {07F23FF6-2FE1-4072-BF37-9238E3750AA1}
+		{4942C858-277D-438D-B822-92055B8E8DF7} = {07F23FF6-2FE1-4072-BF37-9238E3750AA1}
+		{DDD9A4CB-AA5E-4C0B-87F3-CDC24F6A8DA0} = {07F23FF6-2FE1-4072-BF37-9238E3750AA1}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {E682A9F5-43D7-4D4C-82EA-953545B8F4DE}

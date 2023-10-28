@@ -5,15 +5,13 @@
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
 		<RootNamespace>Deveel</RootNamespace>
-		<DocumentationFile>./Deveel.Webhooks.EntityFramework.xml</DocumentationFile>
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>
     <Description>An implementation of the Deveel Webhooks storage layer based on the Entity Framework ORM</Description>
     <PackageTags>webhooks;webhook;data;ef;entityframework;sql;subscription;subscriptions</PackageTags>
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Finbuckle.MultiTenant.EntityFrameworkCore" Version="6.12.0" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="7.0.11" />
+		<PackageReference Include="Deveel.Repository.EntityFramework" Version="1.2.7-6657417435" />
 	</ItemGroup>
 
 	<ItemGroup>

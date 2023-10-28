@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Diagnostics.CodeAnalysis;
+
 namespace Deveel.Webhooks {
     public class DbWebhookReceiver : IWebhookReceiver {
         public int? Id { get; set; }
@@ -24,6 +26,7 @@ namespace Deveel.Webhooks {
 
         public string DestinationUrl { get; set; }
 
+		[ExcludeFromCodeCoverage]
         IEnumerable<KeyValuePair<string, string>> IWebhookReceiver.Headers
             => Headers?.ToDictionary(x => x.Key, y => y.Value);
 

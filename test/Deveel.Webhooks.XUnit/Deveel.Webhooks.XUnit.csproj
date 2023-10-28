@@ -1,0 +1,28 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+	  <Nullable>enable</Nullable>
+    <IsPackable>false</IsPackable>
+
+    <RootNamespace>Deveel</RootNamespace>
+    <NoWarn>1701;1702;CS8618</NoWarn>
+    <IsTestProject>true</IsTestProject>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.2.2" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="6.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="6.0.0" />
+    <PackageReference Include="RichardSzalay.MockHttp" Version="6.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Deveel.Webhooks.DynamicLinq\Deveel.Webhooks.DynamicLinq.csproj" />
+    <ProjectReference Include="..\..\src\Deveel.Webhooks.Service\Deveel.Webhooks.Service.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\apl-2.licenseheader" Link="apl-2.licenseheader" />
+  </ItemGroup>
+</Project>

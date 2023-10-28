@@ -6,7 +6,6 @@
     <Title>Deveel Webhooks</Title>
     <Description>Abstractions and utilities for the service management of webhooks senders</Description>
     <PackageTags>events;webhooks;webhook;notification;notifier</PackageTags>
-    <DocumentationFile>./Deveel.Webhooks.xml</DocumentationFile>
   </PropertyGroup>
 	
 	<ItemGroup>

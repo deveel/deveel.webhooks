@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Deveel.Data;
+
 using Finbuckle.MultiTenant;
 
 using Microsoft.Extensions.Configuration;
@@ -39,54 +41,13 @@ namespace Deveel.Webhooks {
 		private IServiceCollection Services => builder.Services;
 
 		private void AddDefaultStorage() {
-			Services.TryAddScoped<IMongoDbContext, MongoDbWebhookContext>();
 			Services.TryAddScoped<IMongoDbWebhookContext, MongoDbWebhookContext>();
 
-			Services.TryAddScoped<IWebhookSubscriptionStore<MongoWebhookSubscription>, MongoDbWebhookSubscriptionStrore>();
-			Services.AddScoped<MongoDbWebhookSubscriptionStrore>();
-			Services.TryAddScoped<MongoDbWebhookSubscriptionStrore<MongoWebhookSubscription>>();
-
-
-			Services.TryAddScoped<IWebhookDeliveryResultStore<MongoWebhookDeliveryResult>, MongoDbWebhookDeliveryResultStore>();
-			Services.AddScoped<MongoDbWebhookDeliveryResultStore>();
-			Services.TryAddScoped<MongoDbWebhookDeliveryResultStore<MongoWebhookDeliveryResult>>();
+			Services.AddRepository<MongoDbWebhookSubscriptionRepository>();
+			Services.AddRepository<MongoDbWebhookDeliveryResultRepository>();
 
 			Services.TryAddSingleton(typeof(IMongoWebhookConverter<>), typeof(DefaultMongoWebhookConverter<>));
 		}
-
-		/// <summary>
-		/// Configures the MongoDB storage context using a section
-		/// from the application configuration.
-		/// </summary>
-		/// <param name="sectionPath">
-		/// The path to the section in the configuration that contains
-		/// the connection string to the MongoDB database.
-		/// </param>
-		/// <returns>
-		/// Returns this instance of the builder for chaining.
-		/// </returns>
-		public MongoDbWebhookStorageBuilder<TSubscription> Configure(string sectionPath) {
-			Services.AddOptions<MongoDbWebhookOptions>()
-				.BindConfiguration(sectionPath);
-
-			return this;
-		}
-
-		/// <summary>
-		/// Configures the MongoDB storage context using the given function
-		/// </summary>
-		/// <param name="configure">
-		/// The configuration function to use to configure the storage context.
-		/// </param>
-		/// <returns>
-		/// Returns the current instance of the builder for chaining.
-		/// </returns>
-		public MongoDbWebhookStorageBuilder<TSubscription> Configure(Action<MongoDbWebhookOptions> configure) {
-			Services.AddOptions<MongoDbWebhookOptions>()
-				.Configure(configure);
-
-            return this;
-        }
 
 		/// <summary>
 		/// Configures the connection string to the MongoDB database
@@ -98,7 +59,7 @@ namespace Deveel.Webhooks {
 		/// Returns the current instance of the builder for chaining.
 		/// </returns>
 		public MongoDbWebhookStorageBuilder<TSubscription> WithConnectionString(string connectionString) {
-			Services.Configure<MongoDbWebhookOptions>(options => options.ConnectionString = connectionString);
+			Services.AddMongoDbContext<MongoDbWebhookContext>(builder => builder.UseConnection(connectionString));
 
 			return this;
 		}
@@ -114,8 +75,16 @@ namespace Deveel.Webhooks {
 		/// Returns the current instance of the builder for chaining.
 		/// </returns>
 		public MongoDbWebhookStorageBuilder<TSubscription> WithConnectionStringName(string connectionStringName) {
-			Services.AddOptions<MongoDbWebhookOptions>()
-                .Configure<IConfiguration>((options, config) => options.ConnectionString = config.GetConnectionString(connectionStringName));
+			Services.AddMongoDbContext<MongoDbWebhookContext>((sp, builder) => {
+				var config = sp.GetRequiredService<IConfiguration>();
+				builder.UseConnection(config.GetConnectionString(connectionStringName));
+			});
+
+			return this;
+		}
+
+		public MongoDbWebhookStorageBuilder<TSubscription> WithTenantConnectionString(Action<ITenantInfo?, MongoConnectionBuilder> configure) {
+			Services.AddMongoDbContext<MongoDbWebhookContext>(configure);
 
 			return this;
 		}
@@ -134,16 +103,19 @@ namespace Deveel.Webhooks {
 		/// </returns>
 		public MongoDbWebhookStorageBuilder<TSubscription> UseMultiTenant<TTenantInfo>() where TTenantInfo : class, ITenantInfo, new() {
 			Services.RemoveAll<IMongoDbWebhookContext>();
-			Services.AddScoped<IMongoDbWebhookContext, MongoDbWebhookTenantContext<TTenantInfo>>();
-			Services.AddScoped<MongoDbWebhookTenantContext<TTenantInfo>>();
+			Services.RemoveAll<MongoDbWebhookContext>();
+			Services.RemoveAll<IRepositoryProvider<TSubscription>>();
 
-            Services.TryAddScoped<IWebhookSubscriptionStoreProvider<MongoWebhookSubscription>, MongoDbWebhookSubscriptionStoreProvider<TTenantInfo>>();
-            Services.AddScoped<MongoDbWebhookSubscriptionStoreProvider<TTenantInfo>>();
-            Services.TryAddScoped<MongoDbWebhookSubscriptionStoreProvider<TTenantInfo, MongoWebhookSubscription>>();
+			Services.AddMongoDbContext<MongoDbWebhookTenantContext>((tenant, builder) => {
+				if (tenant == null)
+					throw new Exception("No tenant information was provided");
 
-            Services.TryAddScoped<IWebhookDeliveryResultStoreProvider<MongoWebhookDeliveryResult>, MongoDbWebhookDeliveryResultStoreProvider<TTenantInfo>>();
-            Services.AddScoped<MongoDbWebhookDeliveryResultStoreProvider<TTenantInfo>>();
-            Services.TryAddScoped<MongoDbWebhookDeliveryResultStoreProvider<TTenantInfo, MongoWebhookDeliveryResult>>();
+				builder.UseConnection(tenant.ConnectionString!);
+			});
+
+			Services.AddScoped<IMongoDbWebhookContext>(sp => sp.GetRequiredService<MongoDbWebhookTenantContext>());
+			Services.AddRepositoryProvider<MongoDbWebhookSubscriptionRepositoryProvider<MongoDbWebhookTenantContext, TTenantInfo>>();
+			Services.AddRepositoryProvider<MongoDbWebhookDeliveryResultRepositoryProvider<TTenantInfo>>();
 
             return this;
 		}
@@ -163,15 +135,19 @@ namespace Deveel.Webhooks {
 		/// </summary>
 		/// <typeparam name="TStore">
 		/// The type of the storage to use for storing the webhook subscriptions,
-		/// that is derived from <see cref="MongoDbWebhookSubscriptionStrore"/>.
+		/// that is derived from <see cref="MongoDbWebhookSubscriptionRepository"/>.
 		/// </typeparam>
 		/// <returns>
 		/// Returns the current instance of the builder for chaining.
 		/// </returns>
 		public MongoDbWebhookStorageBuilder<TSubscription> UseSubscriptionStore<TStore>()
-			where TStore : MongoDbWebhookSubscriptionStrore {
-			Services.AddScoped<IWebhookSubscriptionStore<MongoWebhookSubscription>, TStore>();
-			Services.AddScoped<TStore>();
+			where TStore : MongoDbWebhookSubscriptionRepository {
+			Services.RemoveAll<IRepository<TSubscription>>();
+			Services.RemoveAll<IWebhookSubscriptionRepository<TSubscription>>();
+
+			Services.AddRepository<TStore>();
+			//Services.AddScoped<IWebhookSubscriptionStore<MongoWebhookSubscription>, TStore>();
+			//Services.AddScoped<TStore>();
 
 			return this;
 		}
@@ -182,14 +158,15 @@ namespace Deveel.Webhooks {
 		/// </summary>
 		/// <typeparam name="TStore">
 		/// The type of the storage to use for storing the webhook delivery results,
-		/// derived from <see cref="MongoDbWebhookDeliveryResultStore"/>.
+		/// derived from <see cref="MongoDbWebhookDeliveryResultRepository"/>.
 		/// </typeparam>
 		/// <returns>
 		/// Returns the current instance of the builder for chaining.
 		/// </returns>
 		public MongoDbWebhookStorageBuilder<TSubscription> UseDeliveryResultStore<TStore>()
-			where TStore : MongoDbWebhookDeliveryResultStore {
-			Services.AddScoped<IWebhookDeliveryResultStore<MongoWebhookDeliveryResult>, TStore>();
+			where TStore : MongoDbWebhookDeliveryResultRepository {
+			Services.AddRepository<TStore>();
+			// Services.AddScoped<IWebhookDeliveryResultStore<MongoWebhookDeliveryResult>, TStore>();
 
 			return this;
 		}

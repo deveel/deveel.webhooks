@@ -5,7 +5,6 @@
         <RootNamespace>Deveel</RootNamespace>
         <PackageTags>webhooks;webhook;receiver;receivers;aspnet;aspnetcore;httpcontext;httprequest;twilio;sms;voice;whatsapp</PackageTags>
         <Description>An implementation of the Deveel Webhooks ASP.NET Core Receiver that is able to receive webhooks from Twilio</Description>
-        <DocumentationFile>.\Deveel.Webhooks.Receiver.Twilio.xml</DocumentationFile>
     </PropertyGroup>
 
     <ItemGroup>

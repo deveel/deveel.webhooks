@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Deveel.Webhooks {
     public class DbWebhookConfiguration : IEntityTypeConfiguration<DbWebhook> {
+		/// <inheritdoc/>
         public virtual void Configure(EntityTypeBuilder<DbWebhook> builder) {
             builder.ToTable("webhooks");
 
@@ -27,11 +28,9 @@ namespace Deveel.Webhooks {
             builder.Property(x => x.Data)
                 .HasColumnName("data");
 
-            builder.HasIndex(x => x.WebhookId)
-                .IsDescending();
+			builder.HasIndex(x => x.WebhookId);
         
-            builder.HasIndex(x => x.EventType)
-                .IsDescending();
+            builder.HasIndex(x => x.EventType);
         }
     }
 }

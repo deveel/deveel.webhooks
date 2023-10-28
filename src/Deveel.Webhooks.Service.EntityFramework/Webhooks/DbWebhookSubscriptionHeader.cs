@@ -16,21 +16,15 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Deveel.Webhooks {
-    [Table("webhook_subscription_headers")]
     public class DbWebhookSubscriptionHeader {
-        [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity), Column("id")]
         public int Id { get; set; }
 
-        [Required, Column("key")]
         public string Key { get; set; }
 
-        [Required, Column("value")]
         public string Value { get; set; }
 
-        // [ForeignKey(nameof(SubscriptionId))]
         public virtual DbWebhookSubscription? Subscription { get; set; }
 
-        [Required, Column("subscription_id")]
         public string? SubscriptionId { get; set; }
     }
 }

@@ -1,17 +1,16 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-    <PropertyGroup>
-        <TargetFramework>net6.0</TargetFramework>
-        <RootNamespace>Deveel</RootNamespace>
-        <PackageTags>webhooks;webhook;receiver;receivers;aspnet;aspnetcore;httpcontext;httprequest;newtonsoft;json;jsonparser</PackageTags>
-        <Description>Extends the ASP.NET Core receivers with webhook parsers implemented using the Newtonsoft.Json library</Description>
-    </PropertyGroup>
+  <PropertyGroup>
+    <Title>Deveel Webhooks ASP.NET Core Netwonsoft JSON Serializer</Title>
+    <PackageTags>webhooks;webhook;receiver;receivers;aspnet;aspnetcore;httpcontext;httprequest;newtonsoft;json;jsonparser</PackageTags>
+    <Description>Extends the ASP.NET Core receivers with webhook parsers implemented using the Newtonsoft.Json library</Description>
+  </PropertyGroup>
 
-    <ItemGroup>
-        <PackageReference Include="Newtonsoft.Json" Version="13.0.3"/>
-    </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3"/>
+  </ItemGroup>
 
-    <ItemGroup>
-        <ProjectReference Include="..\Deveel.Webhooks.Receiver.AspNetCore\Deveel.Webhooks.Receiver.AspNetCore.csproj" />
-    </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Deveel.Webhooks.Receiver.AspNetCore\Deveel.Webhooks.Receiver.AspNetCore.csproj" />
+  </ItemGroup>
 </Project>

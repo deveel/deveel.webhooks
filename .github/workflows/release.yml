@@ -6,7 +6,7 @@ on:
 
 jobs:
   build:
-
+    name: "Build and Test"
     runs-on: ubuntu-latest
 
     steps:
@@ -17,10 +17,12 @@ jobs:
         TAG=${{ github.event.release.tag_name }}
         echo "VERSION=${TAG#v}" >> $GITHUB_ENV
 
-    - name: Setup .NET 6.0
+    - name: Setup .NET
       uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: 6.0.x
+        dotnet-version: |
+            6.0.x
+            7.0.x
     
     - name: Add Deveel GitHub NuGet Source
       run: dotnet nuget add source "https://nuget.pkg.github.com/deveel/index.json" -n "Deveel GitHub" -u ${{ secrets.DEVEEL_NUGET_USER }} -p ${{ secrets.DEVEEL_NUGET_TOKEN }} --store-password-in-clear-text
@@ -43,5 +45,4 @@ jobs:
       run: dotnet pack --configuration Release --no-restore --no-build --include-symbols -p:PackageVersion=$VERSION --output ./nuget
 
     - name: Push Packages to GitHub NuGet
-      
       run: dotnet nuget push ./nuget/**/*.nupkg --skip-duplicate --api-key ${{secrets.NUGET_API_KEY}} --source https://api.nuget.org/v3/index.json

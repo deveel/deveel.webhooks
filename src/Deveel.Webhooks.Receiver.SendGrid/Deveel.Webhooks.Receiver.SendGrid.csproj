@@ -1,8 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
-    <RootNamespace>Deveel</RootNamespace>
+    <Title>Deveel Webhooks SendGrid Receiver</Title>
     <PackageTags>webhooks;webhook;receiver;receivers;aspnet;aspnetcore;httpcontext;httprequest;sendgrid;sg;email;mail</PackageTags>
     <Description>An implementation of the Deveel Webhooks ASP.NET Core Receiver that is able to receive webhooks and e-mails from SendGrid</Description>
   </PropertyGroup>

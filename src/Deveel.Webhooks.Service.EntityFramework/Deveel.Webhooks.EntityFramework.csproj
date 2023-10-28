@@ -1,11 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFramework>net6.0</TargetFramework>
-		<ImplicitUsings>enable</ImplicitUsings>
-		<Nullable>enable</Nullable>
-		<RootNamespace>Deveel</RootNamespace>
-		<GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <Title>Deveel Webhooks Entity Framework Data Layer</Title>
     <Description>An implementation of the Deveel Webhooks storage layer based on the Entity Framework ORM</Description>
     <PackageTags>webhooks;webhook;data;ef;entityframework;sql;subscription;subscriptions</PackageTags>
 	</PropertyGroup>

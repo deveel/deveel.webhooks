@@ -12,11 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
@@ -54,8 +49,15 @@ namespace Deveel.Webhooks {
 
 		private void RegisterDefaultServices() {
 			Services.TryAddScoped<IWebhookNotifier<TWebhook>, WebhookNotifier<TWebhook>>();
-
+			Services.TryAddScoped<WebhookNotifier<TWebhook>>();
 			Services.TryAddScoped<IWebhookSender<TWebhook>, WebhookSender<TWebhook>>();
+			Services.TryAddScoped<WebhookSender<TWebhook>>();
+
+			if (typeof(Webhook).IsAssignableFrom(typeof(TWebhook))) {
+				var factoryType = typeof(DefaultWebhookFactory<>).MakeGenericType(typeof(TWebhook));
+				Services.TryAddSingleton(typeof(IWebhookFactory<TWebhook>), factoryType);
+				Services.TryAddSingleton(factoryType);
+			}
 
 			// TODO: register the default filter evaluator
 		}
@@ -184,8 +186,8 @@ namespace Deveel.Webhooks {
 
 			Services.RemoveAll<IWebhookFactory<TWebhook>>();
 
-			Services.Add(new ServiceDescriptor(typeof(IWebhookFactory<TWebhook>), typeof(TFactory), lifetime));
-			Services.TryAdd(new ServiceDescriptor(typeof(TFactory), typeof(TFactory), lifetime));
+			Services.TryAdd(new ServiceDescriptor(typeof(IWebhookFactory<TWebhook>), typeof(TFactory), lifetime));
+			Services.Add(new ServiceDescriptor(typeof(TFactory), typeof(TFactory), lifetime));
 
 			return this;
 		}

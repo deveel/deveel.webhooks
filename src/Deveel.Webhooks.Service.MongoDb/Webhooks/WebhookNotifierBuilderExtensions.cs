@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Microsoft.Extensions.DependencyInjection;
+
 namespace Deveel.Webhooks {
     /// <summary>
     /// Provides extensions to the <see cref="WebhookNotifierBuilder{TWebhook}"/>
@@ -54,9 +56,43 @@ namespace Deveel.Webhooks {
 		/// </returns>
 		public static WebhookNotifierBuilder<TWebhook> UseMongoTenantSubscriptionResolver<TWebhook>(this WebhookNotifierBuilder<TWebhook> builder)
 			where TWebhook : class {
-			return builder
-				.UseDefaultTenantSubscriptionResolver(typeof(MongoWebhookSubscription));
+			return builder.UseDefaultTenantSubscriptionResolver(typeof(MongoWebhookSubscription));
 		}
 
+		/// <summary>
+		/// Registers an implementation of <see cref="IWebhookDeliveryResultLogger{TWebhook}"/>
+		/// that is using MongoDB as the storage for the webhook delivery results.
+		/// </summary>
+		/// <typeparam name="TWebhook">
+		/// The type of the webhook that is being delivered.
+		/// </typeparam>
+		/// <typeparam name="TResult">
+		/// The type of the webhook delivery result that is being logged.
+		/// </typeparam>
+		/// <returns>
+		/// Returns the current instance of the builder for chaining.
+		/// </returns>
+		public static WebhookNotifierBuilder<TWebhook> UseMongoDeliveryResultLogger<TWebhook, TResult>(this WebhookNotifierBuilder<TWebhook> builder)
+			where TWebhook : class
+			where TResult : MongoWebhookDeliveryResult, new() {
+
+			builder.Services.AddTransient<IWebhookDeliveryResultLogger<TWebhook>, MongoDbWebhookDeliveryResultLogger<TWebhook, TResult>>();
+
+			return builder;
+		}
+
+		/// <summary>
+		/// Registers an implementation of <see cref="IWebhookDeliveryResultLogger{TWebhook}"/>
+		/// that is using MongoDB as the storage for the webhook delivery results.
+		/// </summary>
+		/// <typeparam name="TWebhook">
+		/// The type of the webhook that is being delivered.
+		/// </typeparam>
+		/// <returns>
+		/// Returns the current instance of the builder for chaining.
+		/// </returns>
+		public static WebhookNotifierBuilder<TWebhook> UseMongoDeliveryResultLogger<TWebhook>(this WebhookNotifierBuilder<TWebhook> builder)
+			where TWebhook : class
+			=> builder.UseMongoDeliveryResultLogger<TWebhook, MongoWebhookDeliveryResult>();
 	}
 }

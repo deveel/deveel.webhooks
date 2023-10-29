@@ -44,8 +44,8 @@ namespace Deveel.Webhooks {
 			notifier = Services.GetRequiredService<ITenantWebhookNotifier<Webhook>>();
 		}
 
-		protected override void ConfigureWebhookService(WebhookSubscriptionBuilder<MongoWebhookSubscription> builder) {
-			builder.Services.AddMultiTenant<TenantInfo>()
+		protected override void ConfigureServices(IServiceCollection services) {
+			services.AddMultiTenant<TenantInfo>()
 				.WithInMemoryStore(store => {
 					store.Tenants.Add(new TenantInfo {
 						Id = tenantId,
@@ -56,20 +56,22 @@ namespace Deveel.Webhooks {
 				})
 				.WithStaticStrategy(tenantId);
 
-			builder
-				.UseSubscriptionManager()
-				.UseNotifier<Webhook>(notifier => notifier
+			services.AddWebhookNotifier<Webhook>(notifier => notifier
 					.UseTenantNotifier()
 					.UseSender(options => {
 						options.Timeout = TimeSpan.FromSeconds(TimeOutSeconds);
 						options.Retry.MaxRetries = 2;
 					})
 					.UseLinqFilter()
-					.UseWebhookFactory<DefaultWebhookFactory>()
-					.UseMongoTenantSubscriptionResolver())
-				.UseMongoDb(options => options
-					.UseMultiTenant()
-					.UseDeliveryResultLogger<Webhook>());
+					.UseMongoTenantSubscriptionResolver()
+					.UseMongoDeliveryResultLogger());
+
+			base.ConfigureServices(services);
+		}
+
+		protected override void ConfigureWebhookService(WebhookSubscriptionBuilder<MongoWebhookSubscription> builder) {
+			builder.UseSubscriptionManager()
+				.UseMongoDb(options => options.UseMultiTenant());
 		}
 
 		private static MongoWebhook ConvertToMongo(Webhook webhook) {

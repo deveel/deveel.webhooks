@@ -31,6 +31,8 @@ namespace Deveel.Webhooks {
                 .AddTestHttpClient(OnRequestAsync)
                 .AddLogging(logging => logging.AddXUnit(outputHelper));
 
+			services.AddWebhookNotifier<Webhook>(builder => builder.UseEntityFrameworkDeliveryResults());
+
             return services.BuildServiceProvider();
         }
 

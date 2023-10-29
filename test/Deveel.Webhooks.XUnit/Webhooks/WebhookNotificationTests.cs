@@ -12,14 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using System.Linq;
 using System.Net;
-using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text.Json;
-using System.Threading;
-using System.Threading.Tasks;
 
 using Microsoft.Extensions.DependencyInjection;
 
@@ -42,17 +37,16 @@ namespace Deveel.Webhooks {
 			subscriptionResolver = Services.GetRequiredService<TestSubscriptionResolver>();
 		}
 
-		protected override void ConfigureWebhookService(WebhookSubscriptionBuilder<TestWebhookSubscription> builder) {
-			builder
-				.UseSubscriptionManager()
-				.UseNotifier<Webhook>(config => config
-					.UseWebhookFactory<DefaultWebhookFactory>()
+		protected override void ConfigureServices(IServiceCollection services) {
+			services.AddWebhookNotifier<Webhook>(config => config
 					.UseLinqFilter()
 					.UseSubscriptionResolver<TestSubscriptionResolver>(ServiceLifetime.Singleton)
 					.UseSender(options => {
 						options.Retry.MaxRetries = 2;
 						options.Retry.Timeout = TimeSpan.FromSeconds(TimeOutSeconds);
 					}));
+
+			base.ConfigureServices(services);
 		}
 
 		protected override async Task<HttpResponseMessage> OnRequestAsync(HttpRequestMessage httpRequest) {

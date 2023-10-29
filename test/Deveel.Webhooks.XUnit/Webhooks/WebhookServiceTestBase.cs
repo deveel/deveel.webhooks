@@ -33,11 +33,14 @@ namespace Deveel.Webhooks {
 		protected IServiceProvider Services { get; }
 
 		private IServiceProvider BuildServiceProvider(ITestOutputHelper outputHelper) {
-			return new ServiceCollection()
+			var services = new ServiceCollection()
 				.AddWebhookSubscriptions<TestWebhookSubscription>(buidler => ConfigureWebhookService(buidler))
 				.AddTestHttpClient(OnRequestAsync)
-				.AddLogging(logging => logging.AddXUnit(outputHelper).SetMinimumLevel(LogLevel.Trace))
-				.BuildServiceProvider();
+				.AddLogging(logging => logging.AddXUnit(outputHelper).SetMinimumLevel(LogLevel.Trace));
+
+			ConfigureServices(services);
+
+			return services.BuildServiceProvider();
 		}
 
 		protected virtual Task<HttpResponseMessage> OnRequestAsync(HttpRequestMessage httpRequest) {

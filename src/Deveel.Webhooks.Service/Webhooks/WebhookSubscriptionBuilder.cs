@@ -14,6 +14,8 @@
 
 using System;
 
+using Deveel.Data;
+
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
@@ -57,25 +59,25 @@ namespace Deveel.Webhooks {
 			// Services.TryAddScoped<ITenantWebhookSubscriptionResolver, TenantWebhookSubscriptionResolver<TSubscription>>();
 		}
 
-		/// <summary>
-		/// Adds the notification capabilities to the service.
-		/// </summary>
-		/// <typeparam name="TWebhook">
-		/// The type of the webhook that is notified the subscribers.
-		/// </typeparam>
-		/// <param name="configure">
-		/// A callback that is used to configure the webhook notifier.
-		/// </param>
-		/// <returns>
-		/// Returns this instance of the <see cref="WebhookSubscriptionBuilder{TSubscription}"/>.
-		/// </returns>
-		/// <seealso cref="ITenantWebhookNotifier{TWebhook}"/>
-		public WebhookSubscriptionBuilder<TSubscription> UseNotifier<TWebhook>(Action<WebhookNotifierBuilder<TWebhook>> configure)
-			where TWebhook : class, IWebhook {
-			Services.AddWebhookNotifier(configure);
+		///// <summary>
+		///// Adds the notification capabilities to the service.
+		///// </summary>
+		///// <typeparam name="TWebhook">
+		///// The type of the webhook that is notified the subscribers.
+		///// </typeparam>
+		///// <param name="configure">
+		///// A callback that is used to configure the webhook notifier.
+		///// </param>
+		///// <returns>
+		///// Returns this instance of the <see cref="WebhookSubscriptionBuilder{TSubscription}"/>.
+		///// </returns>
+		///// <seealso cref="ITenantWebhookNotifier{TWebhook}"/>
+		//public WebhookSubscriptionBuilder<TSubscription> UseNotifier<TWebhook>(Action<WebhookNotifierBuilder> configure)
+		//	where TWebhook : class, IWebhook {
+		//	Services.AddWebhookNotifier<TWebhook>(configure);
 
-			return this;
-		}
+		//	return this;
+		//}
 
 		/// <summary>
 		/// Registers a custom <see cref="WebhookSubscriptionManager{TSubscription}"/>
@@ -92,6 +94,9 @@ namespace Deveel.Webhooks {
 		/// </returns>
 		public WebhookSubscriptionBuilder<TSubscription> UseSubscriptionManager<TManager>(ServiceLifetime lifetime = ServiceLifetime.Scoped)
 			where TManager : WebhookSubscriptionManager<TSubscription> {
+
+			Services.RemoveAll<EntityManager<TSubscription>>();
+			Services.RemoveAll<WebhookSubscriptionManager<TSubscription>>();
 
 			Services.TryAdd(new ServiceDescriptor(typeof(WebhookSubscriptionManager<TSubscription>), typeof(TManager), lifetime));
 

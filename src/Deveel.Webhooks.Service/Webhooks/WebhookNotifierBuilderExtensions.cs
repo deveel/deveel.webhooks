@@ -12,12 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Deveel.Webhooks {
@@ -63,6 +57,5 @@ namespace Deveel.Webhooks {
 			var resolverType = typeof(WebhookSubscriptionResolver<>).MakeGenericType(subscriptionType);
 			return builder.UseSubscriptionResolver(resolverType, lifetime);
 		}
-
 	}
 }

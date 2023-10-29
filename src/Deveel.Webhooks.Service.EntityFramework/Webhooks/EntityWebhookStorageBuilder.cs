@@ -21,27 +21,20 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Deveel.Webhooks {
-    /// <summary>
-    /// A builder for configuring the storage of webhook subscriptions
-    /// </summary>
-    /// <typeparam name="TSubscription">
+	/// <summary>
+	/// A builder for configuring the storage of webhook subscriptions
+	/// </summary>
+	/// <typeparam name="TSubscription">
 	/// The type of the <see cref="DbWebhookSubscription"/> entity to use
 	/// </typeparam>
-    public sealed class EntityWebhookStorageBuilder<TSubscription> where TSubscription : DbWebhookSubscription {
+	public sealed class EntityWebhookStorageBuilder<TSubscription> where TSubscription : DbWebhookSubscription {
         private readonly WebhookSubscriptionBuilder<TSubscription> builder;
         
-        internal EntityWebhookStorageBuilder(WebhookSubscriptionBuilder<TSubscription> builder, Type? resultType = null) {
-			ResultType = resultType;
+        internal EntityWebhookStorageBuilder(WebhookSubscriptionBuilder<TSubscription> builder) {
             this.builder = builder;
 
             AddDefaultStorage();
         }
-
-		/// <summary>
-		/// Gets the entity type to be used to store the results of 
-		/// webhook deliveries in the database.
-		/// </summary>
-		public Type? ResultType { get; private set; }
 
         /// <summary>
         /// Gets the <see cref="IServiceCollection"/> that is used to
@@ -55,14 +48,6 @@ namespace Deveel.Webhooks {
             if (typeof(TSubscription) == typeof(DbWebhookSubscription)) {
 				Services.AddRepository<EntityWebhookSubscriptionRepository>();
             }
-
-			if (ResultType != null) {
-				var resultStoreType = typeof(EntityWebhookDeliveryResultRepository<>).MakeGenericType(ResultType);
-				Services.AddRepository(resultStoreType);
-
-				if (ResultType == typeof(DbWebhookDeliveryResult))
-					Services.AddRepository<EntityWebhookDeliveryResultRepository>();
-			}
         }
 
         /// <summary>
@@ -170,51 +155,5 @@ namespace Deveel.Webhooks {
 
             return this;
         }
-
-		/// <summary>
-		/// Configures the storage to use the given type of result.
-		/// </summary>
-		/// <param name="type">
-		/// The type of the result to use, that must be derived from
-		/// the <see cref="DbWebhookDeliveryResult"/> type.
-		/// </param>
-		/// <returns>
-		/// Returns the current instance of the builder for chaining.
-		/// </returns>
-		/// <exception cref="ArgumentNullException">
-		/// Thrown when the given <paramref name="type"/> is <c>null</c>.
-		/// </exception>
-		/// <exception cref="ArgumentException">
-		/// Thrown when the given <paramref name="type"/> is not derived from
-		/// <see cref="DbWebhookDeliveryResult"/>.
-		/// </exception>
-		public EntityWebhookStorageBuilder<TSubscription> UseResultType(Type type) {
-			ArgumentNullException.ThrowIfNull(type, nameof(type));
-
-			if (!typeof(DbWebhookDeliveryResult).IsAssignableFrom(type))
-				throw new ArgumentException($"The given type '{type}' is not a valid result type");
-
-			ResultType = type;
-
-			return this;
-		}
-
-		public EntityWebhookStorageBuilder<TSubscription> UseResult<TResult>()
-			where TResult : DbWebhookDeliveryResult
-			=> UseResultType(typeof(TResult));
-
-		public EntityWebhookStorageBuilder<TSubscription> UseResultRepository(Type repositoryType) {
-			if (ResultType == null)
-				throw new InvalidOperationException("No result type was specified for the storage");
-
-			var resultStoreType = typeof(IWebhookDeliveryResultRepository<>).MakeGenericType(ResultType);
-
-			if (!resultStoreType.IsAssignableFrom(repositoryType))
-				throw new ArgumentException($"The given type '{repositoryType}' is not a valid result store");
-
-			Services.AddRepository(resultStoreType);
-
-			return this;
-		}
     }
 }

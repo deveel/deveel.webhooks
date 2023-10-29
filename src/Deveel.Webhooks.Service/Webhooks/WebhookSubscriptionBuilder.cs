@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
+using Deveel.Data;
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -54,27 +54,8 @@ namespace Deveel.Webhooks {
 			Services.TryAddSingleton<IWebhookSubscriptionValidator<TSubscription>, WebhookSubscriptionValidator<TSubscription>>();
 
 			Services.TryAddScoped<IWebhookSubscriptionResolver, WebhookSubscriptionResolver<TSubscription>>();
+			Services.TryAddScoped<WebhookSubscriptionResolver<TSubscription>>();
 			// Services.TryAddScoped<ITenantWebhookSubscriptionResolver, TenantWebhookSubscriptionResolver<TSubscription>>();
-		}
-
-		/// <summary>
-		/// Adds the notification capabilities to the service.
-		/// </summary>
-		/// <typeparam name="TWebhook">
-		/// The type of the webhook that is notified the subscribers.
-		/// </typeparam>
-		/// <param name="configure">
-		/// A callback that is used to configure the webhook notifier.
-		/// </param>
-		/// <returns>
-		/// Returns this instance of the <see cref="WebhookSubscriptionBuilder{TSubscription}"/>.
-		/// </returns>
-		/// <seealso cref="ITenantWebhookNotifier{TWebhook}"/>
-		public WebhookSubscriptionBuilder<TSubscription> UseNotifier<TWebhook>(Action<WebhookNotifierBuilder<TWebhook>> configure)
-			where TWebhook : class, IWebhook {
-			Services.AddWebhookNotifier(configure);
-
-			return this;
 		}
 
 		/// <summary>
@@ -92,6 +73,9 @@ namespace Deveel.Webhooks {
 		/// </returns>
 		public WebhookSubscriptionBuilder<TSubscription> UseSubscriptionManager<TManager>(ServiceLifetime lifetime = ServiceLifetime.Scoped)
 			where TManager : WebhookSubscriptionManager<TSubscription> {
+
+			Services.RemoveAll<EntityManager<TSubscription>>();
+			Services.RemoveAll<WebhookSubscriptionManager<TSubscription>>();
 
 			Services.TryAdd(new ServiceDescriptor(typeof(WebhookSubscriptionManager<TSubscription>), typeof(TManager), lifetime));
 
@@ -124,8 +108,8 @@ namespace Deveel.Webhooks {
 		/// </returns>
 		public WebhookSubscriptionBuilder<TSubscription> AddSubscriptionValidator<TValidator>(ServiceLifetime lifetime = ServiceLifetime.Singleton)
 			where TValidator : class, IWebhookSubscriptionValidator<TSubscription> {
-			Services.Add(new ServiceDescriptor(typeof(IWebhookSubscriptionValidator<TSubscription>), typeof(TValidator), lifetime));
-			Services.Add(new ServiceDescriptor(typeof(TValidator), typeof(TValidator), lifetime));
+
+			Services.AddEntityValidator<TValidator>(lifetime);
 
 			return this;
 		}

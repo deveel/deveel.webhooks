@@ -98,7 +98,7 @@ namespace Deveel.Webhooks {
 		/// <returns>
 		/// Returns the current instance of the builder for chaining.
 		/// </returns>
-		public MongoDbWebhookStorageBuilder<TSubscription> WithTenantConnectionString(Action<ITenantInfo?, MongoConnectionBuilder> configure) {
+		public MongoDbWebhookStorageBuilder<TSubscription> WithTenantConnection(Action<ITenantInfo?, MongoConnectionBuilder> configure) {
 			Services.AddMongoDbContext<MongoDbWebhookContext>(configure);
 
 			return this;
@@ -161,66 +161,9 @@ namespace Deveel.Webhooks {
 			Services.RemoveAll<IWebhookSubscriptionRepository<TSubscription>>();
 
 			Services.AddRepository<TRepository>();
-			//Services.AddScoped<IWebhookSubscriptionStore<MongoWebhookSubscription>, TStore>();
-			//Services.AddScoped<TStore>();
 
 			return this;
 		}
-
-		/// <summary>
-		/// Registers the given type of storage to be used for
-		/// storing the webhook delivery results.
-		/// </summary>
-		/// <typeparam name="TRepository">
-		/// The type of the storage to use for storing the webhook delivery results,
-		/// derived from <see cref="MongoDbWebhookDeliveryResultRepository"/>.
-		/// </typeparam>
-		/// <returns>
-		/// Returns the current instance of the builder for chaining.
-		/// </returns>
-		public MongoDbWebhookStorageBuilder<TSubscription> UseDeliveryResultRepository<TRepository>()
-			where TRepository : MongoDbWebhookDeliveryResultRepository {
-			Services.AddRepository<TRepository>();
-			// Services.AddScoped<IWebhookDeliveryResultStore<MongoWebhookDeliveryResult>, TStore>();
-
-			return this;
-		}
-
-		/// <summary>
-		/// Registers an implementation of <see cref="IWebhookDeliveryResultLogger{TWebhook}"/>
-		/// that is using MongoDB as the storage for the webhook delivery results.
-		/// </summary>
-		/// <typeparam name="TWebhook">
-		/// The type of the webhook that is being delivered.
-		/// </typeparam>
-		/// <typeparam name="TResult">
-		/// The type of the webhook delivery result that is being logged.
-		/// </typeparam>
-		/// <returns>
-		/// Returns the current instance of the builder for chaining.
-		/// </returns>
-		public MongoDbWebhookStorageBuilder<TSubscription> UseDeliveryResultLogger<TWebhook, TResult>()
-			where TWebhook : class
-			where TResult : MongoWebhookDeliveryResult, new() {
-
-			Services.AddTransient<IWebhookDeliveryResultLogger<TWebhook>, MongoDbWebhookDeliveryResultLogger<TWebhook, TResult>>();
-
-			return this;
-		}
-
-		/// <summary>
-		/// Registers an implementation of <see cref="IWebhookDeliveryResultLogger{TWebhook}"/>
-		/// that is using MongoDB as the storage for the webhook delivery results.
-		/// </summary>
-		/// <typeparam name="TWebhook">
-		/// The type of the webhook that is being delivered.
-		/// </typeparam>
-		/// <returns>
-		/// Returns the current instance of the builder for chaining.
-		/// </returns>
-		public MongoDbWebhookStorageBuilder<TSubscription> UseDeliveryResultLogger<TWebhook>()
-			where TWebhook : class
-			=> UseDeliveryResultLogger<TWebhook, MongoWebhookDeliveryResult>();
 
 		/// <summary>
 		/// Registers a service that is used to convert the webhook

@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-
 using Deveel.Data;
 
 using Microsoft.Extensions.DependencyInjection;
@@ -56,28 +54,9 @@ namespace Deveel.Webhooks {
 			Services.TryAddSingleton<IWebhookSubscriptionValidator<TSubscription>, WebhookSubscriptionValidator<TSubscription>>();
 
 			Services.TryAddScoped<IWebhookSubscriptionResolver, WebhookSubscriptionResolver<TSubscription>>();
+			Services.TryAddScoped<WebhookSubscriptionResolver<TSubscription>>();
 			// Services.TryAddScoped<ITenantWebhookSubscriptionResolver, TenantWebhookSubscriptionResolver<TSubscription>>();
 		}
-
-		///// <summary>
-		///// Adds the notification capabilities to the service.
-		///// </summary>
-		///// <typeparam name="TWebhook">
-		///// The type of the webhook that is notified the subscribers.
-		///// </typeparam>
-		///// <param name="configure">
-		///// A callback that is used to configure the webhook notifier.
-		///// </param>
-		///// <returns>
-		///// Returns this instance of the <see cref="WebhookSubscriptionBuilder{TSubscription}"/>.
-		///// </returns>
-		///// <seealso cref="ITenantWebhookNotifier{TWebhook}"/>
-		//public WebhookSubscriptionBuilder<TSubscription> UseNotifier<TWebhook>(Action<WebhookNotifierBuilder> configure)
-		//	where TWebhook : class, IWebhook {
-		//	Services.AddWebhookNotifier<TWebhook>(configure);
-
-		//	return this;
-		//}
 
 		/// <summary>
 		/// Registers a custom <see cref="WebhookSubscriptionManager{TSubscription}"/>
@@ -129,8 +108,8 @@ namespace Deveel.Webhooks {
 		/// </returns>
 		public WebhookSubscriptionBuilder<TSubscription> AddSubscriptionValidator<TValidator>(ServiceLifetime lifetime = ServiceLifetime.Singleton)
 			where TValidator : class, IWebhookSubscriptionValidator<TSubscription> {
-			Services.Add(new ServiceDescriptor(typeof(IWebhookSubscriptionValidator<TSubscription>), typeof(TValidator), lifetime));
-			Services.Add(new ServiceDescriptor(typeof(TValidator), typeof(TValidator), lifetime));
+
+			Services.AddEntityValidator<TValidator>(lifetime);
 
 			return this;
 		}

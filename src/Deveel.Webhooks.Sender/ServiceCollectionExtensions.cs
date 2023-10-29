@@ -42,6 +42,7 @@ namespace Deveel {
 			var builder = new WebhookSenderBuilder<TWebhook>(services);
 
 			services.TryAddSingleton(builder);
+			services.AddOptions<WebhookSenderOptions<TWebhook>>();
 
 			return builder;
 		}

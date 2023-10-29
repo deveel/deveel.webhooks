@@ -75,7 +75,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Deveel.Webhooks.XUnit", "te
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Deveel.Webhooks.Receiver.TestApi", "test\Deveel.Webhooks.Receiver.TestApi\Deveel.Webhooks.Receiver.TestApi.csproj", "{4942C858-277D-438D-B822-92055B8E8DF7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Deveel.Webhooks.DeliveryResultLogging.Tests", "test\Deveel.Webhooks.DeliveryResultLogging.Tests\Deveel.Webhooks.DeliveryResultLogging.Tests.csproj", "{DDD9A4CB-AA5E-4C0B-87F3-CDC24F6A8DA0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Deveel.Webhooks.DeliveryResultLogging.Tests", "test\Deveel.Webhooks.DeliveryResultLogging.Tests\Deveel.Webhooks.DeliveryResultLogging.Tests.csproj", "{DDD9A4CB-AA5E-4C0B-87F3-CDC24F6A8DA0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

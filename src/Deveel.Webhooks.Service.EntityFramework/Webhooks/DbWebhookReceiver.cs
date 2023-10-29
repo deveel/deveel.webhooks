@@ -14,24 +14,50 @@
 
 using System.Diagnostics.CodeAnalysis;
 
+// Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+#pragma warning disable CS8618
+
 namespace Deveel.Webhooks {
+	/// <summary>
+	/// Represents a webhook receiver that is stored in a database
+	/// </summary>
     public class DbWebhookReceiver : IWebhookReceiver {
+		/// <summary>
+		/// Gets or sets the database identifier of the 
+		/// receiver entity
+		/// </summary>
         public int? Id { get; set; }
 
+		/// <summary>
+		/// Gets or sets the database identifier of the
+		/// subscription entity that owns the receiver.
+		/// </summary>
         public string? SubscriptionId { get; set; }
 
+		/// <summary>
+		/// Gets or sets the database entity that describes
+		/// the subscription that owns the receiver.
+		/// </summary>
         public virtual DbWebhookSubscription? Subscription { get; set; }
 
+		/// <inheritdoc/>
         public string? SubscriptionName { get; set; }
 
+		/// <inheritdoc/>
         public string DestinationUrl { get; set; }
 
 		[ExcludeFromCodeCoverage]
         IEnumerable<KeyValuePair<string, string>> IWebhookReceiver.Headers
-            => Headers?.ToDictionary(x => x.Key, y => y.Value);
+            => Headers?.ToDictionary(x => x.Key, y => y.Value) ?? new Dictionary<string, string>();
 
+		/// <summary>
+		/// Gets or sets the list of headers that are sent
+		/// to the receiver.
+		/// </summary>
+		/// <seealso cref="IWebhookReceiver.Headers"/>
         public virtual List<DbWebhookReceiverHeader> Headers { get; set; }
 
+		/// <inheritdoc/>
         public string BodyFormat { get; set; }
     }
 }

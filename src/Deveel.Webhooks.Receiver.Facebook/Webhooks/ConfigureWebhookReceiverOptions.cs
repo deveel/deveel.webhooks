@@ -24,7 +24,7 @@ namespace Deveel.Webhooks {
 			this.facebookOptions = facebookOptions.Value;
 		}
 
-		public void PostConfigure(string name, WebhookReceiverOptions<FacebookWebhook> options) {
+		public void PostConfigure(string? name, WebhookReceiverOptions<FacebookWebhook> options) {
 			options.Signature.AlgorithmHeaderName = "X-Hub-Signature";
 			options.Signature.Algorithm = "sha256";
 			options.Signature.Secret = facebookOptions.AppSecret;

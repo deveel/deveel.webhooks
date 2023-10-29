@@ -12,6 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+#pragma warning disable CS8618
+
 namespace Deveel.Webhooks {
 	/// <summary>
 	/// An implementation of <see cref="IWebhookFilter"/> that can
@@ -38,6 +41,6 @@ namespace Deveel.Webhooks {
 		/// <summary>
 		/// Gets or sets the database entity that describes the subscription
 		/// </summary>
-        public virtual DbWebhookSubscription Subscription { get; set; }
+        public virtual DbWebhookSubscription? Subscription { get; set; }
     }
 }

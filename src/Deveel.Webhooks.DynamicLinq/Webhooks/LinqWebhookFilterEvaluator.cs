@@ -18,10 +18,22 @@ using System.Linq.Expressions;
 using Microsoft.Extensions.Options;
 
 namespace Deveel.Webhooks {
+	/// <summary>
+	/// A service that evaluates a webhook filter using a LINQ expression
+	/// </summary>
+	/// <typeparam name="TWebhook"></typeparam>
 	public sealed class LinqWebhookFilterEvaluator<TWebhook> : IWebhookFilterEvaluator<TWebhook> where TWebhook : class {
 		private readonly IDictionary<string, Func<object, bool>> filterCache;
 		private readonly WebhookSenderOptions<TWebhook> senderOptions;
 
+		/// <summary>
+		/// Constructs the evaluator with the given options
+		/// from the sender.
+		/// </summary>
+		/// <param name="senderOptions">
+		/// The options from the sender that are used to configure
+		/// the filter evaluator.
+		/// </param>
 		public LinqWebhookFilterEvaluator(IOptions<WebhookSenderOptions<TWebhook>> senderOptions) {
 			filterCache = new Dictionary<string, Func<object, bool>>();
 			this.senderOptions = senderOptions.Value;
@@ -31,6 +43,9 @@ namespace Deveel.Webhooks {
 			Default = new LinqWebhookFilterEvaluator<TWebhook>(Options.Create(new WebhookSenderOptions<TWebhook>()));
 		}
 
+		/// <summary>
+		/// Gets a default instance of the evaluator.
+		/// </summary>
 		public static LinqWebhookFilterEvaluator<TWebhook> Default { get; }
 
 		string IWebhookFilterEvaluator<TWebhook>.Format => "linq";
@@ -67,6 +82,7 @@ namespace Deveel.Webhooks {
 			return senderOptions.JsonSerializer.SerializeToObjectAsync(webhook, cancellationToken);
 		}
 
+		/// <inheritdoc/>
 		public async Task<bool> MatchesAsync(WebhookSubscriptionFilter filter, TWebhook webhook, CancellationToken cancellationToken) {
 			if (filter is null)
 				throw new ArgumentNullException(nameof(filter));

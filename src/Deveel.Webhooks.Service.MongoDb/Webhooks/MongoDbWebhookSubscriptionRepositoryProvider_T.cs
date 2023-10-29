@@ -23,11 +23,15 @@ namespace Deveel.Webhooks {
 	/// A service that implements the <see cref="IWebhookSubscriptionRepositoryProvider{TSubscription}"/>
 	/// contract to resolve a store for a given tenant.
 	/// </summary>
-	/// <typeparam name="TTenantInfo">
-	/// The type of the tenant information used to identify the MongoDB database
+	/// <typeparam name="TContext">
+	/// The type of the <see cref="IMongoDbWebhookContext"/> to be used
+	/// to access the database.
 	/// </typeparam>
 	/// <typeparam name="TSubscription">
 	/// The type of the subscription to store.
+	/// </typeparam>
+	/// <typeparam name="TTenantInfo">
+	/// The type of the tenant information used to identify the MongoDB database
 	/// </typeparam>
 	public class MongoDbWebhookSubscriptionRepositoryProvider<TContext, TSubscription, TTenantInfo> :
 		MongoRepositoryProvider<TContext, TSubscription, TTenantInfo>,
@@ -37,10 +41,14 @@ namespace Deveel.Webhooks {
 		where TSubscription : MongoWebhookSubscription {
 
 		/// <summary>
-		/// Constructs a new instance of the store provider.
+		/// Constructs a new instance of the repository provider.
 		/// </summary>
 		/// <param name="tenantStore">
 		/// The store that provides access to the tenants information.
+		/// </param>
+		/// <param name="loggerFactory">
+		/// An optional logger factory to be used to create loggers
+		/// for the repositories.
 		/// </param>
 		public MongoDbWebhookSubscriptionRepositoryProvider(IEnumerable<IMultiTenantStore<TTenantInfo>> tenantStore, ILoggerFactory? loggerFactory = null)
 			: base(tenantStore, loggerFactory) {

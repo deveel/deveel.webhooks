@@ -17,17 +17,17 @@ namespace Deveel.Webhooks {
     /// An exception that is thrwn when an error occurs in the
     /// MongoDB storage.
     /// </summary>
-    public sealed class WebhookMongoException : WebhookServiceException {
+    public sealed class WebhookMongoException : WebhookException {
         /// <inheritdoc/>
-        public WebhookMongoException() {
+        public WebhookMongoException() : base() {
 		}
 
         /// <inheritdoc/>
-		public WebhookMongoException(string message) : base(message) {
+		public WebhookMongoException(string? message) : base(message) {
 		}
 
         /// <inheritdoc/>
-		public WebhookMongoException(string message, Exception innerException) : base(message, innerException) {
+		public WebhookMongoException(string? message, Exception? innerException) : base(message, innerException) {
 		}
 	}
 }

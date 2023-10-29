@@ -59,7 +59,12 @@ namespace Deveel.Webhooks.SendGrid {
 		/// <returns>
 		/// Returns <c>true</c> if the parsing was successful, otherwise <c>false</c>.
 		/// </returns>
-		public static bool TryParse(string address, out EmailAddress email) {
+		public static bool TryParse(string? address, out EmailAddress email) {
+			if (string.IsNullOrWhiteSpace(address)) {
+				email = default;
+				return false;
+			}
+
 			if (!MailAddress.TryCreate(address, out var mailAddress)) {
 				email = default;
 				return false;

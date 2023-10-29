@@ -23,7 +23,7 @@ namespace Deveel.Webhooks.Twilio {
 		/// <summary>
 		/// Gets the URL of the media element.
 		/// </summary>
-        public string Url { get; internal set; }
+        public string? Url { get; internal set; }
 
 		/// <summary>
 		/// Gets the content type of the media element.

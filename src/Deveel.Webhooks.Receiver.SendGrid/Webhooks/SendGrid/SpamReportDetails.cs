@@ -47,6 +47,9 @@ namespace Deveel.Webhooks.SendGrid {
 		[JsonPropertyName("policy")]
 		public string Policy { get; set; }
 
+		/// <summary>
+		/// Gets the bulkiness of the spam report.
+		/// </summary>
 		[JsonPropertyName("bulkiness")]
 		public string Bulkiness { get; set; }
 

@@ -36,13 +36,13 @@ namespace Deveel.Webhooks {
 			Assert.NotNull(context.Connection);
 			
 			var dbConnection = Assert.IsType<MongoDbConnection<MongoDbWebhookContext>>(context.Connection);
-			Assert.Equal("mongodb://127.0.0.1:2709/my_db", dbConnection.Url.ToString());
+			Assert.Equal("mongodb://127.0.0.1:2709/my_db", dbConnection.Url!.ToString());
 		}
 
 		[Fact]
 		public static void ConfigurationPattern_ExternalConnectionString() {
 			var config = new ConfigurationBuilder()
-				.AddInMemoryCollection(new Dictionary<string, string> {
+				.AddInMemoryCollection(new Dictionary<string, string?> {
 					{ "ConnectionStrings:MongoDb", "mongodb://127.0.0.1:2709/my_db" }
 				});
 
@@ -70,7 +70,7 @@ namespace Deveel.Webhooks {
 				.AddWebhookSubscriptions<MongoWebhookSubscription>(webhook => webhook
 					.UseMongoDb(builder => {
 						builder.WithConnectionString("mongodb://127.0.0.1:2709/my_db");
-						builder.UseSubscriptionStore<MyMongoDbWebhookSubscriptionStore>();
+						builder.UseSubscriptionRepository<MyMongoDbWebhookSubscriptionStore>();
 					}))
 				.BuildServiceProvider();
 

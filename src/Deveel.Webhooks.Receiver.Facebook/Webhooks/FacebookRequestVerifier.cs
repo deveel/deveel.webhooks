@@ -13,12 +13,12 @@
 // limitations under the License.
 
 using Deveel.Webhooks.Facebook;
+
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 
-namespace Deveel.Webhooks
-{
-    class FacebookRequestVerifier : WebhookRequestVerifier<FacebookWebhook> {
+namespace Deveel.Webhooks {
+	class FacebookRequestVerifier : WebhookRequestVerifier<FacebookWebhook> {
 		public FacebookRequestVerifier(IOptions<WebhookVerificationOptions<FacebookWebhook>> options) 
 			: base(options) {
 		}
@@ -29,7 +29,7 @@ namespace Deveel.Webhooks
 			var fbResult = (FacebookVerificationResult)result;
 			httpResponse.ContentType = "text/plain";
 			httpResponse.StatusCode = 200;
-			await httpResponse.WriteAsync(fbResult.Challenge);
+			await httpResponse.WriteAsync(fbResult.Challenge!);
 		}
 
 		public override async Task<IWebhookVerificationResult> VerifyRequestAsync(HttpRequest httpRequest, CancellationToken cancellationToken = default) {

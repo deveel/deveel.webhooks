@@ -12,6 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+#pragma warning disable CS8618
+
 namespace Deveel.Webhooks {
 	/// <summary>
 	/// Implements the <see cref="IWebhookDeliveryResult"/> interface to
@@ -26,6 +29,9 @@ namespace Deveel.Webhooks {
 		/// <inheritdoc/>
         public string OperationId { get; set; }
 
+		/// <summary>
+		/// Gets or sets the identifier of the tenant that owns the webhook
+		/// </summary>
 		public string? TenantId { get; set; }
 
         IEventInfo IWebhookDeliveryResult.EventInfo => EventInfo;

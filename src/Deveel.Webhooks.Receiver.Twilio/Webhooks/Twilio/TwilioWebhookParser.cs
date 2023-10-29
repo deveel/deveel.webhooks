@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Globalization;
+
 using Microsoft.AspNetCore.Http;
 
 namespace Deveel.Webhooks.Twilio {
@@ -33,7 +35,7 @@ namespace Deveel.Webhooks.Twilio {
                             data.To.State = kvp.Value;
                             break;
                         case "NumMedia":
-                            numMedia = int.Parse(kvp.Value);
+                            numMedia = Int32.TryParse(kvp.Value, NumberStyles.Integer, CultureInfo.InvariantCulture, out var i) ? i : null;
                             break;
                         case "ToCity":
                             data.To.City = kvp.Value;
@@ -67,7 +69,7 @@ namespace Deveel.Webhooks.Twilio {
                             data.To.Zip = kvp.Value;
                             break;
                         case "NumSegments":
-							if (int.TryParse(kvp.Value, out var ns))
+							if (Int32.TryParse(kvp.Value, NumberStyles.Integer, CultureInfo.InvariantCulture, out var ns))
 								numSegments = ns;
 
 							data.SegmentCount = numSegments;
@@ -140,7 +142,7 @@ namespace Deveel.Webhooks.Twilio {
             }
         }
 
-        private static MessageStatus ParseMessageStatus(string value) {
+        private static MessageStatus ParseMessageStatus(string? value) {
             if (!Enum.TryParse<MessageStatus>(value, true, out var status))
                 return MessageStatus.Unknown;
 

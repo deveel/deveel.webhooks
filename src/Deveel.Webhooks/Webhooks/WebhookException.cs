@@ -24,11 +24,11 @@ namespace Deveel.Webhooks {
 		}
 
 		/// <inheritdoc/>
-		public WebhookException(string message) : base(message) {
+		public WebhookException(string? message) : base(message) {
 		}
 
 		/// <inheritdoc/>
-		public WebhookException(string message, Exception innerException) : base(message, innerException) {
+		public WebhookException(string? message, Exception? innerException) : base(message, innerException) {
 		}
 	}
 }

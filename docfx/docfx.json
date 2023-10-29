@@ -12,6 +12,7 @@
           ]
         }
       ],
+      "outputFormat": "markdown",
       "dest": "api",
       "disableGitFeatures": false,
       "disableDefaultFilter": false,
@@ -29,14 +30,14 @@
       "_appLogoPath": "images/deveel-logo.png"
     },
     "sitemap": {
-      "baseUrl": "https://webhooks.deveel.com",
+      "baseUrl": "https://webhooks.deveel.org",
       "priority": 0.5,
-      "changefreq": "monthly"
+      "changefreq": "weekly"
     },
     "content": [
       {
         "files": [
-          "api/**.yml",
+          "api/**.md",
           "api/index.md"
         ]
       }

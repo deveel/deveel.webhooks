@@ -42,7 +42,13 @@ namespace Deveel.Webhooks {
         /// <param name="tenantStore">
         /// The store that is used to resolve the tenant information.
         /// </param>
-        public MongoDbWebhookDeliveryResultRepositoryProvider(IEnumerable<IMultiTenantStore<TTenantInfo>> tenantStore, ILoggerFactory? loggerFactory = null)
+		/// <param name="loggerFactory">
+		/// An object that is used to create the logger for the repositories
+		/// created by this provider.
+		/// </param>
+        public MongoDbWebhookDeliveryResultRepositoryProvider(
+			IEnumerable<IMultiTenantStore<TTenantInfo>> tenantStore, 
+			ILoggerFactory? loggerFactory = null)
 			: base(tenantStore, loggerFactory) {
 		}
 

@@ -76,8 +76,8 @@ namespace Deveel.Webhooks {
 			return new TestMongoWebhook {
 				TimeStamp = webhook.TimeStamp,
 				EventType = webhook.EventType,
-				SubscriptionId = webhook.SubscriptionId,
-				EventName = webhook.Name,
+				SubscriptionId = webhook.SubscriptionId!,
+				EventName = webhook.Name!,
 				WebhookId = webhook.Id,
 			};
 		}

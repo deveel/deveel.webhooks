@@ -30,7 +30,7 @@ namespace Deveel.Webhooks.Twilio {
 		/// <summary>
 		/// Gets the body text of the segment.
 		/// </summary>
-		public string Text { get; internal set; }
+		public string? Text { get; internal set; }
 
 		/// <summary>
 		/// Gets the unique identifier of the message part for 

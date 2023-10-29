@@ -46,6 +46,6 @@ namespace Deveel.Webhooks {
 		/// Gets or sets the <see cref="DbWebhookDeliveryResult"/> that
 		/// represents the scope of the delivery attempt.
 		/// </summary>
-        public virtual DbWebhookDeliveryResult DeliveryResult { get; set; }
+        public virtual DbWebhookDeliveryResult? DeliveryResult { get; set; }
     }
 }

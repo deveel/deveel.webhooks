@@ -16,7 +16,12 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Deveel.Webhooks {
+	/// <summary>
+	/// Configures the database entity that represents a webhook
+	/// delivery attempt.
+	/// </summary>
     public class DbWebhookDeliveryAttemptConfiguration : IEntityTypeConfiguration<DbWebhookDeliveryAttempt> {
+		/// <inheritdoc/>
         public virtual void Configure(EntityTypeBuilder<DbWebhookDeliveryAttempt> builder) {
             builder.ToTable("webhook_delivery_attempts");
 

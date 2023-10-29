@@ -41,10 +41,13 @@ namespace Deveel.Webhooks {
 		/// <param name="context">
 		/// The context that is used to access the MongoDB database.
 		/// </param>
+		/// <param name="logger">
+		/// The logger instance to use for logging operations.
+		/// </param>
 		/// <exception cref="ArgumentNullException">
 		/// Thrown when the given <paramref name="context"/> is <c>null</c>.
 		/// </exception>
-		public MongoDbWebhookSubscriptionRepository(IMongoDbWebhookContext context, ILogger<MongoDbWebhookSubscriptionRepository<TSubscription>>? logger) 
+		public MongoDbWebhookSubscriptionRepository(IMongoDbWebhookContext context, ILogger<MongoDbWebhookSubscriptionRepository<TSubscription>>? logger = null) 
 			: base(context, logger) {
 		}
 
@@ -59,7 +62,7 @@ namespace Deveel.Webhooks {
 			ThrowIfDisposed();
 			cancellationToken.ThrowIfCancellationRequested();
 
-			return Task.FromResult(subscription.DestinationUrl);
+			return Task.FromResult<string?>(subscription.DestinationUrl);
 		}
 
 		/// <inheritdoc/>

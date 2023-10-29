@@ -19,17 +19,17 @@ namespace Deveel.Webhooks {
 	/// An exception that denotes an error during the execution
 	/// of the webhook service
 	/// </summary>
-	public class WebhookServiceException : WebhookException {
+	public class WebhookServiceException : OperationException {
 		/// <inheritdoc/>
-		public WebhookServiceException() {
+		public WebhookServiceException(string errorCode) : base(errorCode) {
 		}
 
 		/// <inheritdoc/>
-		public WebhookServiceException(string message) : base(message) {
+		public WebhookServiceException(string errorCode, string? message) : base(errorCode, message) {
 		}
 
 		/// <inheritdoc/>
-		public WebhookServiceException(string message, Exception innerException) : base(message, innerException) {
+		public WebhookServiceException(string errorCode, string? message, Exception innerException) : base(errorCode, message, innerException) {
 		}
 	}
 }

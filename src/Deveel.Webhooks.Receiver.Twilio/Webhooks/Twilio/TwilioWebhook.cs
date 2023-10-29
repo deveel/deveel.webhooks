@@ -36,7 +36,7 @@ namespace Deveel.Webhooks.Twilio {
 		/// <summary>
 		/// Gets the unique ID of the SMS message sent to the recipient's phone
 		/// </summary>
-		public string SmsId { get; internal set; }
+		public string? SmsId { get; internal set; }
 
 		/// <summary>
 		/// Gets the status of the message
@@ -56,13 +56,13 @@ namespace Deveel.Webhooks.Twilio {
 		/// <summary>
 		/// Gets the unique identifier of the message
 		/// </summary>
-        public string MessageId { get; internal set; }
+        public string? MessageId { get; internal set; }
 
 		/// <summary>
 		/// Gets the unique identifier of the Account that 
 		/// initiated the message
 		/// </summary>
-		public string AccountId { get; internal set; }
+		public string? AccountId { get; internal set; }
 
 		/// <summary>
 		/// Gets the version of the Twilio API used to handle the message

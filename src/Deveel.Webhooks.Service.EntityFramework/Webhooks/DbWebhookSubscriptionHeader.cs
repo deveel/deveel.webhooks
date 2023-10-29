@@ -12,19 +12,43 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+#pragma warning disable CS8618
+
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Deveel.Webhooks {
+	/// <summary>
+	/// Describes an header that is associated to a webhook subscription.
+	/// </summary>
     public class DbWebhookSubscriptionHeader {
-        public int Id { get; set; }
+		/// <summary>
+		/// Gets or sets the database identifier of the 
+		/// header entity.
+		/// </summary>
+        public int? Id { get; set; }
 
+		/// <summary>
+		/// Gets or sets the name of the header.
+		/// </summary>
         public string Key { get; set; }
 
+		/// <summary>
+		/// Gets or sets the value of the header.
+		/// </summary>
         public string Value { get; set; }
 
+		/// <summary>
+		/// Gets or sets the database entity that represents
+		/// the subscription that owns the header.
+		/// </summary>
         public virtual DbWebhookSubscription? Subscription { get; set; }
 
+		/// <summary>
+		/// Gets or sets the database identifier of the
+		/// webhook subscription that owns the header.
+		/// </summary>
         public string? SubscriptionId { get; set; }
     }
 }

@@ -22,7 +22,7 @@ namespace Deveel.Webhooks {
 			=> options.UseEntityFramework(builder => builder.UseContext(ctx => ctx.UseSqlite(sql.Connection)));
 
 		protected override async Task InitializeAsync() {
-			var options = Services.GetRequiredService<DbContextOptions<WebhookDbContext>>();
+			var options = Services!.GetRequiredService<DbContextOptions<WebhookDbContext>>();
 
 			using var context = new WebhookDbContext(options);
 
@@ -33,7 +33,7 @@ namespace Deveel.Webhooks {
 		}
 
 		protected override async Task DisposeAsync() {
-			var options = Services.GetRequiredService<DbContextOptions<WebhookDbContext>>();
+			var options = Services!.GetRequiredService<DbContextOptions<WebhookDbContext>>();
 
 			using var context = new WebhookDbContext(options);
 			context.Subscriptions.RemoveRange(context.Subscriptions);

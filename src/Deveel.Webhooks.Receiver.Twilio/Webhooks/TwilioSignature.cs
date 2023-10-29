@@ -41,7 +41,7 @@ namespace Deveel.Webhooks {
 			string url = $"{request.Scheme}://{request.Host + request.Path}";
 
 			// Get the post parameters
-			Dictionary<string, string> postParams = new Dictionary<string, string>();
+			var postParams = new Dictionary<string, string?>();
 			foreach (string key in request.Form.Keys) {
 				postParams.Add(key, request.Form[key]);
 			}

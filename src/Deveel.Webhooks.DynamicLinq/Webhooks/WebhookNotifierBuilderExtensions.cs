@@ -13,7 +13,24 @@
 // limitations under the License.
 
 namespace Deveel.Webhooks {
+	/// <summary>
+	/// Extensions for the <see cref="WebhookNotifierBuilder{TWebhook}"/>
+	/// to add the support for the dynamic LINQ filter evaluator.
+	/// </summary>
 	public static class WebhookNotifierBuilderExtensions {
+		/// <summary>
+		/// Registers a service that uses the dynamic LINQ
+		/// expressions to evaluate the filter expression.
+		/// </summary>
+		/// <typeparam name="TWebhook">
+		/// The type of the webhook to be used.
+		/// </typeparam>
+		/// <param name="builder">
+		/// The instance of the builder to register the service.
+		/// </param>
+		/// <returns>
+		/// Returns the same instance of the builder for chaining calls.
+		/// </returns>
 		public static WebhookNotifierBuilder<TWebhook> UseLinqFilter<TWebhook>(this WebhookNotifierBuilder<TWebhook> builder)
 			where TWebhook : class 
 			=> builder.AddFilterEvaluator<LinqWebhookFilterEvaluator<TWebhook>>();

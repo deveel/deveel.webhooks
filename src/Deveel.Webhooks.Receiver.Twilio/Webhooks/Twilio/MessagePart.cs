@@ -23,7 +23,7 @@ namespace Deveel.Webhooks.Twilio {
 		/// <summary>
 		/// Gets the phone number of the messaging part
 		/// </summary>
-		public string PhoneNumber { get; internal set; }
+		public string? PhoneNumber { get; internal set; }
 
 		/// <summary>
 		/// Gets the country code of the messaging part
@@ -48,7 +48,7 @@ namespace Deveel.Webhooks.Twilio {
 		/// <summary>
 		/// If the part is a WhatsApp number, gets the phone number
 		/// </summary>
-		public string WhatsAppPhoneNumber => IsWhatsApp() ? PhoneNumber.Substring(9) : PhoneNumber;
+		public string? WhatsAppPhoneNumber => IsWhatsApp() ? PhoneNumber?.Substring(9) : PhoneNumber;
 
 		/// <summary>
 		/// Gets a value indicating if the messaging part is a WhatsApp

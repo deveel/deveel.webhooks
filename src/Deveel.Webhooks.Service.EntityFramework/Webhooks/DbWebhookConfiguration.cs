@@ -2,6 +2,9 @@
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Deveel.Webhooks {
+	/// <summary>
+	/// Configures the database entity that represents a webhook
+	/// </summary>
     public class DbWebhookConfiguration : IEntityTypeConfiguration<DbWebhook> {
 		/// <inheritdoc/>
         public virtual void Configure(EntityTypeBuilder<DbWebhook> builder) {

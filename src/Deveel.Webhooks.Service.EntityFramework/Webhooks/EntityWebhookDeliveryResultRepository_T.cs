@@ -33,7 +33,12 @@ namespace Deveel.Webhooks {
         /// <summary>
         /// Constructs the store with the given <see cref="WebhookDbContext"/>.
         /// </summary>
-        /// <param name="context"></param>
+        /// <param name="context">
+		/// The database context to be used to store the delivery results.
+		/// </param>
+		/// <param name="logger">
+		/// An optional logger to be used to log information about the store.
+		/// </param>
         public EntityWebhookDeliveryResultRepository(WebhookDbContext context, ILogger<EntityWebhookDeliveryResultRepository<TResult>>? logger = null) 
 			: base(context, logger) {
         }

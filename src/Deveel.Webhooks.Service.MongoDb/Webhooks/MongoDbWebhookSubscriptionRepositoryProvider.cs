@@ -21,6 +21,10 @@ namespace Deveel.Webhooks {
 	/// <summary>
 	/// A default implementation of the <see cref="IWebhookSubscriptionRepositoryProvider{TSubscription}"/>
 	/// </summary>
+	/// <typeparam name="TContext">
+	/// The type of the <see cref="IMongoDbWebhookContext"/> to be used 
+	/// to access the database.
+	/// </typeparam>
 	/// <typeparam name="TTenantInfo">
 	/// The type of the tenant information.
 	/// </typeparam>

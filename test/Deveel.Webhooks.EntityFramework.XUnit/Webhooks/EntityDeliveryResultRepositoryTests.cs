@@ -10,7 +10,7 @@ namespace Deveel.Webhooks {
 	public class EntityDeliveryResultRepositoryTests : EntityWebhookTestBase {
         private readonly Faker<DbWebhookDeliveryResult> resultFaker;
 		private readonly Faker<DbEventInfo> eventFaker;
-        private List<DbWebhookDeliveryResult> results;
+        private List<DbWebhookDeliveryResult>? results;
 
         public EntityDeliveryResultRepositoryTests(SqliteTestDatabase sqlite, ITestOutputHelper outputHelper) : base(sqlite, outputHelper) {
 			resultFaker = new DbWebhookDeliveryResultFaker();
@@ -36,7 +36,7 @@ namespace Deveel.Webhooks {
         }
 
         private DbWebhookDeliveryResult NextRandom()
-            => results[Random.Shared.Next(0, results.Count - 1)];
+            => results![Random.Shared.Next(0, results.Count - 1)];
 
         [Fact]
         public async Task CreateNewResult() {
@@ -71,7 +71,7 @@ namespace Deveel.Webhooks {
 
         [Fact]
         public async Task GetNotExistingResult() {
-            var resultId = Random.Shared.Next(results.Max(x => x.Id!.Value) + 1, Int32.MaxValue);
+            var resultId = Random.Shared.Next(results!.Max(x => x.Id!.Value) + 1, Int32.MaxValue);
 
             var found = await Repository.FindByKeyAsync(resultId!);
 
@@ -93,7 +93,7 @@ namespace Deveel.Webhooks {
 
         [Fact]
         public async Task RemoveNotExistingResult() {
-            var resultId = Random.Shared.Next(results.Max(x => x.Id!.Value) + 1, Int32.MaxValue);
+            var resultId = Random.Shared.Next(results!.Max(x => x.Id!.Value) + 1, Int32.MaxValue);
             var result = resultFaker.Generate();
             result.Id = resultId;
 
@@ -106,7 +106,7 @@ namespace Deveel.Webhooks {
         public async Task CountAll() {
             var count = await Repository.CountAllAsync();
 
-            Assert.Equal(results.Count, count);
+            Assert.Equal(results!.Count, count);
         }
 
         [Fact]

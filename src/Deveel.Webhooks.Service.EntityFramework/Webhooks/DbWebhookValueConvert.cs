@@ -1,7 +1,24 @@
 ﻿using System.Globalization;
 
 namespace Deveel.Webhooks {
+	/// <summary>
+	/// A class that provides methods to convert values to and from
+	/// a string representation that can be stored in a database.
+	/// </summary>
 	public static class DbWebhookValueConvert {
+		/// <summary>
+		/// Gets the type of the value passed as argument.
+		/// </summary>
+		/// <param name="value">
+		/// The object value to get the type of.
+		/// </param>
+		/// <returns>
+		/// Returns a string that represents the type of the value,
+		/// as one of the constants defined in <see cref="DbWebhookValueTypes"/>.
+		/// </returns>
+		/// <exception cref="NotSupportedException">
+		/// Thrown when the type of the value is not supported.
+		/// </exception>
 		public static string GetValueType(object? value) {
 			if (value is null || value is string)
 				return DbWebhookValueTypes.String;
@@ -17,6 +34,20 @@ namespace Deveel.Webhooks {
 			throw new NotSupportedException($"The value of type '{value.GetType()}' is not supported");
 		}
 
+		/// <summary>
+		/// Converts the given value to a string representation that can be stored
+		/// in the database.
+		/// </summary>
+		/// <param name="value">
+		/// The value object to convert.
+		/// </param>
+		/// <returns>
+		/// Returns a string that represents the value, or <c>null</c> if the value
+		/// is <c>null</c>.
+		/// </returns>
+		/// <exception cref="NotSupportedException">
+		/// Thrown when the type of the value is not supported.
+		/// </exception>
 		public static string? ConvertToString(object? value) {
 			if (value is null)
 				return null;
@@ -34,6 +65,23 @@ namespace Deveel.Webhooks {
 			throw new NotSupportedException($"The value of type '{value.GetType()}' is not supported");
 		}
 
+		/// <summary>
+		/// Converts the given string value to the given type.
+		/// </summary>
+		/// <param name="value">
+		/// The string value to convert.
+		/// </param>
+		/// <param name="valueType">
+		/// The type of the value to convert to, as one of the constants
+		/// defined in <see cref="DbWebhookValueTypes"/>.
+		/// </param>
+		/// <returns>
+		/// Returns an object that represents the converted value, or <c>null</c>
+		/// if the given string value is <c>null</c>.
+		/// </returns>
+		/// <exception cref="NotSupportedException">
+		/// Thrown when the type of the value is not supported.
+		/// </exception>
 		public static object? Convert(string? value, string valueType) {
 			if (value is null)
 				return null;

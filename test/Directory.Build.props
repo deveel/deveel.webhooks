@@ -5,6 +5,7 @@
     <Nullable>enable</Nullable>
     <RootNamespace>Deveel</RootNamespace>
     <IsPackable>false</IsPackable>
+    <NoWarn>CS8618</NoWarn>
   </PropertyGroup>
   
   <ItemGroup>

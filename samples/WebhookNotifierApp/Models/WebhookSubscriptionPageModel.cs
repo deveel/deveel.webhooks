@@ -8,6 +8,6 @@
 
 		public int TotalItems { get; set; }
 
-		public WebhookSubscriptionModel[] Items { get; set; }
+		public WebhookSubscriptionModel[]? Items { get; set; }
 	}
 }

@@ -28,7 +28,7 @@ namespace Deveel.Webhooks {
 			this.twilioOptions = twilioOptions.Value;
 		}
 
-		public void PostConfigure(string name, WebhookReceiverOptions<TwilioWebhook> options) {
+		public void PostConfigure(string? name, WebhookReceiverOptions<TwilioWebhook> options) {
 			options.ContentFormats = WebhookContentFormats.Form;
 			options.FormParser = new TwilioWebhookFormParser();
 			options.VerifySignature = twilioOptions.VerifySignature;

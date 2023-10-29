@@ -12,16 +12,40 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+#pragma warning disable CS8618
+
 namespace Deveel.Webhooks {
+	/// <summary>
+	/// Describes the entity that represents an header
+	/// that is associated to a webhook receiver.
+	/// </summary>
     public class DbWebhookReceiverHeader {
+		/// <summary>
+		/// Gets or sets the database identifier of the header entity.
+		/// </summary>
         public int? Id { get; set; }
 
+		/// <summary>
+		/// Gets or sets the name of the header.
+		/// </summary>
         public string Key { get; set; }
 
+		/// <summary>
+		/// Gets or sets the value of the header.
+		/// </summary>
         public string Value { get; set; }
 
-        public virtual DbWebhookReceiver Receiver { get; set; }
+		/// <summary>
+		/// Gets or sets the database entity that describes 
+		/// the receiver that owns the header.
+		/// </summary>
+        public virtual DbWebhookReceiver? Receiver { get; set; }
 
+		/// <summary>
+		/// Gets or sets the database identifier of the receiver
+		/// that owns the header.
+		/// </summary>
         public int? ReceiverId { get; set; }
     }
 }

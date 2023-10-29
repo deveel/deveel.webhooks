@@ -44,7 +44,7 @@ namespace Deveel.Webhooks {
 				});
 
 			services.AddSingleton<IMongoWebhookConverter<Webhook>, DefaultMongoWebhookConverter<Webhook>>();
-			services.AddMongoDbContext<MongoDbWebhookTenantContext>((tenant, builder) => builder.UseConnection(tenant.ConnectionString!));
+			services.AddMongoDbContext<MongoDbWebhookTenantContext>((tenant, builder) => builder.UseConnection(tenant!.ConnectionString!));
 			services.AddRepositoryProvider<MongoDbWebhookDeliveryResultRepositoryProvider<TenantInfo>>();
 			services.AddScoped<IWebhookDeliveryResultLogger<Webhook>, MongoDbWebhookDeliveryResultLogger<Webhook, MongoWebhookDeliveryResult>>();
 		}

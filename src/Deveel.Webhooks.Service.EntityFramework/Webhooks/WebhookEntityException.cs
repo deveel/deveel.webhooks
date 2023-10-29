@@ -18,13 +18,33 @@ namespace Deveel.Webhooks {
     /// of webhook entities in a database.
     /// </summary>
     public class WebhookEntityException : WebhookException {
+		/// <summary>
+		/// Constructs a webhook entity exception without 
+		/// a message.
+		/// </summary>
         public WebhookEntityException() {
         }
 
-        public WebhookEntityException(string message) : base(message) {
+		/// <summary>
+		/// Constructs a webhook entity exception with the given message
+		/// </summary>
+		/// <param name="message">
+		/// A message that describes the error that occurred.
+		/// </param>
+        public WebhookEntityException(string? message) : base(message) {
         }
 
-        public WebhookEntityException(string message, Exception innerException) : base(message, innerException) {
+		/// <summary>
+		/// Constructs a webhook entity exception with the given message
+		/// and the inner exception that caused the error.
+		/// </summary>
+		/// <param name="message">
+		/// A message that describes the error that occurred.
+		/// </param>
+		/// <param name="innerException">
+		/// The inner exception that caused the error.
+		/// </param>
+        public WebhookEntityException(string? message, Exception? innerException) : base(message, innerException) {
         }
     }
 }

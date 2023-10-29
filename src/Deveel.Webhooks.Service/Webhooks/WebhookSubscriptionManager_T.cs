@@ -145,6 +145,9 @@ namespace Deveel.Webhooks {
         /// <param name="status">
         /// The new status to set.
         /// </param>
+		/// <param name="cancellationToken">
+		/// A token used to cancel the operation.
+		/// </param>
         /// <returns>
         /// Returns <c>true</c> if the status was changed, or <c>false</c>
         /// </returns>
@@ -178,6 +181,9 @@ namespace Deveel.Webhooks {
         /// <param name="subscription">
         /// The instance of the webhook subscription to disable.
         /// </param>
+		/// <param name="cancellationToken">
+		/// A token used to cancel the operation.
+		/// </param>
         /// <returns>
         /// Returns <c>true</c> if the subscription was disabled, or <c>false</c>
         /// if the subscription was already disabled.
@@ -191,6 +197,9 @@ namespace Deveel.Webhooks {
 		/// </summary>
 		/// <param name="subscription">
 		/// The instance of the webhook subscription to enable.
+		/// </param>
+		/// <param name="cancellationToken">
+		/// A token used to cancel the operation.
 		/// </param>
 		/// <returns>
 		/// Returns <c>true</c> if the subscription was enabled, or <c>false</c>
@@ -244,6 +253,22 @@ namespace Deveel.Webhooks {
 			}
 		}
 
+		/// <summary>
+		/// Sets the headers that are sent to the destination URL of 
+		/// a subscription together with the webhook notification.
+		/// </summary>
+		/// <param name="subscription">
+		/// The instance of the subscription to set the headers.
+		/// </param>
+		/// <param name="headers">
+		/// The list of headers to set.
+		/// </param>
+		/// <param name="cancellationToken">
+		/// A token used to cancel the operation.
+		/// </param>
+		/// <returns>
+		/// Returns an object that represents the result of the operation.
+		/// </returns>
 		public async Task<OperationResult> SetHeadersAsync(TSubscription subscription, IDictionary<string, string> headers, CancellationToken? cancellationToken = null) {
 			ThrowIfDisposed();
 
@@ -271,6 +296,22 @@ namespace Deveel.Webhooks {
 			}
 		}
 
+		/// <summary>
+		/// Sets the URL where to send the webhook notifications 
+		/// for a subscription.
+		/// </summary>
+		/// <param name="subscription">
+		/// The instance of the subscription to set the destination URL.
+		/// </param>
+		/// <param name="url">
+		/// The URL address to set as destination of the notifications.
+		/// </param>
+		/// <param name="cancellationToken">
+		/// A token used to cancel the operation.
+		/// </param>
+		/// <returns>
+		/// Returns an object that represents the result of the operation.
+		/// </returns>
 		public async Task<OperationResult> SetDestinationUrlAsync(TSubscription subscription, string url, CancellationToken cancellationToken = default) {
 			try {
 				var existing = SubscriptionRepository.GetDestinationUrlAsync(subscription, cancellationToken);
@@ -286,6 +327,21 @@ namespace Deveel.Webhooks {
 			}
 		}
 
+		/// <summary>
+		/// Sets the secret that is used to sign the webhook notifications.
+		/// </summary>
+		/// <param name="subscription">
+		/// The instance of the subscription to set the secret.
+		/// </param>
+		/// <param name="secret">
+		/// The secret word to set.
+		/// </param>
+		/// <param name="cancellationToken">
+		/// A token used to cancel the operation.
+		/// </param>
+		/// <returns>
+		/// Returns an object that represents the result of the operation.
+		/// </returns>
 		public async Task<OperationResult> SetSecretAsync(TSubscription subscription, string? secret, CancellationToken? cancellationToken = null) {
 			try {
 				var existing = await SubscriptionRepository.GetSecretAsync(subscription, GetCancellationToken(cancellationToken));
@@ -301,6 +357,21 @@ namespace Deveel.Webhooks {
 			}
 		}
 
+		/// <summary>
+		/// Sets the properties of a subscription.
+		/// </summary>
+		/// <param name="subscription">
+		/// The instance of the subscription to set the properties.
+		/// </param>
+		/// <param name="properties">
+		/// The list of properties to set.
+		/// </param>
+		/// <param name="cancellationToken">
+		/// A token used to cancel the operation.
+		/// </param>
+		/// <returns>
+		/// Returns an object that represents the result of the operation.
+		/// </returns>
 		public async Task<OperationResult> SetPropertiesAsync(TSubscription subscription, IDictionary<string, object> properties, CancellationToken? cancellationToken = null) {
 			try {
 				var existing = await SubscriptionRepository.GetPropertiesAsync(subscription, GetCancellationToken(cancellationToken));

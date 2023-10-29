@@ -1,26 +1,75 @@
 {
   "sitemap": {
-    "baseUrl": "https://webhooks.deveel.com/",
-    "changefreq": "monthly",
+    "baseUrl": "https://webhooks.deveel.org/",
+    "changefreq": "weekly",
     "priority": 0.5
   },
-  "homepages": [],
-  "source_base_path": "C:/dev/deveel/deveel.webhooks/docfx",
+  "source_base_path": "c:/dev/deveel/deveel.webhooks/docfx",
   "xrefmap": "xrefmap.yml",
   "files": [
     {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.ServiceCollectionExtensions.yml",
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Json.JsonDiscriminatorAttribute.md",
       "output": {
         ".html": {
-          "relative_path": "api/Deveel.ServiceCollectionExtensions.html"
+          "relative_path": "api/Deveel.Json.JsonDiscriminatorAttribute.html"
         }
       },
       "version": ""
     },
     {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.ApplicationBuilderExtensions.yml",
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Json.JsonKnownTypeAttribute.md",
+      "output": {
+        ".html": {
+          "relative_path": "api/Deveel.Json.JsonKnownTypeAttribute.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Json.PolymorphicJsonConverter-1.md",
+      "output": {
+        ".html": {
+          "relative_path": "api/Deveel.Json.PolymorphicJsonConverter-1.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Json.UnixTimeMillisConverter.md",
+      "output": {
+        ".html": {
+          "relative_path": "api/Deveel.Json.UnixTimeMillisConverter.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Json.UnixTimeSecondsConverter.md",
+      "output": {
+        ".html": {
+          "relative_path": "api/Deveel.Json.UnixTimeSecondsConverter.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Json.md",
+      "output": {
+        ".html": {
+          "relative_path": "api/Deveel.Json.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.ApplicationBuilderExtensions.md",
       "output": {
         ".html": {
           "relative_path": "api/Deveel.Webhooks.ApplicationBuilderExtensions.html"
@@ -29,8 +78,8 @@
       "version": ""
     },
     {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.Caching.IWebhookSubscriptionCache.yml",
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.Caching.IWebhookSubscriptionCache.md",
       "output": {
         ".html": {
           "relative_path": "api/Deveel.Webhooks.Caching.IWebhookSubscriptionCache.html"
@@ -39,8 +88,8 @@
       "version": ""
     },
     {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.Caching.yml",
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.Caching.md",
       "output": {
         ".html": {
           "relative_path": "api/Deveel.Webhooks.Caching.html"
@@ -49,8 +98,258 @@
       "version": ""
     },
     {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.DefaultWebhookFactory-1.yml",
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.DbEventInfo.md",
+      "output": {
+        ".html": {
+          "relative_path": "api/Deveel.Webhooks.DbEventInfo.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.DbEventInfoConfiguration.md",
+      "output": {
+        ".html": {
+          "relative_path": "api/Deveel.Webhooks.DbEventInfoConfiguration.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.DbWebhook.md",
+      "output": {
+        ".html": {
+          "relative_path": "api/Deveel.Webhooks.DbWebhook.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.DbWebhookConfiguration.md",
+      "output": {
+        ".html": {
+          "relative_path": "api/Deveel.Webhooks.DbWebhookConfiguration.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.DbWebhookDeliveryAttempt.md",
+      "output": {
+        ".html": {
+          "relative_path": "api/Deveel.Webhooks.DbWebhookDeliveryAttempt.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.DbWebhookDeliveryAttemptConfiguration.md",
+      "output": {
+        ".html": {
+          "relative_path": "api/Deveel.Webhooks.DbWebhookDeliveryAttemptConfiguration.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.DbWebhookDeliveryResult.md",
+      "output": {
+        ".html": {
+          "relative_path": "api/Deveel.Webhooks.DbWebhookDeliveryResult.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.DbWebhookDeliveryResultConfiguration.md",
+      "output": {
+        ".html": {
+          "relative_path": "api/Deveel.Webhooks.DbWebhookDeliveryResultConfiguration.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.DbWebhookFilter.md",
+      "output": {
+        ".html": {
+          "relative_path": "api/Deveel.Webhooks.DbWebhookFilter.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.DbWebhookFilterConfiguration.md",
+      "output": {
+        ".html": {
+          "relative_path": "api/Deveel.Webhooks.DbWebhookFilterConfiguration.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.DbWebhookReceiver.md",
+      "output": {
+        ".html": {
+          "relative_path": "api/Deveel.Webhooks.DbWebhookReceiver.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.DbWebhookReceiverConfiguration.md",
+      "output": {
+        ".html": {
+          "relative_path": "api/Deveel.Webhooks.DbWebhookReceiverConfiguration.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.DbWebhookReceiverHeader.md",
+      "output": {
+        ".html": {
+          "relative_path": "api/Deveel.Webhooks.DbWebhookReceiverHeader.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.DbWebhookReceiverHeaderConfiguration.md",
+      "output": {
+        ".html": {
+          "relative_path": "api/Deveel.Webhooks.DbWebhookReceiverHeaderConfiguration.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.DbWebhookSubscription.md",
+      "output": {
+        ".html": {
+          "relative_path": "api/Deveel.Webhooks.DbWebhookSubscription.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.DbWebhookSubscriptionConfiguration.md",
+      "output": {
+        ".html": {
+          "relative_path": "api/Deveel.Webhooks.DbWebhookSubscriptionConfiguration.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.DbWebhookSubscriptionEvent.md",
+      "output": {
+        ".html": {
+          "relative_path": "api/Deveel.Webhooks.DbWebhookSubscriptionEvent.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.DbWebhookSubscriptionEventConfiguration.md",
+      "output": {
+        ".html": {
+          "relative_path": "api/Deveel.Webhooks.DbWebhookSubscriptionEventConfiguration.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.DbWebhookSubscriptionHeader.md",
+      "output": {
+        ".html": {
+          "relative_path": "api/Deveel.Webhooks.DbWebhookSubscriptionHeader.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.DbWebhookSubscriptionHeaderConfiguration.md",
+      "output": {
+        ".html": {
+          "relative_path": "api/Deveel.Webhooks.DbWebhookSubscriptionHeaderConfiguration.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.DbWebhookSubscriptionProperty.md",
+      "output": {
+        ".html": {
+          "relative_path": "api/Deveel.Webhooks.DbWebhookSubscriptionProperty.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.DbWebhookSubscriptionPropertyConfiguration.md",
+      "output": {
+        ".html": {
+          "relative_path": "api/Deveel.Webhooks.DbWebhookSubscriptionPropertyConfiguration.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.DbWebhookValueConvert.md",
+      "output": {
+        ".html": {
+          "relative_path": "api/Deveel.Webhooks.DbWebhookValueConvert.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.DbWebhookValueTypes.md",
+      "output": {
+        ".html": {
+          "relative_path": "api/Deveel.Webhooks.DbWebhookValueTypes.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.DefaultMongoWebhookConverter-1.md",
+      "output": {
+        ".html": {
+          "relative_path": "api/Deveel.Webhooks.DefaultMongoWebhookConverter-1.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.DefaultWebhookFactory-1.md",
       "output": {
         ".html": {
           "relative_path": "api/Deveel.Webhooks.DefaultWebhookFactory-1.html"
@@ -59,8 +358,8 @@
       "version": ""
     },
     {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.DefaultWebhookFactory.yml",
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.DefaultWebhookFactory.md",
       "output": {
         ".html": {
           "relative_path": "api/Deveel.Webhooks.DefaultWebhookFactory.html"
@@ -69,8 +368,8 @@
       "version": ""
     },
     {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.DestinationVerificationResult.yml",
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.DestinationVerificationResult.md",
       "output": {
         ".html": {
           "relative_path": "api/Deveel.Webhooks.DestinationVerificationResult.html"
@@ -79,8 +378,58 @@
       "version": ""
     },
     {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.EventInfo.yml",
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.EntityWebhookDeliveryResultRepository-1.md",
+      "output": {
+        ".html": {
+          "relative_path": "api/Deveel.Webhooks.EntityWebhookDeliveryResultRepository-1.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.EntityWebhookDeliveryResultRepository.md",
+      "output": {
+        ".html": {
+          "relative_path": "api/Deveel.Webhooks.EntityWebhookDeliveryResultRepository.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.EntityWebhookStorageBuilder-1.md",
+      "output": {
+        ".html": {
+          "relative_path": "api/Deveel.Webhooks.EntityWebhookStorageBuilder-1.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.EntityWebhookSubscriptionRepository-1.md",
+      "output": {
+        ".html": {
+          "relative_path": "api/Deveel.Webhooks.EntityWebhookSubscriptionRepository-1.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.EntityWebhookSubscriptionRepository.md",
+      "output": {
+        ".html": {
+          "relative_path": "api/Deveel.Webhooks.EntityWebhookSubscriptionRepository.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.EventInfo.md",
       "output": {
         ".html": {
           "relative_path": "api/Deveel.Webhooks.EventInfo.html"
@@ -89,8 +438,428 @@
       "version": ""
     },
     {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.IMongoDbWebhookContext.yml",
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.EventInfoExtensions.md",
+      "output": {
+        ".html": {
+          "relative_path": "api/Deveel.Webhooks.EventInfoExtensions.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.Facebook.AssetAttachment.md",
+      "output": {
+        ".html": {
+          "relative_path": "api/Deveel.Webhooks.Facebook.AssetAttachment.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.Facebook.Attachment.md",
+      "output": {
+        ".html": {
+          "relative_path": "api/Deveel.Webhooks.Facebook.Attachment.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.Facebook.AttachmentType.md",
+      "output": {
+        ".html": {
+          "relative_path": "api/Deveel.Webhooks.Facebook.AttachmentType.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.Facebook.AudioAttachment.md",
+      "output": {
+        ".html": {
+          "relative_path": "api/Deveel.Webhooks.Facebook.AudioAttachment.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.Facebook.FacebookJsonSerializer.md",
+      "output": {
+        ".html": {
+          "relative_path": "api/Deveel.Webhooks.Facebook.FacebookJsonSerializer.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.Facebook.FacebookMessagingEntry.md",
+      "output": {
+        ".html": {
+          "relative_path": "api/Deveel.Webhooks.Facebook.FacebookMessagingEntry.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.Facebook.FacebookWebhook.md",
+      "output": {
+        ".html": {
+          "relative_path": "api/Deveel.Webhooks.Facebook.FacebookWebhook.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.Facebook.FacebookWebhookEntry.md",
+      "output": {
+        ".html": {
+          "relative_path": "api/Deveel.Webhooks.Facebook.FacebookWebhookEntry.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.Facebook.FallbackAttachment.md",
+      "output": {
+        ".html": {
+          "relative_path": "api/Deveel.Webhooks.Facebook.FallbackAttachment.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.Facebook.FallbackPayload.md",
+      "output": {
+        ".html": {
+          "relative_path": "api/Deveel.Webhooks.Facebook.FallbackPayload.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.Facebook.FileAttachment.md",
+      "output": {
+        ".html": {
+          "relative_path": "api/Deveel.Webhooks.Facebook.FileAttachment.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.Facebook.GameContextType.md",
+      "output": {
+        ".html": {
+          "relative_path": "api/Deveel.Webhooks.Facebook.GameContextType.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.Facebook.GamePlay.md",
+      "output": {
+        ".html": {
+          "relative_path": "api/Deveel.Webhooks.Facebook.GamePlay.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.Facebook.ImageAttachment.md",
+      "output": {
+        ".html": {
+          "relative_path": "api/Deveel.Webhooks.Facebook.ImageAttachment.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.Facebook.MessageDelivery.md",
+      "output": {
+        ".html": {
+          "relative_path": "api/Deveel.Webhooks.Facebook.MessageDelivery.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.Facebook.MessageRead.md",
+      "output": {
+        ".html": {
+          "relative_path": "api/Deveel.Webhooks.Facebook.MessageRead.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.Facebook.MessageRef.md",
+      "output": {
+        ".html": {
+          "relative_path": "api/Deveel.Webhooks.Facebook.MessageRef.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.Facebook.MessagingOptIn.md",
+      "output": {
+        ".html": {
+          "relative_path": "api/Deveel.Webhooks.Facebook.MessagingOptIn.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.Facebook.MessagingPart.md",
+      "output": {
+        ".html": {
+          "relative_path": "api/Deveel.Webhooks.Facebook.MessagingPart.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.Facebook.NotificationFequency.md",
+      "output": {
+        ".html": {
+          "relative_path": "api/Deveel.Webhooks.Facebook.NotificationFequency.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.Facebook.NotificationStatus.md",
+      "output": {
+        ".html": {
+          "relative_path": "api/Deveel.Webhooks.Facebook.NotificationStatus.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.Facebook.Product.md",
+      "output": {
+        ".html": {
+          "relative_path": "api/Deveel.Webhooks.Facebook.Product.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.Facebook.ProductElement.md",
+      "output": {
+        ".html": {
+          "relative_path": "api/Deveel.Webhooks.Facebook.ProductElement.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.Facebook.QuickReply.md",
+      "output": {
+        ".html": {
+          "relative_path": "api/Deveel.Webhooks.Facebook.QuickReply.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.Facebook.Reaction.md",
+      "output": {
+        ".html": {
+          "relative_path": "api/Deveel.Webhooks.Facebook.Reaction.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.Facebook.ReactionActionType.md",
+      "output": {
+        ".html": {
+          "relative_path": "api/Deveel.Webhooks.Facebook.ReactionActionType.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.Facebook.ReactionType.md",
+      "output": {
+        ".html": {
+          "relative_path": "api/Deveel.Webhooks.Facebook.ReactionType.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.Facebook.ReceivedMessage.md",
+      "output": {
+        ".html": {
+          "relative_path": "api/Deveel.Webhooks.Facebook.ReceivedMessage.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.Facebook.SenderPart.md",
+      "output": {
+        ".html": {
+          "relative_path": "api/Deveel.Webhooks.Facebook.SenderPart.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.Facebook.TemplateAttachment.md",
+      "output": {
+        ".html": {
+          "relative_path": "api/Deveel.Webhooks.Facebook.TemplateAttachment.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.Facebook.TemplateAttachmentPayload.md",
+      "output": {
+        ".html": {
+          "relative_path": "api/Deveel.Webhooks.Facebook.TemplateAttachmentPayload.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.Facebook.UrlPayload.md",
+      "output": {
+        ".html": {
+          "relative_path": "api/Deveel.Webhooks.Facebook.UrlPayload.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.Facebook.UserTokenStatus.md",
+      "output": {
+        ".html": {
+          "relative_path": "api/Deveel.Webhooks.Facebook.UserTokenStatus.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.Facebook.VideoAttachment.md",
+      "output": {
+        ".html": {
+          "relative_path": "api/Deveel.Webhooks.Facebook.VideoAttachment.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.Facebook.md",
+      "output": {
+        ".html": {
+          "relative_path": "api/Deveel.Webhooks.Facebook.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.FacebookReceiverOptions.md",
+      "output": {
+        ".html": {
+          "relative_path": "api/Deveel.Webhooks.FacebookReceiverOptions.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.FacebookVerificationResult.md",
+      "output": {
+        ".html": {
+          "relative_path": "api/Deveel.Webhooks.FacebookVerificationResult.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.FacebookWebhookHandlingOptions.md",
+      "output": {
+        ".html": {
+          "relative_path": "api/Deveel.Webhooks.FacebookWebhookHandlingOptions.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.HandlerExecutionMode.md",
+      "output": {
+        ".html": {
+          "relative_path": "api/Deveel.Webhooks.HandlerExecutionMode.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.IDbWebhookConverter-1.md",
+      "output": {
+        ".html": {
+          "relative_path": "api/Deveel.Webhooks.IDbWebhookConverter-1.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.IEventInfo.md",
+      "output": {
+        ".html": {
+          "relative_path": "api/Deveel.Webhooks.IEventInfo.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.IMongoDbWebhookContext.md",
       "output": {
         ".html": {
           "relative_path": "api/Deveel.Webhooks.IMongoDbWebhookContext.html"
@@ -99,8 +868,8 @@
       "version": ""
     },
     {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.IMongoWebhookConverter-1.yml",
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.IMongoWebhookConverter-1.md",
       "output": {
         ".html": {
           "relative_path": "api/Deveel.Webhooks.IMongoWebhookConverter-1.html"
@@ -109,8 +878,38 @@
       "version": ""
     },
     {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.IWebhook.yml",
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.ITenantWebhookNotifier-1.md",
+      "output": {
+        ".html": {
+          "relative_path": "api/Deveel.Webhooks.ITenantWebhookNotifier-1.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.ITenantWebhookSubscriptionResolver-1.md",
+      "output": {
+        ".html": {
+          "relative_path": "api/Deveel.Webhooks.ITenantWebhookSubscriptionResolver-1.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.ITenantWebhookSubscriptionResolver.md",
+      "output": {
+        ".html": {
+          "relative_path": "api/Deveel.Webhooks.ITenantWebhookSubscriptionResolver.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.IWebhook.md",
       "output": {
         ".html": {
           "relative_path": "api/Deveel.Webhooks.IWebhook.html"
@@ -119,18 +918,8 @@
       "version": ""
     },
     {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.IWebhookDataFactory.yml",
-      "output": {
-        ".html": {
-          "relative_path": "api/Deveel.Webhooks.IWebhookDataFactory.html"
-        }
-      },
-      "version": ""
-    },
-    {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.IWebhookDeliveryAttempt.yml",
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.IWebhookDeliveryAttempt.md",
       "output": {
         ".html": {
           "relative_path": "api/Deveel.Webhooks.IWebhookDeliveryAttempt.html"
@@ -139,8 +928,8 @@
       "version": ""
     },
     {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.IWebhookDeliveryResult.yml",
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.IWebhookDeliveryResult.md",
       "output": {
         ".html": {
           "relative_path": "api/Deveel.Webhooks.IWebhookDeliveryResult.html"
@@ -149,8 +938,8 @@
       "version": ""
     },
     {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.IWebhookDeliveryResultLogger-1.yml",
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.IWebhookDeliveryResultLogger-1.md",
       "output": {
         ".html": {
           "relative_path": "api/Deveel.Webhooks.IWebhookDeliveryResultLogger-1.html"
@@ -159,48 +948,28 @@
       "version": ""
     },
     {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.IWebhookDeliveryResultPagedStore-1.yml",
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.IWebhookDeliveryResultRepository-1.md",
       "output": {
         ".html": {
-          "relative_path": "api/Deveel.Webhooks.IWebhookDeliveryResultPagedStore-1.html"
+          "relative_path": "api/Deveel.Webhooks.IWebhookDeliveryResultRepository-1.html"
         }
       },
       "version": ""
     },
     {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.IWebhookDeliveryResultQueryableStore-1.yml",
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.IWebhookDeliveryResultRepositoryProvider-1.md",
       "output": {
         ".html": {
-          "relative_path": "api/Deveel.Webhooks.IWebhookDeliveryResultQueryableStore-1.html"
+          "relative_path": "api/Deveel.Webhooks.IWebhookDeliveryResultRepositoryProvider-1.html"
         }
       },
       "version": ""
     },
     {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.IWebhookDeliveryResultStore-1.yml",
-      "output": {
-        ".html": {
-          "relative_path": "api/Deveel.Webhooks.IWebhookDeliveryResultStore-1.html"
-        }
-      },
-      "version": ""
-    },
-    {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.IWebhookDeliveryResultStoreProvider-1.yml",
-      "output": {
-        ".html": {
-          "relative_path": "api/Deveel.Webhooks.IWebhookDeliveryResultStoreProvider-1.html"
-        }
-      },
-      "version": ""
-    },
-    {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.IWebhookDestinationVerifier-1.yml",
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.IWebhookDestinationVerifier-1.md",
       "output": {
         ".html": {
           "relative_path": "api/Deveel.Webhooks.IWebhookDestinationVerifier-1.html"
@@ -209,18 +978,8 @@
       "version": ""
     },
     {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.IWebhookDestinationVerifier.yml",
-      "output": {
-        ".html": {
-          "relative_path": "api/Deveel.Webhooks.IWebhookDestinationVerifier.html"
-        }
-      },
-      "version": ""
-    },
-    {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.IWebhookFactory-1.yml",
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.IWebhookFactory-1.md",
       "output": {
         ".html": {
           "relative_path": "api/Deveel.Webhooks.IWebhookFactory-1.html"
@@ -229,8 +988,8 @@
       "version": ""
     },
     {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.IWebhookFilter.yml",
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.IWebhookFilter.md",
       "output": {
         ".html": {
           "relative_path": "api/Deveel.Webhooks.IWebhookFilter.html"
@@ -239,8 +998,8 @@
       "version": ""
     },
     {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.IWebhookFilterEvaluator-1.yml",
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.IWebhookFilterEvaluator-1.md",
       "output": {
         ".html": {
           "relative_path": "api/Deveel.Webhooks.IWebhookFilterEvaluator-1.html"
@@ -249,8 +1008,18 @@
       "version": ""
     },
     {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.IWebhookHandler-1.yml",
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.IWebhookFormParser-1.md",
+      "output": {
+        ".html": {
+          "relative_path": "api/Deveel.Webhooks.IWebhookFormParser-1.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.IWebhookHandler-1.md",
       "output": {
         ".html": {
           "relative_path": "api/Deveel.Webhooks.IWebhookHandler-1.html"
@@ -259,8 +1028,8 @@
       "version": ""
     },
     {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.IWebhookJsonParser-1.yml",
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.IWebhookJsonParser-1.md",
       "output": {
         ".html": {
           "relative_path": "api/Deveel.Webhooks.IWebhookJsonParser-1.html"
@@ -269,8 +1038,8 @@
       "version": ""
     },
     {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.IWebhookJsonSerializer-1.yml",
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.IWebhookJsonSerializer-1.md",
       "output": {
         ".html": {
           "relative_path": "api/Deveel.Webhooks.IWebhookJsonSerializer-1.html"
@@ -279,8 +1048,8 @@
       "version": ""
     },
     {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.IWebhookNotifier-1.yml",
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.IWebhookNotifier-1.md",
       "output": {
         ".html": {
           "relative_path": "api/Deveel.Webhooks.IWebhookNotifier-1.html"
@@ -289,8 +1058,8 @@
       "version": ""
     },
     {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.IWebhookReceiver-1.yml",
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.IWebhookReceiver-1.md",
       "output": {
         ".html": {
           "relative_path": "api/Deveel.Webhooks.IWebhookReceiver-1.html"
@@ -299,8 +1068,8 @@
       "version": ""
     },
     {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.IWebhookReceiver.yml",
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.IWebhookReceiver.md",
       "output": {
         ".html": {
           "relative_path": "api/Deveel.Webhooks.IWebhookReceiver.html"
@@ -309,8 +1078,8 @@
       "version": ""
     },
     {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.IWebhookRequestVerifier-1.yml",
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.IWebhookRequestVerifier-1.md",
       "output": {
         ".html": {
           "relative_path": "api/Deveel.Webhooks.IWebhookRequestVerifier-1.html"
@@ -319,8 +1088,8 @@
       "version": ""
     },
     {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.IWebhookSender-1.yml",
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.IWebhookSender-1.md",
       "output": {
         ".html": {
           "relative_path": "api/Deveel.Webhooks.IWebhookSender-1.html"
@@ -329,8 +1098,8 @@
       "version": ""
     },
     {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.IWebhookSigner-1.yml",
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.IWebhookSigner-1.md",
       "output": {
         ".html": {
           "relative_path": "api/Deveel.Webhooks.IWebhookSigner-1.html"
@@ -339,8 +1108,8 @@
       "version": ""
     },
     {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.IWebhookSigner.yml",
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.IWebhookSigner.md",
       "output": {
         ".html": {
           "relative_path": "api/Deveel.Webhooks.IWebhookSigner.html"
@@ -349,18 +1118,8 @@
       "version": ""
     },
     {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.IWebhookSignerProvider-1.yml",
-      "output": {
-        ".html": {
-          "relative_path": "api/Deveel.Webhooks.IWebhookSignerProvider-1.html"
-        }
-      },
-      "version": ""
-    },
-    {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.IWebhookSubscription.yml",
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.IWebhookSubscription.md",
       "output": {
         ".html": {
           "relative_path": "api/Deveel.Webhooks.IWebhookSubscription.html"
@@ -369,28 +1128,28 @@
       "version": ""
     },
     {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.IWebhookSubscriptionPagedStore-1.yml",
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.IWebhookSubscriptionRepository-1.md",
       "output": {
         ".html": {
-          "relative_path": "api/Deveel.Webhooks.IWebhookSubscriptionPagedStore-1.html"
+          "relative_path": "api/Deveel.Webhooks.IWebhookSubscriptionRepository-1.html"
         }
       },
       "version": ""
     },
     {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.IWebhookSubscriptionQueryableStore-1.yml",
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.IWebhookSubscriptionRepositoryProvider-1.md",
       "output": {
         ".html": {
-          "relative_path": "api/Deveel.Webhooks.IWebhookSubscriptionQueryableStore-1.html"
+          "relative_path": "api/Deveel.Webhooks.IWebhookSubscriptionRepositoryProvider-1.html"
         }
       },
       "version": ""
     },
     {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.IWebhookSubscriptionResolver-1.yml",
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.IWebhookSubscriptionResolver-1.md",
       "output": {
         ".html": {
           "relative_path": "api/Deveel.Webhooks.IWebhookSubscriptionResolver-1.html"
@@ -399,8 +1158,8 @@
       "version": ""
     },
     {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.IWebhookSubscriptionResolver.yml",
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.IWebhookSubscriptionResolver.md",
       "output": {
         ".html": {
           "relative_path": "api/Deveel.Webhooks.IWebhookSubscriptionResolver.html"
@@ -409,28 +1168,8 @@
       "version": ""
     },
     {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.IWebhookSubscriptionStore-1.yml",
-      "output": {
-        ".html": {
-          "relative_path": "api/Deveel.Webhooks.IWebhookSubscriptionStore-1.html"
-        }
-      },
-      "version": ""
-    },
-    {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.IWebhookSubscriptionStoreProvider-1.yml",
-      "output": {
-        ".html": {
-          "relative_path": "api/Deveel.Webhooks.IWebhookSubscriptionStoreProvider-1.html"
-        }
-      },
-      "version": ""
-    },
-    {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.IWebhookSubscriptionValidator-1.yml",
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.IWebhookSubscriptionValidator-1.md",
       "output": {
         ".html": {
           "relative_path": "api/Deveel.Webhooks.IWebhookSubscriptionValidator-1.html"
@@ -439,8 +1178,8 @@
       "version": ""
     },
     {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.IWebhookVerificationResult.yml",
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.IWebhookVerificationResult.md",
       "output": {
         ".html": {
           "relative_path": "api/Deveel.Webhooks.IWebhookVerificationResult.html"
@@ -449,8 +1188,18 @@
       "version": ""
     },
     {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.IWebhookXmlSerializer-1.yml",
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.IWebhookXmlParser-1.md",
+      "output": {
+        ".html": {
+          "relative_path": "api/Deveel.Webhooks.IWebhookXmlParser-1.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.IWebhookXmlSerializer-1.md",
       "output": {
         ".html": {
           "relative_path": "api/Deveel.Webhooks.IWebhookXmlSerializer-1.html"
@@ -459,8 +1208,8 @@
       "version": ""
     },
     {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.LinqWebhookFilterEvaluator-1.yml",
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.LinqWebhookFilterEvaluator-1.md",
       "output": {
         ".html": {
           "relative_path": "api/Deveel.Webhooks.LinqWebhookFilterEvaluator-1.html"
@@ -469,8 +1218,8 @@
       "version": ""
     },
     {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.MongoDbWebhookContext.yml",
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.MongoDbWebhookContext.md",
       "output": {
         ".html": {
           "relative_path": "api/Deveel.Webhooks.MongoDbWebhookContext.html"
@@ -479,8 +1228,8 @@
       "version": ""
     },
     {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.MongoDbWebhookDeliveryResultLogger-2.yml",
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.MongoDbWebhookDeliveryResultLogger-2.md",
       "output": {
         ".html": {
           "relative_path": "api/Deveel.Webhooks.MongoDbWebhookDeliveryResultLogger-2.html"
@@ -489,58 +1238,48 @@
       "version": ""
     },
     {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.MongoDbWebhookDeliveryResultStore-1.yml",
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.MongoDbWebhookDeliveryResultRepository-1.md",
       "output": {
         ".html": {
-          "relative_path": "api/Deveel.Webhooks.MongoDbWebhookDeliveryResultStore-1.html"
+          "relative_path": "api/Deveel.Webhooks.MongoDbWebhookDeliveryResultRepository-1.html"
         }
       },
       "version": ""
     },
     {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.MongoDbWebhookDeliveryResultStore.yml",
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.MongoDbWebhookDeliveryResultRepository.md",
       "output": {
         ".html": {
-          "relative_path": "api/Deveel.Webhooks.MongoDbWebhookDeliveryResultStore.html"
+          "relative_path": "api/Deveel.Webhooks.MongoDbWebhookDeliveryResultRepository.html"
         }
       },
       "version": ""
     },
     {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.MongoDbWebhookDeliveryResultStoreProvider-1.yml",
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.MongoDbWebhookDeliveryResultRepositoryProvider-1.md",
       "output": {
         ".html": {
-          "relative_path": "api/Deveel.Webhooks.MongoDbWebhookDeliveryResultStoreProvider-1.html"
+          "relative_path": "api/Deveel.Webhooks.MongoDbWebhookDeliveryResultRepositoryProvider-1.html"
         }
       },
       "version": ""
     },
     {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.MongoDbWebhookDeliveryResultStoreProvider-2.yml",
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.MongoDbWebhookDeliveryResultRepositoryProvider-2.md",
       "output": {
         ".html": {
-          "relative_path": "api/Deveel.Webhooks.MongoDbWebhookDeliveryResultStoreProvider-2.html"
+          "relative_path": "api/Deveel.Webhooks.MongoDbWebhookDeliveryResultRepositoryProvider-2.html"
         }
       },
       "version": ""
     },
     {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.MongoDbWebhookOptions.yml",
-      "output": {
-        ".html": {
-          "relative_path": "api/Deveel.Webhooks.MongoDbWebhookOptions.html"
-        }
-      },
-      "version": ""
-    },
-    {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.MongoDbWebhookStorageBuilder-1.yml",
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.MongoDbWebhookStorageBuilder-1.md",
       "output": {
         ".html": {
           "relative_path": "api/Deveel.Webhooks.MongoDbWebhookStorageBuilder-1.html"
@@ -549,8 +1288,8 @@
       "version": ""
     },
     {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.MongoDbWebhookStorageConstants.yml",
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.MongoDbWebhookStorageConstants.md",
       "output": {
         ".html": {
           "relative_path": "api/Deveel.Webhooks.MongoDbWebhookStorageConstants.html"
@@ -559,58 +1298,68 @@
       "version": ""
     },
     {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.MongoDbWebhookSubscriptionStoreProvider-1.yml",
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.MongoDbWebhookSubscriptionRepository-1.md",
       "output": {
         ".html": {
-          "relative_path": "api/Deveel.Webhooks.MongoDbWebhookSubscriptionStoreProvider-1.html"
+          "relative_path": "api/Deveel.Webhooks.MongoDbWebhookSubscriptionRepository-1.html"
         }
       },
       "version": ""
     },
     {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.MongoDbWebhookSubscriptionStoreProvider-2.yml",
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.MongoDbWebhookSubscriptionRepository.md",
       "output": {
         ".html": {
-          "relative_path": "api/Deveel.Webhooks.MongoDbWebhookSubscriptionStoreProvider-2.html"
+          "relative_path": "api/Deveel.Webhooks.MongoDbWebhookSubscriptionRepository.html"
         }
       },
       "version": ""
     },
     {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.MongoDbWebhookSubscriptionStrore-1.yml",
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.MongoDbWebhookSubscriptionRepositoryProvider-2.md",
       "output": {
         ".html": {
-          "relative_path": "api/Deveel.Webhooks.MongoDbWebhookSubscriptionStrore-1.html"
+          "relative_path": "api/Deveel.Webhooks.MongoDbWebhookSubscriptionRepositoryProvider-2.html"
         }
       },
       "version": ""
     },
     {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.MongoDbWebhookSubscriptionStrore.yml",
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.MongoDbWebhookSubscriptionRepositoryProvider-3.md",
       "output": {
         ".html": {
-          "relative_path": "api/Deveel.Webhooks.MongoDbWebhookSubscriptionStrore.html"
+          "relative_path": "api/Deveel.Webhooks.MongoDbWebhookSubscriptionRepositoryProvider-3.html"
         }
       },
       "version": ""
     },
     {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.MongoDbWebhookTenantContext-1.yml",
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.MongoDbWebhookTenantContext.md",
       "output": {
         ".html": {
-          "relative_path": "api/Deveel.Webhooks.MongoDbWebhookTenantContext-1.html"
+          "relative_path": "api/Deveel.Webhooks.MongoDbWebhookTenantContext.html"
         }
       },
       "version": ""
     },
     {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.MongoWebhook.yml",
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.MongoEventInfo.md",
+      "output": {
+        ".html": {
+          "relative_path": "api/Deveel.Webhooks.MongoEventInfo.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.MongoWebhook.md",
       "output": {
         ".html": {
           "relative_path": "api/Deveel.Webhooks.MongoWebhook.html"
@@ -619,8 +1368,8 @@
       "version": ""
     },
     {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.MongoWebhookDeliveryAttempt.yml",
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.MongoWebhookDeliveryAttempt.md",
       "output": {
         ".html": {
           "relative_path": "api/Deveel.Webhooks.MongoWebhookDeliveryAttempt.html"
@@ -629,8 +1378,8 @@
       "version": ""
     },
     {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.MongoWebhookDeliveryResult.yml",
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.MongoWebhookDeliveryResult.md",
       "output": {
         ".html": {
           "relative_path": "api/Deveel.Webhooks.MongoWebhookDeliveryResult.html"
@@ -639,8 +1388,8 @@
       "version": ""
     },
     {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.MongoWebhookFilter.yml",
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.MongoWebhookFilter.md",
       "output": {
         ".html": {
           "relative_path": "api/Deveel.Webhooks.MongoWebhookFilter.html"
@@ -649,8 +1398,8 @@
       "version": ""
     },
     {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.MongoWebhookReceiver.yml",
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.MongoWebhookReceiver.md",
       "output": {
         ".html": {
           "relative_path": "api/Deveel.Webhooks.MongoWebhookReceiver.html"
@@ -659,8 +1408,8 @@
       "version": ""
     },
     {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.MongoWebhookSubscription.yml",
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.MongoWebhookSubscription.md",
       "output": {
         ".html": {
           "relative_path": "api/Deveel.Webhooks.MongoWebhookSubscription.html"
@@ -669,8 +1418,8 @@
       "version": ""
     },
     {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.NewtonsoftWebhookJsonParser-1.yml",
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.NewtonsoftWebhookJsonParser-1.md",
       "output": {
         ".html": {
           "relative_path": "api/Deveel.Webhooks.NewtonsoftWebhookJsonParser-1.html"
@@ -679,8 +1428,8 @@
       "version": ""
     },
     {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.NewtonsoftWebhookJsonSerializer-1.yml",
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.NewtonsoftWebhookJsonSerializer-1.md",
       "output": {
         ".html": {
           "relative_path": "api/Deveel.Webhooks.NewtonsoftWebhookJsonSerializer-1.html"
@@ -689,8 +1438,8 @@
       "version": ""
     },
     {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.NullWebhookDeliveryResultLogger-1.yml",
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.NullWebhookDeliveryResultLogger-1.md",
       "output": {
         ".html": {
           "relative_path": "api/Deveel.Webhooks.NullWebhookDeliveryResultLogger-1.html"
@@ -699,38 +1448,148 @@
       "version": ""
     },
     {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.OptionsSnapshotExtensions.yml",
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.SendGrid.EmailAddress.md",
       "output": {
         ".html": {
-          "relative_path": "api/Deveel.Webhooks.OptionsSnapshotExtensions.html"
+          "relative_path": "api/Deveel.Webhooks.SendGrid.EmailAddress.html"
         }
       },
       "version": ""
     },
     {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.PagedQuery-1.yml",
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.SendGrid.EmailAttachment.md",
       "output": {
         ".html": {
-          "relative_path": "api/Deveel.Webhooks.PagedQuery-1.html"
+          "relative_path": "api/Deveel.Webhooks.SendGrid.EmailAttachment.html"
         }
       },
       "version": ""
     },
     {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.PagedResult-1.yml",
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.SendGrid.EmailSpamReport.md",
       "output": {
         ".html": {
-          "relative_path": "api/Deveel.Webhooks.PagedResult-1.html"
+          "relative_path": "api/Deveel.Webhooks.SendGrid.EmailSpamReport.html"
         }
       },
       "version": ""
     },
     {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.ServiceCollectionExtensions.yml",
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.SendGrid.Envelope.md",
+      "output": {
+        ".html": {
+          "relative_path": "api/Deveel.Webhooks.SendGrid.Envelope.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.SendGrid.MatchedRule.md",
+      "output": {
+        ".html": {
+          "relative_path": "api/Deveel.Webhooks.SendGrid.MatchedRule.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.SendGrid.SendGridEmail.md",
+      "output": {
+        ".html": {
+          "relative_path": "api/Deveel.Webhooks.SendGrid.SendGridEmail.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.SendGrid.SendGridEmailStatus.md",
+      "output": {
+        ".html": {
+          "relative_path": "api/Deveel.Webhooks.SendGrid.SendGridEmailStatus.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.SendGrid.SendGridEventType.md",
+      "output": {
+        ".html": {
+          "relative_path": "api/Deveel.Webhooks.SendGrid.SendGridEventType.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.SendGrid.SendGridWebhook.md",
+      "output": {
+        ".html": {
+          "relative_path": "api/Deveel.Webhooks.SendGrid.SendGridWebhook.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.SendGrid.SpamReportDetails.md",
+      "output": {
+        ".html": {
+          "relative_path": "api/Deveel.Webhooks.SendGrid.SpamReportDetails.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.SendGrid.SpamRuleDetails.md",
+      "output": {
+        ".html": {
+          "relative_path": "api/Deveel.Webhooks.SendGrid.SpamRuleDetails.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.SendGrid.md",
+      "output": {
+        ".html": {
+          "relative_path": "api/Deveel.Webhooks.SendGrid.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.SendGridReceiverOptions.md",
+      "output": {
+        ".html": {
+          "relative_path": "api/Deveel.Webhooks.SendGridReceiverOptions.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.SendGridWebhookSignature.md",
+      "output": {
+        ".html": {
+          "relative_path": "api/Deveel.Webhooks.SendGridWebhookSignature.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.ServiceCollectionExtensions.md",
       "output": {
         ".html": {
           "relative_path": "api/Deveel.Webhooks.ServiceCollectionExtensions.html"
@@ -739,8 +1598,8 @@
       "version": ""
     },
     {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.Sha1WebhookSigner.yml",
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.Sha1WebhookSigner.md",
       "output": {
         ".html": {
           "relative_path": "api/Deveel.Webhooks.Sha1WebhookSigner.html"
@@ -749,8 +1608,8 @@
       "version": ""
     },
     {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.Sha256WebhookSigner.yml",
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.Sha256WebhookSigner.md",
       "output": {
         ".html": {
           "relative_path": "api/Deveel.Webhooks.Sha256WebhookSigner.html"
@@ -759,8 +1618,8 @@
       "version": ""
     },
     {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.SystemTextWebhookJsonParser-1.yml",
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.SystemTextWebhookJsonParser-1.md",
       "output": {
         ".html": {
           "relative_path": "api/Deveel.Webhooks.SystemTextWebhookJsonParser-1.html"
@@ -769,8 +1628,8 @@
       "version": ""
     },
     {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.SystemTextWebhookJsonSerializer-1.yml",
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.SystemTextWebhookJsonSerializer-1.md",
       "output": {
         ".html": {
           "relative_path": "api/Deveel.Webhooks.SystemTextWebhookJsonSerializer-1.html"
@@ -779,8 +1638,18 @@
       "version": ""
     },
     {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.SystemWebhookXmlSerializer-1.yml",
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.SystemWebhookXmlParser-1.md",
+      "output": {
+        ".html": {
+          "relative_path": "api/Deveel.Webhooks.SystemWebhookXmlParser-1.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.SystemWebhookXmlSerializer-1.md",
       "output": {
         ".html": {
           "relative_path": "api/Deveel.Webhooks.SystemWebhookXmlSerializer-1.html"
@@ -789,18 +1658,108 @@
       "version": ""
     },
     {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.UnixTimeMillisJsonConverter.yml",
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.TenantWebhookNotifier-1.md",
       "output": {
         ".html": {
-          "relative_path": "api/Deveel.Webhooks.UnixTimeMillisJsonConverter.html"
+          "relative_path": "api/Deveel.Webhooks.TenantWebhookNotifier-1.html"
         }
       },
       "version": ""
     },
     {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.UriExtensions.yml",
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.TenantWebhookSubscriptionResolver-1.md",
+      "output": {
+        ".html": {
+          "relative_path": "api/Deveel.Webhooks.TenantWebhookSubscriptionResolver-1.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.Twilio.MediaElement.md",
+      "output": {
+        ".html": {
+          "relative_path": "api/Deveel.Webhooks.Twilio.MediaElement.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.Twilio.MessagePart.md",
+      "output": {
+        ".html": {
+          "relative_path": "api/Deveel.Webhooks.Twilio.MessagePart.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.Twilio.MessageStatus.md",
+      "output": {
+        ".html": {
+          "relative_path": "api/Deveel.Webhooks.Twilio.MessageStatus.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.Twilio.Segment.md",
+      "output": {
+        ".html": {
+          "relative_path": "api/Deveel.Webhooks.Twilio.Segment.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.Twilio.TwilioWebhook.md",
+      "output": {
+        ".html": {
+          "relative_path": "api/Deveel.Webhooks.Twilio.TwilioWebhook.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.Twilio.md",
+      "output": {
+        ".html": {
+          "relative_path": "api/Deveel.Webhooks.Twilio.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.TwilioReceiverOptions.md",
+      "output": {
+        ".html": {
+          "relative_path": "api/Deveel.Webhooks.TwilioReceiverOptions.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.TwilioSignature.md",
+      "output": {
+        ".html": {
+          "relative_path": "api/Deveel.Webhooks.TwilioSignature.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.UriExtensions.md",
       "output": {
         ".html": {
           "relative_path": "api/Deveel.Webhooks.UriExtensions.html"
@@ -809,8 +1768,8 @@
       "version": ""
     },
     {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.VerificationTokenLocation.yml",
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.VerificationTokenLocation.md",
       "output": {
         ".html": {
           "relative_path": "api/Deveel.Webhooks.VerificationTokenLocation.html"
@@ -819,8 +1778,8 @@
       "version": ""
     },
     {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.Webhook.yml",
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.Webhook.md",
       "output": {
         ".html": {
           "relative_path": "api/Deveel.Webhooks.Webhook.html"
@@ -829,8 +1788,28 @@
       "version": ""
     },
     {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.WebhookDeliveryAttempt.yml",
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.WebhookContentFormats.md",
+      "output": {
+        ".html": {
+          "relative_path": "api/Deveel.Webhooks.WebhookContentFormats.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.WebhookDbContext.md",
+      "output": {
+        ".html": {
+          "relative_path": "api/Deveel.Webhooks.WebhookDbContext.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.WebhookDeliveryAttempt.md",
       "output": {
         ".html": {
           "relative_path": "api/Deveel.Webhooks.WebhookDeliveryAttempt.html"
@@ -839,8 +1818,8 @@
       "version": ""
     },
     {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.WebhookDeliveryResult-1.yml",
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.WebhookDeliveryResult-1.md",
       "output": {
         ".html": {
           "relative_path": "api/Deveel.Webhooks.WebhookDeliveryResult-1.html"
@@ -849,8 +1828,8 @@
       "version": ""
     },
     {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.WebhookDestination.yml",
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.WebhookDestination.md",
       "output": {
         ".html": {
           "relative_path": "api/Deveel.Webhooks.WebhookDestination.html"
@@ -859,8 +1838,8 @@
       "version": ""
     },
     {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.WebhookDestinationSignatureOptions.yml",
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.WebhookDestinationSignatureOptions.md",
       "output": {
         ".html": {
           "relative_path": "api/Deveel.Webhooks.WebhookDestinationSignatureOptions.html"
@@ -869,8 +1848,8 @@
       "version": ""
     },
     {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.WebhookDestinationVerificationOptions.yml",
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.WebhookDestinationVerificationOptions.md",
       "output": {
         ".html": {
           "relative_path": "api/Deveel.Webhooks.WebhookDestinationVerificationOptions.html"
@@ -879,8 +1858,8 @@
       "version": ""
     },
     {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.WebhookDestinationVerifier-1.yml",
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.WebhookDestinationVerifier-1.md",
       "output": {
         ".html": {
           "relative_path": "api/Deveel.Webhooks.WebhookDestinationVerifier-1.html"
@@ -889,28 +1868,18 @@
       "version": ""
     },
     {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.WebhookDestinationVerifier.yml",
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.WebhookEntityException.md",
       "output": {
         ".html": {
-          "relative_path": "api/Deveel.Webhooks.WebhookDestinationVerifier.html"
+          "relative_path": "api/Deveel.Webhooks.WebhookEntityException.html"
         }
       },
       "version": ""
     },
     {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.WebhookDestinationVerifierOptions.yml",
-      "output": {
-        ".html": {
-          "relative_path": "api/Deveel.Webhooks.WebhookDestinationVerifierOptions.html"
-        }
-      },
-      "version": ""
-    },
-    {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.WebhookException.yml",
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.WebhookException.md",
       "output": {
         ".html": {
           "relative_path": "api/Deveel.Webhooks.WebhookException.html"
@@ -919,8 +1888,8 @@
       "version": ""
     },
     {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.WebhookFilter.yml",
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.WebhookFilter.md",
       "output": {
         ".html": {
           "relative_path": "api/Deveel.Webhooks.WebhookFilter.html"
@@ -929,8 +1898,8 @@
       "version": ""
     },
     {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.WebhookFilterExtensions.yml",
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.WebhookFilterExtensions.md",
       "output": {
         ".html": {
           "relative_path": "api/Deveel.Webhooks.WebhookFilterExtensions.html"
@@ -939,8 +1908,8 @@
       "version": ""
     },
     {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.WebhookFormat.yml",
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.WebhookFormat.md",
       "output": {
         ".html": {
           "relative_path": "api/Deveel.Webhooks.WebhookFormat.html"
@@ -949,8 +1918,28 @@
       "version": ""
     },
     {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.WebhookJsonParserExtensions.yml",
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.WebhookHandler.md",
+      "output": {
+        ".html": {
+          "relative_path": "api/Deveel.Webhooks.WebhookHandler.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.WebhookHandlingOptions.md",
+      "output": {
+        ".html": {
+          "relative_path": "api/Deveel.Webhooks.WebhookHandlingOptions.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.WebhookJsonParserExtensions.md",
       "output": {
         ".html": {
           "relative_path": "api/Deveel.Webhooks.WebhookJsonParserExtensions.html"
@@ -959,8 +1948,8 @@
       "version": ""
     },
     {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.WebhookJsonSerializerExtensions.yml",
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.WebhookJsonSerializerExtensions.md",
       "output": {
         ".html": {
           "relative_path": "api/Deveel.Webhooks.WebhookJsonSerializerExtensions.html"
@@ -969,8 +1958,8 @@
       "version": ""
     },
     {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.WebhookMongoException.yml",
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.WebhookMongoException.md",
       "output": {
         ".html": {
           "relative_path": "api/Deveel.Webhooks.WebhookMongoException.html"
@@ -979,8 +1968,18 @@
       "version": ""
     },
     {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.WebhookNotificationResult-1.yml",
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.WebhookNotificationOptions-1.md",
+      "output": {
+        ".html": {
+          "relative_path": "api/Deveel.Webhooks.WebhookNotificationOptions-1.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.WebhookNotificationResult-1.md",
       "output": {
         ".html": {
           "relative_path": "api/Deveel.Webhooks.WebhookNotificationResult-1.html"
@@ -989,8 +1988,8 @@
       "version": ""
     },
     {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.WebhookNotifier-1.yml",
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.WebhookNotifier-1.md",
       "output": {
         ".html": {
           "relative_path": "api/Deveel.Webhooks.WebhookNotifier-1.html"
@@ -999,8 +1998,18 @@
       "version": ""
     },
     {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.WebhookNotifierBuilder-1.yml",
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.WebhookNotifierBase-1.md",
+      "output": {
+        ".html": {
+          "relative_path": "api/Deveel.Webhooks.WebhookNotifierBase-1.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.WebhookNotifierBuilder-1.md",
       "output": {
         ".html": {
           "relative_path": "api/Deveel.Webhooks.WebhookNotifierBuilder-1.html"
@@ -1009,8 +2018,8 @@
       "version": ""
     },
     {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.WebhookNotifierBuilderExtensions.yml",
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.WebhookNotifierBuilderExtensions.md",
       "output": {
         ".html": {
           "relative_path": "api/Deveel.Webhooks.WebhookNotifierBuilderExtensions.html"
@@ -1019,8 +2028,8 @@
       "version": ""
     },
     {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.WebhookParseException.yml",
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.WebhookParseException.md",
       "output": {
         ".html": {
           "relative_path": "api/Deveel.Webhooks.WebhookParseException.html"
@@ -1029,8 +2038,8 @@
       "version": ""
     },
     {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.WebhookReceiveResult-1.yml",
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.WebhookReceiveResult-1.md",
       "output": {
         ".html": {
           "relative_path": "api/Deveel.Webhooks.WebhookReceiveResult-1.html"
@@ -1039,8 +2048,8 @@
       "version": ""
     },
     {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.WebhookReceiver-1.ValidateResult.yml",
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.WebhookReceiver-1.ValidateResult.md",
       "output": {
         ".html": {
           "relative_path": "api/Deveel.Webhooks.WebhookReceiver-1.ValidateResult.html"
@@ -1049,8 +2058,8 @@
       "version": ""
     },
     {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.WebhookReceiver-1.yml",
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.WebhookReceiver-1.md",
       "output": {
         ".html": {
           "relative_path": "api/Deveel.Webhooks.WebhookReceiver-1.html"
@@ -1059,8 +2068,8 @@
       "version": ""
     },
     {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.WebhookReceiverBuilder-1.yml",
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.WebhookReceiverBuilder-1.md",
       "output": {
         ".html": {
           "relative_path": "api/Deveel.Webhooks.WebhookReceiverBuilder-1.html"
@@ -1069,8 +2078,8 @@
       "version": ""
     },
     {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.WebhookReceiverBuilderExtensions.yml",
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.WebhookReceiverBuilderExtensions.md",
       "output": {
         ".html": {
           "relative_path": "api/Deveel.Webhooks.WebhookReceiverBuilderExtensions.html"
@@ -1079,8 +2088,8 @@
       "version": ""
     },
     {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.WebhookReceiverException.yml",
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.WebhookReceiverException.md",
       "output": {
         ".html": {
           "relative_path": "api/Deveel.Webhooks.WebhookReceiverException.html"
@@ -1089,18 +2098,38 @@
       "version": ""
     },
     {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.WebhookReceiverOptions.yml",
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.WebhookReceiverMiddleware-1.md",
       "output": {
         ".html": {
-          "relative_path": "api/Deveel.Webhooks.WebhookReceiverOptions.html"
+          "relative_path": "api/Deveel.Webhooks.WebhookReceiverMiddleware-1.html"
         }
       },
       "version": ""
     },
     {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.WebhookRequestVerifier-1.yml",
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.WebhookReceiverOptions-1.md",
+      "output": {
+        ".html": {
+          "relative_path": "api/Deveel.Webhooks.WebhookReceiverOptions-1.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.WebhookReceiverVerificationOptions.md",
+      "output": {
+        ".html": {
+          "relative_path": "api/Deveel.Webhooks.WebhookReceiverVerificationOptions.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.WebhookRequestVerifier-1.md",
       "output": {
         ".html": {
           "relative_path": "api/Deveel.Webhooks.WebhookRequestVerifier-1.html"
@@ -1109,8 +2138,8 @@
       "version": ""
     },
     {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.WebhookRetryOptions.yml",
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.WebhookRetryOptions.md",
       "output": {
         ".html": {
           "relative_path": "api/Deveel.Webhooks.WebhookRetryOptions.html"
@@ -1119,8 +2148,18 @@
       "version": ""
     },
     {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.WebhookSender-1.yml",
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.WebhookRootType.md",
+      "output": {
+        ".html": {
+          "relative_path": "api/Deveel.Webhooks.WebhookRootType.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.WebhookSender-1.md",
       "output": {
         ".html": {
           "relative_path": "api/Deveel.Webhooks.WebhookSender-1.html"
@@ -1129,8 +2168,8 @@
       "version": ""
     },
     {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.WebhookSenderBuilder-1.yml",
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.WebhookSenderBuilder-1.md",
       "output": {
         ".html": {
           "relative_path": "api/Deveel.Webhooks.WebhookSenderBuilder-1.html"
@@ -1139,8 +2178,8 @@
       "version": ""
     },
     {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.WebhookSenderBuilderExtensions.yml",
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.WebhookSenderBuilderExtensions.md",
       "output": {
         ".html": {
           "relative_path": "api/Deveel.Webhooks.WebhookSenderBuilderExtensions.html"
@@ -1149,8 +2188,8 @@
       "version": ""
     },
     {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.WebhookSenderClient.yml",
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.WebhookSenderClient.md",
       "output": {
         ".html": {
           "relative_path": "api/Deveel.Webhooks.WebhookSenderClient.html"
@@ -1159,8 +2198,18 @@
       "version": ""
     },
     {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.WebhookSenderException.yml",
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.WebhookSenderDefaults.md",
+      "output": {
+        ".html": {
+          "relative_path": "api/Deveel.Webhooks.WebhookSenderDefaults.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.WebhookSenderException.md",
       "output": {
         ".html": {
           "relative_path": "api/Deveel.Webhooks.WebhookSenderException.html"
@@ -1169,18 +2218,18 @@
       "version": ""
     },
     {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.WebhookSenderOptions.yml",
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.WebhookSenderOptions-1.md",
       "output": {
         ".html": {
-          "relative_path": "api/Deveel.Webhooks.WebhookSenderOptions.html"
+          "relative_path": "api/Deveel.Webhooks.WebhookSenderOptions-1.html"
         }
       },
       "version": ""
     },
     {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.WebhookSenderSignatureOptions.yml",
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.WebhookSenderSignatureOptions.md",
       "output": {
         ".html": {
           "relative_path": "api/Deveel.Webhooks.WebhookSenderSignatureOptions.html"
@@ -1189,8 +2238,8 @@
       "version": ""
     },
     {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.WebhookSerializationException.yml",
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.WebhookSerializationException.md",
       "output": {
         ".html": {
           "relative_path": "api/Deveel.Webhooks.WebhookSerializationException.html"
@@ -1199,8 +2248,8 @@
       "version": ""
     },
     {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.WebhookServiceException.yml",
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.WebhookServiceException.md",
       "output": {
         ".html": {
           "relative_path": "api/Deveel.Webhooks.WebhookServiceException.html"
@@ -1209,8 +2258,8 @@
       "version": ""
     },
     {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.WebhookSignature.yml",
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.WebhookSignature.md",
       "output": {
         ".html": {
           "relative_path": "api/Deveel.Webhooks.WebhookSignature.html"
@@ -1219,8 +2268,8 @@
       "version": ""
     },
     {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.WebhookSignatureLocation.yml",
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.WebhookSignatureLocation.md",
       "output": {
         ".html": {
           "relative_path": "api/Deveel.Webhooks.WebhookSignatureLocation.html"
@@ -1229,8 +2278,8 @@
       "version": ""
     },
     {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.WebhookSignatureOptions.yml",
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.WebhookSignatureOptions.md",
       "output": {
         ".html": {
           "relative_path": "api/Deveel.Webhooks.WebhookSignatureOptions.html"
@@ -1239,8 +2288,8 @@
       "version": ""
     },
     {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.WebhookSignerBase.yml",
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.WebhookSignerBase.md",
       "output": {
         ".html": {
           "relative_path": "api/Deveel.Webhooks.WebhookSignerBase.html"
@@ -1249,8 +2298,8 @@
       "version": ""
     },
     {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.WebhookSubscriptionBuilder-1.yml",
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.WebhookSubscriptionBuilder-1.md",
       "output": {
         ".html": {
           "relative_path": "api/Deveel.Webhooks.WebhookSubscriptionBuilder-1.html"
@@ -1259,8 +2308,8 @@
       "version": ""
     },
     {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.WebhookSubscriptionBuilderExtensions.yml",
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.WebhookSubscriptionBuilderExtensions.md",
       "output": {
         ".html": {
           "relative_path": "api/Deveel.Webhooks.WebhookSubscriptionBuilderExtensions.html"
@@ -1269,8 +2318,18 @@
       "version": ""
     },
     {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.WebhookSubscriptionExtensions.yml",
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.WebhookSubscriptionErrorCodes.md",
+      "output": {
+        ".html": {
+          "relative_path": "api/Deveel.Webhooks.WebhookSubscriptionErrorCodes.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.WebhookSubscriptionExtensions.md",
       "output": {
         ".html": {
           "relative_path": "api/Deveel.Webhooks.WebhookSubscriptionExtensions.html"
@@ -1279,8 +2338,8 @@
       "version": ""
     },
     {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.WebhookSubscriptionFilter.yml",
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.WebhookSubscriptionFilter.md",
       "output": {
         ".html": {
           "relative_path": "api/Deveel.Webhooks.WebhookSubscriptionFilter.html"
@@ -1289,8 +2348,8 @@
       "version": ""
     },
     {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.WebhookSubscriptionManager-1.yml",
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.WebhookSubscriptionManager-1.md",
       "output": {
         ".html": {
           "relative_path": "api/Deveel.Webhooks.WebhookSubscriptionManager-1.html"
@@ -1299,8 +2358,8 @@
       "version": ""
     },
     {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.WebhookSubscriptionResolver-1.yml",
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.WebhookSubscriptionResolver-1.md",
       "output": {
         ".html": {
           "relative_path": "api/Deveel.Webhooks.WebhookSubscriptionResolver-1.html"
@@ -1309,8 +2368,8 @@
       "version": ""
     },
     {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.WebhookSubscriptionStatus.yml",
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.WebhookSubscriptionStatus.md",
       "output": {
         ".html": {
           "relative_path": "api/Deveel.Webhooks.WebhookSubscriptionStatus.html"
@@ -1319,8 +2378,8 @@
       "version": ""
     },
     {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.WebhookSubscriptionValidationException.yml",
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.WebhookSubscriptionValidationException.md",
       "output": {
         ".html": {
           "relative_path": "api/Deveel.Webhooks.WebhookSubscriptionValidationException.html"
@@ -1329,8 +2388,8 @@
       "version": ""
     },
     {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.WebhookSubscriptionValidator-1.yml",
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.WebhookSubscriptionValidator-1.md",
       "output": {
         ".html": {
           "relative_path": "api/Deveel.Webhooks.WebhookSubscriptionValidator-1.html"
@@ -1339,8 +2398,8 @@
       "version": ""
     },
     {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.WebhookTypeCache.yml",
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.WebhookTypeCache.md",
       "output": {
         ".html": {
           "relative_path": "api/Deveel.Webhooks.WebhookTypeCache.html"
@@ -1349,18 +2408,8 @@
       "version": ""
     },
     {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.WebhookValidationResult.yml",
-      "output": {
-        ".html": {
-          "relative_path": "api/Deveel.Webhooks.WebhookValidationResult.html"
-        }
-      },
-      "version": ""
-    },
-    {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.WebhookVerificationException.yml",
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.WebhookVerificationException.md",
       "output": {
         ".html": {
           "relative_path": "api/Deveel.Webhooks.WebhookVerificationException.html"
@@ -1369,18 +2418,18 @@
       "version": ""
     },
     {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.WebhookVerificationOptions.yml",
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.WebhookVerificationOptions-1.md",
       "output": {
         ".html": {
-          "relative_path": "api/Deveel.Webhooks.WebhookVerificationOptions.html"
+          "relative_path": "api/Deveel.Webhooks.WebhookVerificationOptions-1.html"
         }
       },
       "version": ""
     },
     {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.WebhookVerificationResult.yml",
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.WebhookVerificationResult.md",
       "output": {
         ".html": {
           "relative_path": "api/Deveel.Webhooks.WebhookVerificationResult.html"
@@ -1389,8 +2438,28 @@
       "version": ""
     },
     {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.WebhookXmlSerializerExtensions.yml",
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.WebhookVerifierBuilder-1.md",
+      "output": {
+        ".html": {
+          "relative_path": "api/Deveel.Webhooks.WebhookVerifierBuilder-1.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.WebhookXmlParserExtensions.md",
+      "output": {
+        ".html": {
+          "relative_path": "api/Deveel.Webhooks.WebhookXmlParserExtensions.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.WebhookXmlSerializerExtensions.md",
       "output": {
         ".html": {
           "relative_path": "api/Deveel.Webhooks.WebhookXmlSerializerExtensions.html"
@@ -1399,41 +2468,24 @@
       "version": ""
     },
     {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.WebhooksBuilder-1.yml",
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.XmlSerializerOptions.md",
       "output": {
         ".html": {
-          "relative_path": "api/Deveel.Webhooks.WebhooksBuilder-1.html"
+          "relative_path": "api/Deveel.Webhooks.XmlSerializerOptions.html"
         }
       },
       "version": ""
     },
     {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.Webhooks.yml",
+      "log_codes": [
+        "InvalidFileLink"
+      ],
+      "type": "Conceptual",
+      "source_relative_path": "api/Deveel.Webhooks.md",
       "output": {
         ".html": {
           "relative_path": "api/Deveel.Webhooks.html"
-        }
-      },
-      "version": ""
-    },
-    {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Deveel.yml",
-      "output": {
-        ".html": {
-          "relative_path": "api/Deveel.html"
-        }
-      },
-      "version": ""
-    },
-    {
-      "type": "Toc",
-      "source_relative_path": "api/toc.yml",
-      "output": {
-        ".html": {
-          "relative_path": "api/toc.html"
         }
       },
       "version": ""
@@ -1449,7 +2501,6 @@
       "version": ""
     }
   ],
-  "version_info": {},
   "groups": [
     {
       "xrefmap": "xrefmap.yml"

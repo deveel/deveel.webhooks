@@ -32,18 +32,19 @@ namespace Deveel.Webhooks {
 		where TSubscription : DbWebhookSubscription {
 
 		/// <summary>
-		/// Constructs the store by using the given <see cref="WebhookDbContext"/>.
+		/// Constructs the repository by using the given <see cref="WebhookDbContext"/>.
 		/// </summary>
 		/// <param name="context">
 		/// The database context to be used to store the subscriptions.
 		/// </param>
-		/// <exception cref="ArgumentNullException">
-		/// Thrown when the given <paramref name="context"/> is <c>null</c>.
-		/// </exception>
+		/// <param name="logger">
+		/// A logger to be used to log messages.
+		/// </param>
 		public EntityWebhookSubscriptionRepository(WebhookDbContext context, ILogger<EntityWebhookSubscriptionRepository<TSubscription>>? logger = null)
 			: base(context, logger) {
 		}
 
+		/// <inheritdoc/>
 		public override IQueryable<TSubscription> AsQueryable() {
 			return Context.Set<TSubscription>()
 				.Include(x => x.Filters)
@@ -219,7 +220,7 @@ namespace Deveel.Webhooks {
 			ThrowIfDisposed();
 			cancellationToken.ThrowIfCancellationRequested();
 
-			var properties = subscription.Properties.ToDictionary(x => x.Key, x => DbWebhookValueConvert.Convert(x.Value, x.ValueType));
+			var properties = subscription.Properties.ToDictionary(x => x.Key, x => DbWebhookValueConvert.Convert(x.Value, x.ValueType)!);
 
 			return Task.FromResult<IDictionary<string, object>>(properties);
 		}

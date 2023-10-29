@@ -40,6 +40,9 @@ namespace Deveel.Webhooks {
 		/// <param name="context">
 		/// The context to the MongoDB database.
 		/// </param>
+		/// <param name="logger">
+		/// An object to use for logging operations.
+		/// </param>
 		public MongoDbWebhookDeliveryResultRepository(IMongoDbWebhookContext context, ILogger<MongoDbWebhookDeliveryResultRepository<TResult>>? logger = null) 
 			: base(context, logger) {
 		}

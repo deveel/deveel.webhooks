@@ -24,7 +24,7 @@ namespace Deveel.Webhooks {
 			this.receiverOptions = receiverOptions.Value;
 		}
 
-		public void PostConfigure(string name, WebhookReceiverOptions<SendGridWebhook> options) {
+		public void PostConfigure(string? name, WebhookReceiverOptions<SendGridWebhook> options) {
 			options.ContentFormats = WebhookContentFormats.Json;
 			options.JsonParser = new SystemTextWebhookJsonParser<SendGridWebhook>(SendGridWebhookParser.Options);
 			options.RootType = WebhookRootType.List;

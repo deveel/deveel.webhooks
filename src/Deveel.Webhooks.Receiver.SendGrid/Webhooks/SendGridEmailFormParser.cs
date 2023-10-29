@@ -41,7 +41,8 @@ namespace Deveel.Webhooks {
 				// TODO: parse multiple addresses
 				email.Bcc = new List<EmailAddress>();
 				foreach (var item in bcc)
-					email.Bcc.Add(new EmailAddress(item));
+					if (EmailAddress.TryParse(item, out var emailAddress))
+						email.Bcc.Add(emailAddress);
 			}
 			if (form.TryGetValue("from", out var from)) {
 				// TODO: parse the name ...
@@ -55,7 +56,7 @@ namespace Deveel.Webhooks {
 				email.Text = text;
 			}
 			if (form.TryGetValue("html", out var html)) {
-				email.Html = Encoding.UTF8.GetString(Convert.FromBase64String(html));
+				email.Html = Encoding.UTF8.GetString(Convert.FromBase64String(html.ToString()));
 			}
 			if (form.TryGetValue("attachments", out var attachments)) {
 				email.Attachments = new List<EmailAttachment>();

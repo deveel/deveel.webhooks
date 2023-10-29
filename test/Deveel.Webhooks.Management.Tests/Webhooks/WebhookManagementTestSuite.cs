@@ -18,11 +18,11 @@ namespace Deveel.Webhooks {
 
 		protected ITestOutputHelper TestOutput { get; }
 
-		protected IServiceProvider Services { get; private set; }
+		protected IServiceProvider? Services { get; private set; }
 
-		protected IServiceScope Scope { get; private set; }
+		protected IServiceScope? Scope { get; private set; }
 
-		protected IReadOnlyList<TSubscription> Subscriptions { get; private set; }
+		protected IReadOnlyList<TSubscription>? Subscriptions { get; private set; }
 
 		protected abstract Faker<TSubscription> Faker { get; }
 
@@ -43,10 +43,10 @@ namespace Deveel.Webhooks {
 		}
 
 		protected WebhookSubscriptionManager<TSubscription> Manager 
-			=> Scope.ServiceProvider.GetRequiredService<WebhookSubscriptionManager<TSubscription>>();
+			=> Scope!.ServiceProvider.GetRequiredService<WebhookSubscriptionManager<TSubscription>>();
 
 		protected IWebhookSubscriptionRepository<TSubscription> Repository 
-			=> Scope.ServiceProvider.GetRequiredService<IWebhookSubscriptionRepository<TSubscription>>();
+			=> Scope!.ServiceProvider.GetRequiredService<IWebhookSubscriptionRepository<TSubscription>>();
 
 		protected virtual object GenerateSubscriptionKey() => Guid.NewGuid();
 
@@ -73,11 +73,11 @@ namespace Deveel.Webhooks {
 		}
 
 		protected virtual async Task SeedAsync(IRepository<TSubscription> repository) {
-			await repository.AddRangeAsync(Subscriptions);
+			await repository.AddRangeAsync(Subscriptions!);
 		}
 
 		protected virtual async Task ClearAsync(IRepository<TSubscription> repository) {
-			await repository.RemoveRangeAsync(Subscriptions);
+			await repository.RemoveRangeAsync(Subscriptions!);
 		}
 
 		async Task IAsyncLifetime.InitializeAsync() {
@@ -100,8 +100,10 @@ namespace Deveel.Webhooks {
 		async Task IAsyncLifetime.DisposeAsync() {
 			await DisposeAsync();
 
-			Scope.Dispose();
+			Scope?.Dispose();
+			Scope = null;
 			(Services as IDisposable)?.Dispose();
+			Services = null;
 		}
 
 		[Fact]
@@ -115,7 +117,7 @@ namespace Deveel.Webhooks {
 			Assert.NotNull(subscription.SubscriptionId);
 
 			var key = Repository.GetEntityKey(subscription);
-			var found = await Repository.FindByKeyAsync(key);
+			var found = await Repository.FindByKeyAsync(key!);
 
 			Assert.NotNull(found);
 			Assert.Equal(subscription.SubscriptionId, found.SubscriptionId);
@@ -152,7 +154,7 @@ namespace Deveel.Webhooks {
 
 		[Fact]
 		public async Task SetNewDestinationUrl() {
-			var subscription = Subscriptions.Random();
+			var subscription = Subscriptions!.Random();
 
 			var result = await Manager.SetDestinationUrlAsync(subscription, "http://new.example.com");
 
@@ -172,7 +174,7 @@ namespace Deveel.Webhooks {
 		[InlineData("ftp://dest.example.com")]
 		[InlineData("test data")]
 		public async Task SetInvalidDestinationUrl(string url) {
-			var subscription = Subscriptions.Random();
+			var subscription = Subscriptions!.Random();
 
 			var result = await Manager.SetDestinationUrlAsync(subscription, url);
 
@@ -190,7 +192,7 @@ namespace Deveel.Webhooks {
 
 		[Fact]
 		public async Task GetCurrentStatus() {
-			var subscription = Subscriptions.Random();
+			var subscription = Subscriptions!.Random();
 
 			var status = await Manager.GetStatusAsync(subscription);
 
@@ -199,7 +201,7 @@ namespace Deveel.Webhooks {
 
 		[Fact]
 		public async Task SetEventTypes_AddNew() {
-			var subscription = Subscriptions.Random();
+			var subscription = Subscriptions!.Random();
 
 			var eventTypes = new List<string>(subscription.EventTypes);
 			eventTypes.Add("user.created");
@@ -218,7 +220,7 @@ namespace Deveel.Webhooks {
 
 		[Fact]
 		public async Task SetEventTypes_Remove() {
-			var subscription = Subscriptions.Random(x => x.EventTypes.Count() > 1);
+			var subscription = Subscriptions!.Random(x => x.EventTypes.Count() > 1);
 
 			var eventTypeToRemove = subscription.EventTypes.ElementAt(0);
 			var newEvents = subscription.EventTypes.Except(new[] {eventTypeToRemove});
@@ -237,7 +239,7 @@ namespace Deveel.Webhooks {
 
 		[Fact]
 		public async Task SetEventTypes_SameEvents() {
-			var subscription = Subscriptions.Random();
+			var subscription = Subscriptions!.Random();
 
 			var result = await Manager.SetEventTypesAsync(subscription, subscription.EventTypes.ToArray());
 
@@ -247,7 +249,7 @@ namespace Deveel.Webhooks {
 
 		[Fact]
 		public async Task SetNewSecret() {
-			var subscription = Subscriptions.Random();
+			var subscription = Subscriptions!.Random();
 
 			var secret = new Faker().Internet.Password(20);
 
@@ -265,7 +267,7 @@ namespace Deveel.Webhooks {
 
 		[Fact]
 		public async Task SetSameSecret() {
-			var subscription = Subscriptions.Random(x => x.Secret != null);
+			var subscription = Subscriptions!.Random(x => x.Secret != null);
 
 			var result = await Manager.SetSecretAsync(subscription, subscription.Secret);
 
@@ -275,7 +277,7 @@ namespace Deveel.Webhooks {
 
 		[Fact]
 		public async Task RemoveSecret() {
-			var subscription = Subscriptions.Random(x => x.Secret != null);
+			var subscription = Subscriptions!.Random(x => x.Secret != null);
 
 			var result = await Manager.SetSecretAsync(subscription, null);
 
@@ -291,7 +293,7 @@ namespace Deveel.Webhooks {
 
 		[Fact]
 		public async Task FindExistingSubscription() {
-			var subscription = Subscriptions.Random();
+			var subscription = Subscriptions!.Random();
 
 			var key = Repository.GetEntityKey(subscription);
 			Assert.NotNull(key);
@@ -319,7 +321,7 @@ namespace Deveel.Webhooks {
 
 		[Fact]
 		public async Task RemoveExistingSubscription() {
-			var subscription = Subscriptions.Random();
+			var subscription = Subscriptions!.Random();
 			var key = Repository.GetEntityKey(subscription);
 			Assert.NotNull(key);
 
@@ -338,7 +340,7 @@ namespace Deveel.Webhooks {
 
 		[Fact]
 		public async Task GetSubscriptionsByEventType() {
-			var eventType = Subscriptions.Random(x => x.EventTypes.Any()).EventTypes.ElementAt(0);
+			var eventType = Subscriptions!.Random(x => x.EventTypes.Any()).EventTypes.ElementAt(0);
 
 			var subscriptions = await Manager.GetByEventTypeAsync(eventType, true);
 
@@ -349,7 +351,7 @@ namespace Deveel.Webhooks {
 
 		[Fact]
 		public async Task ActivateSubscription() {
-			var subscription = Subscriptions.Random(x => x.Status == WebhookSubscriptionStatus.None);
+			var subscription = Subscriptions!.Random(x => x.Status == WebhookSubscriptionStatus.None);
 
 			var key = Repository.GetEntityKey(subscription);
 			Assert.NotNull(key);
@@ -366,7 +368,7 @@ namespace Deveel.Webhooks {
 
 		[Fact]
 		public async Task ActivateActiveSubscription() {
-			var subscription = Subscriptions.Random(x => x.Status == WebhookSubscriptionStatus.Active);
+			var subscription = Subscriptions!.Random(x => x.Status == WebhookSubscriptionStatus.Active);
 
 			var result = await Manager.SetStatusAsync(subscription, WebhookSubscriptionStatus.Active);
 
@@ -376,7 +378,7 @@ namespace Deveel.Webhooks {
 
 		[Fact]
 		public async Task SuspendSubscription() {
-			var subscription = Subscriptions.Random(x => x.Status == WebhookSubscriptionStatus.Active);
+			var subscription = Subscriptions!.Random(x => x.Status == WebhookSubscriptionStatus.Active);
 
 			var key = Repository.GetEntityKey(subscription);
 			Assert.NotNull(key);
@@ -393,7 +395,7 @@ namespace Deveel.Webhooks {
 
 		[Fact]
 		public async Task AddNewHeaders() {
-			var subscription = Subscriptions.Random();
+			var subscription = Subscriptions!.Random();
 
 			var headers = new Dictionary<string, string> {
 				{"X-Test-Header", "test value"}
@@ -415,7 +417,7 @@ namespace Deveel.Webhooks {
 
 		[Fact]
 		public async Task AddExistingHeaders() {
-			var subscription = Subscriptions.Random(x => x.Headers?.Any() ?? false);
+			var subscription = Subscriptions!.Random(x => x.Headers?.Any() ?? false);
 
 			var headers = subscription.Headers!.ToDictionary(x => x.Key, x => x.Value);
 
@@ -429,7 +431,7 @@ namespace Deveel.Webhooks {
 
 		[Fact]
 		public async Task AddNewProperties() {
-			var subscription = Subscriptions.Random();
+			var subscription = Subscriptions!.Random();
 
 			var properties = new Dictionary<string, object> {
 				{"testProperty", "test value"},
@@ -453,7 +455,7 @@ namespace Deveel.Webhooks {
 
 		[Fact]
 		public async Task GetSimplePage() {
-			var totalPages = (int)Math.Ceiling(Subscriptions.Count / (double)10);
+			var totalPages = (int)Math.Ceiling(Subscriptions!.Count / (double)10);
 
 			Assert.True(Manager.SupportsPaging);
 
@@ -469,7 +471,7 @@ namespace Deveel.Webhooks {
 
 		[Fact]
 		public async Task GetPageWithFilter() {
-			var items = Subscriptions.Where(x => x.Status == WebhookSubscriptionStatus.Active).ToList();
+			var items = Subscriptions!.Where(x => x.Status == WebhookSubscriptionStatus.Active).ToList();
 			var totalPages = (int)Math.Ceiling(items.Count / (double)10);
 
 			Assert.True(Manager.SupportsPaging);
@@ -488,7 +490,7 @@ namespace Deveel.Webhooks {
 
 		[Fact]
 		public async Task CountAllSubscriptions() {
-			var subsCount = Subscriptions.Count;
+			var subsCount = Subscriptions!.Count;
 			var count = await Manager.CountAsync();
 
 			Assert.Equal(subsCount, count);

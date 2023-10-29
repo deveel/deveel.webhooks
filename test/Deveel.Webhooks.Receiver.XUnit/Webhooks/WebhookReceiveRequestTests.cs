@@ -139,7 +139,7 @@ namespace Deveel.Webhooks {
 
 			var secret = config["Webhook:Receiver:Signature:Secret"];
 
-			return WebhookSignature.Create("sha256", json, secret);
+			return WebhookSignature.Create("sha256", json, secret!);
 		}
 
 		[Fact]

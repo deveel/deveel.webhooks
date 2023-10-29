@@ -330,7 +330,8 @@ namespace Deveel.Webhooks {
 			}
 
 			if (ReceiverOptions.Signature!.Location == WebhookSignatureLocation.Header) {
-				if (!request.Headers.TryGetValue(ReceiverOptions.Signature.ParameterName, out var header)) {
+				if (String.IsNullOrWhiteSpace(ReceiverOptions.Signature.ParameterName) ||
+					!request.Headers.TryGetValue(ReceiverOptions.Signature.ParameterName, out var header)) {
 					signature = null;
 					return false;
 				}
@@ -338,7 +339,8 @@ namespace Deveel.Webhooks {
 				signature = header.ToString();
 				return true;
 			} else if (ReceiverOptions.Signature!.Location == WebhookSignatureLocation.QueryString) {
-				if (!request.Query.TryGetValue(ReceiverOptions.Signature.ParameterName, out var value)) {
+				if (String.IsNullOrWhiteSpace(ReceiverOptions.Signature.ParameterName) ||
+					!request.Query.TryGetValue(ReceiverOptions.Signature.ParameterName, out var value)) {
 					signature = null;
 					return false;
 				}

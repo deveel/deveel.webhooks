@@ -42,7 +42,7 @@ namespace Deveel.Webhooks.SendGrid {
 		/// Gets or sets the subject of the email.
 		/// </summary>
 		[JsonPropertyName("subject")]
-		public string Subject { get; set; }
+		public string? Subject { get; set; }
 
 		/// <summary>
 		/// Gets or sets the list of email addresses that

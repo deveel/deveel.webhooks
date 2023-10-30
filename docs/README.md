@@ -1,3 +1,21 @@
+---
+coverY: 0
+layout:
+  cover:
+    visible: true
+    size: full
+  title:
+    visible: true
+  description:
+    visible: true
+  tableOfContents:
+    visible: false
+  outline:
+    visible: false
+  pagination:
+    visible: true
+---
+
 # Deveel Webhooks
 
 Here you can find documentation of the `Deveel Webhooks` framework, to help you get started with the libraries and functions that compose it and to understand how it works.

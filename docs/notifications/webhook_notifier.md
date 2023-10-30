@@ -1,6 +1,6 @@
 # The WebhookNotifier Service
 
-As described in the [previous chapter](README.md), when registering the Webhook Notifier service, a number of services are registered in the container, that are used to manage the subscriptions and to deliver the webhooks to the receiving end-point.
+As described in the [previous chapter](./), when registering the Webhook Notifier service, a number of services are registered in the container, that are used to manage the subscriptions and to deliver the webhooks to the receiving end-point.
 
 An default implementation of the `IWebhookNotifier<TWebhook>` service is also registered by the framework, which is the `WebhookNotifier<TWebhook>` class.
 
@@ -14,12 +14,7 @@ This implementation executes the following steps:
 
 ### Service Dependencies
 
-| Service | Description |
-|---------|-------------|
-| `IWebhookSubscriptionResolver<TWebhook>` | Resolves the subscriptions to an event. It is generally provided externally, since it's generally tied to the Webhook Subscription service. Anyway, a default implementation of this service is registered, that is a wrapper around any registered `IWebhookSubscriptionRepository<TSubscription>` in the container. |
-| `IWebhookFactory<TWebhook>` | Transforms the event into a webhook object of the type supported by the service, and that will be then notified. |
-| `IWebhookFilterEvaluator<TWebhook>` | The service used to evaluate the filters of the subscriptions. When none is provided at the registration, and webhook subscriptions define any filter, the notification to those subscribers will fail. See [this chapter](webhook_subscription_filters.md) for more information |
-| `IWebhookDeliveryResultLogger<TWebhook>` | When available in the context of the application, logs the results of the delivery of the webhooks |
+<table data-full-width="true"><thead><tr><th width="421.5">Service</th><th>Description</th></tr></thead><tbody><tr><td><code>IWebhookSubscriptionResolver&#x3C;TWebhook></code></td><td>Resolves the subscriptions to an event. It is generally provided externally, since it's generally tied to the Webhook Subscription service. Anyway, a default implementation of this service is registered, that is a wrapper around any registered <code>IWebhookSubscriptionRepository&#x3C;TSubscription></code> in the container.</td></tr><tr><td><code>IWebhookFactory&#x3C;TWebhook></code></td><td>Transforms the event into a webhook object of the type supported by the service, and that will be then notified.</td></tr><tr><td><code>IWebhookFilterEvaluator&#x3C;TWebhook></code></td><td>The service used to evaluate the filters of the subscriptions. When none is provided at the registration, and webhook subscriptions define any filter, the notification to those subscribers will fail. See <a href="webhook_subscription_filters.md">this chapter</a> for more information</td></tr><tr><td><code>IWebhookDeliveryResultLogger&#x3C;TWebhook></code></td><td>When available in the context of the application, logs the results of the delivery of the webhooks</td></tr></tbody></table>
 
 ## Custom Webhook Notifiers
 

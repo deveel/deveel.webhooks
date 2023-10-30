@@ -10,11 +10,15 @@ In fact, the Webhook Sender component of the framework provides the following ca
 
 This component doesn't provide any capabilities for managing subscriptions to event notifications, or to automate the notification of the events: see the Webhook Notification chapter for learning how to activate it.
 
+## Install the Required Libraries
+
+The overall set of libraries are available through [NuGet](https://nuget.org), and can be installed and restored easily once configured in your projects.
+
 ### Requirements
 
-To use the sender functions in your applications, without any other additional feature (eg. _subscription management_, _notifications_, etc.) you must install the foundation library `Deveel.Webhooks.Sender`.
+The library currently suppots both the `.NET 6.0` and `.NET 7.0` runtimes.
 
-The library currently requires the `.NET 6.0` runtime to be installed in the system.
+### Installing the Package
 
 You can do this by using the .NET command line on the root folder of your project
 
@@ -25,14 +29,24 @@ dotnet add package Deveel.Webhooks.Sender
 Alternatively, you can add a reference in your project file
 
 ```xml
-<PackageReference Include="Deveel.Webhooks.Sender" Version="2.1.1" />>
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>ne7.0</TargetFramework>
+    ...
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Deveel.Webhooks.Sender" Version="2.1.1" />
+    ...
+  </ItemGroup>
+</Project>
 ```
 
 ### Registering the Webook Sender
 
 The most common way to use the Webhook Sender is to register it in the collection of services of your application, using the _dependency injection_ pattern to obtain it.
 
-You can use one of the overloads of the extension method `.AddWebhookSender<TWebhook>()` to the `IServiceCollection` contract.
+You can use one of the overloads of the extension method `.AddWebhookSender<TWebhook>()` to the `IServiceCollection` contract, which will return a builder object that can be used to configure the service.
 
 For example:
 
@@ -43,9 +57,24 @@ services.AddWebhookSender<MyWebhook>()
     });
 ```
 
+or even simplier:
+
+```csharp
+// To use the default configurations
+services.AddWebhookSender<MyWebhook>();
+```
+
 This method will register the default implementation of the `IWebhookSender<TWebhook>`, returning a builder object for further configurations of the service.
 
-See the [configuration chapters](configuring-the-sender.md) for further information.
+See the [configuration chapters](configuring-the-sender.md) for further information about the available options to configure the sender.
+
+### The Webhook Scope
+
+The Webhook Sender service is scoped to the type of the webhook: this means that you can register multiple instances of the service, each one for a specific type of webhook.
+
+You will find that this is useful when you need to send different types of webhooks, with different configurations, using the same infrastructure or application.
+
+The same scoping mechanism is inherited by the `IWebhookNotifier<TWebhook>` service: see the documentation of the [Webhook Notification](../notifications/README.md) chapter for further information.
 
 #### Example Registration
 
@@ -81,7 +110,6 @@ namespace Example {
         }
     }
 }
-
 ```
 
 ## Using the Webhook Sender

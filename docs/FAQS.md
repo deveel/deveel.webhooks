@@ -10,27 +10,29 @@ A: We didn't have the ambition to develop this project, but rather to use some a
 
 ## Q: Which .NET versions are supported by Deveel Webhooks?
 
-A: Since the version 2.0.1, the framework is built on top of .NET 6.0, and therefore it can be used in any .NET implementation that supports this version of the standard.
+A: Since the version 2.1.1, the framework supports both .NET 6.0 and .NET 7.0, and therefore it can be used in any .NET implementation that supports this version of the standard.
+
+Previous versions are built on the .NET 6.0 framework only.
 
 ## Q: Do you have any commercial plans for this framework?
 
 A: No. Not at the moment.
 
-The origin of this project was to support a commercial service, that is currently under development, and we wanted to provide the community with the outcomes of our experiences and finding in this specific area.
+The origin of this project was to support a commercial service, and we wanted to provide the community with the outcomes of our experiences and finding in this specific area.
 
 ## Q: Is your aim to replace Microsoft's Webhook Framework?
 
-A: As pointed out in the answer provided above (on the motivations of this project), currently Microsoft provides no stable alternatives to handle webhook subscription management, but just an experimental framework to implement receivers of webhooks from major service providers.
-
-## Q: Do you provide any other data layers than MongoDB?
-
-A: Not at the moment, but any contribution is welcome... :)
-
-The data model of subscriptions and webhooks is not complex and should not be a challenge to contribute with alternatives (please refer to the [contributing guidelines](../CONTRIBUTING.md)).
+A: As pointed out in the answer provided above (and on the motivations of this project), currently Microsoft provides no stable alternatives to handle webhook subscription management and notifications, but just an experimental framework to implement receivers of webhooks from major service providers.
 
 ## Q: Does Deveel Webhooks support webhook subscriptions?
 
 A: Yes. The server part of the framework provides a mechanism to manage webhook subscriptions, that can be used to register a webhook endpoint to receive webhooks from your applications (as provider).
+
+## Q: Which persistency layers do you provide to store Webhook Subscriptions?
+
+A: The current implementation of the framework provides a MongoDB and an Entity Framework Core persistency layer, but we are open to contributions to support other persistency layers.
+
+The data model of subscriptions and webhooks is not complex and should not be a challenge to contribute with alternatives (please refer to the [contributing guidelines](../CONTRIBUTING.md)).
 
 ## Q: Does Deveel Webhooks support webhook formats other than JSON?
 
@@ -38,15 +40,17 @@ A: Yes. Since version _2.0.1_, the framework supports JSON and XML formats for s
 
 ## Q: Does Deveel Webhooks support webhook authentication?
 
-A: Yes. Since version _2.0.1_, the framework supports the validation of the signature of the webhook payload, using the HMAC-SHA256 and HMAC-SHA1 algorithms, and the secret key provided by the subscription.
+A: Yes. Since version _2.0.1_, the framework supports the validation of the signature of the webhook payload, using the _HMAC-SHA256_ and _HMAC-SHA1_ algorithms, and the secret key provided by the subscription.
 
 ## Q: Does Deveel Webhooks support webhook encryption?
 
 A: Not at the moment.
 
+Encrypting and decrypting messages is an intensive operation, and it is not in the scope of the framework to provide this functionality at the moment, especially in consideration of the messaging nature of webhooks.
+
 ## Q: Does Deveel Webhooks support webhook retry policies?
 
-A: Yes. The framework supports the definition of a retry policy for the delivery of webhooks, that is applied when the delivery of a webhook fails. The policy can be defined at the level of the subscription, or at the level of the webhook itself.
+A: Yes. The framework supports retry policies for the delivery of webhooks, that is applied when the delivery of a webhook fails. The policy can be defined at the level of the subscription, or at the level of the webhook itself.
 
 ## Q: Does Deveel Webhooks support webhook delivery scheduling?
 

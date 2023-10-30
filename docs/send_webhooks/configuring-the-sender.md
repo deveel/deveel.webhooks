@@ -107,7 +107,7 @@ namespace Example {
             // section of the configuration instance, and the service
             // will find the IConfiguration instance within the
             // container and use it to configure the service
-            services.AddWebhooks<MyWebhook>("Webhooks:Sender");
+            services.AddWebhookSender<MyWebhook>("Webhooks:Sender");
         }
     }
 }
@@ -140,7 +140,7 @@ namespace Example {
         public void Configure(IServiceCollection services) {
             services.AddHttpClient("my-http-client");
 
-            services.AddWebhooks<MyWebhook>(options => {
+            services.AddWebhookSender<MyWebhook>(options => {
               options.HttpClientName = "my-http-client";
             });
         }

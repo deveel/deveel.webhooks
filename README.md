@@ -6,7 +6,7 @@
 [![Maintainability](https://api.codeclimate.com/v1/badges/d6af433587d35d4eaee3/maintainability)](https://codeclimate.com/github/deveel/deveel.webhooks/maintainability)
 ![License](https://img.shields.io/github/license/deveel/deveel.webhooks)
 
-This project provides a set of .NET tools for the management of subscriptions to events, basic transformations and notifications of such event occurrences (_[webhooks](docs/concept_webhook.md)_): in a global design scope, this model enables event-driven architectures, triggering system processes upon the occurrence of expected occurrences from other systems.
+This project provides a set of .NET tools for the management of subscriptions to events, basic transformations and notifications of such event occurrences (_[webhooks](docs/concepts/webhook.md)_): in a global design scope, this model enables event-driven architectures, triggering system processes upon the occurrence of expected occurrences from other systems.
 
 Although this integration model is widely adopted by major service providers (like _[SendGrid](https://docs.sendgrid.com/for-developers/tracking-events/getting-started-event-webhook)_, _[Twilio](https://www.twilio.com/docs/usage/webhooks)_, _[GitHub](https://docs.github.com/en/developers/webhooks-and-events/webhooks/about-webhooks)_, _[Slack](https://api.slack.com/messaging/webhooks)_, etc.), there is no formal protocol or authority that would enforce a compliance (like for other cases, such as OpenID, OpenAPI, etc.).
 
@@ -23,28 +23,33 @@ I tried to express the concepts in more details in [this page](docs/concept_webh
 
 The libraries currently provided by the framework are the following:
 
-| Library                                 | NuGet                                                                  | GitHub (prerelease) |
-| ----------------------------------------|----------------------------------------------------------------------- |---------------------|
-| **Deveel.Webhooks**                     | [![Nuget](https://img.shields.io/nuget/v/Deveel.Webhooks?label=NuGet&logo=nuget)](https://www.nuget.org/packages/Deveel.Webhooks) | [![GitHub](https://img.shields.io/static/v1?label=GitHub&message=preview&color=yellow&logo=github)](https://github.com/deveel/deveel.webhooks/pkgs/nuget/Deveel.Webhooks) |
-| **Deveel.Webhooks.Sender**              | [![Nuget](https://img.shields.io/nuget/v/Deveel.Webhooks.Sender?label=latest&logo=nuget)](https://www.nuget.org/packages/Deveel.Webhooks.Sender) | [![GitHub](https://img.shields.io/static/v1?label=GitHub&message=preview&color=yellow&logo=github)](https://github.com/deveel/deveel.webhooks/pkgs/nuget/Deveel.Webhooks.Sender) |
-| **Deveel.Webhooks.Service**             | [![Nuget](https://img.shields.io/nuget/v/Deveel.Webhooks.Service?label=NuGet&logo=nuget)](https://www.nuget.org/packages/Deveel.Webhooks.Service) |  [![GitHub](https://img.shields.io/static/v1?label=NuGet&message=preview&color=yellow&logo=github)](https://github.com/deveel/deveel.webhooks/pkgs/nuget/Deveel.Webhooks.Service) |
-| **Deveel.Webhooks.MongoDb**             | [![Nuget](https://img.shields.io/nuget/v/Deveel.Webhooks.MongoDb?label=NuGet&logo=nuget)](https://www.nuget.org/packages/Deveel.Webhooks.MongoDb) | [![GitHub](https://img.shields.io/static/v1?label=GitHub&message=preview&color=yellow&logo=github)](https://github.com/deveel/deveel.webhooks/pkgs/nuget/Deveel.Webhooks.MongoDb) |
-| **Deveel.Webhooks.EntityFramework**             | [![Nuget](https://img.shields.io/nuget/v/Deveel.Webhooks.EntityFramework?label=NuGet&logo=nuget)](https://www.nuget.org/packages/Deveel.Webhooks.EntityFramework) | [![GitHub](https://img.shields.io/static/v1?label=GitHub&message=preview&color=yellow&logo=github)](https://github.com/deveel/deveel.webhooks/pkgs/nuget/Deveel.Webhooks.EntityFramework) |
-| **Deveel.Webhooks.DynamicLinq**         | [![Nuget](https://img.shields.io/nuget/v/Deveel.Webhooks.DynamicLinq?label=NuGet&logo=nuget)](https://www.nuget.org/packages/Deveel.Webhooks.DynamicLinq) | [![GitHub](https://img.shields.io/static/v1?label=GitHub&message=preview&color=yellow&logo=github)](https://github.com/deveel/deveel.webhooks/pkgs/nuget/Deveel.Webhooks.DynamicLinq) |
+| Library |  NuGet  | GitHub (prerelease) |
+| --- |--- | --- |
+| **Deveel.Webhooks** | [![Nuget](https://img.shields.io/nuget/v/Deveel.Webhooks?label=NuGet&logo=nuget)](https://www.nuget.org/packages/Deveel.Webhooks) | [![GitHub](https://img.shields.io/static/v1?label=GitHub&message=preview&color=yellow&logo=github)](https://github.com/deveel/deveel.webhooks/pkgs/nuget/Deveel.Webhooks) |
+| **Deveel.Webhooks.Sender**  | [![Nuget](https://img.shields.io/nuget/v/Deveel.Webhooks.Sender?label=latest&logo=nuget)](https://www.nuget.org/packages/Deveel.Webhooks.Sender) | [![GitHub](https://img.shields.io/static/v1?label=GitHub&message=preview&color=yellow&logo=github)](https://github.com/deveel/deveel.webhooks/pkgs/nuget/Deveel.Webhooks.Sender) |
+| **Deveel.Webhooks.Service**  | [![Nuget](https://img.shields.io/nuget/v/Deveel.Webhooks.Service?label=NuGet&logo=nuget)](https://www.nuget.org/packages/Deveel.Webhooks.Service) |  [![GitHub](https://img.shields.io/static/v1?label=NuGet&message=preview&color=yellow&logo=github)](https://github.com/deveel/deveel.webhooks/pkgs/nuget/Deveel.Webhooks.Service) |
+| **Deveel.Webhooks.MongoDb**  | [![Nuget](https://img.shields.io/nuget/v/Deveel.Webhooks.MongoDb?label=NuGet&logo=nuget)](https://www.nuget.org/packages/Deveel.Webhooks.MongoDb) | [![GitHub](https://img.shields.io/static/v1?label=GitHub&message=preview&color=yellow&logo=github)](https://github.com/deveel/deveel.webhooks/pkgs/nuget/Deveel.Webhooks.MongoDb) |
+| **Deveel.Webhooks.EntityFramework** | [![Nuget](https://img.shields.io/nuget/v/Deveel.Webhooks.EntityFramework?label=NuGet&logo=nuget)](https://www.nuget.org/packages/Deveel.Webhooks.EntityFramework) | [![GitHub](https://img.shields.io/static/v1?label=GitHub&message=preview&color=yellow&logo=github)](https://github.com/deveel/deveel.webhooks/pkgs/nuget/Deveel.Webhooks.EntityFramework) |
+| **Deveel.Webhooks.DynamicLinq**  | [![Nuget](https://img.shields.io/nuget/v/Deveel.Webhooks.DynamicLinq?label=NuGet&logo=nuget)](https://www.nuget.org/packages/Deveel.Webhooks.DynamicLinq) | [![GitHub](https://img.shields.io/static/v1?label=GitHub&message=preview&color=yellow&logo=github)](https://github.com/deveel/deveel.webhooks/pkgs/nuget/Deveel.Webhooks.DynamicLinq) |
 | **Deveel.Webhooks.Receiver.AspNetCore** | [![Nuget](https://img.shields.io/nuget/v/Deveel.Webhooks.Receiver.AspNetCore?label=NuGet&logo=nuget)](https://www.nuget.org/packages/Deveel.Webhooks.Receiver.AspNetCore) | [![GitHub](https://img.shields.io/static/v1?label=GitHub&message=preview&color=yellow&logo=github)](https://github.com/deveel/deveel.webhooks/pkgs/nuget/Deveel.Webhooks.Receiver.AspNetCore) |
 
 The following libraries extend the framework with receivers for specific providers:
 
-| Library                                 | NuGet                                                                  | GitHub (prerelease) |
-| ----------------------------------------|----------------------------------------------------------------------- |---------------------|
-| **Deveel.Webhooks.Receiver.Twilio**     | [![Nuget](https://img.shields.io/nuget/v/Deveel.Webhooks.Receiver.Twilio?label=NuGet&logo=nuget)](https://www.nuget.org/packages/Deveel.Webhooks.Receiver.Twilio) | [![GitHub](https://img.shields.io/static/v1?label=GitHub&message=preview&color=yellow&logo=github)](https://github.com/deveel/deveel.webhooks/pkgs/nuget/Deveel.Webhooks.Receiver.Twilio) |
-| **Deveel.Webhooks.Receiver.SendGrid**   | [![Nuget](https://img.shields.io/nuget/v/Deveel.Webhooks.Receiver.SendGrid?label=NuGet&logo=nuget)](https://www.nuget.org/packages/Deveel.Webhooks.Receiver.SendGrid) | [![GitHub](https://img.shields.io/static/v1?label=GitHub&message=preview&color=yellow&logo=github)](https://github.com/deveel/deveel.webhooks/pkgs/nuget/Deveel.Webhooks.Receiver.SendGrid) |
-| **Deveel.Webhooks.Receiver.Facebook**   | [![Nuget](https://img.shields.io/nuget/v/Deveel.Webhooks.Receiver.Facebook?label=NuGet&logo=nuget)](https://www.nuget.org/packages/Deveel.Webhooks.Receiver.Facebook) | [![GitHub](https://img.shields.io/static/v1?label=GitHub&message=preview&color=yellow&logo=github)](https://github.com/deveel/deveel.webhooks/pkgs/nuget/Deveel.Webhooks.Receiver.Facebook) |
+| Library | NuGet  | GitHub (prerelease) |
+| --- | --- |---|
+| **Deveel.Webhooks.Receiver.Twilio**  | [![Nuget](https://img.shields.io/nuget/v/Deveel.Webhooks.Receiver.Twilio?label=NuGet&logo=nuget)](https://www.nuget.org/packages/Deveel.Webhooks.Receiver.Twilio) | [![GitHub](https://img.shields.io/static/v1?label=GitHub&message=preview&color=yellow&logo=github)](https://github.com/deveel/deveel.webhooks/pkgs/nuget/Deveel.Webhooks.Receiver.Twilio) |
+| **Deveel.Webhooks.Receiver.SendGrid**  | [![Nuget](https://img.shields.io/nuget/v/Deveel.Webhooks.Receiver.SendGrid?label=NuGet&logo=nuget)](https://www.nuget.org/packages/Deveel.Webhooks.Receiver.SendGrid) | [![GitHub](https://img.shields.io/static/v1?label=GitHub&message=preview&color=yellow&logo=github)](https://github.com/deveel/deveel.webhooks/pkgs/nuget/Deveel.Webhooks.Receiver.SendGrid) |
+| **Deveel.Webhooks.Receiver.Facebook**  | [![Nuget](https://img.shields.io/nuget/v/Deveel.Webhooks.Receiver.Facebook?label=NuGet&logo=nuget)](https://www.nuget.org/packages/Deveel.Webhooks.Receiver.Facebook) | [![GitHub](https://img.shields.io/static/v1?label=GitHub&message=preview&color=yellow&logo=github)](https://github.com/deveel/deveel.webhooks/pkgs/nuget/Deveel.Webhooks.Receiver.Facebook) |
 
 You can obtain the stable versions of these libraries from the [NuGet Official](https://nuget.org) channel.
 
 To get the latest pre-release versions of the packages you can restore from the [Deveel Package Manager](https://github.com/orgs/deveel/packages).
 
+## Documentation
+
+We would like to help you getting started with this framework and to eventually extend it: please refer to the **[Documentation](docs/README.md)** section, or to the **[Official Website](https://webhooks.deveel.org/)** that we have produced for you.
+
+The easiest way to get started is to follow the **[Getting Started](docs/getting-started.md)** guide, but you can also refer to the **[Frequently Asked Questions](docs/FAQS.md)** section to get answers to the most common questions.
 
 ## Motivation
 
@@ -52,18 +57,14 @@ While working on a .NET Core 3.1/.NET 5 _PaaS_ (_Platform-as-a-Service_) project
 
 * [Microsoft's ASP.NET Webhooks](https://github.com/aspnet/WebHooks) project was archived and moved back to the [Microsoft ASP Labs](https://github.com/aspnet/AspLabs/tree/main/src/WebHooks) (that has no visibility on its release), aiming one day to provide compatibility with .NET Core (which eventually evolved, becoming LTS)
 * Both Microsoft's projects (the _legacy_ and the _experimental_ ones) are not compatible with the latest .NET stacks (_.NET 5_ / _.NET 6_)
-* Microsoft's _experimental_ projects never implemented any capability of handling subscriptions, and eventually removing also the _sender_ capability, focusing exclusively on _receivers_
+* Microsoft's _experimental_ projects never implemented any capability of handling subscriptions, and eventually removed the _sender_ capability, focusing exclusively on _receivers_
 * Alternative implementations providing similar capabilities are embedded and organic part of larger frameworks (like [ASP.NET Boilerplate](https://github.com/aspnetboilerplate/aspnetboilerplate)), that would have forced me to adopt the the entirety of such frameworks, beyond my design intentions
-
-## Documentation
-
-We would like to help you getting started with this framework and to eventually extend it: please refer to the **[Documentation](docs/README.md)** section, or to the **[Gitbook](https://deveel.gitbook.io/webhooks)** website that we have produced for you.
-
-The easiest way to get started is to follow the **[Getting Started](docs/getting-started/README.md)** guide, but you can also refer to the **[Frequently Asked Questions](docs/FAQS.md)** section to get answers to the most common questions.
 
 ## Simple Usage Example
 
-To help you getting started with the framework, please consider the following examples that show how to create a simple webhook management service, that handle subscriptions and notifications, and a client receiver.
+The **[documentation of the framework](docs/README.md)** will provide you more details on the requirements, configurations, usage and extensibility of the framework.
+
+Anyway, to help you getting started with the framework, please consider the following examples that show how to create a simple webhook management service, that handle subscriptions and notifications, and a client receiver.
 
 ### Subscriptions and Notifications
 

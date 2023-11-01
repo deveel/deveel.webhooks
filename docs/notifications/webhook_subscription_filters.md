@@ -1,41 +1,64 @@
 # Filtering Webhook Subscriptions
 
-To allow a webhook to be triggered only when a specific event occurs, subscriptions can define some filtering conditions that are evaluated before the webhook is delivered.
+By design, webhook subscriptions are bound to a set of _event types_, and they are resolved on the occurrence of one or more of the events matching the type subscribed.
 
-Such capability is useful to avoid sending unnecessary notifications to the webhook endpoint, and to reduce the load on the webhook endpoint, or for even implementing a routing mechanism to deliver the notifications to different endpoints.
+It is possible to define _second-level filtering_ on the subscription, applying filters that will be evaluated, for the notification to be delivered to the subscriber.
 
-## Filter Evaluators
+Such capability is useful for scenarios like
 
-The filtering conditions are evaluated by a set of services implementing the `IFilterEvaluator` interface, that is in fact a filtering engine. 
+* Avoid sending unnecessary notifications to the receiver
+* &#x20;Reduce the load on the receiver
+* Routing the delivery of the notifications to different receivers
 
-When no filtering service is registered, the notification service will not evaluate any filtering condition, and will deliver the notification to the webhook endpoint, even if the subscription defines some filtering conditions.
+## Webhook Filter Evaluators
 
-To enable the filtering capability, the `IFilterEvaluator` service must be registered through the notification service builder:
+Webhook subscriptions might include additional filters, such as IWebhookSubscriptionFilter, specifying the format in which they are expressed: a matching service supporting that format must be present in the application, for the evaluation to be performed.
+
+These filtering conditions are evaluated by services implementing the `IWebhookFilterEvaluator` interface, that is in fact a filtering engine.
+
+By default, when no filtering service is registered in the application to support a specific format of the webhook subscription's filter, the notification service will fail, and will not deliver the notification to the receiver.
+
+#### Registering the Filter Service
+
+To enable the filtering capability, the `IWebFilterEvaluator` service must be registered through the notification service builder:
 
 ```csharp
-
 namespace Example {
     public class Startup {
-		public void ConfigureServices(IServiceCollection services) {
-			services.AddWebhookNotifier(webhooks => {
-				// Register the filter evaluator service that
-				// is using the "linq" syntax
-				webhooks.UseDynamicLinq();
-			});
-		}
-	}
+        public void ConfigureServices(IServiceCollection services) {
+            services.AddWebhookNotifier<MyWebhook>(webhooks => {
+                // Register the filter evaluator service that
+                // is using the "linq" syntax
+                webhooks.UseDynamicLinq();
+            });
+        }
+    }
 }
 ```
 
-The filtering engine is invoked with the instance of the webhook to be delivered, and the filtering expressions are evaluated against its structure and data: keep in mind this when creating the filtering conditions.
+In the above code, we registered the `DynamicLinqFilterEvaluator`, which is a service provided in the [Deveel.Webhooks.DynamicLinq](https://www.nuget.org/packages/Deveel.Webhooks.DynamicLinq) package and that uses the [DynamicLINQ](https://dynamic-linq.net/) syntax to evaluate filters.
+
+### Evaluating Webhooks
+
+The filtering engine is invoked with the instance of the webhook object to be delivered, and the filtering expressions are evaluated against its structure and data: keep in mind this when creating the filtering conditions.
 
 The representation of the webhook is dependent on the implementation of the serialization service (eg. `System.Text.Json`, `Newtonsoft.Json` or `System.Xml`) and the format of the webhook payload (either `json` or `xml`): these serializer might have different behaviors when serializing the webhook object (such as attributes or properties, or the casing of the names), and the filtering conditions must be defined accordingly.
 
 ## LINQ Filters
 
-Currently the framework provides the service `DynamicLinqFilterEvaluator`  that provides filtering capabilities using the LINQ syntax, that is a very powerful and flexible syntax to define filtering conditions.
+As mentioned above, the framework provides the `DynamicLinqFilterEvaluator` service, which provides filtering capabilities using the LINQ syntax, a very powerful and flexible syntax to define filtering conditions.
 
-For example, considering a webhook that is serialiazed as a JSON object as the following one:
+You can install it by calling the following command on the root of your project:
+
+```bash
+dotnet add package Deveel.Webhooks.DynamicLinq --version 2.1.5
+```
+
+To enable it you will have to invoke the `.UseDynamicLinqFilters()`, like in the example above.
+
+#### Example Filter
+
+For example, consider a webhook that is serialized as a JSON object as the following one:
 
 ```json
 {
@@ -49,10 +72,10 @@ For example, considering a webhook that is serialiazed as a JSON object as the f
 
 The filtering expression
 
-```linq
+```csharp
 event_type == "user.created" && user_name.startsWith("anto")
 ```
 
-will evaluate to `true` if the webhook is delivered for the event `user.created` and the user name starts with `anto`.
+will evaluate to `true` if the webhook is for the event `user.created` and the user name starts with `anto`.
 
-**Note** - The engine does not provide any access to an external context than the webhook object itself, so it is not possible to access external data or services to evaluate the filtering conditions.
+**Note** - The engine does not provide any access to an external context other than the webhook object itself: this means that is not possible to access external data or services to evaluate the filtering conditions.

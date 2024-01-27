@@ -39,8 +39,8 @@ namespace Deveel.Webhooks {
 
 		/// <inheritdoc/>
 		public async Task SerializeAsync(Stream utf8Stream, TWebhook webhook, CancellationToken cancellationToken = default) {
-			if (utf8Stream == null)
-				throw new ArgumentNullException(nameof(utf8Stream));
+			ArgumentNullException.ThrowIfNull(utf8Stream, nameof(utf8Stream));
+
 			if (!utf8Stream.CanWrite)
 				throw new ArgumentException("The stream is not writable", nameof(utf8Stream));
 

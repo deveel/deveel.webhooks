@@ -264,6 +264,8 @@ namespace Deveel.Webhooks {
 				if (SenderOptions.Verification.Challenge ?? false)
 					challenge = CreateChallenge();
 
+				logger.TraceVerifyingReceiver(url.ToString());
+
 				var capture = await policy.ExecuteAndCaptureAsync(token => TryVerifyAsync(httpClient, destination, url, verifyToken!, challenge, token), cancellationToken);
 
 				// var response = await TryVerifyAsync(httpClient, destination, url, verifyToken!, challenge, cancellationToken);
@@ -271,8 +273,10 @@ namespace Deveel.Webhooks {
 				if (capture.Outcome == OutcomeType.Successful) {
 					var httpStatusCode = (int)capture.Result.StatusCode;
 
-					if (httpStatusCode < 400)
+					if (httpStatusCode < 400) {
+						logger.TraceReceiverVerified(url.ToString());
 						return DestinationVerificationResult.Success(httpStatusCode);
+					}
 
 					return DestinationVerificationResult.Failed(httpStatusCode);
 				} else if (capture.FinalException is HttpRequestException error) {
@@ -283,10 +287,12 @@ namespace Deveel.Webhooks {
 					throw new WebhookVerificationException("An error occurred while verifying the destination", capture.FinalException);
 				}
 			} catch (HttpRequestException ex) {
+				logger.LogVerificationFailed(ex, destination.Url.ToString());
 				return DestinationVerificationResult.Failed(ex.StatusCode == null ? 0 : (int)ex.StatusCode);
 			} catch (WebhookVerificationException) {
 				throw;
 			} catch (Exception ex) {
+				logger.LogVerificationFailed(ex, destination.Url.ToString());
 				throw new WebhookVerificationException("An error occurred while verifying the destination URL", ex);
 			}
 		}

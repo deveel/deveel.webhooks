@@ -12,6 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Threading;
+
+using Polly;
+using Polly.Extensions.Http;
+
 namespace Deveel.Webhooks {
 	// TODO: Find a better name for this class? The reason
 	//    for not calling it 'WebhookReceiver' is to avoid
@@ -26,6 +31,8 @@ namespace Deveel.Webhooks {
 	/// including configuration options for the delivery and verification.
 	/// </remarks>
     public sealed class WebhookDestination {
+		private string name;
+
 		/// <summary>
 		/// Initializes a new instance of the <see cref="WebhookDestination"/> class
 		/// </summary>
@@ -39,13 +46,14 @@ namespace Deveel.Webhooks {
 		/// Thrown when the <paramref name="url"/> is not an absolute URI.
 		/// </exception>
 		public WebhookDestination(Uri url) {
-			if (url == null)
-				throw new ArgumentNullException(nameof(url));
+			ArgumentNullException.ThrowIfNull(url, nameof(url));
 
 			if (!url.IsAbsoluteUri)
 				throw new ArgumentException($"The '{nameof(url)}' must be an absolute URI.", nameof(url));
 
 			Url = url;
+
+			name = url.ToString();
 		}
 
 		/// <summary>
@@ -76,6 +84,18 @@ namespace Deveel.Webhooks {
 		/// Gets the absolute URL of the destination.
 		/// </summary>
 		public Uri Url { get; }
+
+		/// <summary>
+		/// Gets or sets the name of the destination,
+		/// to uniquely identify it in a sender context.
+		/// </summary>
+		public string Name {
+			get => name;
+			set {
+				ArgumentNullException.ThrowIfNull(value, nameof(Name));
+				name = value;
+			}
+		}
 
 		/// <summary>
 		/// Gets or sets the options for the verification of the destination
@@ -215,6 +235,22 @@ namespace Deveel.Webhooks {
 		}
 
 		/// <summary>
+		/// Sets the name of the webhook destination.
+		/// </summary>
+		/// <param name="name">
+		/// The name of the destination.
+		/// </param>
+		/// <returns>
+		/// Returns this instance of the <see cref="WebhookDestination"/> with
+		/// the name set.
+		/// </returns>
+		public WebhookDestination WithName(string name) {
+			ArgumentNullException.ThrowIfNull(name, nameof(name));
+			Name = name;
+			return this;
+		}
+
+		/// <summary>
 		/// Merges the current settings with the default settings
 		/// from the configuration of a sender service.
 		/// </summary>
@@ -231,6 +267,7 @@ namespace Deveel.Webhooks {
 		/// </returns>
 		public WebhookDestination Merge<TWebhook>(WebhookSenderOptions<TWebhook> options) where TWebhook : class {
 			var result = new WebhookDestination(Url) {
+				Name = Name,
 				Sign = Sign,
 				Headers = new Dictionary<string, string>(),
 				Format = Format ?? options.DefaultFormat,
@@ -264,6 +301,26 @@ namespace Deveel.Webhooks {
 				result.Verification = new WebhookDestinationVerificationOptions(Verification);
 
 			return result;
+		}
+
+		internal IAsyncPolicy<HttpResponseMessage> CreateRetryPolicy(WebhookRetryOptions? retry = null) {
+			// TODO: Validate that the sum of the retry delays is less than the timeout
+			var retryCountValue = (Retry?.MaxRetries ?? retry?.MaxRetries) ?? 0;
+			var sleepValue = (Retry?.MaxDelay ?? retry?.MaxDelay) ?? TimeSpan.FromMilliseconds(300);
+
+			// the retry policy
+			return Policy
+				.Handle<HttpRequestException>()
+				.Or<TaskCanceledException>()
+				.Or<TimeoutException>()
+				.OrTransientHttpStatusCode()
+				.WaitAndRetryAsync(retryCountValue, attempt => sleepValue);
+		}
+
+		internal IAsyncPolicy<HttpResponseMessage> CreateTimeoutPolicy(WebhookRetryOptions? retry = null) {
+			// TODO: Validate that the timeout is not less than the retry timeout
+			var timeoutValue = (Retry?.Timeout ?? retry?.Timeout) ?? System.Threading.Timeout.InfiniteTimeSpan;
+			return Policy.TimeoutAsync<HttpResponseMessage>(timeoutValue);
 		}
 	}
 }

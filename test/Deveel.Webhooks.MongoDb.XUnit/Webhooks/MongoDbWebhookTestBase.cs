@@ -14,8 +14,6 @@
 
 using System.Net;
 
-using Deveel.Util;
-
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
@@ -60,7 +58,7 @@ namespace Deveel.Webhooks {
 		private IServiceProvider BuildServiceProvider(ITestOutputHelper outputHelper) {
 			var services = new ServiceCollection()
 				.AddWebhookSubscriptions<MongoWebhookSubscription>(buidler => ConfigureWebhookService(buidler))
-				.AddTestHttpClient(OnRequestAsync)
+				.AddHttpCallback(OnRequestAsync)
 				.AddLogging(logging => logging.AddXUnit(outputHelper));
 
 			ConfigureServices(services);

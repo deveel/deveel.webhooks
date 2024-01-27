@@ -25,7 +25,7 @@ namespace Deveel.Webhooks {
 	[Trait("Category", "Webhooks")]
 	[Trait("Category", "Notification")]
 	public class TenantWebhookNotificationTests : WebhookServiceTestBase {
-		private const int TimeOutSeconds = 2;
+		private const int TimeOutSeconds = 3;
 		private bool testTimeout = false;
 
 		private readonly string tenantId = Guid.NewGuid().ToString();
@@ -48,6 +48,7 @@ namespace Deveel.Webhooks {
 					.UseTenantSubscriptionResolver<TestTenantSubscriptionResolver>(ServiceLifetime.Singleton)
 					.UseSender(options => {
 						options.Retry.MaxRetries = 2;
+						options.Retry.MaxDelay = TimeSpan.FromMilliseconds(200);
 						options.Retry.Timeout = TimeSpan.FromSeconds(TimeOutSeconds);
 					}));
 

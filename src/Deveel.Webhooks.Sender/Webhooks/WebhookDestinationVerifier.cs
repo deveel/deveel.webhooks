@@ -18,6 +18,7 @@ using System.Net;
 using System.Text;
 
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 
 using Polly;
@@ -28,8 +29,11 @@ namespace Deveel.Webhooks {
 	/// A default implementation of the <see cref="IWebhookDestinationVerifier{TWebhook}"/>,
 	/// that pings a destination URL with some configured parameters to verify if it is reachable.
 	/// </summary>
-	public class WebhookDestinationVerifier<TWebhook> : WebhookSenderClient, IWebhookDestinationVerifier<TWebhook>, IDisposable
+	public class WebhookDestinationVerifier<TWebhook> : IWebhookDestinationVerifier<TWebhook>
 		where TWebhook : class {
+		private readonly ILogger logger;
+		private readonly IHttpClientFactory httpClientFactory;
+
 		/// <summary>
 		/// Creates a new instance of the <see cref="WebhookDestinationVerifier{TWebhook}"/> class
 		/// with the given options.
@@ -44,11 +48,11 @@ namespace Deveel.Webhooks {
 		/// <param name="logger">
 		/// A logger to use for logging the operations of the verifier.
 		/// </param>
-		public WebhookDestinationVerifier(IOptions<WebhookSenderOptions<TWebhook>> options, 
-			IHttpClientFactory? httpClientFactory = null,
+		public WebhookDestinationVerifier(IOptions<WebhookSenderOptions<TWebhook>> options,
+			IHttpClientFactory httpClientFactory,
 			ILogger<WebhookDestinationVerifier<TWebhook>>? logger = null)
-            : this(options.Value, httpClientFactory, logger) {
-        }
+			: this(options.Value, httpClientFactory, logger) {
+		}
 
 		/// <summary>
 		/// Creates a new instance of the <see cref="WebhookDestinationVerifier{TWebhook}"/> class
@@ -66,44 +70,18 @@ namespace Deveel.Webhooks {
 		/// <exception cref="ArgumentNullException">
 		/// Thrown when the <paramref name="options"/> is <c>null</c>.
 		/// </exception>
-		protected WebhookDestinationVerifier(WebhookSenderOptions<TWebhook> options, 
-			IHttpClientFactory? httpClientFactory = null,
-			ILogger? logger = null) 
-			: base(httpClientFactory, logger) {
+		protected WebhookDestinationVerifier(WebhookSenderOptions<TWebhook> options,
+			IHttpClientFactory httpClientFactory,
+			ILogger? logger = null) {
+			this.httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
+			this.logger = logger ?? NullLogger<WebhookDestinationVerifier<TWebhook>>.Instance;
 			SenderOptions = options ?? throw new ArgumentNullException(nameof(options));
-        }
-
-		/// <summary>
-		/// Creates a new instance of the <see cref="WebhookDestinationVerifier{TWebhook}"/> class
-		/// using an optional HTTP client.
-		/// </summary>
-		/// <param name="options">
-		/// The options to configure the verifier service.
-		/// </param>
-		/// <param name="httpClient">
-		/// The optional HTTP client used to send the verification requests.
-		/// </param>
-		/// <param name="logger">
-		/// A logger to use for logging the operations of the verifier.
-		/// </param>
-		/// <exception cref="ArgumentNullException">
-		/// Thrown when the <paramref name="options"/> is <c>null</c>.
-		/// </exception>
-		protected WebhookDestinationVerifier(WebhookSenderOptions<TWebhook> options, HttpClient httpClient, ILogger? logger) 
-			: base(httpClient, logger) {
-			SenderOptions = options;
 		}
 
 		/// <summary>
 		/// Gets the options used to configure the verifier service.
 		/// </summary>
-        protected WebhookSenderOptions<TWebhook> SenderOptions { get; }
-
-		/// <inheritdoc/>
-		protected override WebhookRetryOptions? Retry => SenderOptions.Retry;
-
-		/// <inheritdoc/>
-		protected override TimeSpan? Timeout => SenderOptions.Timeout;
+		protected WebhookSenderOptions<TWebhook> SenderOptions { get; }
 
 		/// <summary>
 		/// Appends a challenge to query string of the 
@@ -154,25 +132,25 @@ namespace Deveel.Webhooks {
 		/// <returns>
 		/// Returns an instance of <see cref="HttpRequestMessage"/> that can be sent
 		/// </returns>
-        protected virtual HttpRequestMessage CreateRequest(Uri verificationUrl, string token, string? challenge) {
-            var request = new HttpRequestMessage(new HttpMethod(SenderOptions.Verification.HttpMethod), verificationUrl);
+		protected virtual HttpRequestMessage CreateRequest(Uri verificationUrl, string token, string? challenge) {
+			var request = new HttpRequestMessage(new HttpMethod(SenderOptions.Verification.HttpMethod), verificationUrl);
 
-            if (SenderOptions.Verification.TokenLocation == VerificationTokenLocation.QueryString) {
+			if (SenderOptions.Verification.TokenLocation == VerificationTokenLocation.QueryString) {
 				request.RequestUri = request.RequestUri!.AddQueryParameter(SenderOptions.Verification.TokenQueryParameter, token);
-            } else {
-                request.Headers.TryAddWithoutValidation(SenderOptions.Verification.TokenHeaderName, token);
-            }
+			} else {
+				request.Headers.TryAddWithoutValidation(SenderOptions.Verification.TokenHeaderName, token);
+			}
 
-			if ((SenderOptions.Verification.Challenge ?? false) && 
+			if ((SenderOptions.Verification.Challenge ?? false) &&
 				!String.IsNullOrWhiteSpace(challenge)) {
 				AddChallenge(request, challenge);
 			}
 
-            return request;
-        }
+			return request;
+		}
 
 		private async Task<HttpResponseMessage> VerifyChallengeAsync(HttpResponseMessage response, string challenge, CancellationToken cancellationToken) {
-			if (response.Content == null || 
+			if (response.Content == null ||
 				response.Content.Headers == null ||
 				response.Content.Headers.ContentType == null)
 				return new HttpResponseMessage(HttpStatusCode.BadRequest);
@@ -188,15 +166,15 @@ namespace Deveel.Webhooks {
 			return new HttpResponseMessage(HttpStatusCode.OK);
 		}
 
-		private async Task<HttpStatusCode> TryVerifyAsync(Uri destinationUrl, string verifyToken, string? challenge, CancellationToken cancellationToken) {
-			var timeoutPolicy = CreateTryTimeoutPolicy<HttpResponseMessage>(SenderOptions.Retry?.Timeout);
+		private async Task<HttpResponseMessage> TryVerifyAsync(HttpClient httpClient, WebhookDestination destination, Uri destinationUrl, string verifyToken, string? challenge, CancellationToken cancellationToken) {
+			var timeoutPolicy = destination.CreateTimeoutPolicy(SenderOptions.Retry);
 
 			HttpResponseMessage? response = null;
 
 			try {
 				var request = CreateRequest(destinationUrl, verifyToken, challenge);
 
-				response = await timeoutPolicy.ExecuteAsync(token => SendRequestAsync(request, token), cancellationToken);
+				response = await timeoutPolicy.ExecuteAsync(token => httpClient.SendAsync(request, token), cancellationToken);
 
 				// TODO: Check the response body for a specific value?
 
@@ -205,14 +183,14 @@ namespace Deveel.Webhooks {
 					!String.IsNullOrWhiteSpace(challenge))
 					response = await VerifyChallengeAsync(response, challenge, cancellationToken);
 
-				return response.StatusCode;
+				return response;
 			} catch (TimeoutRejectedException ex) {
 				throw new TimeoutException("A timeout has occurred", ex);
 			} catch (HttpRequestException) {
 				throw;
-			} catch(TaskCanceledException) {
+			} catch (TaskCanceledException) {
 				throw;
-			} catch(Exception ex) {
+			} catch (Exception ex) {
 				throw new WebhookVerificationException("An error occurred while verifying the destination", ex);
 			} finally {
 				response?.Dispose();
@@ -270,9 +248,11 @@ namespace Deveel.Webhooks {
 					destination.Verification.Parameters == null)
 					throw new WebhookVerificationException("The destination is not configured to be verified");
 
-				var timeoutPolicy = CreateTimeoutPolicy();
+				var httpClient = httpClientFactory.CreateClient(destination.Name);
 
-				var retryPolicy = CreateRetryPolicy(destination.Retry?.MaxRetries, destination.Retry?.MaxDelay);
+				var timeoutPolicy = Policy.TimeoutAsync(SenderOptions.Timeout ?? Timeout.InfiniteTimeSpan);
+
+				var retryPolicy = destination.CreateRetryPolicy(SenderOptions.Retry);
 				var policy = timeoutPolicy.WrapAsync(retryPolicy);
 
 				var url = destination.Verification.VerificationUrl ?? destination.Url;
@@ -284,11 +264,12 @@ namespace Deveel.Webhooks {
 				if (SenderOptions.Verification.Challenge ?? false)
 					challenge = CreateChallenge();
 
-				var capture = await policy.ExecuteAndCaptureAsync(token => TryVerifyAsync(url, verifyToken!, challenge, token), cancellationToken);
+				var capture = await policy.ExecuteAndCaptureAsync(token => TryVerifyAsync(httpClient, destination, url, verifyToken!, challenge, token), cancellationToken);
 
-				// TODO: configure the expected status code
+				// var response = await TryVerifyAsync(httpClient, destination, url, verifyToken!, challenge, cancellationToken);
+
 				if (capture.Outcome == OutcomeType.Successful) {
-					var httpStatusCode = (int)capture.Result;
+					var httpStatusCode = (int)capture.Result.StatusCode;
 
 					if (httpStatusCode < 400)
 						return DestinationVerificationResult.Success(httpStatusCode);
@@ -301,11 +282,13 @@ namespace Deveel.Webhooks {
 				} else {
 					throw new WebhookVerificationException("An error occurred while verifying the destination", capture.FinalException);
 				}
+			} catch (HttpRequestException ex) {
+				return DestinationVerificationResult.Failed(ex.StatusCode == null ? 0 : (int)ex.StatusCode);
 			} catch (WebhookVerificationException) {
 				throw;
 			} catch (Exception ex) {
 				throw new WebhookVerificationException("An error occurred while verifying the destination URL", ex);
 			}
-        }
-    }
+		}
+	}
 }

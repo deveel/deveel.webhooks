@@ -17,8 +17,6 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 
-using Deveel.Util;
-
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
@@ -35,7 +33,7 @@ namespace Deveel.Webhooks {
 		private IServiceProvider BuildServiceProvider(ITestOutputHelper outputHelper) {
 			var services = new ServiceCollection()
 				.AddWebhookSubscriptions<TestWebhookSubscription>(buidler => ConfigureWebhookService(buidler))
-				.AddTestHttpClient(OnRequestAsync)
+				.AddHttpCallback(OnRequestAsync)
 				.AddLogging(logging => logging.AddXUnit(outputHelper).SetMinimumLevel(LogLevel.Trace));
 
 			ConfigureServices(services);

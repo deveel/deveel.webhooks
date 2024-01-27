@@ -77,6 +77,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Deveel.Webhooks.Receiver.Te
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Deveel.Webhooks.DeliveryResultLogging.Tests", "test\Deveel.Webhooks.DeliveryResultLogging.Tests\Deveel.Webhooks.DeliveryResultLogging.Tests.csproj", "{DDD9A4CB-AA5E-4C0B-87F3-CDC24F6A8DA0}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "util", "util", "{6D7A2395-7D23-40E4-91EF-AF4EE5C4EFEB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Deveel.Webhooks.TestHttpClient", "test\Deveel.Webhooks.TestHttpClient\Deveel.Webhooks.TestHttpClient.csproj", "{98547810-98BF-46E6-8C13-2CC2690D145E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -207,6 +211,10 @@ Global
 		{DDD9A4CB-AA5E-4C0B-87F3-CDC24F6A8DA0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DDD9A4CB-AA5E-4C0B-87F3-CDC24F6A8DA0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DDD9A4CB-AA5E-4C0B-87F3-CDC24F6A8DA0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{98547810-98BF-46E6-8C13-2CC2690D145E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{98547810-98BF-46E6-8C13-2CC2690D145E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{98547810-98BF-46E6-8C13-2CC2690D145E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{98547810-98BF-46E6-8C13-2CC2690D145E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -243,6 +251,8 @@ Global
 		{EBD3DB50-0E90-47C7-9DD8-FBBAC8696CE1} = {07F23FF6-2FE1-4072-BF37-9238E3750AA1}
 		{4942C858-277D-438D-B822-92055B8E8DF7} = {07F23FF6-2FE1-4072-BF37-9238E3750AA1}
 		{DDD9A4CB-AA5E-4C0B-87F3-CDC24F6A8DA0} = {07F23FF6-2FE1-4072-BF37-9238E3750AA1}
+		{6D7A2395-7D23-40E4-91EF-AF4EE5C4EFEB} = {07F23FF6-2FE1-4072-BF37-9238E3750AA1}
+		{98547810-98BF-46E6-8C13-2CC2690D145E} = {6D7A2395-7D23-40E4-91EF-AF4EE5C4EFEB}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {E682A9F5-43D7-4D4C-82EA-953545B8F4DE}

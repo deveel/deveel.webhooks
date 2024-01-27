@@ -52,6 +52,8 @@ namespace Deveel.Webhooks {
 			Services.TryAddScoped<WebhookSender<TWebhook>>();
 
 			Services.AddScoped<IWebhookDestinationVerifier<TWebhook>, WebhookDestinationVerifier<TWebhook>>();
+
+			Services.AddHttpClient();
 		}
 
 		/// <summary>
@@ -91,6 +93,5 @@ namespace Deveel.Webhooks {
 
 			return this;
 		}
-
 	}
 }

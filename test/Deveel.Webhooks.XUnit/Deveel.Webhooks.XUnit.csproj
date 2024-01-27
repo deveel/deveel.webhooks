@@ -24,6 +24,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\Deveel.Webhooks.DynamicLinq\Deveel.Webhooks.DynamicLinq.csproj" />
     <ProjectReference Include="..\..\src\Deveel.Webhooks.Service\Deveel.Webhooks.Service.csproj" />
+    <ProjectReference Include="..\Deveel.Webhooks.TestHttpClient\Deveel.Webhooks.TestHttpClient.csproj" />
   </ItemGroup>
 
   <ItemGroup>

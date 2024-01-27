@@ -12,12 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace Deveel.Webhooks {
 	/// <summary>
 	/// Extends the <see cref="IWebhookSubscription"/> to provide some helper methods.
@@ -35,6 +29,7 @@ namespace Deveel.Webhooks {
 		/// </returns>
 		public static WebhookDestination AsDestination(this IWebhookSubscription subscription) {
 			var destination = new WebhookDestination(subscription.DestinationUrl) {
+				Name = subscription.Name,
 				Headers = subscription.Headers?.ToDictionary(x => x.Key, x => x.Value)
 			};
 

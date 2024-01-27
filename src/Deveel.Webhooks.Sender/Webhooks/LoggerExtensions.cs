@@ -57,11 +57,27 @@ namespace Deveel.Webhooks {
 		public static partial void TraceSendingWebhook(this ILogger logger, string destinationUrl);
 
 		[LoggerMessage(EventId = 120328, Level = LogLevel.Debug, 
-						Message = "The webhook has been sent to the receiver '{DestinationUrl}'")]
+			Message = "The webhook has been sent to the receiver '{DestinationUrl}'")]
 		public static partial void TraceSuccessfulDelivery(this ILogger logger, string destinationUrl);
 
 		[LoggerMessage(EventId = -120329, Level = LogLevel.Debug, 
-						Message = "The webhook has failed to be delivered to the receiver '{DestinationUrl}'")]
+			Message = "The webhook has failed to be delivered to the receiver '{DestinationUrl}'")]
 		public static partial void WarnDeliveryFailed(this ILogger logger, string destinationUrl);
+
+		[LoggerMessage(EventId = 120330, Level = LogLevel.Debug, 
+			Message = "The webhook has been delivered to the receiver '{DestinationUrl}'")]
+		public static partial void TraceDeliveryFinished(this ILogger logger, string destinationUrl);
+
+		[LoggerMessage(EventId = 120331, Level = LogLevel.Debug, 
+			Message = "Verifying the the receiver '{VerificationUrl}' for the delivery")]
+		public static partial void TraceVerifyingReceiver(this ILogger logger, string verificationUrl);
+
+		[LoggerMessage(EventId = 120332, Level = LogLevel.Debug, 
+			Message = "The receiver '{VerificationUrl}' has been verified for the delivery")]
+		public static partial void TraceReceiverVerified(this ILogger logger, string verificationUrl);
+
+		[LoggerMessage(EventId = -120333, Level = LogLevel.Error, 
+			Message = "The receiver '{VerificationUrl}' has failed to be verified for the delivery")]
+		public static partial void LogVerificationFailed(this ILogger logger, Exception error, string verificationUrl);
 	}
 }

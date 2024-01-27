@@ -18,13 +18,6 @@ namespace Deveel.Webhooks {
     /// </summary>
     public class WebhookSenderOptions<TWebhook> where TWebhook : class {
 		/// <summary>
-		/// Gets or sets the name of the HTTP client registered in the
-		/// factory pool and that will be used to send the webhooks. 
-		/// When this is not provided, the default HTTP client is used.
-		/// </summary>
-		public string? HttpClientName { get; set; }
-
-		/// <summary>
 		/// Gets or sets the default headers to be sent with the webhook,
 		/// additionally to the ones specified in the webhook definition.
 		/// Any header with the same name of one in the webhook definition

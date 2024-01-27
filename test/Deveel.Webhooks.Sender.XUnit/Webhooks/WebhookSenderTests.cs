@@ -41,7 +41,7 @@ namespace Deveel.Webhooks {
 		}
 
 		private IServiceProvider ConfigureServices(ITestOutputHelper outputHelper) {
-			var retryTimeoutMs = 500;
+			var retryTimeoutMs = TimeSpan.FromSeconds(1).TotalMilliseconds;
 
 			Func<HttpRequestMessage, Task<TestWebhook>> readContent = async request => {
 				TestWebhook? webhook;
@@ -124,9 +124,10 @@ namespace Deveel.Webhooks {
 
 
 			var services = new ServiceCollection()
-				.AddSingleton<IHttpClientFactory>(new MockHttpClientFactory("", mockHandler.ToHttpClient()))
 				.AddLogging(logging => logging.AddXUnit(outputHelper, options => options.Filter = (cat, level) => true)
 					.SetMinimumLevel(LogLevel.Trace));
+
+			services.AddTestHttpClientFacoty(mockHandler);
 
 			services.AddWebhookSender<TestWebhook>(options => {
 				options.DefaultHeaders = new Dictionary<string, string> {

@@ -17,7 +17,7 @@ Anyway, a typical implementation consists of the following elements:
 * The webhook payload includes properties that describe the type of event and the time-stamp of the occurrence
 * An optional signature in the header of the request or a query-string parameter ensures the authenticity of the caller
 
-I tried to express the concepts in more details in [this page](docs/concept_webhook.md) within this repository (without any ambition to be pedagogic).
+I tried to express the concepts in more detail in [this page](docs/concept_webhook.md) within this repository (without any ambition to be pedagogic).
 
 ## The Framework Libraries
 
@@ -47,7 +47,7 @@ To get the latest pre-release versions of the packages you can restore from the 
 
 ## Documentation
 
-We would like to help you getting started with this framework and to eventually extend it: please refer to the **[Documentation](docs/README.md)** section, or to the **[Official Website](https://webhooks.deveel.org/)** that we have produced for you.
+We would like to help you get started with this framework and to eventually extend it: please refer to the **[Documentation](docs/README.md)** section, or to the **[Official Website](https://webhooks.deveel.org/)** that we have produced for you.
 
 The easiest way to get started is to follow the **[Getting Started](docs/getting-started.md)** guide, but you can also refer to the **[Frequently Asked Questions](docs/FAQS.md)** section to get answers to the most common questions.
 
@@ -58,17 +58,17 @@ While working on a .NET Core 3.1/.NET 5 _PaaS_ (_Platform-as-a-Service_) project
 * [Microsoft's ASP.NET Webhooks](https://github.com/aspnet/WebHooks) project was archived and moved back to the [Microsoft ASP Labs](https://github.com/aspnet/AspLabs/tree/main/src/WebHooks) (that has no visibility on its release), aiming one day to provide compatibility with .NET Core (which eventually evolved, becoming LTS)
 * Both Microsoft's projects (the _legacy_ and the _experimental_ ones) are not compatible with the latest .NET stacks (_.NET 5_ / _.NET 6_)
 * Microsoft's _experimental_ projects never implemented any capability of handling subscriptions, and eventually removed the _sender_ capability, focusing exclusively on _receivers_
-* Alternative implementations providing similar capabilities are embedded and organic part of larger frameworks (like [ASP.NET Boilerplate](https://github.com/aspnetboilerplate/aspnetboilerplate)), that would have forced me to adopt the the entirety of such frameworks, beyond my design intentions
+* Alternative implementations providing similar capabilities are embedded and organic parts of larger frameworks (like [ASP.NET Boilerplate](https://github.com/aspnetboilerplate/aspnetboilerplate)), that would have forced me to adopt the the entirety of such frameworks, beyond my design intentions
 
 ## Simple Usage Example
 
-The **[documentation of the framework](docs/README.md)** will provide you more details on the requirements, configurations, usage and extensibility of the framework.
+The **[documentation of the framework](docs/README.md)** will provide you with more details on the requirements, configurations, usage and extensibility of the framework.
 
-Anyway, to help you getting started with the framework, please consider the following examples that show how to create a simple webhook management service, that handle subscriptions and notifications, and a client receiver.
+Anyway, to help you get started with the framework, please consider the following examples that show how to create a simple webhook management service, that handle subscriptions and notifications, and a client receiver.
 
 ### Subscriptions and Notifications
 
-As a provider of service, this library provide functions to handle the two main aspects of the webhook pattern:
+As a provider of service, this library provides functions to handle the two main aspects of the webhook pattern:
 
 * **Subscriptions**: the capability of a client to subscribe to a specific event, providing an endpoint to be notified
 * **Notifications**: the capability of a server to send notifications to the subscribed endpoints
@@ -87,12 +87,12 @@ namespace Example {
             
             // ...
 
-            builder.Services.AddSubscriptions<MongoWebhookSubscription>(subs => { 
+            builder.Services.AddWebhookSubscriptions<MongoWebhookSubscription>(subs => { 
                 subs.UseMongoDb("mongodb://localhost:27017")
                     .UseSubscriptionResolver();
             });
 				
-            builder.Services.AddNotifier<MyWebhook>(notifier => {
+            builder.Services.AddWebhookNotifier<MyWebhook>(notifier => {
                 notifier.UseSender(sender => {
                    sender.Configure(options => {
                         options.Timeout = TimeSpan.FromSeconds(30);
@@ -108,7 +108,7 @@ namespace Example {
             app.MapPost("/webhooks", async (HttpContext context, 
                 [FromServices] IWebhookSender<MyWebhook> sender, [FromBody] MyWebhookModel webhook) => {
                 var destination = webhook.Destination.ToWebhookDestination();
-                var result = await sender.SendAsync(destination webhook, context.HttpContext.RequestAborted);
+                var result = await sender.SendAsync(destination, webhook, context.HttpContext.RequestAborted);
 
                 // ...
 
@@ -172,9 +172,9 @@ namespace Example {
 
 ## Contribute
 
-Contributions to open-source projects, like **Deveel Webhooks**, is generally driven by interest in using the product and services, if they would respect some of the expectations we have to its functions.
+Contributions to open-source projects, like **Deveel Webhooks**, is generally driven by interest in using the product and services, if they would respect some of the expectations we have for its functions.
 
-The best ways to contribute and improve the quality of this project is by trying it, filing issues, joining in design conversations, and make pull-requests.
+The best ways to contribute and improve the quality of this project are by trying it, filing issues, joining in design conversations, and making pull-requests.
 
 Please refer to the [Contributing Guidelines](CONTRIBUTING.md) to receive more details on how you can contribute to this project.
 

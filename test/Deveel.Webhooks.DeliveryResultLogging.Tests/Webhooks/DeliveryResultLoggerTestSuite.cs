@@ -70,6 +70,8 @@ namespace Deveel.Webhooks {
 		public async Task LogSuccessfulDelivery() {
 			var webhook = WebhookFaker.Generate();
 			var eventInfo = new EventInfo("test", "executed", "1.0.0", new { name = "logTest" });
+			var notification = new EventNotification(eventInfo);
+
 			var subscription = SubscriptionFaker.Generate();
 			var destination = subscription.AsDestination();
 
@@ -83,7 +85,7 @@ namespace Deveel.Webhooks {
 			Assert.Equal(200, result.Attempts[0].ResponseCode);
 			Assert.Equal("OK", result.Attempts[0].ResponseMessage);
 			
-			await ResultLogger.LogResultAsync(eventInfo, subscription, result);
+			await ResultLogger.LogResultAsync(notification, subscription, result);
 
 			var logged = await FindResultByOperationIdAsync(result.OperationId);
 
@@ -101,6 +103,7 @@ namespace Deveel.Webhooks {
 		public async Task LogFailedDelivery() {
 			var webhook = WebhookFaker.Generate();
 			var eventInfo = new EventInfo("test", "executed", "1.0.0", new { name = "logTest" });
+			var notification = new EventNotification(eventInfo);
 			var subscription = SubscriptionFaker.Generate();
 			var destination = subscription.AsDestination();
 
@@ -126,7 +129,7 @@ namespace Deveel.Webhooks {
 			Assert.Equal(200, result.Attempts[2].ResponseCode);
 			Assert.Equal("OK", result.Attempts[2].ResponseMessage);
 
-			await ResultLogger.LogResultAsync(eventInfo, subscription, result);
+			await ResultLogger.LogResultAsync(notification, subscription, result);
 
 			var logged = await FindResultByOperationIdAsync(result.OperationId);
 

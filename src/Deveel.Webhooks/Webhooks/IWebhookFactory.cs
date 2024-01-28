@@ -31,9 +31,6 @@ namespace Deveel.Webhooks {
 		/// <param name="subscription">
 		/// The subscription that is requesting the webhook.
 		/// </param>
-		/// <param name="eventInfo">
-		/// The event information that is triggering the delivery of the webhook.
-		/// </param>
 		/// <param name="cancellationToken">
 		/// A token that can be used to cancel the operation.
 		/// </param>
@@ -41,6 +38,6 @@ namespace Deveel.Webhooks {
 		/// Returns an instance of the webhook that will be delivered to
 		/// the receiver that is subscribed to the event.
 		/// </returns>
-		Task<TWebhook> CreateAsync(IWebhookSubscription subscription, EventInfo eventInfo, CancellationToken cancellationToken = default);
+		Task<TWebhook> CreateAsync(IWebhookSubscription subscription, EventNotification notification, CancellationToken cancellationToken = default);
 	}
 }

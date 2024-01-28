@@ -63,12 +63,12 @@ namespace Deveel.Webhooks {
 		}
 
 		/// <inheritdoc/>
-		protected virtual async Task<IEnumerable<IWebhookSubscription>> ResolveSubscriptionsAsync(EventInfo eventInfo, CancellationToken cancellationToken) {
+		protected virtual async Task<IEnumerable<IWebhookSubscription>> ResolveSubscriptionsAsync(EventNotification notification, CancellationToken cancellationToken) {
 			if (subscriptionResolver == null)
 				return new List<IWebhookSubscription>();
 
 			try {
-				return await subscriptionResolver.ResolveSubscriptionsAsync(eventInfo.EventType, true, cancellationToken);
+				return await subscriptionResolver.ResolveSubscriptionsAsync(notification.EventType, true, cancellationToken);
 			} catch (WebhookException) {
 				throw;
 			} catch (Exception ex) {
@@ -78,10 +78,10 @@ namespace Deveel.Webhooks {
 		}
 
 		/// <inheritdoc/>
-		public async Task<WebhookNotificationResult<TWebhook>> NotifyAsync(EventInfo eventInfo, CancellationToken cancellationToken) {
-			var subscriptions = await ResolveSubscriptionsAsync(eventInfo, cancellationToken);
+		public async Task<WebhookNotificationResult<TWebhook>> NotifyAsync(EventNotification notification, CancellationToken cancellationToken) {
+			var subscriptions = await ResolveSubscriptionsAsync(notification, cancellationToken);
 
-			return await NotifySubscriptionsAsync(eventInfo, subscriptions, cancellationToken);
+			return await NotifySubscriptionsAsync(notification, subscriptions, cancellationToken);
 
 		}
 	}

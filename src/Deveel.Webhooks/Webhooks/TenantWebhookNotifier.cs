@@ -74,8 +74,8 @@ namespace Deveel.Webhooks {
 		/// <param name="tenantId">
 		/// The identifier of the tenant for which the event was raised.
 		/// </param>
-		/// <param name="eventInfo">
-		/// The information about the event that was raised.
+		/// <param name="notification">
+		/// The aggreate of the events to notify.
 		/// </param>
 		/// <param name="cancellationToken">
 		/// A cancellation token that can be used to cancel the operation.
@@ -83,12 +83,12 @@ namespace Deveel.Webhooks {
 		/// <returns>
 		/// Returns a list of subscriptions that should be notified for the given event.
 		/// </returns>
-		protected virtual async Task<IList<IWebhookSubscription>> ResolveSubscriptionsAsync(string tenantId, EventInfo eventInfo, CancellationToken cancellationToken) {
+		protected virtual async Task<IList<IWebhookSubscription>> ResolveSubscriptionsAsync(string tenantId, EventNotification notification, CancellationToken cancellationToken) {
 			if (subscriptionResolver == null)
 				return new List<IWebhookSubscription>();
 
 			try {
-				return await subscriptionResolver.ResolveSubscriptionsAsync(tenantId, eventInfo.EventType, true, cancellationToken);
+				return await subscriptionResolver.ResolveSubscriptionsAsync(tenantId, notification.EventType, true, cancellationToken);
 			} catch(WebhookException) {
 				throw;
 			} catch (Exception ex) {
@@ -97,18 +97,18 @@ namespace Deveel.Webhooks {
 		}
 
 		/// <inheritdoc/>
-		public virtual async Task<WebhookNotificationResult<TWebhook>> NotifyAsync(string tenantId, EventInfo eventInfo, CancellationToken cancellationToken) {
+		public virtual async Task<WebhookNotificationResult<TWebhook>> NotifyAsync(string tenantId, EventNotification notification, CancellationToken cancellationToken) {
 			IEnumerable<IWebhookSubscription> subscriptions;
 
 			try {
-				subscriptions = await ResolveSubscriptionsAsync(tenantId, eventInfo, cancellationToken);
+				subscriptions = await ResolveSubscriptionsAsync(tenantId, notification, cancellationToken);
 			} catch (WebhookException ex) {
 				Logger.LogError(ex, "Error while resolving the subscriptions to event {EventType} for tenant '{TenantId}'", 
-					eventInfo.EventType, tenantId);
+					notification.EventType, tenantId);
 				throw;
 			}
 
-			return await NotifySubscriptionsAsync(eventInfo, subscriptions, cancellationToken);
+			return await NotifySubscriptionsAsync(notification, subscriptions, cancellationToken);
 		}
 	}
 }

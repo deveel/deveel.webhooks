@@ -65,7 +65,7 @@ namespace Deveel.Webhooks {
 		/// <param name="subscription">
 		/// The subscription that is listening to the event
 		/// </param>
-		/// <param name="eventInfo">
+		/// <param name="notification">
 		/// The event that is being delivered to the subscription
 		/// </param>
 		/// <param name="cancellationToken">
@@ -74,14 +74,19 @@ namespace Deveel.Webhooks {
 		/// <returns>
 		/// Returns a task that resolves to the created webhook
 		/// </returns>
-		public Task<TWebhook> CreateAsync(IWebhookSubscription subscription, EventInfo eventInfo, CancellationToken cancellationToken) {
+		public Task<TWebhook> CreateAsync(IWebhookSubscription subscription, EventNotification notification, CancellationToken cancellationToken) {
+			if (!notification.HasSingleEvent)
+				throw new WebhookException("Multiple events per notification not supported yet.");
+			
+			var @event = notification.SingleEvent;
+
 			var webhook = new TWebhook {
-				Id = eventInfo.Id,
-				EventType = eventInfo.EventType,
+				Id = @event.Id,
+				EventType = @event.EventType,
 				SubscriptionId = subscription.SubscriptionId,
 				Name = subscription.Name,
-				TimeStamp = eventInfo.TimeStamp,
-				Data = eventInfo.Data,
+				TimeStamp = @event.TimeStamp,
+				Data = @event.Data,
 			};
 
 			return Task.FromResult(webhook);

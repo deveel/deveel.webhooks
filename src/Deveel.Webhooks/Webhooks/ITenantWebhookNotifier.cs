@@ -36,12 +36,14 @@ namespace Deveel.Webhooks {
 		/// </summary>
 		/// <param name="tenantId">The scope of the tenant holding the subscriptions
 		/// to the given event.</param>
-		/// <param name="eventInfo">The ifnormation of the event that occurred.</param>
+		/// <param name="notification">
+		/// The aggregate of the events to be notified to the subscribers.
+		/// </param>
 		/// <param name="cancellationToken"></param>
 		/// <returns>
 		/// Returns an object that describes the aggregated final result of 
 		/// the notification process executed.
 		/// </returns>
-		Task<WebhookNotificationResult<TWebhook>> NotifyAsync(string tenantId, EventInfo eventInfo, CancellationToken cancellationToken);
+		Task<WebhookNotificationResult<TWebhook>> NotifyAsync(string tenantId, EventNotification notification, CancellationToken cancellationToken);
 	}
 }

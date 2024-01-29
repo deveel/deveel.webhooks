@@ -185,8 +185,8 @@ namespace Deveel.Webhooks {
 		/// <summary>
 		/// Logs the given delivery result.
 		/// </summary>
-		/// <param name="eventInfo">
-		/// The information about the event that triggered the notification.
+		/// <param name="notification">
+		/// The aggregate of the events that are being delivered to the receiver.
 		/// </param>
 		/// <param name="subscription">
 		/// The subscription that was used to send the webhook.

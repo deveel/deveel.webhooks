@@ -19,7 +19,7 @@ using System.Threading.Tasks;
 namespace Deveel.Webhooks {
 	/// <summary>
 	/// Defines a factory that can create <typeparamref name="TWebhook"/> 
-	/// instances given the subscription and the event information.
+	/// instances given the subscription and the events notification.
 	/// </summary>
 	/// <typeparam name="TWebhook">
 	/// The type of the webhook instance to create.
@@ -30,6 +30,9 @@ namespace Deveel.Webhooks {
 		/// </summary>
 		/// <param name="subscription">
 		/// The subscription that is requesting the webhook.
+		/// </param>
+		/// <param name="notification">
+		/// The notification that is being delivered to the receiver.
 		/// </param>
 		/// <param name="cancellationToken">
 		/// A token that can be used to cancel the operation.

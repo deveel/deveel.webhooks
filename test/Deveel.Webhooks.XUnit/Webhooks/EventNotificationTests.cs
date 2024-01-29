@@ -1,13 +1,14 @@
 ﻿using Xunit;
 
 namespace Deveel.Webhooks {
-	public static class WebhookNotificationTests {
+	public static class EventNotificationTests {
 		[Fact]
 		public static void NewNotification_OneEvent() {
 			var eventInfo = new EventInfo("subj1", "test.event");
 			var notification = new EventNotification(eventInfo);
 
 			Assert.Equal("test.event", notification.EventType);
+			Assert.True(notification.HasSingleEvent);
 			Assert.Single(notification.Events);
 			Assert.Equal(eventInfo, notification.Events[0]);
 			Assert.Single(notification);

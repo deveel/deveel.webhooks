@@ -12,9 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Threading;
-using System.Threading.Tasks;
-
 namespace Deveel.Webhooks {
 	/// <summary>
 	/// A default implementation of the <see cref="IWebhookFactory{TWebhook}"/>
@@ -29,7 +26,7 @@ namespace Deveel.Webhooks {
 	/// </para>
 	/// <para>
 	/// It is possible to create a custom webhook type by implementing
-	/// this factory and overriding the <see cref="CreateData(IWebhookSubscription, EventInfo)"/>
+	/// this factory and overriding the <see cref="CreateData(IWebhookSubscription, EventNotification)"/>
 	/// </para>
 	/// <para>
 	/// By default the <see cref="Webhook"/> class is configured with attributes from
@@ -47,14 +44,38 @@ namespace Deveel.Webhooks {
 		/// <param name="subscription">
 		/// The subscription that is listening to the event
 		/// </param>
-		/// <param name="eventInfo">
-		/// The event that is being delivered to the subscription
+		/// <param name="notification">
+		/// The aggregate of the events that are being delivered to the subscription.
 		/// </param>
+		/// <remarks>
+		/// The default implementation of this method returns an array of
+		/// objects, each one created by the <see cref="CreateEventData(IWebhookSubscription, EventInfo)"/>,
+		/// when the notification contains multiple events, or the single object
+		/// if the notification contains a single event.
+		/// </remarks>
 		/// <returns>
 		/// Returns a data object that is carried by the webhook
 		/// through the <see cref="Webhook.Data"/> property.
 		/// </returns>
-		protected virtual object? CreateData(IWebhookSubscription subscription, EventInfo eventInfo) {
+		protected virtual object? CreateData(IWebhookSubscription subscription, EventNotification notification) {
+			if (notification.HasSingleEvent)
+				return CreateEventData(subscription, notification.SingleEvent);
+
+			return notification.Events.Select(x => CreateEventData(subscription, x)).ToArray();
+		}
+
+		/// <summary>
+		/// When overridden, creates the data object that is carried by
+		/// a webhook to the receiver.
+		/// </summary>
+		/// <param name="subscription"></param>
+		/// <param name="eventInfo"></param>
+		/// <remarks>
+		/// The default implementation of this method returns the <see cref="EventInfo.Data"/>
+		/// object of the given event.
+		/// </remarks>
+		/// <returns></returns>
+		protected virtual object? CreateEventData(IWebhookSubscription subscription, EventInfo eventInfo) {
 			return eventInfo.Data;
 		}
 
@@ -74,19 +95,14 @@ namespace Deveel.Webhooks {
 		/// <returns>
 		/// Returns a task that resolves to the created webhook
 		/// </returns>
-		public Task<TWebhook> CreateAsync(IWebhookSubscription subscription, EventNotification notification, CancellationToken cancellationToken) {
-			if (!notification.HasSingleEvent)
-				throw new WebhookException("Multiple events per notification not supported yet.");
-			
-			var @event = notification.SingleEvent;
-
+		public virtual Task<TWebhook> CreateAsync(IWebhookSubscription subscription, EventNotification notification, CancellationToken cancellationToken) {
 			var webhook = new TWebhook {
-				Id = @event.Id,
-				EventType = @event.EventType,
+				Id = notification.NotificationId,
+				EventType = notification.EventType,
 				SubscriptionId = subscription.SubscriptionId,
 				Name = subscription.Name,
-				TimeStamp = @event.TimeStamp,
-				Data = @event.Data,
+				TimeStamp = notification.TimeStamp,
+				Data = CreateData(subscription, notification),
 			};
 
 			return Task.FromResult(webhook);

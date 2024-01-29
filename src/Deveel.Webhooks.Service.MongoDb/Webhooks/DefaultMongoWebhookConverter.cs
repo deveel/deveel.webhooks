@@ -32,6 +32,9 @@ namespace Deveel.Webhooks {
 		/// Converts the given <see cref="EventInfo"/> and the webhook object into
 		/// a <see cref="MongoWebhook"/> object.
 		/// </summary>
+		/// <param name="notification">
+		/// The event notification that was sent to the subscribers.
+		/// </param>
 		/// <param name="webhook">
 		/// The webhook that was notified to the subscribers.
 		/// </param>

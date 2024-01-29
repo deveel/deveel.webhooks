@@ -70,6 +70,9 @@ namespace Deveel.Webhooks {
 		/// Converts the given result to an object that can be stored in the
 		/// MongoDB database collection.
 		/// </summary>
+		/// <param name="notification">
+		/// The aggregate of the events that are being delivered to the receiver.
+		/// </param>
 		/// <param name="eventInfo">
 		/// The information about the event that triggered the delivery of the webhook.
 		/// </param>
@@ -157,6 +160,9 @@ namespace Deveel.Webhooks {
 		/// Converts the given webhook to an object that can be stored in the
 		/// MongoDB database collection.
 		/// </summary>
+		/// <param name="notification">
+		/// The aggregate of the events that are being delivered to the receiver.
+		/// </param>
 		/// <param name="webhook">
 		/// The instance of the webhook to convert.
 		/// </param>

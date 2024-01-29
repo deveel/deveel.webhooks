@@ -26,6 +26,9 @@ namespace Deveel.Webhooks {
         /// Converts the given webhook to an object that can be stored
         /// in a MongoDB database.
         /// </summary>
+		/// <param name="notification">
+		/// The event notification that was sent to the subscribers.
+		/// </param>
         /// <param name="webhook">
         /// The instance of the webhook to be converted.
         /// </param>

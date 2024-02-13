@@ -14,6 +14,7 @@
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Options;
 
 namespace Deveel.Webhooks {
 	/// <summary>
@@ -58,6 +59,8 @@ namespace Deveel.Webhooks {
 				Services.TryAddSingleton(typeof(IWebhookFactory<TWebhook>), factoryType);
 				Services.TryAddSingleton(factoryType);
 			}
+
+			Services.AddSingleton(Options.Create(new WebhookFactoryOptions<TWebhook>()));
 
 			// TODO: register the default filter evaluator
 		}

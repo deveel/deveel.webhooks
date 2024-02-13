@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Microsoft.Extensions.Options;
+
 namespace Deveel.Webhooks {
 	/// <summary>
 	/// A default implementation of the <see cref="IWebhookFactory{TWebhook}"/>
@@ -19,5 +21,7 @@ namespace Deveel.Webhooks {
 	/// provided by the subscription and the event.
 	/// </summary>
 	public sealed class DefaultWebhookFactory : DefaultWebhookFactory<Webhook> {
+		public DefaultWebhookFactory(IOptions<WebhookFactoryOptions<Webhook>> options) : base(options) {
+		}
 	}
 }

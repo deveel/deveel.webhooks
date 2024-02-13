@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Microsoft.Extensions.Options;
+
 namespace Deveel.Webhooks {
 	/// <summary>
 	/// A default implementation of the <see cref="IWebhookFactory{TWebhook}"/>
@@ -26,7 +28,7 @@ namespace Deveel.Webhooks {
 	/// </para>
 	/// <para>
 	/// It is possible to create a custom webhook type by implementing
-	/// this factory and overriding the <see cref="CreateData(IWebhookSubscription, EventNotification)"/>
+	/// this factory and overriding the <see cref="CreateNotificationData(IWebhookSubscription, EventNotification)"/>
 	/// </para>
 	/// <para>
 	/// By default the <see cref="Webhook"/> class is configured with attributes from
@@ -37,6 +39,17 @@ namespace Deveel.Webhooks {
 	/// </remarks>
 	/// <seealso cref="Webhook"/>
 	public class DefaultWebhookFactory<TWebhook> : IWebhookFactory<TWebhook> where TWebhook : Webhook, new() {
+		/// <summary>
+		/// Constructs the factory with the options to use when creating
+		/// webhooks from a notification for a subscription.
+		/// </summary>
+		/// <param name="options"></param>
+		public DefaultWebhookFactory(IOptions<WebhookFactoryOptions<TWebhook>> options) {
+			Options = options.Value;
+		}
+
+		protected WebhookFactoryOptions<TWebhook> Options { get; }
+
 		/// <summary>
 		/// When overridden, creates the data object that is carried
 		/// by the webhook to the receiver.
@@ -57,11 +70,18 @@ namespace Deveel.Webhooks {
 		/// Returns a data object that is carried by the webhook
 		/// through the <see cref="Webhook.Data"/> property.
 		/// </returns>
-		protected virtual object? CreateData(IWebhookSubscription subscription, EventNotification notification) {
-			if (notification.HasSingleEvent)
-				return CreateEventData(subscription, notification.SingleEvent);
+		protected virtual object? CreateNotificationData(IWebhookSubscription subscription, EventNotification notification) {
+			if (Options.CreateStrategy == WebhookCreateStrategy.OnePerNotification) {
+				if (notification.Events.Count == 1)
+					return CreateEventData(subscription, notification.Events[0]);
 
-			return notification.Events.Select(x => CreateEventData(subscription, x)).ToArray();
+				return notification.Select(e => CreateEventData(subscription, e)).ToArray();
+			}
+
+			if (notification.Events.Count == 1)
+				return CreateEventData(subscription, notification.Events[0]);
+
+			throw new WebhookException("The strategy 'OnePerEvent' requires a single event in the notification");
 		}
 
 		/// <summary>
@@ -95,17 +115,31 @@ namespace Deveel.Webhooks {
 		/// <returns>
 		/// Returns a task that resolves to the created webhook
 		/// </returns>
-		public virtual Task<TWebhook> CreateAsync(IWebhookSubscription subscription, EventNotification notification, CancellationToken cancellationToken) {
-			var webhook = new TWebhook {
-				Id = notification.NotificationId,
-				EventType = notification.EventType,
-				SubscriptionId = subscription.SubscriptionId,
-				Name = subscription.Name,
-				TimeStamp = notification.TimeStamp,
-				Data = CreateData(subscription, notification),
-			};
+		public virtual Task<IList<TWebhook>> CreateAsync(IWebhookSubscription subscription, EventNotification notification, CancellationToken cancellationToken) {
+			IList<TWebhook> result;
 
-			return Task.FromResult(webhook);
+			if (Options.CreateStrategy == WebhookCreateStrategy.OnePerEvent) {
+				result = notification.Events.Select(e => new TWebhook {
+					Id = e.Id,
+					EventType = e.EventType,
+					SubscriptionId = subscription.SubscriptionId,
+					Name = subscription.Name,
+					TimeStamp = e.TimeStamp,
+					Data = CreateEventData(subscription, e),
+				}).ToList();
+			} else {
+				result = new List<TWebhook> { new TWebhook {
+					Id = notification.NotificationId,
+					EventType = notification.EventType,
+					SubscriptionId = subscription.SubscriptionId,
+					Name = subscription.Name,
+					TimeStamp = notification.TimeStamp,
+					Data = CreateNotificationData(subscription, notification),
+				}
+				};
+			}
+
+			return Task.FromResult(result);
 		}
 	}
 }

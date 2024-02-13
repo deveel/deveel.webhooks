@@ -236,41 +236,44 @@ namespace Deveel.Webhooks {
 
 			Logger.TraceEvaluatingSubscription(subscription.SubscriptionId, notification.EventType);
 
-			var webhook = await CreateWebhook(subscription, notification, cancellationToken);
+			var webhooks = await CreateWebhook(subscription, notification, cancellationToken);
 
-			if (webhook == null) {
-				Logger.WarnWebhookNotCreated(subscription.SubscriptionId, notification.EventType);				
+			if (webhooks == null || webhooks.Count == 0) {
+				Logger.WarnWebhookNotCreated(subscription.SubscriptionId, notification.EventType);
 				return;
 			}
 
-			try {
-				var filter = BuildSubscriptionFilter(subscription);
+			var filter = BuildSubscriptionFilter(subscription);
 
-				if (await MatchesAsync(filter, webhook, cancellationToken)) {
-					Logger.TraceSubscriptionMatched(subscription.SubscriptionId, notification.EventType);
+			foreach (var webhook in webhooks) {
+				try {
 
-					var deliveryResult = await SendAsync(subscription, webhook, cancellationToken);
+					if (await MatchesAsync(filter, webhook, cancellationToken)) {
+						Logger.TraceSubscriptionMatched(subscription.SubscriptionId, notification.EventType);
 
-					result.AddDelivery(subscription.SubscriptionId, deliveryResult);
+						var deliveryResult = await SendAsync(subscription, webhook, cancellationToken);
 
-					await LogDeliveryResultAsync(notification, subscription, deliveryResult, cancellationToken);
+						result.AddDelivery(subscription.SubscriptionId, deliveryResult);
 
-					TraceDeliveryResult(notification, deliveryResult);
+						await LogDeliveryResultAsync(notification, subscription, deliveryResult, cancellationToken);
 
-					try {
-						await OnDeliveryResultAsync(subscription, webhook, deliveryResult, cancellationToken);
-					} catch (Exception ex) {
-						Logger.LogUnknownEventDeliveryError(ex, subscription.SubscriptionId, notification.EventType);
+						TraceDeliveryResult(notification, deliveryResult);
+
+						try {
+							await OnDeliveryResultAsync(subscription, webhook, deliveryResult, cancellationToken);
+						} catch (Exception ex) {
+							Logger.LogUnknownEventDeliveryError(ex, subscription.SubscriptionId, notification.EventType);
+						}
+					} else {
+						Logger.TraceSubscriptionNotMatched(subscription.SubscriptionId, notification.EventType);
 					}
-				} else {
-					Logger.TraceSubscriptionNotMatched(subscription.SubscriptionId, notification.EventType);
+				} catch (Exception ex) {
+					Logger.LogUnknownEventDeliveryError(ex, subscription.SubscriptionId, notification.EventType);
+
+					await OnDeliveryErrorAsync(subscription, webhook, ex, cancellationToken);
+
+					// result.AddDelivery(new WebhookDeliveryResult<TWebhook>(destination, webhook));
 				}
-			} catch (Exception ex) {
-				Logger.LogUnknownEventDeliveryError(ex, subscription.SubscriptionId, notification.EventType);
-
-				await OnDeliveryErrorAsync(subscription, webhook, ex, cancellationToken);
-
-				// result.AddDelivery(new WebhookDeliveryResult<TWebhook>(destination, webhook));
 			}
 		}
 
@@ -389,7 +392,7 @@ namespace Deveel.Webhooks {
 		/// or <c>null</c> if it was not possible to constuct the data.
 		/// </returns>
 		/// <exception cref="WebhookException"></exception>
-		protected virtual async Task<TWebhook?> CreateWebhook(IWebhookSubscription subscription, EventNotification notification, CancellationToken cancellationToken) {
+		protected virtual async Task<IList<TWebhook>> CreateWebhook(IWebhookSubscription subscription, EventNotification notification, CancellationToken cancellationToken) {
 			try {
 				return await webhookFactory.CreateAsync(subscription, notification, cancellationToken);
 			} catch (Exception ex) {

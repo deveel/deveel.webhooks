@@ -41,6 +41,6 @@ namespace Deveel.Webhooks {
 		/// Returns an instance of the webhook that will be delivered to
 		/// the receiver that is subscribed to the event.
 		/// </returns>
-		Task<TWebhook> CreateAsync(IWebhookSubscription subscription, EventNotification notification, CancellationToken cancellationToken = default);
+		Task<IList<TWebhook>> CreateAsync(IWebhookSubscription subscription, EventNotification notification, CancellationToken cancellationToken = default);
 	}
 }

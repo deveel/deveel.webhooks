@@ -8,8 +8,8 @@ namespace Deveel.Webhooks.Services {
 			this.userResolver = userResolver;
 		}
 
-		public async Task<IdentityWebhook> CreateAsync(IWebhookSubscription subscription, EventNotification notification, CancellationToken cancellationToken = default) {
-			var @event = notification.SingleEvent;
+		public async Task<IList<IdentityWebhook>> CreateAsync(IWebhookSubscription subscription, EventNotification notification, CancellationToken cancellationToken = default) {
+			var @event = notification.Events[0];
 
 			var userCreated = (UserCreatedEvent?)@event.Data;
 			var user = await userResolver.ResolveUserAsync(userCreated!.UserId, cancellationToken);
@@ -17,11 +17,13 @@ namespace Deveel.Webhooks.Services {
 			if (user == null)
 				throw new InvalidOperationException();
 
-			return new IdentityWebhook {
-				EventId = @event.Id,
-				EventType = "user_created",
-				TimeStamp = @event.TimeStamp,
-				User = user
+			return new [] { 
+				new IdentityWebhook {
+					EventId = @event.Id,
+					EventType = @event.EventType,
+					TimeStamp = @event.TimeStamp,
+					User = user
+				} 
 			};
 		}
 	}

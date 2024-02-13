@@ -8,7 +8,6 @@ namespace Deveel.Webhooks {
 			var notification = new EventNotification(eventInfo);
 
 			Assert.Equal("test.event", notification.EventType);
-			Assert.True(notification.HasSingleEvent);
 			Assert.Single(notification.Events);
 			Assert.Equal(eventInfo, notification.Events[0]);
 			Assert.Single(notification);

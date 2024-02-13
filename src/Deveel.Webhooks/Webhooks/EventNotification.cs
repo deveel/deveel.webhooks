@@ -72,31 +72,6 @@ namespace Deveel.Webhooks {
 		public IReadOnlyList<EventInfo> Events { get; }
 
 		/// <summary>
-		/// Gets a value indicating if the notification has a single event.
-		/// </summary>
-		public bool HasSingleEvent => Events.Count == 1;
-
-		/// <summary>
-		/// Gets the single event of the notification.
-		/// </summary>
-		/// <remarks>
-		/// It is recommended to use this property only after checking that
-		/// the notification has a single event, using the <see cref="HasSingleEvent"/>.
-		/// </remarks>
-		/// <exception cref="InvalidOperationException">
-		/// Thrown when the notification has more than one event.
-		/// </exception>
-		/// <seealso cref="HasSingleEvent"/>
-		public EventInfo SingleEvent {
-			get {
-				if (!HasSingleEvent)
-					throw new InvalidOperationException("The notification has more than one event");
-
-				return Events[0];
-			}
-		}
-
-		/// <summary>
 		/// Gets the type of the events that are being notified.
 		/// </summary>
 		public string EventType { get; }

@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Collections.Concurrent;
 using System.Linq.Dynamic.Core;
 using System.Linq.Expressions;
 
@@ -23,7 +24,7 @@ namespace Deveel.Webhooks {
 	/// </summary>
 	/// <typeparam name="TWebhook"></typeparam>
 	public sealed class LinqWebhookFilterEvaluator<TWebhook> : IWebhookFilterEvaluator<TWebhook> where TWebhook : class {
-		private readonly IDictionary<string, Func<object, bool>> filterCache;
+		private readonly IDictionary<FilterKey, Func<object, bool>> filterCache;
 		private readonly WebhookSenderOptions<TWebhook> senderOptions;
 
 		/// <summary>
@@ -35,7 +36,7 @@ namespace Deveel.Webhooks {
 		/// the filter evaluator.
 		/// </param>
 		public LinqWebhookFilterEvaluator(IOptions<WebhookSenderOptions<TWebhook>> senderOptions) {
-			filterCache = new Dictionary<string, Func<object, bool>>();
+			filterCache = new ConcurrentDictionary<FilterKey, Func<object, bool>>();
 			this.senderOptions = senderOptions.Value;
 		}
 
@@ -51,7 +52,8 @@ namespace Deveel.Webhooks {
 		string IWebhookFilterEvaluator<TWebhook>.Format => "linq";
 
 		private Func<object, bool> Compile(Type objType, string filter) {
-			if (!filterCache.TryGetValue(filter, out var compiled)) {
+			var key = new FilterKey(objType.FullName!, filter);
+			if (!filterCache.TryGetValue(key, out var compiled)) {
 				var config = ParsingConfig.Default;
 
 				var parameters = new[] {
@@ -59,7 +61,7 @@ namespace Deveel.Webhooks {
 				};
 				var parsed = DynamicExpressionParser.ParseLambda(config, parameters, typeof(bool), filter).Compile();
 				compiled = hook => (bool)(parsed.DynamicInvoke(hook)!);
-				filterCache[filter] = compiled;
+				filterCache[key] = compiled;
 			}
 
 			return compiled;
@@ -84,10 +86,8 @@ namespace Deveel.Webhooks {
 
 		/// <inheritdoc/>
 		public async Task<bool> MatchesAsync(WebhookSubscriptionFilter filter, TWebhook webhook, CancellationToken cancellationToken) {
-			if (filter is null)
-				throw new ArgumentNullException(nameof(filter));
-			if (webhook is null)
-				throw new ArgumentNullException(nameof(webhook));
+			ArgumentNullException.ThrowIfNull(filter, nameof(filter));
+			ArgumentNullException.ThrowIfNull(webhook, nameof(webhook));
 
 			if (filter.FilterFormat != "linq")
 				throw new ArgumentException($"Filter format '{filter.FilterFormat}' not supported by the LINQ evaluator");
@@ -111,7 +111,27 @@ namespace Deveel.Webhooks {
 			} catch(Exception ex) {
 				throw new WebhookException("Unable to evaluate the filter", ex);
 			}
+		}
 
+		readonly struct FilterKey {
+			public FilterKey(string typeName, string filter) : this() {
+				TypeName = typeName;
+				Filter = filter;
+			}
+
+			public string TypeName { get; }
+
+			public string Filter { get; }
+
+			public override bool Equals(object? obj) {
+				return obj is FilterKey key &&
+					   TypeName == key.TypeName &&
+					   Filter == key.Filter;
+			}
+
+			public override int GetHashCode() {
+				return HashCode.Combine(TypeName, Filter);
+			}
 		}
 	}
 }

@@ -44,8 +44,8 @@ namespace Deveel.Webhooks {
 		/// webhooks from a notification for a subscription.
 		/// </summary>
 		/// <param name="options"></param>
-		public DefaultWebhookFactory(IOptions<WebhookFactoryOptions<TWebhook>> options) {
-			Options = options.Value;
+		public DefaultWebhookFactory(IOptions<WebhookFactoryOptions<TWebhook>>? options = null) {
+			Options = options?.Value ?? new WebhookFactoryOptions<TWebhook>();
 		}
 
 		protected WebhookFactoryOptions<TWebhook> Options { get; }

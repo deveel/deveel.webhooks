@@ -38,7 +38,7 @@ namespace Deveel.Webhooks {
 		}
 
 		protected override void ConfigureServices(IServiceCollection services) {
-			services.AddWebhookNotifier<Webhook>(config => config
+			services.AddWebhookNotifier<Webhook>(notifier => notifier
 					.UseLinqFilter()
 					.UseSubscriptionResolver<TestSubscriptionResolver>(ServiceLifetime.Singleton)
 					.UseSender(options => {

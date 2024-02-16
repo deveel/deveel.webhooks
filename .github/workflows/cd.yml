@@ -1,5 +1,9 @@
 name: Webhooks CD
 
+permissions:
+  contents: read
+  packages: write
+
 on:
   push:
     branches: [ main ]
@@ -7,20 +11,24 @@ on:
 jobs:
   build:
     name: "Build and Test"
-    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+      matrix:
+        dotnet-verion: [ '6.0.x', '7.0.x', '8.0.x' ]
+        os: [ ubuntu-latest, windows-latest ]
+    
+    runs-on: ${{ matrix.os }}
 
     steps:
     - uses: actions/checkout@v3
 
-    - name: Setup .NET
+    - name: Setup .NET ${{ matrix.dotnet-version }}}
       uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: |
-            6.0.x
-            7.0.x
+        dotnet-version: ${{ matrix.dotnet-version }}
     
-    - name: Add Deveel GitHub NuGet Source
-      run: dotnet nuget add source "https://nuget.pkg.github.com/deveel/index.json" -n "Deveel GitHub" -u ${{ secrets.DEVEEL_NUGET_USER }} -p ${{ secrets.DEVEEL_NUGET_TOKEN }} --store-password-in-clear-text
+    # - name: Add Deveel GitHub NuGet Source
+    #   run: dotnet nuget add source "https://nuget.pkg.github.com/deveel/index.json" -n "Deveel GitHub" -u ${{ secrets.DEVEEL_NUGET_USER }} -p ${{ secrets.DEVEEL_NUGET_TOKEN }} --store-password-in-clear-text
       
     - name: Restore dependencies
       run: dotnet restore

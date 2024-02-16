@@ -22,7 +22,7 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
-    - name: Setup .NET ${{ matrix.dotnet-version }}}
+    - name: Setup .NET ${{ matrix.dotnet-version }}
       uses: actions/setup-dotnet@v3
       with:
         dotnet-version: ${{ matrix.dotnet-version }}
@@ -56,6 +56,6 @@ jobs:
       run: dotnet nuget push ./nuget/**/*.nupkg --skip-duplicate --api-key ${{secrets.GITHUB_TOKEN}} --source "https://nuget.pkg.github.com/deveel/index.json"
 
   clean:
-    needs: build
+    needs: pack
     name: "Clean Old Packages"
     uses: ./.github/workflows/clean-packages.yml

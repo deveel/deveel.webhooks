@@ -22,7 +22,7 @@ using Xunit;
 using Xunit.Abstractions;
 
 namespace Deveel.Webhooks {
-	public class WebhookNotificationTests : WebhookServiceTestBase {
+	public class WebhookNotifierTests : WebhookServiceTestBase {
 		private const int TimeOutSeconds = 2;
 		private bool testTimeout = false;
 
@@ -32,13 +32,13 @@ namespace Deveel.Webhooks {
 		private Webhook? lastWebhook;
 		private HttpResponseMessage? testResponse;
 
-		public WebhookNotificationTests(ITestOutputHelper outputHelper) : base(outputHelper) {
+		public WebhookNotifierTests(ITestOutputHelper outputHelper) : base(outputHelper) {
 			notifier = Services.GetRequiredService<IWebhookNotifier<Webhook>>();
 			subscriptionResolver = Services.GetRequiredService<TestSubscriptionResolver>();
 		}
 
 		protected override void ConfigureServices(IServiceCollection services) {
-			services.AddWebhookNotifier<Webhook>(config => config
+			services.AddWebhookNotifier<Webhook>(notifier => notifier
 					.UseLinqFilter()
 					.UseSubscriptionResolver<TestSubscriptionResolver>(ServiceLifetime.Singleton)
 					.UseSender(options => {
@@ -90,12 +90,57 @@ namespace Deveel.Webhooks {
 		}
 
 		[Fact]
-		public async Task DeliverWebhookFromEvent() {
+		public async Task DeliverWebhookFromSingleEvent() {
 			var subscriptionId = CreateSubscription("Data Created", "data.created", new WebhookFilter("hook.data.type == \"test\"", "linq"));
-			var notification = new EventInfo("test", "data.created", data: new {
+			var eventInfo = new EventInfo("test", "data.created", data: new {
 				creationTime = DateTimeOffset.UtcNow,
 				type = "test"
 			});
+
+			var result = await notifier.NotifyAsync(eventInfo, CancellationToken.None);
+
+			Assert.NotNull(result);
+			Assert.NotEmpty(result);
+			Assert.Single(result);
+			Assert.True(result.HasSuccessful);
+			Assert.False(result.HasFailed);
+			Assert.NotEmpty(result.Successful);
+			Assert.Empty(result.Failed);
+
+			Assert.Single(result[subscriptionId]!);
+
+			var webhookResult = result[subscriptionId]![0];
+
+			Assert.Equal(subscriptionId, webhookResult.Webhook.SubscriptionId);
+			Assert.True(webhookResult.Successful);
+			Assert.True(webhookResult.HasAttempted);
+			Assert.Single(webhookResult.Attempts);
+			Assert.NotNull(webhookResult.LastAttempt);
+			Assert.True(webhookResult.LastAttempt.HasResponse);
+
+			Assert.NotNull(lastWebhook);
+			Assert.Equal("data.created", lastWebhook.EventType);
+			Assert.Equal(eventInfo.Id, lastWebhook.Id);
+			Assert.Equal(eventInfo.TimeStamp.ToUnixTimeSeconds(), lastWebhook.TimeStamp.ToUnixTimeSeconds());
+
+			var testData = Assert.IsType<JsonElement>(lastWebhook.Data);
+
+			Assert.Equal("test", testData.GetProperty("type").GetString());
+		}
+
+		[Fact]
+		public async Task DeliverWebhookFromMultipleEvents() {
+			var subscriptionId = CreateSubscription("Data Created", "data.created", new WebhookFilter("hook.data[0].type.equals(\"test\")", "linq"));
+			EventNotification notification = new[] {
+				new EventInfo("test", "data.created", data: new {
+					creationTime = DateTimeOffset.UtcNow,
+					type = "test"
+				}),
+				new EventInfo("test", "data.created", data: new {
+					creationTime = DateTimeOffset.UtcNow.AddSeconds(3),
+					type = "test2"
+				})
+			};
 
 			var result = await notifier.NotifyAsync(notification, CancellationToken.None);
 
@@ -120,13 +165,17 @@ namespace Deveel.Webhooks {
 
 			Assert.NotNull(lastWebhook);
 			Assert.Equal("data.created", lastWebhook.EventType);
-			Assert.Equal(notification.Id, lastWebhook.Id);
-			Assert.Equal(notification.TimeStamp.ToUnixTimeSeconds(), lastWebhook.TimeStamp.ToUnixTimeSeconds());
+			Assert.Equal(notification.NotificationId, lastWebhook.Id);
+			// TODO: how to determine the timestamp of the notification that has multiple events?
+			// Assert.Equal(notification.TimeStamp.ToUnixTimeSeconds(), lastWebhook.TimeStamp.ToUnixTimeSeconds());
 
 			var testData = Assert.IsType<JsonElement>(lastWebhook.Data);
 
-			Assert.Equal("test", testData.GetProperty("type").GetString());
+			Assert.Equal(JsonValueKind.Array, testData.ValueKind);
+			Assert.Equal(2, testData.GetArrayLength());
+			Assert.Equal("test", testData[0].GetProperty("type").GetString());
 		}
+
 
 		[Fact]
 		public async Task DeliverWebhookFromEvent_NoTransformations() {

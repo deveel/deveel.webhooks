@@ -12,10 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using System.Threading;
-using System.Threading.Tasks;
-
 namespace Deveel.Webhooks {
 	/// <summary>
 	/// Defines a service that is able to log the result of 
@@ -28,8 +24,8 @@ namespace Deveel.Webhooks {
 		/// <summary>
 		/// Logs the result of a delivery of a webhook
 		/// </summary>
-		/// <param name="eventInfo">
-		/// The information about the event that triggered the notification.
+		/// <param name="notification">
+		/// 
 		/// </param>
 		/// <param name="subscription">
 		/// The subscription that was used to deliver the webhook
@@ -43,6 +39,6 @@ namespace Deveel.Webhooks {
 		/// <returns>
 		/// Returns a task that when completed will log the result of the delivery
 		/// </returns>
-		Task LogResultAsync(EventInfo eventInfo, IWebhookSubscription subscription, WebhookDeliveryResult<TWebhook> result, CancellationToken cancellationToken = default);
+		Task LogResultAsync(EventNotification notification, IWebhookSubscription subscription, WebhookDeliveryResult<TWebhook> result, CancellationToken cancellationToken = default);
 	}
 }

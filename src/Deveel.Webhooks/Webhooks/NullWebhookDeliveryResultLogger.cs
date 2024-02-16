@@ -12,9 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Threading;
-using System.Threading.Tasks;
-
 namespace Deveel.Webhooks {
 	/// <summary>
 	/// A default implementation of <see cref="IWebhookDeliveryResultLogger{TWebhook}"/> that
@@ -34,7 +31,7 @@ namespace Deveel.Webhooks {
 		public static readonly NullWebhookDeliveryResultLogger<TWebhook> Instance = new NullWebhookDeliveryResultLogger<TWebhook>();
 
 		/// <inheritdoc/>
-		public Task LogResultAsync(EventInfo eventInfo, IWebhookSubscription subscription, WebhookDeliveryResult<TWebhook> result, CancellationToken cancellationToken) {
+		public Task LogResultAsync(EventNotification notification, IWebhookSubscription subscription, WebhookDeliveryResult<TWebhook> result, CancellationToken cancellationToken) {
 			return Task.CompletedTask;
 		}
 	}

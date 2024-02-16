@@ -76,7 +76,7 @@ namespace Deveel.Webhooks {
 				var list = await GetCachedAsync(eventType, cancellationToken);
 
 				if (list == null) {
-					logger.LogTrace("No webhook subscriptions to event {EventType} of tenant {TenantId} were found in cache", eventType);
+					logger.LogTrace("No webhook subscriptions to event {EventType} were found in cache", eventType);
 
 					var result = await repository.GetByEventTypeAsync(eventType, activeOnly, cancellationToken);
 					list = result.Cast<IWebhookSubscription>().ToList();

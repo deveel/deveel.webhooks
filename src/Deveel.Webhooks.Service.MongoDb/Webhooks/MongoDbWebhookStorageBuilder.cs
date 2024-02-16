@@ -202,7 +202,7 @@ namespace Deveel.Webhooks {
 		/// <returns>
 		/// Returns the current instance of the builder for chaining.
 		/// </returns>
-		public MongoDbWebhookStorageBuilder<TSubscription> UseWebhookConverter<TWebhook>(Func<EventInfo, TWebhook, MongoWebhook> converter)
+		public MongoDbWebhookStorageBuilder<TSubscription> UseWebhookConverter<TWebhook>(Func<EventNotification, TWebhook, MongoWebhook> converter)
 			where TWebhook : class {
 
 			Services.AddSingleton<IMongoWebhookConverter<TWebhook>>(new MongoWebhookConverterWrapper<TWebhook>(converter));
@@ -211,13 +211,14 @@ namespace Deveel.Webhooks {
 		}
 
 		private class MongoWebhookConverterWrapper<TWebhook> : IMongoWebhookConverter<TWebhook> where TWebhook : class {
-			private readonly Func<EventInfo, TWebhook, MongoWebhook> converter;
+			private readonly Func<EventNotification, TWebhook, MongoWebhook> converter;
 
-			public MongoWebhookConverterWrapper(Func<EventInfo, TWebhook, MongoWebhook> converter) {
+			public MongoWebhookConverterWrapper(Func<EventNotification, TWebhook, MongoWebhook> converter) {
 				this.converter = converter;
 			}
 
-			public MongoWebhook ConvertWebhook(EventInfo eventInfo, TWebhook webhook) => converter.Invoke(eventInfo, webhook);
+			public MongoWebhook ConvertWebhook(EventNotification notification, TWebhook webhook) 
+				=> converter.Invoke(notification, webhook);
 		}
 	}
 }

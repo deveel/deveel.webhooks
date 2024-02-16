@@ -32,8 +32,8 @@ namespace Deveel.Webhooks {
 		/// Converts the given <see cref="EventInfo"/> and the webhook object into
 		/// a <see cref="MongoWebhook"/> object.
 		/// </summary>
-		/// <param name="eventInfo">
-		/// The event information that is being notified.
+		/// <param name="notification">
+		/// The event notification that was sent to the subscribers.
 		/// </param>
 		/// <param name="webhook">
 		/// The webhook that was notified to the subscribers.
@@ -42,7 +42,7 @@ namespace Deveel.Webhooks {
 		/// Returns an instance of <see cref="MongoWebhook"/> that represents the
 		/// webhook that can be stored into the database.
 		/// </returns>
-		public MongoWebhook ConvertWebhook(EventInfo eventInfo, TWebhook webhook) {
+		public MongoWebhook ConvertWebhook(EventNotification notification, TWebhook webhook) {
 			if (webhook is IWebhook obj) {
 				return new MongoWebhook {
 					WebhookId = obj.Id,
@@ -52,10 +52,14 @@ namespace Deveel.Webhooks {
 				};
 			}
 
+			// TODO: we should support multiple events in a single notification
+
+			var firstEvent = notification.Events.First();
+
 			return new MongoWebhook {
-				EventType = eventInfo.EventType,
-				TimeStamp = eventInfo.TimeStamp,
-				WebhookId = eventInfo.Id,
+				EventType = notification.EventType,
+				TimeStamp = firstEvent.TimeStamp,
+				WebhookId = notification.NotificationId,
 				Data = BsonValueUtil.ConvertData(webhook)
 			};
 		}

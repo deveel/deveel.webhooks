@@ -19,7 +19,7 @@ using System.Threading.Tasks;
 namespace Deveel.Webhooks {
 	/// <summary>
 	/// Defines a factory that can create <typeparamref name="TWebhook"/> 
-	/// instances given the subscription and the event information.
+	/// instances given the subscription and the events notification.
 	/// </summary>
 	/// <typeparam name="TWebhook">
 	/// The type of the webhook instance to create.
@@ -31,8 +31,8 @@ namespace Deveel.Webhooks {
 		/// <param name="subscription">
 		/// The subscription that is requesting the webhook.
 		/// </param>
-		/// <param name="eventInfo">
-		/// The event information that is triggering the delivery of the webhook.
+		/// <param name="notification">
+		/// The notification that is being delivered to the receiver.
 		/// </param>
 		/// <param name="cancellationToken">
 		/// A token that can be used to cancel the operation.
@@ -41,6 +41,6 @@ namespace Deveel.Webhooks {
 		/// Returns an instance of the webhook that will be delivered to
 		/// the receiver that is subscribed to the event.
 		/// </returns>
-		Task<TWebhook> CreateAsync(IWebhookSubscription subscription, EventInfo eventInfo, CancellationToken cancellationToken = default);
+		Task<IList<TWebhook>> CreateAsync(IWebhookSubscription subscription, EventNotification notification, CancellationToken cancellationToken = default);
 	}
 }

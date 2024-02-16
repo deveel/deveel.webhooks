@@ -14,6 +14,7 @@
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Options;
 
 namespace Deveel.Webhooks {
 	/// <summary>
@@ -99,7 +100,7 @@ namespace Deveel.Webhooks {
 		/// <returns>
 		/// Returns an instance of the builder to allow chaining.
 		/// </returns>
-		public WebhookNotifierBuilder<TWebhook> UseDefaultSender() 
+		public WebhookNotifierBuilder<TWebhook> UseSender() 
 			=> UseSender((WebhookSenderBuilder<TWebhook> builder) => { });
 
 		/// <summary>
@@ -188,6 +189,37 @@ namespace Deveel.Webhooks {
 
 			Services.TryAdd(new ServiceDescriptor(typeof(IWebhookFactory<TWebhook>), typeof(TFactory), lifetime));
 			Services.Add(new ServiceDescriptor(typeof(TFactory), typeof(TFactory), lifetime));
+
+			return this;
+		}
+
+		public WebhookNotifierBuilder<TWebhook> UseWebhookFactory() {
+			if (!typeof(TWebhook).IsClass || typeof(TWebhook).IsAbstract)
+				throw new InvalidOperationException("The webhook type must be a concrete class");
+
+			// TODO: check if the TWebhook has a parameterless constructor
+			if (!(typeof(TWebhook).GetConstructor(Type.EmptyTypes)?.IsPublic ?? false))
+				throw new InvalidOperationException("The webhook type must have a public parameterless constructor");
+
+			Services.RemoveAll<IWebhookFactory<TWebhook>>();
+
+			var factoryType = typeof(DefaultWebhookFactory<>).MakeGenericType(typeof(TWebhook));
+			Services.AddSingleton(typeof(IWebhookFactory<TWebhook>), factoryType);
+			Services.AddSingleton(factoryType);
+
+			if (typeof(TWebhook).IsAssignableFrom(typeof(Webhook))) {
+				Services.AddSingleton(typeof(DefaultWebhookFactory));
+			}
+
+			return this;
+		}
+
+		public WebhookNotifierBuilder<TWebhook> UseWebhookFactory(Action<WebhookFactoryOptions<TWebhook>> configure) {
+			UseWebhookFactory();
+			if (configure != null) {
+				Services.AddOptions<WebhookFactoryOptions<TWebhook>>()
+					.Configure(configure);
+			}
 
 			return this;
 		}

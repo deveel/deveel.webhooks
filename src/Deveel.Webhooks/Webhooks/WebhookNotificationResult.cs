@@ -30,21 +30,23 @@ namespace Deveel.Webhooks {
 		/// <summary>
 		/// Constructs a notification result for the given event.
 		/// </summary>
-		/// <param name="eventInfo">
-		/// The information of the event that was notified through webhooks.
+		/// <param name="notification">
+		/// The aggregate of the events to be notified to the subscribers.
 		/// </param>
 		/// <exception cref="ArgumentNullException">
-		/// Thrown when the given <paramref name="eventInfo"/> is <c>null</c>.
+		/// Thrown when the given <paramref name="notification"/> is <c>null</c>.
 		/// </exception>
-		public WebhookNotificationResult(EventInfo eventInfo) {
+		public WebhookNotificationResult(EventNotification notification) {
+			ArgumentNullException.ThrowIfNull(notification, nameof(notification));
+
 			deliveryResults = new ConcurrentDictionary<string, IList<WebhookDeliveryResult<TWebhook>>>();
-			EventInfo = eventInfo;
+			Notification = notification;
 		}
 
 		/// <summary>
 		/// Gets the information of the event that was notified.
 		/// </summary>
-		public EventInfo EventInfo { get; }
+		public EventNotification Notification { get; }
 
 		/// <summary>
 		/// Adds a delivery result for the given subscription.

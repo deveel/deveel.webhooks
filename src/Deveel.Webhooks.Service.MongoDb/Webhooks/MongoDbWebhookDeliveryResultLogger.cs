@@ -12,13 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Collections;
-using System.Reflection;
-
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
-
-using MongoDB.Bson;
 
 namespace Deveel.Webhooks {
 	/// <summary>
@@ -75,6 +70,9 @@ namespace Deveel.Webhooks {
 		/// Converts the given result to an object that can be stored in the
 		/// MongoDB database collection.
 		/// </summary>
+		/// <param name="notification">
+		/// The aggregate of the events that are being delivered to the receiver.
+		/// </param>
 		/// <param name="eventInfo">
 		/// The information about the event that triggered the delivery of the webhook.
 		/// </param>
@@ -87,14 +85,14 @@ namespace Deveel.Webhooks {
 		/// <returns>
 		/// Returns an object that can be stored in the MongoDB database collection.
 		/// </returns>
-		protected virtual TResult ConvertResult(EventInfo eventInfo, IWebhookSubscription subscription, WebhookDeliveryResult<TWebhook> result) {
+		protected virtual TResult ConvertResult(EventNotification notification, EventInfo eventInfo, IWebhookSubscription subscription, WebhookDeliveryResult<TWebhook> result) {
 			var obj = new TResult();
 
 			obj.TenantId = subscription.TenantId;
 			obj.OperationId = result.OperationId;
 			obj.EventInfo = CreateEvent(eventInfo);
 			obj.Receiver = CreateReceiver(subscription);
-			obj.Webhook = ConvertWebhook(eventInfo, result.Webhook);
+			obj.Webhook = ConvertWebhook(notification, result.Webhook);
 			obj.DeliveryAttempts = result.Attempts?.Select(ConvertDeliveryAttempt).ToList() 
 				?? new List<MongoWebhookDeliveryAttempt>();
 
@@ -162,8 +160,8 @@ namespace Deveel.Webhooks {
 		/// Converts the given webhook to an object that can be stored in the
 		/// MongoDB database collection.
 		/// </summary>
-		/// <param name="eventInfo">
-		/// The information about the event that triggered the delivery of the webhook.
+		/// <param name="notification">
+		/// The aggregate of the events that are being delivered to the receiver.
 		/// </param>
 		/// <param name="webhook">
 		/// The instance of the webhook to convert.
@@ -175,15 +173,15 @@ namespace Deveel.Webhooks {
 		/// Thrown when the given type of webhook is not supported by this instance and
 		/// no converter was provided.
 		/// </exception>
-		protected virtual MongoWebhook ConvertWebhook(EventInfo eventInfo, TWebhook webhook) {
+		protected virtual MongoWebhook ConvertWebhook(EventNotification notification, TWebhook webhook) {
 			if (webhookConverter != null)
-				return webhookConverter.ConvertWebhook(eventInfo, webhook);
+				return webhookConverter.ConvertWebhook(notification, webhook);
 
 			throw new NotSupportedException("The given type of webhook is not supported by this instance of the logger");
 		}
 
 		/// <inheritdoc/>
-		public async Task LogResultAsync(EventInfo eventInfo, IWebhookSubscription subscription, WebhookDeliveryResult<TWebhook> result, CancellationToken cancellationToken) {
+		public async Task LogResultAsync(EventNotification notification, IWebhookSubscription subscription, WebhookDeliveryResult<TWebhook> result, CancellationToken cancellationToken) {
 			ArgumentNullException.ThrowIfNull(result, nameof(result));
 			ArgumentNullException.ThrowIfNull(subscription, nameof(subscription));
 
@@ -195,11 +193,11 @@ namespace Deveel.Webhooks {
 				typeof(TWebhook), subscription.TenantId);
 
 			try {
-				var resultObj = ConvertResult(eventInfo, subscription, result);
+				var results = notification.Select(e => ConvertResult(notification, e, subscription, result));
 
 				var repository = await RepositoryProvider.GetRepositoryAsync(subscription.TenantId, cancellationToken);
 
-				await repository.AddAsync(resultObj, cancellationToken);
+				await repository.AddRangeAsync(results, cancellationToken);
 			} catch (Exception ex) {
 				Logger.LogError(ex, "Could not log the result of the delivery of the Webhook of type '{WebhookType}' for tenant '{TenantId}' because of an error",
 					typeof(TWebhook), subscription.TenantId);

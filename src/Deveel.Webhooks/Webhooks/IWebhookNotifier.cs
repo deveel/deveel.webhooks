@@ -36,7 +36,9 @@ namespace Deveel.Webhooks {
 		/// Notifies to the subscribers the occurrence of the
 		/// given event.
 		/// </summary>
-		/// <param name="eventInfo">The ifnormation of the event that occurred.</param>
+		/// <param name="notification">
+		/// The aggregate of the events to be notified to the subscribers.
+		/// </param>
 		/// <param name="cancellationToken">
 		/// A token that can be used to cancel the notification process.
 		/// </param>
@@ -44,6 +46,6 @@ namespace Deveel.Webhooks {
 		/// Returns an object that describes the aggregated final result of 
 		/// the notification process executed.
 		/// </returns>
-		Task<WebhookNotificationResult<TWebhook>> NotifyAsync(EventInfo eventInfo, CancellationToken cancellationToken = default);
+		Task<WebhookNotificationResult<TWebhook>> NotifyAsync(EventNotification notification, CancellationToken cancellationToken = default);
 	}
 }

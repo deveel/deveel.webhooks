@@ -32,11 +32,11 @@ jobs:
       run: echo "DOTNET_TFM=net6.0" >> $GITHUB_ENV
 
     - name: Set the TFM for .NET 7.0
-      if: matrix.dotnet-version == '7.0.x'
+      if: matrix.dotnet == '7.0.x'
       run: echo "DOTNET_TFM=net7.0" >> $GITHUB_ENV
 
     - name: Set the TFM for .NET 8.0
-      if: matrix.dotnet-version == '8.0.x'
+      if: matrix.dotnet == '8.0.x'
       run: echo "DOTNET_TFM=net8.0" >> $GITHUB_ENV
           
     - name: Restore dependencies

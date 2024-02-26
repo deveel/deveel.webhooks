@@ -31,31 +31,35 @@ jobs:
       if: matrix.dotnet == '6.0.x' && startsWith(matrix.os, 'ubuntu')
       run: echo "DOTNET_TFM=net6.0" >> $GITHUB_ENV
 
+    - name: Set the TFM for .NET 6.0 in Windows
+      if: matrix.dotnet == '6.0.x' && startsWith(matrix.os, 'windows')
+      run: echo "DOTNET_TFM=net6.0-windows" | Out-File -FilePath $env:GITHUB_ENV -Append
+
     - name: Set the TFM for .NET 7.0 in Ubuntu
       if: matrix.dotnet == '7.0.x' && startsWith(matrix.os, 'ubuntu')
       run: echo "DOTNET_TFM=net7.0" >> $GITHUB_ENV
 
+    - name: Set the TFM for .NET 7.0 in Windows
+      if: matrix.dotnet == '7.0.x' && startsWith(matrix.os, 'windows')
+      run: echo "DOTNET_TFM=net7.0-windows" | Out-File -FilePath $env:GITHUB_ENV -Append
+
     - name: Set the TFM for .NET 8.0 in Ubuntu
       if: matrix.dotnet == '8.0.x' && startsWith(matrix.os, 'ubuntu')
       run: echo "DOTNET_TFM=net8.0" >> $GITHUB_ENV
+
+    - name: Set the TFM for .NET 8.0 in Windows
+      if: matrix.dotnet == '8.0.x' && startsWith(matrix.os, 'windows')
+      run: echo "DOTNET_TFM=net8.0-windows" | Out-File -FilePath $env:GITHUB_ENV -Append
           
     - name: Restore dependencies
       run: dotnet restore
       
-    - name: Build (Ubuntu)
+    - name: Build
       if: startsWith(matrix.os, 'ubuntu')
       run: dotnet build --no-restore -c Release -f ${{ env.DOTNET_TFM }}
-
-    - name: Build (Windows)
-      if: startsWith(matrix.os, 'windows')
-      run: dotnet build --no-restore -c Release -f $env:DOTNET_TFM
     
-    - name: Test (Ubuntu)
+    - name: Test
       run: dotnet test --no-build --verbosity normal -c  Release -f ${{ env.DOTNET_TFM }} /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:Exclude="[*.XUnit]*"
-
-    - name: Test (Windows)
-      if: startsWith(matrix.os, 'windows')
-      run: dotnet test --no-build --verbosity normal -c  Release -f $env:DOTNET_TFM /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:Exclude="[*.XUnit]*"
       
     - name: Collect to Codecov
       uses: codecov/codecov-action@v3

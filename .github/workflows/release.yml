@@ -29,15 +29,27 @@ jobs:
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: ${{ matrix.dotnet-version }}
+
+    - name: Set the TFM for .NET 6.0
+      if: matrix.dotnet-version == '6.0.x'
+      run: echo "DOTNET_TFM=net6.0" >> $GITHUB_ENV
+
+    - name: Set the TFM for .NET 7.0
+      if: matrix.dotnet-version == '7.0.x'
+      run: echo "DOTNET_TFM=net7.0" >> $GITHUB_ENV
+
+    - name: Set the TFM for .NET 8.0
+      if: matrix.dotnet-version == '8.0.x'
+      run: echo "DOTNET_TFM=net8.0" >> $GITHUB_ENV
           
     - name: Restore dependencies
       run: dotnet restore
       
     - name: Build
-      run: dotnet build --no-restore -c Release /p:Version=$VERSION
+      run: dotnet build --no-restore -c Release /p:Version=$VERSION -f ${{ env.DOTNET_TFM }}
     
     - name: Test
-      run: dotnet test --no-build --verbosity normal -c Release /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:Exclude="[*.XUnit]*"
+      run: dotnet test --no-build --verbosity normal -c Release -f ${{ env.DOTNET_TFM }} /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:Exclude="[*.XUnit]*"
       
     - name: Collect to Codecov
       uses: codecov/codecov-action@v3

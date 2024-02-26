@@ -38,7 +38,7 @@ jobs:
     - name: Set the TFM in Windows
       if: startsWith(matrix.os, 'windows')
       run: |
-          $VERSION = $env:{{ matrix.dotnet }}.Substring(0, $env:{{ matrix.dotnet }}.LastIndexOf('.'))
+          $VERSION = ${{ matrix.dotnet }}.Substring(0, ${{ matrix.dotnet }}.LastIndexOf('.'))
           $DOTNET_TFM = "net$VERSION"
           echo "DOTNET_TFM=$DOTNET_TFM" | Out-File -FilePath $env:GITHUB_ENV -Append
 

@@ -26,10 +26,7 @@ jobs:
       uses: actions/setup-dotnet@v3
       with:
         dotnet-version: ${{ matrix.dotnet-version }}
-    
-    # - name: Add Deveel GitHub NuGet Source
-    #   run: dotnet nuget add source "https://nuget.pkg.github.com/deveel/index.json" -n "Deveel GitHub" -u ${{ secrets.DEVEEL_NUGET_USER }} -p ${{ secrets.DEVEEL_NUGET_TOKEN }} --store-password-in-clear-text
-      
+          
     - name: Restore dependencies
       run: dotnet restore
       

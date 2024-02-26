@@ -20,16 +20,13 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
     - name: Setup .NET ${{ matrix.dotnet-version }}
-      uses: actions/setup-dotnet@v3
+      uses: actions/setup-dotnet@v4
       with:
         dotnet-version: ${{ matrix.dotnet-version }}
-    
-    # - name: Add Deveel GitHub NuGet Source
-    #   run: dotnet nuget add source "https://nuget.pkg.github.com/deveel/index.json" -n "Deveel GitHub" -u ${{ secrets.DEVEEL_NUGET_USER }} -p ${{ secrets.DEVEEL_NUGET_TOKEN }} --store-password-in-clear-text
-      
+          
     - name: Restore dependencies
       run: dotnet restore
       
@@ -44,18 +41,19 @@ jobs:
       with:
         token: ${{ secrets.OCM_CODECOV_TOKEN }}
 
-  pack:
+  publish:
     needs: build
     name: "Pack"
     runs-on: ubuntu-latest
     steps:
+    - uses: actions/checkout@v4
     - name: Pack
-      run: dotnet pack --configuration Release --no-restore --no-build --include-symbols --version-suffix $GITHUB_RUN_ID --output ./nuget
+      run: dotnet pack --configuration Release --include-symbols --version-suffix $GITHUB_RUN_ID --output ./nuget
 
     - name: Push Packages to GitHub NuGet
       run: dotnet nuget push ./nuget/**/*.nupkg --skip-duplicate --api-key ${{secrets.GITHUB_TOKEN}} --source "https://nuget.pkg.github.com/deveel/index.json"
 
   clean:
-    needs: pack
+    needs: publish
     name: "Clean Old Packages"
     uses: ./.github/workflows/clean-packages.yml

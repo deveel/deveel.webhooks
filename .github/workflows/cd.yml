@@ -31,6 +31,7 @@ jobs:
       if: startsWith(matrix.os, 'ubuntu')
       run: |
           VERSION=$(echo "${{ matrix.dotnet }}" | sed 's/[^0-9.]*//g')
+          VERSION=$(echo "${VERSION}" | sed 's/\.$//')
           DOTNET_TFM=".net${VERSION}"
           echo "DOTNET_TFM=$DOTNET_TFM" >> $GITHUB_ENV
 
@@ -38,6 +39,7 @@ jobs:
       if: startsWith(matrix.os, 'windows')
       run: |
           $VERSION = ${{ matrix.dotnet }} -replace '[^0-9.]', ''
+          $VERSION = $VERSION.TrimEnd('.')
           $DOTNET_TFM = ".net$VERSION"
           echo "DOTNET_TFM=$DOTNET_TFM" | Out-File -FilePath $env:GITHUB_ENV -Append
 

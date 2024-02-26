@@ -32,7 +32,7 @@ jobs:
       run: |
           VERSION=$(echo "${{ matrix.dotnet }}" | sed 's/[^0-9.]*//g')
           VERSION=$(echo "${VERSION}" | sed 's/\.$//')
-          DOTNET_TFM=".net${VERSION}"
+          DOTNET_TFM="net${VERSION}"
           echo "DOTNET_TFM=$DOTNET_TFM" >> $GITHUB_ENV
 
     - name: Set the TFM in Windows
@@ -40,7 +40,7 @@ jobs:
       run: |
           $VERSION = ${{ matrix.dotnet }} -replace '[^0-9.]', ''
           $VERSION = $VERSION.TrimEnd('.')
-          $DOTNET_TFM = ".net$VERSION"
+          $DOTNET_TFM = "net$VERSION"
           echo "DOTNET_TFM=$DOTNET_TFM" | Out-File -FilePath $env:GITHUB_ENV -Append
 
     # - name: Set the TFM for .NET 6.0 in Ubuntu

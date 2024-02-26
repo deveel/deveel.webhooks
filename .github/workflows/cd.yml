@@ -33,7 +33,7 @@ jobs:
 
     - name: Set the TFM for .NET 6.0 in Windows
       if: matrix.dotnet == '6.0.x' && startsWith(matrix.os, 'windows')
-      run: echo "DOTNET_TFM=net6.0-windows" | Out-File -FilePath $env:GITHUB_ENV -Append
+      run: echo "DOTNET_TFM=net6.0" | Out-File -FilePath $env:GITHUB_ENV -Append
 
     - name: Set the TFM for .NET 7.0 in Ubuntu
       if: matrix.dotnet == '7.0.x' && startsWith(matrix.os, 'ubuntu')
@@ -41,7 +41,7 @@ jobs:
 
     - name: Set the TFM for .NET 7.0 in Windows
       if: matrix.dotnet == '7.0.x' && startsWith(matrix.os, 'windows')
-      run: echo "DOTNET_TFM=net7.0-windows" | Out-File -FilePath $env:GITHUB_ENV -Append
+      run: echo "DOTNET_TFM=net7.0" | Out-File -FilePath $env:GITHUB_ENV -Append
 
     - name: Set the TFM for .NET 8.0 in Ubuntu
       if: matrix.dotnet == '8.0.x' && startsWith(matrix.os, 'ubuntu')
@@ -49,13 +49,12 @@ jobs:
 
     - name: Set the TFM for .NET 8.0 in Windows
       if: matrix.dotnet == '8.0.x' && startsWith(matrix.os, 'windows')
-      run: echo "DOTNET_TFM=net8.0-windows" | Out-File -FilePath $env:GITHUB_ENV -Append
+      run: echo "DOTNET_TFM=net8.0" | Out-File -FilePath $env:GITHUB_ENV -Append
           
     - name: Restore dependencies
       run: dotnet restore
       
     - name: Build
-      if: startsWith(matrix.os, 'ubuntu')
       run: dotnet build --no-restore -c Release -f ${{ env.DOTNET_TFM }}
     
     - name: Test

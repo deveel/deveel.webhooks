@@ -14,7 +14,7 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        dotnet-verion: [ '6.0.x', '7.0.x', '8.0.x' ]
+        dotnet: [ '6.0.x', '7.0.x', '8.0.x' ]
         os: [ ubuntu-latest, windows-latest ]
     
     runs-on: ${{ matrix.os }}
@@ -22,21 +22,21 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - name: Setup .NET ${{ matrix.dotnet-version }}
+    - name: Setup .NET ${{ matrix.dotnet }}
       uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: ${{ matrix.dotnet-version }}
+        dotnet-version: ${{ matrix.dotnet }}
 
     - name: Set the TFM for .NET 6.0
-      if: ${{ matrix.dotnet-version }} == '6.0.x'
+      if: matrix.dotnet == '6.0.x'
       run: echo "DOTNET_TFM=net6.0" >> $GITHUB_ENV
 
     - name: Set the TFM for .NET 7.0
-      if: ${{ matrix.dotnet-version }} == '7.0.x'
+      if: matrix.dotnet-version == '7.0.x'
       run: echo "DOTNET_TFM=net7.0" >> $GITHUB_ENV
 
     - name: Set the TFM for .NET 8.0
-      if: ${{ matrix.dotnet-version }} == '8.0.x'
+      if: matrix.dotnet-version == '8.0.x'
       run: echo "DOTNET_TFM=net8.0" >> $GITHUB_ENV
           
     - name: Restore dependencies

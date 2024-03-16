@@ -35,10 +35,11 @@ namespace Deveel.Webhooks {
 		/// <returns>
 		/// Returns the collection where the webhook management service is registered.
 		/// </returns>
-		public static IServiceCollection AddWebhookSubscriptions<TSubscription>(this IServiceCollection services, Action<WebhookSubscriptionBuilder<TSubscription>>? configure = null) 
+		public static IServiceCollection AddWebhookSubscriptions<TSubscription, TKey>(this IServiceCollection services, Action<WebhookSubscriptionBuilder<TSubscription, TKey>>? configure = null) 
+			where TKey : notnull
 			where TSubscription : class, IWebhookSubscription {
 
-			var builder = services.AddWebhookSubscriptions<TSubscription>();
+			var builder = services.AddWebhookSubscriptions<TSubscription, TKey>();
 			configure?.Invoke(builder);
 
 			return services;
@@ -57,9 +58,10 @@ namespace Deveel.Webhooks {
 		/// <returns>
 		/// Returns the builder used to configure the service.
 		/// </returns>
-		public static WebhookSubscriptionBuilder<TSubscription> AddWebhookSubscriptions<TSubscription>(this IServiceCollection services) 
-			where TSubscription : class, IWebhookSubscription {
-			var builder = new WebhookSubscriptionBuilder<TSubscription>(services);
+		public static WebhookSubscriptionBuilder<TSubscription,TKey> AddWebhookSubscriptions<TSubscription,TKey>(this IServiceCollection services) 
+			where TSubscription : class, IWebhookSubscription
+			where TKey : notnull {
+			var builder = new WebhookSubscriptionBuilder<TSubscription, TKey>(services);
 
 			services.TryAddSingleton(builder);
 

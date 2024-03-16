@@ -4,21 +4,23 @@ using Deveel.Webhooks.Models;
 
 using Microsoft.AspNetCore.Mvc;
 
+using MongoDB.Bson;
+
 namespace Deveel.Webhooks.Controllers {
 	[ApiController]
 	[Route("subscriptions")]
 	[Produces("application/json")]
 	public class SubscriptionController : ControllerBase {
-		private readonly WebhookSubscriptionManager<MongoWebhookSubscription> subscriptionManager;
+		private readonly WebhookSubscriptionManager<MongoWebhookSubscription, ObjectId> subscriptionManager;
 
-		public SubscriptionController(WebhookSubscriptionManager<MongoWebhookSubscription> subscriptionManager) {
+		public SubscriptionController(WebhookSubscriptionManager<MongoWebhookSubscription, ObjectId> subscriptionManager) {
 			this.subscriptionManager = subscriptionManager;
 		}
 
 		[HttpGet("{id}")]
 		[ProducesResponseType(typeof(MongoWebhookSubscription), 200)]
 		public async Task<IActionResult> Get([FromRoute] string id) {
-			var subscription = await subscriptionManager.FindByKeyAsync(id);
+			var subscription = await subscriptionManager.FindAsync(ObjectId.Parse(id));
 			if (subscription == null)
 				return NotFound();
 
@@ -37,7 +39,7 @@ namespace Deveel.Webhooks.Controllers {
 		[HttpPut("{id}")]
 		[ProducesResponseType(typeof(MongoWebhookSubscription), 200)]
 		public async Task<IActionResult> Put([FromRoute] string id, [FromBody] WebhookSubscriptionModel model) {
-			var subscription = await subscriptionManager.FindByKeyAsync(id);
+			var subscription = await subscriptionManager.FindAsync(ObjectId.Parse(id));
 			if (subscription == null)
 				return NotFound();
 
@@ -51,7 +53,7 @@ namespace Deveel.Webhooks.Controllers {
 		[HttpDelete("{id}")]
 		[ProducesResponseType(204)]
 		public async Task<IActionResult> Delete([FromRoute] string id) {
-			var subscription = await subscriptionManager.FindByKeyAsync(id);
+			var subscription = await subscriptionManager.FindAsync(ObjectId.Parse(id));
 			if (subscription == null)
 				return NotFound();
 

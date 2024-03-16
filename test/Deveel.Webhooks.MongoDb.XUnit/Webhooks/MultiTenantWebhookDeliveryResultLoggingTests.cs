@@ -7,6 +7,8 @@ using Finbuckle.MultiTenant;
 
 using Microsoft.Extensions.DependencyInjection;
 
+using MongoDB.Bson;
+
 using Xunit.Abstractions;
 
 namespace Deveel.Webhooks {
@@ -16,8 +18,8 @@ namespace Deveel.Webhooks {
 
 		private readonly string tenantId = Guid.NewGuid().ToString();
 
-		private IWebhookSubscriptionRepositoryProvider<MongoWebhookSubscription> webhookStoreProvider;
-		private IWebhookDeliveryResultRepositoryProvider<MongoWebhookDeliveryResult> deliveryResultStoreProvider;
+		private IWebhookSubscriptionRepositoryProvider<MongoWebhookSubscription, ObjectId> webhookStoreProvider;
+		private IWebhookDeliveryResultRepositoryProvider<MongoWebhookDeliveryResult, ObjectId> deliveryResultStoreProvider;
 		private ITenantWebhookNotifier<Webhook> notifier;
 
 		private Webhook? lastWebhook;
@@ -25,8 +27,8 @@ namespace Deveel.Webhooks {
 
 		public MultiTenantWebhookDeliveryResultLoggingTests(MongoTestDatabase mongo, ITestOutputHelper outputHelper) 
 			: base(mongo, outputHelper) {
-			webhookStoreProvider = Services.GetRequiredService<IWebhookSubscriptionRepositoryProvider<MongoWebhookSubscription>>();
-			deliveryResultStoreProvider = Services.GetRequiredService<IWebhookDeliveryResultRepositoryProvider<MongoWebhookDeliveryResult>>();
+			webhookStoreProvider = Services.GetRequiredService<IWebhookSubscriptionRepositoryProvider<MongoWebhookSubscription, ObjectId>>();
+			deliveryResultStoreProvider = Services.GetRequiredService<IWebhookDeliveryResultRepositoryProvider<MongoWebhookDeliveryResult, ObjectId>>();
 			notifier = Services.GetRequiredService<ITenantWebhookNotifier<Webhook>>();
 		}
 
@@ -55,7 +57,7 @@ namespace Deveel.Webhooks {
 			base.ConfigureServices(services);
 		}
 
-		protected override void ConfigureWebhookService(WebhookSubscriptionBuilder<MongoWebhookSubscription> builder) {
+		protected override void ConfigureWebhookService(WebhookSubscriptionBuilder<MongoWebhookSubscription, ObjectId> builder) {
 			builder.UseSubscriptionManager()
 				.UseMongoDb(options => options.UseMultiTenant());
 		}

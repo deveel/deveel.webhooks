@@ -30,12 +30,12 @@ namespace Deveel.Webhooks {
 		/// <param name="lifetime"></param>
 		/// <returns></returns>
 		/// <exception cref="ArgumentException"></exception>
-		public static WebhookNotifierBuilder<TWebhook> UseDefaultTenantSubscriptionResolver<TWebhook>(this WebhookNotifierBuilder<TWebhook> builder, Type subscriptionType, ServiceLifetime lifetime = ServiceLifetime.Scoped)
+		public static WebhookNotifierBuilder<TWebhook> UseDefaultTenantSubscriptionResolver<TWebhook>(this WebhookNotifierBuilder<TWebhook> builder, Type subscriptionType, Type keyType, ServiceLifetime lifetime = ServiceLifetime.Scoped)
 			where TWebhook : class {
 			if (!typeof(IWebhookSubscription).IsAssignableFrom(subscriptionType))
 				throw new ArgumentException("The type specified is not a subscription type", nameof(subscriptionType));
 
-			var resolverType = typeof(TenantWebhookSubscriptionResolver<>).MakeGenericType(subscriptionType);
+			var resolverType = typeof(TenantWebhookSubscriptionResolver<,>).MakeGenericType(subscriptionType, keyType);
 			return builder.UseTenantSubscriptionResolver(resolverType, lifetime);
 		}
 
@@ -54,7 +54,7 @@ namespace Deveel.Webhooks {
 			if (!typeof(IWebhookSubscription).IsAssignableFrom(subscriptionType))
 				throw new ArgumentException("The type specified is not a subscription type", nameof(subscriptionType));
 
-			var resolverType = typeof(WebhookSubscriptionResolver<>).MakeGenericType(subscriptionType);
+			var resolverType = typeof(WebhookSubscriptionResolver<,>).MakeGenericType(subscriptionType, typeof(string));
 			return builder.UseSubscriptionResolver(resolverType, lifetime);
 		}
 	}

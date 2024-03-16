@@ -3,6 +3,8 @@ using Deveel.Webhooks.Services;
 
 using Finbuckle.MultiTenant;
 
+using MongoDB.Bson;
+
 namespace Deveel.Webhooks {
 	public class Program {
 		public static void Main(string[] args) {
@@ -33,7 +35,7 @@ namespace Deveel.Webhooks {
 					.UseWebhookFactory<UserCreatedWebhookFactory>()
 					.UseMongoSubscriptionResolver());
 
-			builder.Services.AddWebhookSubscriptions<MongoWebhookSubscription>()
+			builder.Services.AddWebhookSubscriptions<MongoWebhookSubscription, ObjectId>()
 				.UseMongoDb("WebhookSubscriptions");
 
 			var app = builder.Build();

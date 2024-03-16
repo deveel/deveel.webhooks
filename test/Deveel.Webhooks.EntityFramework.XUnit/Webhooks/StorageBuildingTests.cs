@@ -9,13 +9,13 @@ namespace Deveel.Webhooks {
 		[Fact]
 		public static void UseDefaultRepository() {
 			var services = new ServiceCollection();
-			services.AddWebhookSubscriptions<DbWebhookSubscription>()
+			services.AddWebhookSubscriptions<DbWebhookSubscription, string>()
 				.UseEntityFramework(ef => ef.UseContext(options => options.UseSqlite()));
 
 			var provider = services.BuildServiceProvider();
 
-			Assert.NotNull(provider.GetService<IWebhookSubscriptionRepository<DbWebhookSubscription>>());
-			Assert.NotNull(provider.GetService<IRepository<DbWebhookSubscription>>());
+			Assert.NotNull(provider.GetService<IWebhookSubscriptionRepository<DbWebhookSubscription, string>>());
+			Assert.NotNull(provider.GetService<IRepository<DbWebhookSubscription, string>>());
 			Assert.NotNull(provider.GetService<EntityWebhookSubscriptionRepository<DbWebhookSubscription>>());
 			Assert.NotNull(provider.GetService<EntityWebhookSubscriptionRepository>());
 		}
@@ -23,20 +23,20 @@ namespace Deveel.Webhooks {
 		[Fact]
 		public static void UseCustomRepository() {
 			var services = new ServiceCollection();
-			services.AddWebhookSubscriptions<DbWebhookSubscription>()
+			services.AddWebhookSubscriptions<DbWebhookSubscription, string>()
 				.UseEntityFramework(ef => ef
 					.UseContext(options => options.UseSqlite())
 					.UseSubscriptionRepository<MyWebhookSubscriptionRepository>());
 
 			var provider = services.BuildServiceProvider();
 
-			Assert.NotNull(provider.GetService<IWebhookSubscriptionRepository<DbWebhookSubscription>>());
-			Assert.NotNull(provider.GetService<IRepository<DbWebhookSubscription>>());
+			Assert.NotNull(provider.GetService<IWebhookSubscriptionRepository<DbWebhookSubscription, string>>());
+			Assert.NotNull(provider.GetService<IRepository<DbWebhookSubscription, string>>());
 			Assert.NotNull(provider.GetService<MyWebhookSubscriptionRepository>());
 			Assert.NotNull(provider.GetService<EntityWebhookSubscriptionRepository<DbWebhookSubscription>>());
 			Assert.Null(provider.GetService<EntityWebhookSubscriptionRepository>());
 
-			var repository = provider.GetService<IWebhookSubscriptionRepository<DbWebhookSubscription>>();
+			var repository = provider.GetService<IWebhookSubscriptionRepository<DbWebhookSubscription, string>>();
 
 			Assert.IsType<MyWebhookSubscriptionRepository>(repository);
 		}

@@ -14,6 +14,8 @@
 
 using Microsoft.Extensions.DependencyInjection;
 
+using MongoDB.Bson;
+
 namespace Deveel.Webhooks {
     /// <summary>
     /// Provides extensions to the <see cref="WebhookNotifierBuilder{TWebhook}"/>
@@ -56,7 +58,7 @@ namespace Deveel.Webhooks {
 		/// </returns>
 		public static WebhookNotifierBuilder<TWebhook> UseMongoTenantSubscriptionResolver<TWebhook>(this WebhookNotifierBuilder<TWebhook> builder)
 			where TWebhook : class {
-			return builder.UseDefaultTenantSubscriptionResolver(typeof(MongoWebhookSubscription));
+			return builder.UseDefaultTenantSubscriptionResolver(typeof(MongoWebhookSubscription), typeof(ObjectId));
 		}
 
 		/// <summary>

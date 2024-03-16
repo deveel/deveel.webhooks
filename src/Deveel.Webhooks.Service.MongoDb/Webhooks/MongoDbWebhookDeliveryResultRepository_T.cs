@@ -24,14 +24,15 @@ using MongoFramework.Linq;
 
 namespace Deveel.Webhooks {
 	/// <summary>
-	/// Provides an implementation of the <see cref="IWebhookDeliveryResultRepository{TResult}"/>
+	/// Provides an implementation of the <see cref="IWebhookDeliveryResultRepository{TResult,TKey}"/>
 	/// that is backed by a MongoDB database.
 	/// </summary>
 	/// <typeparam name="TResult">
 	/// The type of the result that is stored in the database.
 	/// </typeparam>
-	public class MongoDbWebhookDeliveryResultRepository<TResult> : MongoRepository<TResult>,
-		IWebhookDeliveryResultRepository<TResult>
+	public class MongoDbWebhookDeliveryResultRepository<TResult, TKey> : MongoRepository<TResult, TKey>,
+		IWebhookDeliveryResultRepository<TResult, TKey>
+		where TKey : notnull
 		where TResult : MongoWebhookDeliveryResult {
 
 		/// <summary>
@@ -43,7 +44,7 @@ namespace Deveel.Webhooks {
 		/// <param name="logger">
 		/// An object to use for logging operations.
 		/// </param>
-		public MongoDbWebhookDeliveryResultRepository(IMongoDbWebhookContext context, ILogger<MongoDbWebhookDeliveryResultRepository<TResult>>? logger = null) 
+		public MongoDbWebhookDeliveryResultRepository(IMongoDbWebhookContext context, ILogger<MongoDbWebhookDeliveryResultRepository<TResult, TKey>>? logger = null) 
 			: base(context, logger) {
 		}
 

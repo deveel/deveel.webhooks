@@ -14,7 +14,7 @@
 
 namespace Deveel.Webhooks {
 	/// <summary>
-	/// Provides extensions to the <see cref="WebhookSubscriptionBuilder{TSubscription}"/>
+	/// Provides extensions to the <see cref="WebhookSubscriptionBuilder{TSubscription,TKey}"/>
 	/// to configure the storage system based on Entity Framework.
 	/// </summary>
     public static class WebhookSubscriptionBuilderExtensions {
@@ -25,14 +25,14 @@ namespace Deveel.Webhooks {
 		/// The type of the <see cref="DbWebhookSubscription"/> entity to use
 		/// </typeparam>
 		/// <param name="builder">
-		/// The instance of the <see cref="WebhookSubscriptionBuilder{TSubscription}"/> to
+		/// The instance of the <see cref="WebhookSubscriptionBuilder{TSubscription,TKey}"/> to
 		/// extend with the Entity Framework storage system.
 		/// </param>
 		/// <returns>
 		/// Returns an instance of <see cref="EntityWebhookStorageBuilder{TSubscription}"/>
 		/// that can be used to configure the storage system.
 		/// </returns>
-        public static EntityWebhookStorageBuilder<TSubscription> UseEntityFramework<TSubscription>(this WebhookSubscriptionBuilder<TSubscription> builder)
+        public static EntityWebhookStorageBuilder<TSubscription> UseEntityFramework<TSubscription>(this WebhookSubscriptionBuilder<TSubscription,string> builder)
             where TSubscription : DbWebhookSubscription
 			=> new EntityWebhookStorageBuilder<TSubscription>(builder);
 
@@ -43,7 +43,7 @@ namespace Deveel.Webhooks {
 		/// The type of the <see cref="DbWebhookSubscription"/> entity to use
 		/// </typeparam>
 		/// <param name="builder">
-		/// The instance of the <see cref="WebhookSubscriptionBuilder{TSubscription}"/> to
+		/// The instance of the <see cref="WebhookSubscriptionBuilder{TSubscription,TKey}"/> to
 		/// extend with the Entity Framework storage system.
 		/// </param>
 		/// <param name="configure">
@@ -51,10 +51,10 @@ namespace Deveel.Webhooks {
 		/// as input to configure the storage system.
 		/// </param>
 		/// <returns>
-		/// Returns the same instance of <see cref="WebhookSubscriptionBuilder{TSubscription}"/>
+		/// Returns the same instance of <see cref="WebhookSubscriptionBuilder{TSubscription,TKey}"/>
 		/// as the input, to allow chaining of calls.
 		/// </returns>
-		public static WebhookSubscriptionBuilder<TSubscription> UseEntityFramework<TSubscription>(this WebhookSubscriptionBuilder<TSubscription> builder, Action<EntityWebhookStorageBuilder<TSubscription>> configure)
+		public static WebhookSubscriptionBuilder<TSubscription, string> UseEntityFramework<TSubscription>(this WebhookSubscriptionBuilder<TSubscription, string> builder, Action<EntityWebhookStorageBuilder<TSubscription>> configure)
 			where TSubscription : DbWebhookSubscription {
 			var storageBuilder = builder.UseEntityFramework();
 			configure(storageBuilder);

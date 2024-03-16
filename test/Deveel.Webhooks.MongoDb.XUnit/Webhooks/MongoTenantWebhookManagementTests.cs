@@ -11,7 +11,7 @@ using Xunit.Abstractions;
 
 namespace Deveel.Webhooks {
 	[Collection(nameof(MongoWebhookManagementTestCollection))]
-	public class MongoTenantWebhookManagementTests : WebhookManagementTestSuite<MongoWebhookSubscription> {
+	public class MongoTenantWebhookManagementTests : WebhookManagementTestSuite<MongoWebhookSubscription, ObjectId> {
 		private readonly MongoTestDatabase mongo;
 		private readonly Faker<MongoWebhookSubscription> faker;
 		private readonly Faker<MongoWebhookSubscription> otherFaker;
@@ -31,7 +31,7 @@ namespace Deveel.Webhooks {
 
 		protected override Faker<MongoWebhookSubscription> Faker => faker;
 
-		protected override object GenerateSubscriptionKey() => ObjectId.GenerateNewId();
+		protected override ObjectId GenerateSubscriptionKey() => ObjectId.GenerateNewId();
 
 		protected IReadOnlyList<MongoWebhookSubscription> OtherSubscriptions { get; }
 
@@ -46,7 +46,7 @@ namespace Deveel.Webhooks {
 			base.ConfigureServices(services);
 		}
 
-		protected override void ConfigureWebhookStorage(WebhookSubscriptionBuilder<MongoWebhookSubscription> options) {
+		protected override void ConfigureWebhookStorage(WebhookSubscriptionBuilder<MongoWebhookSubscription, ObjectId> options) {
 			options.UseMongoDb(db => db.UseMultiTenant());
 		}
 

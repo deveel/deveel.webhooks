@@ -19,12 +19,14 @@ using Deveel.Data;
 
 namespace Deveel.Webhooks {
 	/// <summary>
-	/// A default implementation of the <see cref="IWebhookSubscriptionValidator{TSubscription}"/>
+	/// A default implementation of the <see cref="IWebhookSubscriptionValidator{TSubscription,TKey}"/>
 	/// </summary>
 	/// <typeparam name="TSubscription">
 	/// The type of the subscription that is validated.
 	/// </typeparam>
-	public class WebhookSubscriptionValidator<TSubscription> : IWebhookSubscriptionValidator<TSubscription> where TSubscription : class, IWebhookSubscription {
+	public class WebhookSubscriptionValidator<TSubscription, TKey> : IWebhookSubscriptionValidator<TSubscription, TKey> 
+		where TKey : notnull
+		where TSubscription : class, IWebhookSubscription {
 		/// <summary>
 		/// Validates the given <paramref name="subscription"/> to have
 		/// the required properties to be registered
@@ -42,7 +44,7 @@ namespace Deveel.Webhooks {
 		/// Returns an <see cref="IAsyncEnumerable{T}"/> that yields
 		/// all the validation results.
 		/// </returns>
-		public virtual async IAsyncEnumerable<ValidationResult> ValidateAsync(EntityManager<TSubscription> manager, TSubscription subscription, [EnumeratorCancellation] CancellationToken cancellationToken) {
+		public virtual async IAsyncEnumerable<ValidationResult> ValidateAsync(EntityManager<TSubscription, TKey> manager, TSubscription subscription, [EnumeratorCancellation] CancellationToken cancellationToken) {
 			cancellationToken.ThrowIfCancellationRequested();
 
 			if (!ValidateUrl(subscription, out var result))

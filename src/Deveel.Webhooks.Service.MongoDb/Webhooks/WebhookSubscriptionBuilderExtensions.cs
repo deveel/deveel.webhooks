@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using MongoDB.Bson;
+
 namespace Deveel.Webhooks {
 	/// <summary>
 	/// Provides extensions to the <see cref="WebhookSubscriptionBuilder{TSubscription}"/>
@@ -32,7 +34,7 @@ namespace Deveel.Webhooks {
         /// Returns an instance of <see cref="MongoDbWebhookStorageBuilder{TSubscription}"/>
         /// used to further configure the storage.
         /// </returns>
-        public static MongoDbWebhookStorageBuilder<TSubscription> UseMongoDb<TSubscription>(this WebhookSubscriptionBuilder<TSubscription> builder)
+        public static MongoDbWebhookStorageBuilder<TSubscription> UseMongoDb<TSubscription>(this WebhookSubscriptionBuilder<TSubscription, ObjectId> builder)
             where TSubscription : MongoWebhookSubscription
             => new MongoDbWebhookStorageBuilder<TSubscription>(builder);
 
@@ -54,7 +56,7 @@ namespace Deveel.Webhooks {
         /// Returns an instance of <see cref="MongoDbWebhookStorageBuilder{TSubscription}"/>
         /// used to further configure the storage.
         /// </returns>
-        public static MongoDbWebhookStorageBuilder<TSubscription> UseMongoDb<TSubscription>(this WebhookSubscriptionBuilder<TSubscription> builder, string connectionString)
+        public static MongoDbWebhookStorageBuilder<TSubscription> UseMongoDb<TSubscription>(this WebhookSubscriptionBuilder<TSubscription, ObjectId> builder, string connectionString)
 			where TSubscription : MongoWebhookSubscription
 			=> builder.UseMongoDb().WithConnectionString(connectionString);
 
@@ -74,10 +76,10 @@ namespace Deveel.Webhooks {
         /// The function used to configure the storage.
         /// </param>
         /// <returns>
-        /// Returns the instance of <see cref="WebhookSubscriptionBuilder{TSubscription}"/>
+        /// Returns the instance of <see cref="WebhookSubscriptionBuilder{TSubscription,TKey}"/>
         /// with the registered storage.
         /// </returns>
-		public static WebhookSubscriptionBuilder<TSubscription> UseMongoDb<TSubscription>(this WebhookSubscriptionBuilder<TSubscription> builder, Action<MongoDbWebhookStorageBuilder<TSubscription>> configure)
+		public static WebhookSubscriptionBuilder<TSubscription, ObjectId> UseMongoDb<TSubscription>(this WebhookSubscriptionBuilder<TSubscription, ObjectId> builder, Action<MongoDbWebhookStorageBuilder<TSubscription>> configure)
 			where TSubscription : MongoWebhookSubscription {
 			var storageBuilder = new MongoDbWebhookStorageBuilder<TSubscription>(builder);
 			configure?.Invoke(storageBuilder);

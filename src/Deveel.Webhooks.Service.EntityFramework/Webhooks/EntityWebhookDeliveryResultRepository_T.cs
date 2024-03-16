@@ -19,15 +19,15 @@ using Microsoft.Extensions.Logging;
 
 namespace Deveel.Webhooks {
 	/// <summary>
-	/// An implementation of <see cref="IWebhookDeliveryResultRepository{TResult}"/> that
+	/// An implementation of <see cref="IWebhookDeliveryResultRepository{TResult,TKey}"/> that
 	/// uses an Entity Framework Core <see cref="DbContext"/> to store the
 	/// delivery results of a webhook.
 	/// </summary>
 	/// <typeparam name="TResult">
 	/// The type of delivery result to be stored in the database.
 	/// </typeparam>
-	public class EntityWebhookDeliveryResultRepository<TResult> : EntityRepository<TResult>,
-        IWebhookDeliveryResultRepository<TResult>
+	public class EntityWebhookDeliveryResultRepository<TResult> : EntityRepository<TResult, int>,
+        IWebhookDeliveryResultRepository<TResult, int>
         where TResult : DbWebhookDeliveryResult {
 
         /// <summary>
@@ -48,7 +48,7 @@ namespace Deveel.Webhooks {
             cancellationToken.ThrowIfCancellationRequested();
 
             try {
-                return await this.FindFirstAsync<TResult>(x => x.Webhook.WebhookId == webhookId, cancellationToken);
+                return await this.FindFirstAsync<TResult, int>(x => x.Webhook.WebhookId == webhookId, cancellationToken);
             } catch (Exception ex) {
                 throw new WebhookEntityException("Unable to query the database for results", ex);
             }

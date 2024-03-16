@@ -14,11 +14,13 @@
 
 using Microsoft.Extensions.Logging;
 
+using MongoDB.Bson;
+
 namespace Deveel.Webhooks {
     /// <summary>
-    /// Provides an implementation of the <see cref="IWebhookSubscriptionRepository{TSubscription}"/>
+    /// Provides an implementation of the <see cref="IWebhookSubscriptionRepository{TSubscription,TKey}"/>
     /// </summary>
-    public class MongoDbWebhookSubscriptionRepository : MongoDbWebhookSubscriptionRepository<MongoWebhookSubscription> {
+    public class MongoDbWebhookSubscriptionRepository : MongoDbWebhookSubscriptionRepository<MongoWebhookSubscription, ObjectId> {
         /// <inheritdoc/>
 		public MongoDbWebhookSubscriptionRepository(IMongoDbWebhookContext context, ILogger<MongoDbWebhookSubscriptionRepository>? logger = null) 
 			: base(context, logger) {

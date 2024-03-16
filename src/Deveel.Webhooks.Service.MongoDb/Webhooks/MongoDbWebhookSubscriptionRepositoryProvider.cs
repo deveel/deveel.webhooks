@@ -12,10 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Deveel.Data;
+
 using Finbuckle.MultiTenant;
 
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+
+using MongoDB.Bson;
 
 namespace Deveel.Webhooks {
 	/// <summary>
@@ -28,17 +32,16 @@ namespace Deveel.Webhooks {
 	/// <typeparam name="TTenantInfo">
 	/// The type of the tenant information.
 	/// </typeparam>
-	public class MongoDbWebhookSubscriptionRepositoryProvider<TContext, TTenantInfo> : MongoDbWebhookSubscriptionRepositoryProvider<TContext, MongoWebhookSubscription, TTenantInfo>,
-		IWebhookSubscriptionRepositoryProvider<MongoWebhookSubscription>
-		where TContext : class, IMongoDbWebhookContext
-		where TTenantInfo : class, ITenantInfo, new() {
+	public class MongoDbWebhookSubscriptionRepositoryProvider<TContext> : MongoDbWebhookSubscriptionRepositoryProvider<TContext, MongoWebhookSubscription, ObjectId>,
+		IWebhookSubscriptionRepositoryProvider<MongoWebhookSubscription, ObjectId>
+		where TContext : class, IMongoDbWebhookContext {
 		/// <inheritdoc/>
-		public MongoDbWebhookSubscriptionRepositoryProvider(IEnumerable<IMultiTenantStore<TTenantInfo>> tenantStore, ILoggerFactory? loggerFactory = null) 
-			: base(tenantStore, loggerFactory) {
+		public MongoDbWebhookSubscriptionRepositoryProvider(IRepositoryTenantResolver tenantResolver, ILoggerFactory? loggerFactory = null) 
+			: base(tenantResolver, loggerFactory) {
 		}
 
 		/// <inheritdoc/>
-		public new async Task<IWebhookSubscriptionRepository<MongoWebhookSubscription>> GetRepositoryAsync(string tenantId, CancellationToken cancellationToken = default) 
-			=> (IWebhookSubscriptionRepository<MongoWebhookSubscription>) (await base.GetRepositoryAsync(tenantId));
+		public new async Task<IWebhookSubscriptionRepository<MongoWebhookSubscription, ObjectId>> GetRepositoryAsync(string tenantId, CancellationToken cancellationToken = default) 
+			=> (IWebhookSubscriptionRepository<MongoWebhookSubscription, ObjectId>) (await base.GetRepositoryAsync(tenantId));
 	}
 }

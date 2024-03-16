@@ -33,11 +33,11 @@ namespace Deveel.Webhooks {
 	/// <typeparam name="TTenantInfo">
 	/// The type of the tenant information used to identify the MongoDB database
 	/// </typeparam>
-	public class MongoDbWebhookSubscriptionRepositoryProvider<TContext, TSubscription, TTenantInfo> :
-		MongoRepositoryProvider<TContext, TSubscription, TTenantInfo>,
-		IWebhookSubscriptionRepositoryProvider<TSubscription>, IDisposable
+	public class MongoDbWebhookSubscriptionRepositoryProvider<TContext, TSubscription, TKey> :
+		MongoRepositoryProvider<TContext, TSubscription, TKey>,
+		IWebhookSubscriptionRepositoryProvider<TSubscription, TKey>, IDisposable
 		where TContext : class, IMongoDbWebhookContext
-		where TTenantInfo : class, ITenantInfo, new()
+		where TKey : notnull
 		where TSubscription : MongoWebhookSubscription {
 
 		/// <summary>
@@ -50,17 +50,17 @@ namespace Deveel.Webhooks {
 		/// An optional logger factory to be used to create loggers
 		/// for the repositories.
 		/// </param>
-		public MongoDbWebhookSubscriptionRepositoryProvider(IEnumerable<IMultiTenantStore<TTenantInfo>> tenantStore, ILoggerFactory? loggerFactory = null)
-			: base(tenantStore, loggerFactory) {
+		public MongoDbWebhookSubscriptionRepositoryProvider(IRepositoryTenantResolver tenantResolver, ILoggerFactory? loggerFactory = null)
+			: base(tenantResolver, loggerFactory) {
 		}
 
 
 		/// <inheritdoc/>
-		protected override MongoRepository<TSubscription> CreateRepository(TContext context)
-			=> new MongoDbWebhookSubscriptionRepository<TSubscription>(context, LoggerFactory?.CreateLogger<MongoDbWebhookSubscriptionRepository<TSubscription>>());
+		protected override MongoRepository<TSubscription, TKey> CreateRepository(TContext context)
+			=> new MongoDbWebhookSubscriptionRepository<TSubscription, TKey>(context, LoggerFactory?.CreateLogger<MongoDbWebhookSubscriptionRepository<TSubscription, TKey>>());
 
 		/// <inheritdoc/>
-		public new async Task<IWebhookSubscriptionRepository<TSubscription>> GetRepositoryAsync(string tenantId, CancellationToken cancellationToken = default) 
-			=> (IWebhookSubscriptionRepository<TSubscription>)(await base.GetRepositoryAsync(tenantId));
+		public new async Task<IWebhookSubscriptionRepository<TSubscription, TKey>> GetRepositoryAsync(string tenantId, CancellationToken cancellationToken = default) 
+			=> (IWebhookSubscriptionRepository<TSubscription, TKey>)(await base.GetRepositoryAsync(tenantId));
 	}
 }

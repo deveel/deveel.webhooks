@@ -5,6 +5,8 @@ using Finbuckle.MultiTenant;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
+using MongoDB.Bson;
+
 using MongoFramework;
 
 namespace Deveel.Webhooks {
@@ -12,7 +14,7 @@ namespace Deveel.Webhooks {
 		[Fact]
 		public static void WithConnection() {
 			var provider = new ServiceCollection()
-				.AddWebhookSubscriptions<MongoWebhookSubscription>(webhooks =>
+				.AddWebhookSubscriptions<MongoWebhookSubscription, ObjectId>(webhooks =>
 					webhooks.UseMongoDb("mongodb://127.0.0.1:2709/my_db"))
 				.BuildServiceProvider();
 
@@ -34,7 +36,7 @@ namespace Deveel.Webhooks {
 
 			var provider = new ServiceCollection()
 				.AddSingleton<IConfiguration>(config.Build())
-				.AddWebhookSubscriptions<MongoWebhookSubscription>(webhooks => {
+				.AddWebhookSubscriptions<MongoWebhookSubscription, ObjectId>(webhooks => {
 					webhooks.UseMongoDb(mongo => mongo.WithConnectionStringName("MongoDb"));
 				})
 				.BuildServiceProvider();
@@ -53,14 +55,14 @@ namespace Deveel.Webhooks {
 		[Fact]
 		public static void ConfigureCustomStorage() {
 			var provider = new ServiceCollection()
-				.AddWebhookSubscriptions<MongoWebhookSubscription>(webhook => webhook
+				.AddWebhookSubscriptions<MongoWebhookSubscription, ObjectId>(webhook => webhook
 					.UseMongoDb(builder => {
 						builder.WithConnectionString("mongodb://127.0.0.1:2709/my_db");
 						builder.UseSubscriptionRepository<MyMongoDbWebhookSubscriptionStore>();
 					}))
 				.BuildServiceProvider();
 
-			var store = provider.GetService<IWebhookSubscriptionRepository<MongoWebhookSubscription>>();
+			var store = provider.GetService<IWebhookSubscriptionRepository<MongoWebhookSubscription, ObjectId>>();
 			Assert.NotNull(store);
 			Assert.IsType<MyMongoDbWebhookSubscriptionStore>(store);
 		}

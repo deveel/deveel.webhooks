@@ -24,9 +24,11 @@ namespace Deveel.Webhooks {
 	/// <typeparam name="TSubscription">
 	/// The type of the subscription that is used to notify webhooks.
 	/// </typeparam>
-	public sealed class WebhookSubscriptionBuilder<TSubscription> where TSubscription : class, IWebhookSubscription {
+	public sealed class WebhookSubscriptionBuilder<TSubscription, TKey> 
+		where TSubscription : class, IWebhookSubscription 
+		where TKey : notnull {
 		/// <summary>
-		/// Initializes a new instance of the <see cref="WebhookSubscriptionBuilder{TSubscription}"/> class.
+		/// Initializes a new instance of the <see cref="WebhookSubscriptionBuilder{TSubscription,TKey}"/> class.
 		/// </summary>
 		/// <param name="services">
 		/// The collection of services that are used to configure the webhook services.
@@ -50,16 +52,16 @@ namespace Deveel.Webhooks {
 		public IServiceCollection Services { get; }
 
 		private void RegisterDefaults() {
-			Services.TryAddScoped<WebhookSubscriptionManager<TSubscription>>();
-			Services.TryAddSingleton<IWebhookSubscriptionValidator<TSubscription>, WebhookSubscriptionValidator<TSubscription>>();
+			Services.TryAddScoped<WebhookSubscriptionManager<TSubscription, TKey>>();
+			Services.TryAddSingleton<IWebhookSubscriptionValidator<TSubscription, TKey>, WebhookSubscriptionValidator<TSubscription, TKey>>();
 
-			Services.TryAddScoped<IWebhookSubscriptionResolver, WebhookSubscriptionResolver<TSubscription>>();
-			Services.TryAddScoped<WebhookSubscriptionResolver<TSubscription>>();
+			Services.TryAddScoped<IWebhookSubscriptionResolver, WebhookSubscriptionResolver<TSubscription, TKey>>();
+			Services.TryAddScoped<WebhookSubscriptionResolver<TSubscription, TKey>>();
 			// Services.TryAddScoped<ITenantWebhookSubscriptionResolver, TenantWebhookSubscriptionResolver<TSubscription>>();
 		}
 
 		/// <summary>
-		/// Registers a custom <see cref="WebhookSubscriptionManager{TSubscription}"/>
+		/// Registers a custom <see cref="WebhookSubscriptionManager{TSubscription,TKey}"/>
 		/// that overrides the default one.
 		/// </summary>
 		/// <typeparam name="TManager">
@@ -69,30 +71,30 @@ namespace Deveel.Webhooks {
 		/// The service lifetime of the manager to be registered.
 		/// </param>
 		/// <returns>
-		/// Returns this instance of the <see cref="WebhookSubscriptionBuilder{TSubscription}"/>.
+		/// Returns this instance of the <see cref="WebhookSubscriptionBuilder{TSubscription,TKey}"/>.
 		/// </returns>
-		public WebhookSubscriptionBuilder<TSubscription> UseSubscriptionManager<TManager>(ServiceLifetime lifetime = ServiceLifetime.Scoped)
-			where TManager : WebhookSubscriptionManager<TSubscription> {
+		public WebhookSubscriptionBuilder<TSubscription, TKey> UseSubscriptionManager<TManager>(ServiceLifetime lifetime = ServiceLifetime.Scoped)
+			where TManager : WebhookSubscriptionManager<TSubscription, TKey> {
 
 			Services.RemoveAll<EntityManager<TSubscription>>();
-			Services.RemoveAll<WebhookSubscriptionManager<TSubscription>>();
+			Services.RemoveAll<WebhookSubscriptionManager<TSubscription, TKey>>();
 
-			Services.TryAdd(new ServiceDescriptor(typeof(WebhookSubscriptionManager<TSubscription>), typeof(TManager), lifetime));
+			Services.TryAdd(new ServiceDescriptor(typeof(WebhookSubscriptionManager<TSubscription, TKey>), typeof(TManager), lifetime));
 
-			if (typeof(TManager) != typeof(WebhookSubscriptionManager<TSubscription>))
+			if (typeof(TManager) != typeof(WebhookSubscriptionManager<TSubscription, TKey>))
 				Services.Add(new ServiceDescriptor(typeof(TManager), typeof(TManager), lifetime));
 
 			return this;
 		}
 
 		/// <summary>
-		/// Registers the default <see cref="WebhookSubscriptionManager{TSubscription}"/>
+		/// Registers the default <see cref="WebhookSubscriptionManager{TSubscription,TKey}"/>
 		/// </summary>
 		/// <returns>
-		/// Returns this instance of the <see cref="WebhookSubscriptionBuilder{TSubscription}"/>.
+		/// Returns this instance of the <see cref="WebhookSubscriptionBuilder{TSubscription,TKey}"/>.
 		/// </returns>
-		public WebhookSubscriptionBuilder<TSubscription> UseSubscriptionManager()
-			=> UseSubscriptionManager<WebhookSubscriptionManager<TSubscription>>();
+		public WebhookSubscriptionBuilder<TSubscription,TKey> UseSubscriptionManager()
+			=> UseSubscriptionManager<WebhookSubscriptionManager<TSubscription, TKey>>();
 
 		/// <summary>
 		/// Adds a validator of webhook subscriptions.
@@ -104,10 +106,10 @@ namespace Deveel.Webhooks {
 		/// The service lifetime of the validator to be registered.
 		/// </param>
 		/// <returns>
-		/// Returns this instance of the <see cref="WebhookSubscriptionBuilder{TSubscription}"/>.
+		/// Returns this instance of the <see cref="WebhookSubscriptionBuilder{TSubscription,TKey}"/>.
 		/// </returns>
-		public WebhookSubscriptionBuilder<TSubscription> AddSubscriptionValidator<TValidator>(ServiceLifetime lifetime = ServiceLifetime.Singleton)
-			where TValidator : class, IWebhookSubscriptionValidator<TSubscription> {
+		public WebhookSubscriptionBuilder<TSubscription, TKey> AddSubscriptionValidator<TValidator>(ServiceLifetime lifetime = ServiceLifetime.Singleton)
+			where TValidator : class, IWebhookSubscriptionValidator<TSubscription, TKey> {
 
 			Services.AddEntityValidator<TValidator>(lifetime);
 

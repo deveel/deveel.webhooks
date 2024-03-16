@@ -28,9 +28,9 @@ namespace Deveel.Webhooks {
 	/// The type of the <see cref="DbWebhookSubscription"/> entity to use
 	/// </typeparam>
 	public sealed class EntityWebhookStorageBuilder<TSubscription> where TSubscription : DbWebhookSubscription {
-        private readonly WebhookSubscriptionBuilder<TSubscription> builder;
+        private readonly WebhookSubscriptionBuilder<TSubscription, string> builder;
         
-        internal EntityWebhookStorageBuilder(WebhookSubscriptionBuilder<TSubscription> builder) {
+        internal EntityWebhookStorageBuilder(WebhookSubscriptionBuilder<TSubscription, string> builder) {
             this.builder = builder;
 
             AddDefaultStorage();
@@ -144,7 +144,7 @@ namespace Deveel.Webhooks {
 			Services.RemoveAll<IRepository<TSubscription>>();
 			Services.RemoveAll<IPageableRepository<TSubscription>>();
 			Services.RemoveAll<IQueryableRepository<TRepository>>();
-			Services.RemoveAll<IWebhookSubscriptionRepository<TSubscription>>();
+			Services.RemoveAll<IWebhookSubscriptionRepository<TSubscription, string>>();
 			Services.RemoveAll<EntityWebhookSubscriptionRepository<TSubscription>>();
 			Services.RemoveAll<EntityWebhookSubscriptionRepository>();
 

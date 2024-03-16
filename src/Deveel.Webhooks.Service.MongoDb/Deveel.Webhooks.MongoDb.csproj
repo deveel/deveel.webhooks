@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Deveel.Repository.MongoFramework" Version="1.2.7" />
+    <PackageReference Include="Deveel.Repository.MongoFramework" Version="1.3.0" />
   </ItemGroup>
 
   <ItemGroup>

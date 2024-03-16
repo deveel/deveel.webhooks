@@ -14,7 +14,8 @@ namespace Deveel.Webhooks {
 
 		protected IList<DbWebhookSubscription> Subscriptions { get; private set; }
 
-		protected IRepository<DbWebhookSubscription> Repository => Services.GetRequiredService<IRepository<DbWebhookSubscription>>();
+		protected IRepository<DbWebhookSubscription, string> Repository 
+			=> Services.GetRequiredService<IRepository<DbWebhookSubscription, string>>();
 
 		public IWebhookSubscriptionResolver Resolver => Services.GetRequiredService<IWebhookSubscriptionResolver>();
 

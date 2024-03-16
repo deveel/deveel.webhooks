@@ -7,7 +7,7 @@ using Xunit.Abstractions;
 
 namespace Deveel.Webhooks {
 	[Collection(nameof(EntityWebhookManagementTestCollection))]
-	public class EntityWebhookManagementTests : WebhookManagementTestSuite<DbWebhookSubscription> {
+	public class EntityWebhookManagementTests : WebhookManagementTestSuite<DbWebhookSubscription, string> {
 		private readonly SqliteTestDatabase sql;
 
 		public EntityWebhookManagementTests(SqliteTestDatabase sql, ITestOutputHelper testOutput) : base(testOutput) {
@@ -16,9 +16,9 @@ namespace Deveel.Webhooks {
 
 		protected override Faker<DbWebhookSubscription> Faker => new DbWebhookSubscriptionFaker();
 
-		protected override object GenerateSubscriptionKey() => Guid.NewGuid().ToString();
+		protected override string GenerateSubscriptionKey() => Guid.NewGuid().ToString();
 
-		protected override void ConfigureWebhookStorage(WebhookSubscriptionBuilder<DbWebhookSubscription> options)
+		protected override void ConfigureWebhookStorage(WebhookSubscriptionBuilder<DbWebhookSubscription, string> options)
 			=> options.UseEntityFramework(builder => builder.UseContext(ctx => ctx.UseSqlite(sql.Connection)));
 
 		protected override async Task InitializeAsync() {

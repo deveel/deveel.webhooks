@@ -17,4 +17,16 @@
   <ItemGroup>
     <None Include="..\..\apl-2.licenseheader" Link="apl-2.licenseheader" />
   </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Update="Bogus" Version="35.5.0" />
+    <PackageReference Update="coverlet.collector" Version="6.0.2">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Update="coverlet.msbuild" Version="6.0.2">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
 </Project>

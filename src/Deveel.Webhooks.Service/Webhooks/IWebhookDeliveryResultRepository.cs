@@ -12,9 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using System.Threading.Tasks;
-using System.Threading;
 using Deveel.Data;
 
 namespace Deveel.Webhooks {
@@ -24,7 +21,7 @@ namespace Deveel.Webhooks {
 	/// <typeparam name="TResult">
 	/// The type of the result of the delivery of a webhook
 	/// </typeparam>
-	public interface IWebhookDeliveryResultRepository<TResult> : IRepository<TResult> where TResult : class, IWebhookDeliveryResult {
+	public interface IWebhookDeliveryResultRepository<TResult, TKey> : IRepository<TResult, TKey> where TResult : class, IWebhookDeliveryResult {
 		/// <summary>
 		/// Finds a single delivery result by the identifier of the webhook
 		/// that was set during the notification process.

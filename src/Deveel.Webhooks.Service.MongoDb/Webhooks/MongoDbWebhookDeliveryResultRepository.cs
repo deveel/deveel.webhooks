@@ -12,12 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using MongoDB.Bson;
+
 namespace Deveel.Webhooks {
 	/// <summary>
-	/// A default implementation of the <see cref="IWebhookDeliveryResultRepository{T}"/>
+	/// A default implementation of the <see cref="IWebhookDeliveryResultRepository{TResult,TKey}"/>
 	/// that uses the <see cref="MongoWebhookDeliveryResult"/> as the entity
 	/// </summary>
-    public class MongoDbWebhookDeliveryResultRepository : MongoDbWebhookDeliveryResultRepository<MongoWebhookDeliveryResult> {
+    public class MongoDbWebhookDeliveryResultRepository : MongoDbWebhookDeliveryResultRepository<MongoWebhookDeliveryResult, ObjectId> {
 		/// <summary>
 		/// Constructs the store with the given context.
 		/// </summary>

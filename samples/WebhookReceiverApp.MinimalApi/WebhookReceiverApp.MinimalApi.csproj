@@ -6,6 +6,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <RootNamespace>Deveel.Webhooks</RootNamespace>
     <UserSecretsId>f8a59592-accc-4b98-9cc1-46749b23096e</UserSecretsId>
+    <IsPackable>false</IsPackable>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

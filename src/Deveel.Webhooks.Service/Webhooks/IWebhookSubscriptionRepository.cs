@@ -21,8 +21,9 @@ namespace Deveel.Webhooks {
 	/// <typeparam name="TSubscription">
 	/// The type of webhook subscription that is handled by the store.
 	/// </typeparam>
-	public interface IWebhookSubscriptionRepository<TSubscription> : IRepository<TSubscription>
-		where TSubscription : class, IWebhookSubscription {
+	public interface IWebhookSubscriptionRepository<TSubscription, TKey> : IRepository<TSubscription, TKey>
+		where TSubscription : class, IWebhookSubscription
+		where TKey : notnull {
 		/// <summary>
 		/// Gets the URL of the destination where to deliver the
 		/// webhook events for the given subscription.

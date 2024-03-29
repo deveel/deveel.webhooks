@@ -3,6 +3,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
+using MongoDB.Bson;
 using MongoDB.Driver;
 
 using Xunit.Abstractions;
@@ -25,6 +26,8 @@ namespace Deveel.Webhooks {
 
 		protected IServiceScope Scope { get; }
 
+		protected IServiceProvider ScopeServices => Scope.ServiceProvider;
+
 		protected string ConnectionString => mongo.ConnectionString;
 
 		protected MongoClient Client { get; }
@@ -43,7 +46,7 @@ namespace Deveel.Webhooks {
 
 		private IServiceProvider BuildServiceProvider(ITestOutputHelper outputHelper) {
 			var services = new ServiceCollection()
-				.AddWebhookSubscriptions<MongoWebhookSubscription>(buidler => ConfigureWebhookService(buidler))
+				.AddWebhookSubscriptions<MongoWebhookSubscription, ObjectId>(buidler => ConfigureWebhookService(buidler))
 				.AddHttpCallback(OnRequestAsync)
 				.AddLogging(logging => logging.AddXUnit(outputHelper));
 
@@ -56,7 +59,7 @@ namespace Deveel.Webhooks {
 			return Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK));
 		}
 
-		protected virtual void ConfigureWebhookService(WebhookSubscriptionBuilder<MongoWebhookSubscription> builder) {
+		protected virtual void ConfigureWebhookService(WebhookSubscriptionBuilder<MongoWebhookSubscription, ObjectId> builder) {
 			builder.UseMongoDb(options => {
 				options.WithConnectionString($"{ConnectionString}webhooks");
 			});

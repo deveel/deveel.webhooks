@@ -32,7 +32,7 @@ namespace Deveel.Webhooks {
 
 		private IServiceProvider BuildServiceProvider(ITestOutputHelper outputHelper) {
 			var services = new ServiceCollection()
-				.AddWebhookSubscriptions<TestWebhookSubscription>(buidler => ConfigureWebhookService(buidler))
+				.AddWebhookSubscriptions<TestWebhookSubscription,string>(buidler => ConfigureWebhookService(buidler))
 				.AddHttpCallback(OnRequestAsync)
 				.AddLogging(logging => logging.AddXUnit(outputHelper).SetMinimumLevel(LogLevel.Trace));
 
@@ -45,7 +45,7 @@ namespace Deveel.Webhooks {
 			return Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK));
 		}
 
-		protected virtual void ConfigureWebhookService(WebhookSubscriptionBuilder<TestWebhookSubscription> builder) {
+		protected virtual void ConfigureWebhookService(WebhookSubscriptionBuilder<TestWebhookSubscription, string> builder) {
 		}
 
 		protected virtual void ConfigureServices(IServiceCollection services) {

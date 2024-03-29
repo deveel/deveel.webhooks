@@ -23,16 +23,16 @@ using MongoFramework.Linq;
 
 namespace Deveel.Webhooks {
 	/// <summary>
-	/// Provides an implementation of the <see cref="IWebhookSubscriptionRepository{TSubscription}"/>
+	/// Provides an implementation of the <see cref="IWebhookSubscriptionRepository{TSubscription,TKey}"/>
 	/// that is backed by a MongoDB database.
 	/// </summary>
 	/// <typeparam name="TSubscription">
 	/// The type of the webhook subscription, that is
 	/// derived from <see cref="MongoWebhookSubscription"/>.
 	/// </typeparam>
-	public class MongoDbWebhookSubscriptionRepository<TSubscription> : 
-		MongoRepository<TSubscription>,
-		IWebhookSubscriptionRepository<TSubscription>
+	public class MongoDbWebhookSubscriptionRepository<TSubscription, TKey> : 
+		MongoRepository<TSubscription, TKey>,
+		IWebhookSubscriptionRepository<TSubscription, TKey>
 		where TSubscription : MongoWebhookSubscription {
 
 		/// <summary>
@@ -47,7 +47,7 @@ namespace Deveel.Webhooks {
 		/// <exception cref="ArgumentNullException">
 		/// Thrown when the given <paramref name="context"/> is <c>null</c>.
 		/// </exception>
-		public MongoDbWebhookSubscriptionRepository(IMongoDbWebhookContext context, ILogger<MongoDbWebhookSubscriptionRepository<TSubscription>>? logger = null) 
+		public MongoDbWebhookSubscriptionRepository(IMongoDbWebhookContext context, ILogger<MongoDbWebhookSubscriptionRepository<TSubscription, TKey>>? logger = null) 
 			: base(context, logger) {
 		}
 

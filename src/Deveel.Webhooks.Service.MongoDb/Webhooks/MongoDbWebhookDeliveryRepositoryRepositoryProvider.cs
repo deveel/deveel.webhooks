@@ -14,51 +14,48 @@
 
 using Deveel.Data;
 
-using Finbuckle.MultiTenant;
-
 using Microsoft.Extensions.Logging;
-
-using SharpCompress.Compressors.PPMd;
 
 namespace Deveel.Webhooks {
 	/// <summary>
-	/// Provides an implementation of the <see cref="IWebhookDeliveryResultRepositoryProvider{TResult}"/>
-	/// that is resolving instances of <see cref="MongoDbWebhookDeliveryResultRepository{TResult}"/> based
+	/// Provides an implementation of the <see cref="IWebhookDeliveryResultRepositoryProvider{TResult,TKey}"/>
+	/// that is resolving instances of <see cref="MongoDbWebhookDeliveryResultRepository{TResult,TKey}"/> based
 	/// on the tenant identifier.
 	/// </summary>
-	/// <typeparam name="TTenantInfo">
-	/// The type of tenant that owns the connection to the MongoDB database
-	/// </typeparam>
 	/// <typeparam name="TResult">
 	/// The type of the result that is stored in the database.
 	/// </typeparam>
-	public class MongoDbWebhookDeliveryResultRepositoryProvider<TTenantInfo, TResult> : MongoRepositoryProvider<MongoDbWebhookTenantContext, TResult, TTenantInfo>, 
-		IWebhookDeliveryResultRepositoryProvider<TResult>
-		where TTenantInfo : class, ITenantInfo, new()
-		where TResult : MongoWebhookDeliveryResult {
+	/// <typeparam name="TKey">
+	/// The type of the key that is used to identify the result in the database.
+	/// </typeparam>
+	public class MongoDbWebhookDeliveryResultRepositoryProvider<TResult, TKey> : MongoRepositoryProvider<MongoDbWebhookTenantContext, TResult, TKey>, 
+		IWebhookDeliveryResultRepositoryProvider<TResult, TKey>
+		where TResult : MongoWebhookDeliveryResult
+		where TKey : notnull {
         /// <summary>
         /// Constructs the provider with the given tenant store.
         /// </summary>
-        /// <param name="tenantStore">
-        /// The store that is used to resolve the tenant information.
-        /// </param>
+		/// <param name="tenantResolver">
+		/// A service that is used to resolve the tenant identifier for the
+		/// current context.
+		/// </param>
 		/// <param name="loggerFactory">
 		/// An object that is used to create the logger for the repositories
 		/// created by this provider.
 		/// </param>
         public MongoDbWebhookDeliveryResultRepositoryProvider(
-			IEnumerable<IMultiTenantStore<TTenantInfo>> tenantStore, 
+			IRepositoryTenantResolver tenantResolver, 
 			ILoggerFactory? loggerFactory = null)
-			: base(tenantStore, loggerFactory) {
+			: base(tenantResolver, loggerFactory) {
 		}
 
         /// <inheritdoc/>
-        public new async Task<IWebhookDeliveryResultRepository<TResult>> GetRepositoryAsync(string tenantId, CancellationToken cancellationToken = default) {
-			return (IWebhookDeliveryResultRepository<TResult>) await base.GetRepositoryAsync(tenantId, cancellationToken);
+        public new async Task<IWebhookDeliveryResultRepository<TResult, TKey>> GetRepositoryAsync(string tenantId, CancellationToken cancellationToken = default) {
+			return (IWebhookDeliveryResultRepository<TResult, TKey>) await base.GetRepositoryAsync(tenantId, cancellationToken);
 		}
 
 		/// <inheritdoc/>
-		protected override MongoRepository<TResult> CreateRepository(MongoDbWebhookTenantContext context)
-			=> new MongoDbWebhookDeliveryResultRepository<TResult>(context, LoggerFactory?.CreateLogger<MongoDbWebhookDeliveryResultRepository<TResult>>());
+		protected override MongoRepository<TResult, TKey> CreateRepository(MongoDbWebhookTenantContext context)
+			=> new MongoDbWebhookDeliveryResultRepository<TResult, TKey>(context, LoggerFactory?.CreateLogger<MongoDbWebhookDeliveryResultRepository<TResult, TKey>>());
 	}
 }

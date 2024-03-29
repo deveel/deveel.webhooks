@@ -1,10 +1,10 @@
 <Project>
 	<PropertyGroup>
     <!-- Compilation Properties -->
-		<TargetFrameworks>net6.0;net7.0</TargetFrameworks>
+		<TargetFrameworks>net6.0;net7.0;net8.0</TargetFrameworks>
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
-		<VersionPrefix>2.1.5</VersionPrefix>
+		<VersionPrefix>2.2.0</VersionPrefix>
 		<RootNamespace>Deveel</RootNamespace>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     
@@ -12,8 +12,8 @@
 		<GeneratePackageOnBuild>false</GeneratePackageOnBuild>
 		<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
 		<Authors>antonello</Authors>
-		<Company>Deveel AS</Company>
-		<Copyright>Copyright (C) 2021-2023 Deveel AS</Copyright>
+		<Company>Deveel</Company>
+		<Copyright>Copyright (C) 2021-2024 Antonello Provenzano</Copyright>
 		<PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
 		<PackageProjectUrl>https://webhooks.deveel.org</PackageProjectUrl>
 		<PackageIcon>deveel-logo.png</PackageIcon>
@@ -31,7 +31,8 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
+		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" Condition="$(TargetFramework) != 'net8.0'" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" Condition="$(TargetFramework) == 'net8.0'" />
 	</ItemGroup>
 
 	<ItemGroup>

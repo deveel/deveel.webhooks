@@ -24,7 +24,8 @@ namespace Deveel.Webhooks {
 	/// <typeparam name="TSubscription">
 	/// The type of the subscription handled by the manager.
 	/// </typeparam>
-	public class WebhookSubscriptionManager<TSubscription> : EntityManager<TSubscription>
+	public class WebhookSubscriptionManager<TSubscription, TKey> : EntityManager<TSubscription, TKey>
+		where TKey : notnull
 		where TSubscription : class, IWebhookSubscription {
 		/// <summary>
 		/// Creates a new instance of the manager wrapping a given store
@@ -46,10 +47,10 @@ namespace Deveel.Webhooks {
 		/// </param>
 		//TODO: add an Error Factory for Webhook Subscriptions
 		public WebhookSubscriptionManager(
-			IWebhookSubscriptionRepository<TSubscription> subscriptionStore,
-			IWebhookSubscriptionValidator<TSubscription>? validator = null,
+			IWebhookSubscriptionRepository<TSubscription, TKey> subscriptionStore,
+			IWebhookSubscriptionValidator<TSubscription, TKey>? validator = null,
 			IServiceProvider? services = null,
-			ILogger<WebhookSubscriptionManager<TSubscription>>? logger = null)
+			ILogger<WebhookSubscriptionManager<TSubscription, TKey>>? logger = null)
 			: base(subscriptionStore, validator, services: services) {
 		}
 
@@ -63,10 +64,10 @@ namespace Deveel.Webhooks {
 		/// Gets an instance of the repository that implements 
 		/// the webhook subscriptions operations.
 		/// </summary>
-		protected virtual IWebhookSubscriptionRepository<TSubscription> SubscriptionRepository {
+		protected virtual IWebhookSubscriptionRepository<TSubscription, TKey> SubscriptionRepository {
 			get {
 				ThrowIfDisposed();
-				return (IWebhookSubscriptionRepository<TSubscription>) base.Repository;
+				return (IWebhookSubscriptionRepository<TSubscription, TKey>) base.Repository;
 			}
 		}
 

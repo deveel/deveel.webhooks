@@ -15,6 +15,8 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 
+using MongoDB.Bson;
+
 namespace Deveel.Webhooks {
 	/// <summary>
 	/// An implementation of <see cref="IWebhookDeliveryResultLogger{TWebhook}"/> that
@@ -47,7 +49,7 @@ namespace Deveel.Webhooks {
 		/// An optional logger to use to log messages emitted by this service.
 		/// </param>
 		public MongoDbWebhookDeliveryResultLogger(
-			IWebhookDeliveryResultRepositoryProvider<TResult> storeProvider, 
+			IWebhookDeliveryResultRepositoryProvider<TResult, ObjectId> storeProvider, 
 			IMongoWebhookConverter<TWebhook>? webhookConverter = null,
 			ILogger<MongoDbWebhookDeliveryResultLogger<TWebhook, TResult>>? logger = null) {
 			RepositoryProvider = storeProvider;
@@ -59,7 +61,7 @@ namespace Deveel.Webhooks {
 		/// Gets the provider used to resolve the MongoDB storage where to log
 		/// the delivery results.
 		/// </summary>
-		protected IWebhookDeliveryResultRepositoryProvider<TResult> RepositoryProvider { get; }
+		protected IWebhookDeliveryResultRepositoryProvider<TResult, ObjectId> RepositoryProvider { get; }
 
 		/// <summary>
 		/// Gets the logger used to log messages emitted by this service.

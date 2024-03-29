@@ -11,7 +11,9 @@ using Xunit;
 using Xunit.Abstractions;
 
 namespace Deveel.Webhooks {
-	public abstract class WebhookManagementTestSuite<TSubscription> : IAsyncLifetime where TSubscription : class, IWebhookSubscription {
+	public abstract class WebhookManagementTestSuite<TSubscription, TKey> : IAsyncLifetime 
+		where TSubscription : class, IWebhookSubscription
+		where TKey : notnull {
 		protected WebhookManagementTestSuite(ITestOutputHelper testOutput) {
 			TestOutput = testOutput;
 		}
@@ -42,13 +44,13 @@ namespace Deveel.Webhooks {
 			}
 		}
 
-		protected WebhookSubscriptionManager<TSubscription> Manager 
-			=> Scope!.ServiceProvider.GetRequiredService<WebhookSubscriptionManager<TSubscription>>();
+		protected WebhookSubscriptionManager<TSubscription, TKey> Manager 
+			=> Scope!.ServiceProvider.GetRequiredService<WebhookSubscriptionManager<TSubscription, TKey>>();
 
-		protected IWebhookSubscriptionRepository<TSubscription> Repository 
-			=> Scope!.ServiceProvider.GetRequiredService<IWebhookSubscriptionRepository<TSubscription>>();
+		protected IWebhookSubscriptionRepository<TSubscription,TKey> Repository 
+			=> Scope!.ServiceProvider.GetRequiredService<IWebhookSubscriptionRepository<TSubscription,TKey>>();
 
-		protected virtual object GenerateSubscriptionKey() => Guid.NewGuid();
+		protected abstract TKey GenerateSubscriptionKey();
 
 		private IServiceProvider BuildServices() {
 			var services = new ServiceCollection();
@@ -61,22 +63,22 @@ namespace Deveel.Webhooks {
 		}
 
 		protected virtual void ConfigureWebhooks(IServiceCollection services) {
-			services.AddWebhookSubscriptions<TSubscription>(options => {
+			services.AddWebhookSubscriptions<TSubscription,TKey>(options => {
 				ConfigureWebhookStorage(options);
 			});
 		}
 
-		protected abstract void ConfigureWebhookStorage(WebhookSubscriptionBuilder<TSubscription> options);
+		protected abstract void ConfigureWebhookStorage(WebhookSubscriptionBuilder<TSubscription, TKey> options);
 
 		protected virtual void ConfigureServices(IServiceCollection services) {
 			ConfigureWebhooks(services);
 		}
 
-		protected virtual async Task SeedAsync(IRepository<TSubscription> repository) {
+		protected virtual async Task SeedAsync(IRepository<TSubscription, TKey> repository) {
 			await repository.AddRangeAsync(Subscriptions!);
 		}
 
-		protected virtual async Task ClearAsync(IRepository<TSubscription> repository) {
+		protected virtual async Task ClearAsync(IRepository<TSubscription, TKey> repository) {
 			await repository.RemoveRangeAsync(Subscriptions!);
 		}
 
@@ -117,7 +119,7 @@ namespace Deveel.Webhooks {
 			Assert.NotNull(subscription.SubscriptionId);
 
 			var key = Repository.GetEntityKey(subscription);
-			var found = await Repository.FindByKeyAsync(key!);
+			var found = await Repository.FindAsync(key!);
 
 			Assert.NotNull(found);
 			Assert.Equal(subscription.SubscriptionId, found.SubscriptionId);
@@ -162,7 +164,7 @@ namespace Deveel.Webhooks {
 			Assert.False(result.IsError());
 
 			var key = Repository.GetEntityKey(subscription);
-			var updated = await Repository.FindByKeyAsync(key!);
+			var updated = await Repository.FindAsync(key!);
 
 			Assert.NotNull(updated);
 			Assert.Equal("http://new.example.com", updated.DestinationUrl);
@@ -212,7 +214,7 @@ namespace Deveel.Webhooks {
 			Assert.False(result.IsError());
 
 			var key = Repository.GetEntityKey(subscription);
-			var updated = await Repository.FindByKeyAsync(key!);
+			var updated = await Repository.FindAsync(key!);
 
 			Assert.NotNull(updated);
 			Assert.Contains("user.created", updated.EventTypes);
@@ -231,7 +233,7 @@ namespace Deveel.Webhooks {
 			Assert.False(result.IsError());
 
 			var key = Repository.GetEntityKey(subscription);
-			var updated = await Repository.FindByKeyAsync(key!);
+			var updated = await Repository.FindAsync(key!);
 
 			Assert.NotNull(updated);
 			Assert.DoesNotContain(eventTypeToRemove, updated.EventTypes);
@@ -259,7 +261,7 @@ namespace Deveel.Webhooks {
 			Assert.False(result.IsError());
 
 			var key = Repository.GetEntityKey(subscription);
-			var updated = await Repository.FindByKeyAsync(key!);
+			var updated = await Repository.FindAsync(key!);
 
 			Assert.NotNull(updated);
 			Assert.Equal(secret, updated.Secret);
@@ -285,7 +287,7 @@ namespace Deveel.Webhooks {
 			Assert.False(result.IsError());
 
 			var key = Repository.GetEntityKey(subscription);
-			var updated = await Repository.FindByKeyAsync(key!);
+			var updated = await Repository.FindAsync(key!);
 
 			Assert.NotNull(updated);
 			Assert.Null(updated.Secret);
@@ -298,7 +300,7 @@ namespace Deveel.Webhooks {
 			var key = Repository.GetEntityKey(subscription);
 			Assert.NotNull(key);
 
-			var found = await Manager.FindByKeyAsync(key);
+			var found = await Manager.FindAsync(key);
 
 			Assert.NotNull(found);
 			Assert.Equal(subscription.SubscriptionId, found.SubscriptionId);
@@ -314,7 +316,7 @@ namespace Deveel.Webhooks {
 		public async Task FindNotExistingSubscription() {
 			var key = GenerateSubscriptionKey();
 
-			var found = await Manager.FindByKeyAsync(key);
+			var found = await Manager.FindAsync(key);
 
 			Assert.Null(found);
 		}
@@ -325,7 +327,7 @@ namespace Deveel.Webhooks {
 			var key = Repository.GetEntityKey(subscription);
 			Assert.NotNull(key);
 
-			var toRemove = await Repository.FindByKeyAsync(key);
+			var toRemove = await Repository.FindAsync(key);
 
 			Assert.NotNull(toRemove);
 
@@ -333,7 +335,7 @@ namespace Deveel.Webhooks {
 
 			Assert.True(result.IsSuccess());
 
-			var found = await Repository.FindByKeyAsync(key);
+			var found = await Repository.FindAsync(key);
 
 			Assert.Null(found);
 		}
@@ -360,7 +362,7 @@ namespace Deveel.Webhooks {
 
 			Assert.True(result.IsSuccess());
 
-			var updated = await Repository.FindByKeyAsync(key);
+			var updated = await Repository.FindAsync(key);
 
 			Assert.NotNull(updated);
 			Assert.Equal(WebhookSubscriptionStatus.Active, updated.Status);
@@ -387,7 +389,7 @@ namespace Deveel.Webhooks {
 
 			Assert.True(result.IsSuccess());
 
-			var found = await Repository.FindByKeyAsync(key);
+			var found = await Repository.FindAsync(key);
 
 			Assert.NotNull(found);
 			Assert.Equal(WebhookSubscriptionStatus.Suspended, found.Status);
@@ -406,7 +408,7 @@ namespace Deveel.Webhooks {
 			Assert.True(result.IsSuccess());
 
 			var key = Repository.GetEntityKey(subscription);
-			var updated = await Repository.FindByKeyAsync(key!);
+			var updated = await Repository.FindAsync(key!);
 
 			Assert.NotNull(updated);
 
@@ -444,7 +446,7 @@ namespace Deveel.Webhooks {
 			Assert.False(result.IsNotModified());
 
 			var key = Repository.GetEntityKey(subscription);
-			var updated = await Repository.FindByKeyAsync(key!);
+			var updated = await Repository.FindAsync(key!);
 
 			Assert.NotNull(updated);
 			Assert.NotNull(updated.Properties);

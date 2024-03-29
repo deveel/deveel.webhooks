@@ -24,7 +24,10 @@ namespace Deveel.Webhooks {
 	/// <typeparam name="TResult">
 	/// The type of the result of the delivery of a webhook.
 	/// </typeparam>
-	public interface IWebhookDeliveryResultRepositoryProvider<TResult> : IRepositoryProvider<TResult> 
+	/// <typeparam name="TKey">
+	/// The type of the key that is used to identify the result in the database.
+	/// </typeparam>
+	public interface IWebhookDeliveryResultRepositoryProvider<TResult, TKey> : IRepositoryProvider<TResult, TKey> 
 		where TResult : class, IWebhookDeliveryResult {
 		/// <summary>
 		/// Gets the repository of delivery results for the given tenant.
@@ -42,6 +45,6 @@ namespace Deveel.Webhooks {
 		/// <exception cref="WebhookServiceException">
 		/// Thrown if the repository cannot be resolved for the given tenant.
 		/// </exception>
-		new Task<IWebhookDeliveryResultRepository<TResult>> GetRepositoryAsync(string tenantId, CancellationToken cancellationToken = default);
+		new Task<IWebhookDeliveryResultRepository<TResult, TKey>> GetRepositoryAsync(string tenantId, CancellationToken cancellationToken = default);
 	}
 }

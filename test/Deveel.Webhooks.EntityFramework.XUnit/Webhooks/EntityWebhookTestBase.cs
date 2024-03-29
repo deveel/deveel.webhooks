@@ -27,7 +27,7 @@ namespace Deveel.Webhooks {
         private IServiceProvider BuildServiceProvider() {
             var services = new ServiceCollection();
 
-            services.AddWebhookSubscriptions<DbWebhookSubscription>(builder => ConfigureWebhookService(builder))
+            services.AddWebhookSubscriptions<DbWebhookSubscription, string>(builder => ConfigureWebhookService(builder))
                 .AddTestHttpClient(OnRequestAsync)
                 .AddLogging(logging => logging.AddXUnit(outputHelper));
 
@@ -40,7 +40,7 @@ namespace Deveel.Webhooks {
             return Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK));
         }
 
-        protected virtual void ConfigureWebhookService(WebhookSubscriptionBuilder<DbWebhookSubscription> builder) {
+        protected virtual void ConfigureWebhookService(WebhookSubscriptionBuilder<DbWebhookSubscription, string> builder) {
             builder.UseEntityFramework(ConfigureWebhookEntityFramework);
         }
 

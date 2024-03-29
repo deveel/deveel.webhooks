@@ -12,32 +12,29 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Finbuckle.MultiTenant;
+using Deveel.Data;
 
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
+
+using MongoDB.Bson;
 
 namespace Deveel.Webhooks {
 	/// <summary>
-	/// Provides an implementation of the <see cref="IWebhookDeliveryResultRepository{TResult}"/>
+	/// Provides an implementation of the <see cref="IWebhookDeliveryResultRepository{TResult,TKey}"/>
 	/// that is backed by a MongoDB database.
 	/// </summary>
-	/// <typeparam name="TTenantInfo">
-	/// The type of the tenant information.
-	/// </typeparam>
-    public class MongoDbWebhookDeliveryResultRepositoryProvider<TTenantInfo> : MongoDbWebhookDeliveryResultRepositoryProvider<TTenantInfo, MongoWebhookDeliveryResult>
-		where TTenantInfo : class, ITenantInfo, new() {
+	public class MongoDbWebhookDeliveryResultRepositoryProvider : MongoDbWebhookDeliveryResultRepositoryProvider<MongoWebhookDeliveryResult, ObjectId> {
 		/// <summary>
 		/// Constructs the store with the given store.
 		/// </summary>
-		/// <param name="tenantStore">
-		/// The store that provides access to the tenants.
+		/// <param name="tenantResolver">
+		/// A service to resolve the current tenant.
 		/// </param>
 		/// <param name="loggerFactory">
 		/// A factory to create loggers.
 		/// </param>
-		public MongoDbWebhookDeliveryResultRepositoryProvider(IEnumerable<IMultiTenantStore<TTenantInfo>> tenantStore, ILoggerFactory? loggerFactory = null) 
-			: base(tenantStore, loggerFactory) {
+		public MongoDbWebhookDeliveryResultRepositoryProvider(IRepositoryTenantResolver tenantResolver, ILoggerFactory? loggerFactory = null) 
+			: base(tenantResolver, loggerFactory) {
 		}
 	}
 }

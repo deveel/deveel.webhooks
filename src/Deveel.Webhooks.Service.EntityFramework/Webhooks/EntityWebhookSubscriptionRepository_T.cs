@@ -19,16 +19,16 @@ using Microsoft.Extensions.Logging;
 
 namespace Deveel.Webhooks {
 	/// <summary>
-	/// An implementation of <see cref="IWebhookSubscriptionRepository{TSubscription}"/> that
+	/// An implementation of <see cref="IWebhookSubscriptionRepository{TSubscription,TKey}"/> that
 	/// uses an <see cref="DbContext"/> to store the subscriptions.
 	/// </summary>
 	/// <typeparam name="TSubscription">
 	/// The type of the subscription entity to be stored.
 	/// </typeparam>
-	/// <seealso cref="IWebhookSubscriptionRepository{TSubscription}"/>"/>
+	/// <seealso cref="IWebhookSubscriptionRepository{TSubscription,TKey}"/>"/>
 	public class EntityWebhookSubscriptionRepository<TSubscription> :
-		EntityRepository<TSubscription>,
-		IWebhookSubscriptionRepository<TSubscription>
+		EntityRepository<TSubscription, string>,
+		IWebhookSubscriptionRepository<TSubscription,string>
 		where TSubscription : DbWebhookSubscription {
 
 		/// <summary>
@@ -68,7 +68,7 @@ namespace Deveel.Webhooks {
 		}
 
 		/// <inheritdoc/>
-		protected override async Task<TSubscription> OnEntityFoundByKeyAsync(object key, TSubscription entity, CancellationToken cancellationToken = default)
+		protected override async Task<TSubscription> OnEntityFoundByKeyAsync(string key, TSubscription entity, CancellationToken cancellationToken = default)
 			=> await EnsureLoadedAsync(entity, cancellationToken);
 
 		/// <inheritdoc/>

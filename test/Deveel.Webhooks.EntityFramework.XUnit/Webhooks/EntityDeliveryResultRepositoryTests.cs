@@ -17,8 +17,8 @@ namespace Deveel.Webhooks {
 			eventFaker = new DbEventInfoFaker();
         }
 
-        private IWebhookDeliveryResultRepository<DbWebhookDeliveryResult> Repository
-            => Services.GetRequiredService<IWebhookDeliveryResultRepository<DbWebhookDeliveryResult>>();
+        private IWebhookDeliveryResultRepository<DbWebhookDeliveryResult,int> Repository
+            => Services.GetRequiredService<IWebhookDeliveryResultRepository<DbWebhookDeliveryResult, int>>();
 
 		public override async Task InitializeAsync() {
             await base.InitializeAsync();
@@ -51,7 +51,7 @@ namespace Deveel.Webhooks {
         public async Task GetExistingResult() {
             var result = NextRandom();
 
-            var found = await Repository.FindByKeyAsync(result.Id!);
+            var found = await Repository.FindAsync(result.Id!.Value);
 
             Assert.NotNull(found);
             Assert.Equal(result.Id, found.Id);
@@ -73,7 +73,7 @@ namespace Deveel.Webhooks {
         public async Task GetNotExistingResult() {
             var resultId = Random.Shared.Next(results!.Max(x => x.Id!.Value) + 1, Int32.MaxValue);
 
-            var found = await Repository.FindByKeyAsync(resultId!);
+            var found = await Repository.FindAsync(resultId!);
 
             Assert.Null(found);
         }
@@ -86,7 +86,7 @@ namespace Deveel.Webhooks {
 
             Assert.True(deleted);
 
-            var found = await Repository.FindByKeyAsync(result.Id!);
+            var found = await Repository.FindAsync(result.Id!.Value);
 
             Assert.Null(found);
         }

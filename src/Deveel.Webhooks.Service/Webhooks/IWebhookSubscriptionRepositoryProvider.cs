@@ -24,8 +24,9 @@ namespace Deveel.Webhooks {
 	/// <typeparam name="TSubscription">
 	/// The type of subscription that is stored in the store
 	/// </typeparam>
-	public interface IWebhookSubscriptionRepositoryProvider<TSubscription> : IRepositoryProvider<TSubscription>
-		where TSubscription : class, IWebhookSubscription {
+	public interface IWebhookSubscriptionRepositoryProvider<TSubscription, TKey> : IRepositoryProvider<TSubscription, TKey>
+		where TSubscription : class, IWebhookSubscription 
+		where TKey : notnull {
 		/// <summary>
 		/// Gets the store for the given tenant
 		/// </summary>
@@ -36,9 +37,9 @@ namespace Deveel.Webhooks {
 		/// A cancellation token used to cancel the operation.
 		/// </param>
 		/// <returns>
-		/// Returns an instance of <see cref="IWebhookSubscriptionRepository{TSubscription}"/>
+		/// Returns an instance of <see cref="IWebhookSubscriptionRepository{TSubscription,TKey}"/>
 		/// that is used to store the subscriptions for the given tenant.
 		/// </returns>
-		new Task<IWebhookSubscriptionRepository<TSubscription>> GetRepositoryAsync(string tenantId, CancellationToken cancellationToken = default);
+		new Task<IWebhookSubscriptionRepository<TSubscription, TKey>> GetRepositoryAsync(string tenantId, CancellationToken cancellationToken = default);
 	}
 }

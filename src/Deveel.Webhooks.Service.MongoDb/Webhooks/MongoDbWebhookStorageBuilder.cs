@@ -22,6 +22,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
+using MongoDB.Bson;
+
 namespace Deveel.Webhooks {
 	/// <summary>
 	/// Provides a builder to configure the MongoDB storage of webhook entities
@@ -30,9 +32,9 @@ namespace Deveel.Webhooks {
 	/// The type of the subscription entity to store in the database.
 	/// </typeparam>
 	public sealed class MongoDbWebhookStorageBuilder<TSubscription> where TSubscription : MongoWebhookSubscription {
-		private readonly WebhookSubscriptionBuilder<TSubscription> builder;
+		private readonly WebhookSubscriptionBuilder<TSubscription, ObjectId> builder;
 
-		internal MongoDbWebhookStorageBuilder(WebhookSubscriptionBuilder<TSubscription> builder) {
+		internal MongoDbWebhookStorageBuilder(WebhookSubscriptionBuilder<TSubscription, ObjectId> builder) {
 			this.builder = builder;
 
 			AddDefaultStorage();
@@ -121,6 +123,8 @@ namespace Deveel.Webhooks {
 			Services.RemoveAll<MongoDbWebhookContext>();
 			Services.RemoveAll<IRepositoryProvider<TSubscription>>();
 
+			Services.AddRepositoryTenantResolver<TTenantInfo>();
+
 			Services.AddMongoDbContext<MongoDbWebhookTenantContext>((tenant, builder) => {
 				if (tenant == null)
 					throw new Exception("No tenant information was provided");
@@ -129,8 +133,8 @@ namespace Deveel.Webhooks {
 			});
 
 			Services.AddScoped<IMongoDbWebhookContext>(sp => sp.GetRequiredService<MongoDbWebhookTenantContext>());
-			Services.AddRepositoryProvider<MongoDbWebhookSubscriptionRepositoryProvider<MongoDbWebhookTenantContext, TTenantInfo>>();
-			Services.AddRepositoryProvider<MongoDbWebhookDeliveryResultRepositoryProvider<TTenantInfo>>();
+			Services.AddRepositoryProvider<MongoDbWebhookSubscriptionRepositoryProvider<MongoDbWebhookTenantContext>>();
+			Services.AddRepositoryProvider<MongoDbWebhookDeliveryResultRepositoryProvider>();
 
             return this;
 		}
@@ -158,7 +162,7 @@ namespace Deveel.Webhooks {
 		public MongoDbWebhookStorageBuilder<TSubscription> UseSubscriptionRepository<TRepository>()
 			where TRepository : MongoDbWebhookSubscriptionRepository {
 			Services.RemoveAll<IRepository<TSubscription>>();
-			Services.RemoveAll<IWebhookSubscriptionRepository<TSubscription>>();
+			Services.RemoveAll<IWebhookSubscriptionRepository<TSubscription, ObjectId>>();
 
 			Services.AddRepository<TRepository>();
 

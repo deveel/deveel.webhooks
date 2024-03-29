@@ -4,6 +4,8 @@ using Finbuckle.MultiTenant;
 
 using Microsoft.Extensions.DependencyInjection;
 
+using MongoDB.Bson;
+
 using Xunit.Abstractions;
 
 namespace Deveel.Webhooks {
@@ -15,8 +17,8 @@ namespace Deveel.Webhooks {
 			this.mongo = mongo;
 		}
 
-		private IRepositoryProvider<MongoWebhookDeliveryResult> RepositoryProvider 
-			=> Scope!.ServiceProvider.GetRequiredService<IRepositoryProvider<MongoWebhookDeliveryResult>>();
+		private IRepositoryProvider<MongoWebhookDeliveryResult, ObjectId> RepositoryProvider 
+			=> Scope!.ServiceProvider.GetRequiredService<IRepositoryProvider<MongoWebhookDeliveryResult, ObjectId>>();
 
 		protected override void ConfigureService(IServiceCollection services) {
 			services.AddSingleton<TenantInfo>(_ => {
@@ -25,6 +27,8 @@ namespace Deveel.Webhooks {
 					Identifier = TenantId
 				};
 			});
+
+			services.AddRepositoryTenantResolver<TenantInfo>();
 
 			services.AddMultiTenant<TenantInfo>()
 				.WithInMemoryStore(store => {
@@ -45,7 +49,7 @@ namespace Deveel.Webhooks {
 
 			services.AddSingleton<IMongoWebhookConverter<Webhook>, DefaultMongoWebhookConverter<Webhook>>();
 			services.AddMongoDbContext<MongoDbWebhookTenantContext>((tenant, builder) => builder.UseConnection(tenant!.ConnectionString!));
-			services.AddRepositoryProvider<MongoDbWebhookDeliveryResultRepositoryProvider<TenantInfo>>();
+			services.AddRepositoryProvider<MongoDbWebhookDeliveryResultRepositoryProvider>();
 			services.AddScoped<IWebhookDeliveryResultLogger<Webhook>, MongoDbWebhookDeliveryResultLogger<Webhook, MongoWebhookDeliveryResult>>();
 		}
 

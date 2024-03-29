@@ -25,14 +25,15 @@ namespace Deveel.Webhooks {
 	/// <typeparam name="TSubscription">
 	/// The type of the subscription to be resolved.
 	/// </typeparam>
-	public class TenantWebhookSubscriptionResolver<TSubscription> : ITenantWebhookSubscriptionResolver
-		where TSubscription : class, IWebhookSubscription {
-		private readonly IWebhookSubscriptionRepositoryProvider<TSubscription> storeProvider;
+	public class TenantWebhookSubscriptionResolver<TSubscription, TKey> : ITenantWebhookSubscriptionResolver
+		where TSubscription : class, IWebhookSubscription 
+		where TKey : notnull {
+		private readonly IWebhookSubscriptionRepositoryProvider<TSubscription, TKey> storeProvider;
 		private readonly IWebhookSubscriptionCache? cache;
 		private ILogger logger;
 
 		/// <summary>
-		/// Constructs a <see cref="TenantWebhookSubscriptionResolver{TSubscription}"/>
+		/// Constructs a <see cref="TenantWebhookSubscriptionResolver{TSubscription,TKey}"/>
 		/// backed by a given store provider.
 		/// </summary>
 		/// <param name="storeProvider">
@@ -46,12 +47,12 @@ namespace Deveel.Webhooks {
 		/// An optional logger to be used to log the operations.
 		/// </param>
 		public TenantWebhookSubscriptionResolver(
-			IWebhookSubscriptionRepositoryProvider<TSubscription> storeProvider,
+			IWebhookSubscriptionRepositoryProvider<TSubscription, TKey> storeProvider,
 			IWebhookSubscriptionCache? cache = null,
-			ILogger<TenantWebhookSubscriptionResolver<TSubscription>>? logger = null) {
+			ILogger<TenantWebhookSubscriptionResolver<TSubscription, TKey>>? logger = null) {
 			this.storeProvider = storeProvider;
 			this.cache = cache;
-			this.logger = logger ?? NullLogger<TenantWebhookSubscriptionResolver<TSubscription>>.Instance;
+			this.logger = logger ?? NullLogger<TenantWebhookSubscriptionResolver<TSubscription, TKey>>.Instance;
 		}
 
 		private async Task<IList<IWebhookSubscription>?> GetCachedAsync(string tenantId, string eventType, CancellationToken cancellationToken) {

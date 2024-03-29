@@ -2,6 +2,7 @@
 
 using Microsoft.Extensions.DependencyInjection;
 
+using MongoDB.Bson;
 using MongoDB.Driver;
 
 using Xunit.Abstractions;
@@ -14,7 +15,8 @@ namespace Deveel.Webhooks {
 
 		protected IList<MongoWebhookSubscription> Subscriptions { get; private set; }
 
-		protected IRepository<MongoWebhookSubscription> Repository => Scope.ServiceProvider.GetRequiredService<IRepository<MongoWebhookSubscription>>();
+		protected IRepository<MongoWebhookSubscription, ObjectId> Repository 
+			=> Scope.ServiceProvider.GetRequiredService<IRepository<MongoWebhookSubscription, ObjectId>>();
 
 		public IWebhookSubscriptionResolver Resolver => Scope.ServiceProvider.GetRequiredService<IWebhookSubscriptionResolver>();
 

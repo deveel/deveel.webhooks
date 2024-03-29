@@ -14,7 +14,7 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        dotnet: [ '6.0.x', '7.0.x' ]
+        dotnet: [ '6.0.x', '7.0.x', '8.0.x' ]
         os: [ ubuntu-latest, windows-latest ]
 
     runs-on: ${{ matrix.os }}
@@ -27,17 +27,20 @@ jobs:
       with:
         dotnet-version: ${{ matrix.dotnet }}
           
-    - name: Set the TFM for .NET 6.0
-      if: matrix.dotnet == '6.0.x'
-      run: echo "DOTNET_TFM=net6.0" >> $GITHUB_ENV
+    - name: Set the TFM in Ubuntu
+      if: startsWith(matrix.os, 'ubuntu')
+      run: |
+          VERSION=$(echo "${{ matrix.dotnet }}" | sed 's/[^0-9.]*//g')
+          VERSION=$(echo "${VERSION}" | sed 's/\.$//')
+          DOTNET_TFM="net${VERSION}"
+          echo "DOTNET_TFM=$DOTNET_TFM" >> $GITHUB_ENV
 
-    - name: Set the TFM for .NET 7.0
-      if: matrix.dotnet == '7.0.x'
-      run: echo "DOTNET_TFM=net7.0" >> $GITHUB_ENV
-
-    - name: Set the TFM for .NET 8.0
-      if: matrix.dotnet == '8.0.x'
-      run: echo "DOTNET_TFM=net8.0" >> $GITHUB_ENV
+    - name: Set the TFM in Windows
+      if: startsWith(matrix.os, 'windows')
+      run: |
+          $VERSION = "${{ matrix.dotnet }}".Substring(0, "${{ matrix.dotnet }}".LastIndexOf('.'))
+          $DOTNET_TFM = "net$VERSION"
+          echo "DOTNET_TFM=$DOTNET_TFM" | Out-File -FilePath $env:GITHUB_ENV -Append
 
     - name: Restore dependencies
       run: dotnet restore

@@ -52,7 +52,7 @@ jobs:
       run: dotnet test --no-build --verbosity normal -c  Release -f ${{ env.DOTNET_TFM }} /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:Exclude="[*.XUnit]*"
       
     - name: Collect to Codecov
-      uses: codecov/codecov-action@v3
+      uses: codecov/codecov-action@v4
       with:
         token: ${{ secrets.OCM_CODECOV_TOKEN }}
 

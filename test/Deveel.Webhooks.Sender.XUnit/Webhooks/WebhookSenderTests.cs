@@ -122,9 +122,8 @@ namespace Deveel.Webhooks {
 					return new HttpResponseMessage(valid ? HttpStatusCode.OK : HttpStatusCode.Unauthorized);
 				});
 
-			mockHandler.Fallback.Respond(request => {
-				return new HttpResponseMessage(HttpStatusCode.NotFound);
-			});
+			mockHandler.Fallback.Respond(request => new HttpResponseMessage(HttpStatusCode.NotFound));
+
 
 			var services = new ServiceCollection()
 				.AddLogging(logging => logging.AddXUnit(outputHelper, options => options.Filter = (cat, level) => true)

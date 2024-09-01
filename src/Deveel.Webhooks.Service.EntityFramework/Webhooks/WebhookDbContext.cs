@@ -37,6 +37,12 @@ namespace Deveel.Webhooks {
 		/// </summary>
         public virtual DbSet<DbWebhookDeliveryResult> DeliveryResults { get; set; }
 
+        /// <summary>
+        /// Gets or sets the set a <c>DbSet</c> that provides query access to
+        /// the <see cref="DbWebhookDeliveryAttempt"/> entities.
+        /// </summary>
+        public virtual DbSet<DbWebhook> Webhooks { get; set; }
+
         /// <inheritdoc/>
         protected override void OnModelCreating(ModelBuilder modelBuilder) {
             modelBuilder.ApplyConfiguration(new DbWebhookSubscriptionConfiguration());

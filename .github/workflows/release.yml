@@ -15,7 +15,7 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-         dotnet: [ '6.0.x', '7.0.x' ]
+         dotnet: [ '6.0.x', '7.0.x', '8.0.x' ]
 
     steps:
     - uses: actions/checkout@v4
@@ -68,4 +68,7 @@ jobs:
       run: dotnet pack --configuration Release --include-symbols -p:PackageVersion=$VERSION --output ./nuget
 
     - name: Push Packages to GitHub NuGet
+      run: dotnet nuget push ./nuget/**/*.nupkg --skip-duplicate --api-key ${{secrets.GITHUB_TOKEN}} --source "https://nuget.pkg.github.com/deveel/index.json"
+
+    - name: Push Packages to NuGet
       run: dotnet nuget push ./nuget/**/*.nupkg --skip-duplicate --api-key ${{secrets.NUGET_API_KEY}} --source https://api.nuget.org/v3/index.json

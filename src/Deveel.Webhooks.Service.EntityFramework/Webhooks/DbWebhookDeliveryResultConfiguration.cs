@@ -36,12 +36,20 @@ namespace Deveel.Webhooks {
                 .HasMaxLength(36)
                 .IsRequired();
 
-            builder.Property(x => x.EventId)
-                .HasColumnName("event_id")
+            builder.Property(x => x.TenantId)
+                .HasColumnName("tenant_id");
+
+            builder.Property(x => x.WebhookId)
+                .HasColumnName("webhook_id")
                 .IsRequired();
 
+            builder.Property(x => x.EventId)
+                .HasColumnName("event_id")
+                .IsRequired(false);
+
             builder.Property(x => x.ReceiverId)
-                .HasColumnName("receiver_id");
+                .HasColumnName("receiver_id")
+                .IsRequired(false);
 
             builder.HasOne(x => x.EventInfo)
                 .WithMany()
@@ -61,7 +69,7 @@ namespace Deveel.Webhooks {
             builder.HasOne(x => x.Webhook)
                 .WithMany()
                 .HasForeignKey(x => x.WebhookId)
-                .OnDelete(DeleteBehavior.SetNull);
+                .OnDelete(DeleteBehavior.NoAction);
         }
     }
 }

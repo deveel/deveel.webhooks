@@ -1,17 +1,11 @@
-﻿using Microsoft.Data.Sqlite;
-using Microsoft.EntityFrameworkCore;
-
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Microsoft.EntityFrameworkCore;
 
 using Xunit.Abstractions;
 
 namespace Deveel.Webhooks
 {
     [Collection(nameof(SqliteTestCollection))]
+    [Trait("DB", "SQLite")]
     public class SqliteDeliveryResultRepositoryTests : EntityDeliveryResultRepositoryTests
     {
         private readonly SqliteTestDatabase sqlite;

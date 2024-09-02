@@ -5,6 +5,7 @@ using Xunit.Abstractions;
 namespace Deveel.Webhooks
 {
     [Collection(nameof(MsSqlTestCollection))]
+    [Trait("DB", "SQLServer")]
     public class MsSqlWebhookManagementTests : EntityWebhookManagementTests
     {
         private readonly MsSqlTestDatabase sql;

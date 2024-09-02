@@ -5,6 +5,7 @@ using Xunit.Abstractions;
 namespace Deveel.Webhooks
 {
     [Collection(nameof(SqliteTestCollection))]
+    [Trait("DB", "SQLite")]
     public class SqliteSubscriptionResolverTests : EntitySubscriptionResolverTests
     {
         private readonly SqliteTestDatabase sqlite;

@@ -14,7 +14,7 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        dotnet: [ '6.0.x', '7.0.x' ]
+        dotnet: [ '6.0.x', '7.0.x', '8.0.x' ]
         os: [ ubuntu-latest, windows-latest ]
     
     runs-on: ${{ matrix.os }}
@@ -48,8 +48,14 @@ jobs:
     - name: Build
       run: dotnet build --no-restore -c Release -f ${{ env.DOTNET_TFM }}
     
-    - name: Test
+    - name: Test (Ubuntu)
+      if: matrix.os == 'ubuntu-latest'
       run: dotnet test --no-build --verbosity normal -c  Release -f ${{ env.DOTNET_TFM }} /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:Exclude="[*.XUnit]*"
+
+    - name: Test (Ubuntu)
+      if: matrix.os == 'windows-latest'
+      run: dotnet test --no-build --verbosity normal -c  Release -f ${{ env.DOTNET_TFM }} --filter DB!=SQLServer /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:Exclude="[*.XUnit]*"
+
       
     - name: Collect to Codecov
       uses: codecov/codecov-action@v3

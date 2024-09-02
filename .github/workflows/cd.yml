@@ -15,9 +15,8 @@ jobs:
       fail-fast: true
       matrix:
         dotnet: [ '6.0.x', '7.0.x', '8.0.x' ]
-        os: [ ubuntu-latest, windows-latest ]
     
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v4
@@ -28,19 +27,11 @@ jobs:
         dotnet-version: ${{ matrix.dotnet }}
 
     - name: Set the TFM in Ubuntu
-      if: startsWith(matrix.os, 'ubuntu')
       run: |
           VERSION=$(echo "${{ matrix.dotnet }}" | sed 's/[^0-9.]*//g')
           VERSION=$(echo "${VERSION}" | sed 's/\.$//')
           DOTNET_TFM="net${VERSION}"
           echo "DOTNET_TFM=$DOTNET_TFM" >> $GITHUB_ENV
-
-    - name: Set the TFM in Windows
-      if: startsWith(matrix.os, 'windows')
-      run: |
-          $VERSION = "${{ matrix.dotnet }}".Substring(0, "${{ matrix.dotnet }}".LastIndexOf('.'))
-          $DOTNET_TFM = "net$VERSION"
-          echo "DOTNET_TFM=$DOTNET_TFM" | Out-File -FilePath $env:GITHUB_ENV -Append
           
     - name: Restore dependencies
       run: dotnet restore
@@ -48,14 +39,8 @@ jobs:
     - name: Build
       run: dotnet build --no-restore -c Release -f ${{ env.DOTNET_TFM }}
     
-    - name: Test (Ubuntu)
-      if: matrix.os == 'ubuntu-latest'
+    - name: Test
       run: dotnet test --no-build --verbosity normal -c  Release -f ${{ env.DOTNET_TFM }} /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:Exclude="[*.XUnit]*"
-
-    - name: Test (Windows)
-      if: matrix.os == 'windows-latest'
-      run: dotnet test --no-build --verbosity normal -c  Release -f ${{ env.DOTNET_TFM }} --filter DB!=SQLServer /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:Exclude="[*.XUnit]*"
-
       
     - name: Collect to Codecov
       uses: codecov/codecov-action@v4

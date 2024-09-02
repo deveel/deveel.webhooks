@@ -54,7 +54,7 @@ jobs:
 
     - name: Test (Ubuntu)
       if: matrix.os == 'windows-latest'
-      run: dotnet test --no-build --verbosity normal -c  Release -f ${{ env.DOTNET_TFM }} --filter DB=SQLServer /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:Exclude="[*.XUnit]*"
+      run: dotnet test --no-build --verbosity normal -c  Release -f ${{ env.DOTNET_TFM }} --filter DB!=SQLServer /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:Exclude="[*.XUnit]*"
 
       
     - name: Collect to Codecov

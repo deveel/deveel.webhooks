@@ -59,7 +59,7 @@ jobs:
     - uses: actions/checkout@v4
   
     - name: Pack
-      run: dotnet pack --configuration Release --include-symbols -p:PackageVersion=$VERSION --output ./nuget
+      run: dotnet pack --configuration Release --include-symbols -p:PackageVersion=${{ inputs.version }} --output ./nuget
 
     - name: Push Packages to GitHub NuGet
       run: dotnet nuget push ./nuget/**/*.nupkg --skip-duplicate --api-key ${{secrets.GITHUB_TOKEN}} --source "https://nuget.pkg.github.com/deveel/index.json"

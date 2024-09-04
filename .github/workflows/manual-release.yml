@@ -32,7 +32,7 @@ jobs:
           echo "DOTNET_TFM=$DOTNET_TFM" >> $GITHUB_ENV
 
     - name: Setup .NET
-      uses: actions/setup-dotnet@v3
+      uses: actions/setup-dotnet@v4
       with:
         dotnet-version: ${{ matrix.dotnet }}
           
@@ -50,11 +50,19 @@ jobs:
       with:
         token: ${{ secrets.OCM_CODECOV_TOKEN }}
 
+  pack:
+    needs: build
+
+    runs-on: ubuntu-latest
+    name: "Pack"
+    steps:
+    - uses: actions/checkout@v4
+  
     - name: Pack
-      run: dotnet pack --configuration Release --no-restore --no-build --include-symbols -p:PackageVersion=${{ inputs.version }} --output ./nuget
+      run: dotnet pack --configuration Release --include-symbols -p:PackageVersion=$VERSION --output ./nuget
 
     - name: Push Packages to GitHub NuGet
       run: dotnet nuget push ./nuget/**/*.nupkg --skip-duplicate --api-key ${{secrets.GITHUB_TOKEN}} --source "https://nuget.pkg.github.com/deveel/index.json"
 
-    - name: Push Packages to GitHub NuGet
+    - name: Push Packages to NuGet
       run: dotnet nuget push ./nuget/**/*.nupkg --skip-duplicate --api-key ${{secrets.NUGET_API_KEY}} --source https://api.nuget.org/v3/index.json

@@ -49,10 +49,10 @@ namespace Deveel.Webhooks {
 		public WebhookSubscriptionResolver(
 			IWebhookSubscriptionRepository<TSubscription, TKey> repository,
 			IWebhookSubscriptionCache? cache = null,
-			ILogger<TenantWebhookSubscriptionResolver<TSubscription, TKey>>? logger = null) {
+			ILogger<WebhookSubscriptionResolver<TSubscription, TKey>>? logger = null) {
 			this.repository = repository;
 			this.cache = cache;
-			this.logger = logger ?? NullLogger<TenantWebhookSubscriptionResolver<TSubscription, TKey>>.Instance;
+			this.logger = logger ?? NullLogger<WebhookSubscriptionResolver<TSubscription, TKey>>.Instance;
 		}
 
 		private async Task<IList<IWebhookSubscription>?> GetCachedAsync(string eventType, CancellationToken cancellationToken) {

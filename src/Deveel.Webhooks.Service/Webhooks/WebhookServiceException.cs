@@ -21,15 +21,18 @@ namespace Deveel.Webhooks {
 	/// </summary>
 	public class WebhookServiceException : OperationException {
 		/// <inheritdoc/>
-		public WebhookServiceException(string errorCode) : base(errorCode) {
+		public WebhookServiceException(string errorCode) 
+			: base(errorCode, WebhookServiceDefaults.ServiceDomain) {
 		}
 
 		/// <inheritdoc/>
-		public WebhookServiceException(string errorCode, string? message) : base(errorCode, message) {
+		public WebhookServiceException(string errorCode, string? message) 
+			: base(errorCode, WebhookServiceDefaults.ServiceDomain, message) {
 		}
 
 		/// <inheritdoc/>
-		public WebhookServiceException(string errorCode, string? message, Exception innerException) : base(errorCode, message, innerException) {
+		public WebhookServiceException(string errorCode, string? message, Exception innerException) 
+			: base(errorCode, WebhookServiceDefaults.ServiceDomain, message, innerException) {
 		}
 	}
 }

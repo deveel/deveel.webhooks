@@ -162,7 +162,7 @@ namespace Deveel.Webhooks {
 
                 if (currentStatus == status) {
                     Logger.LogTrace("The subscription {SubscriptionId} is already {Status}", subscription.SubscriptionId, status);
-					return OperationResult.NotModified;
+					return OperationResult.NotChanged;
                 }
 
                 await SubscriptionRepository.SetStatusAsync(subscription, status, CancellationToken);
@@ -240,7 +240,7 @@ namespace Deveel.Webhooks {
 				var toRemove = existing.Except(eventTypes, StringComparer.OrdinalIgnoreCase).ToArray();
 
 				if (toAdd.Length == 0 && toRemove.Length == 0)
-					return OperationResult.NotModified;
+					return OperationResult.NotChanged;
 
 				if (toAdd.Length > 0)
 					await SubscriptionRepository.AddEventTypesAsync(subscription, toAdd, CancellationToken);
@@ -283,7 +283,7 @@ namespace Deveel.Webhooks {
 				var toRemove = existing.Where(x => !headers.ContainsKey(x.Key)).ToArray();
 
 				if (toAdd.Length == 0 && toRemove.Length == 0)
-					return OperationResult.NotModified;
+					return OperationResult.NotChanged;
 
 				if (toAdd.Length > 0)
 					await SubscriptionRepository.AddHeadersAsync(subscription, toAdd.ToDictionary(x => x.Key, x => x.Value), CancellationToken);
@@ -317,7 +317,7 @@ namespace Deveel.Webhooks {
 			try {
 				var existing = SubscriptionRepository.GetDestinationUrlAsync(subscription, cancellationToken);
 				if (existing != null && existing.Equals(url))
-					return OperationResult.NotModified;
+					return OperationResult.NotChanged;
 
 				await SubscriptionRepository.SetDestinationUrlAsync(subscription, url, cancellationToken);
 
@@ -347,7 +347,7 @@ namespace Deveel.Webhooks {
 			try {
 				var existing = await SubscriptionRepository.GetSecretAsync(subscription, GetCancellationToken(cancellationToken));
 				if (existing != null && existing.Equals(secret))
-					return OperationResult.NotModified;
+					return OperationResult.NotChanged;
 
 				await SubscriptionRepository.SetSecretAsync(subscription, secret, GetCancellationToken(cancellationToken));
 
@@ -381,7 +381,7 @@ namespace Deveel.Webhooks {
 				var toRemove = existing.Where(x => !properties.ContainsKey(x.Key)).ToArray();
 
 				if (toAdd.Length == 0 && toRemove.Length == 0)
-					return OperationResult.NotModified;
+					return OperationResult.NotChanged;
 
 				if (toAdd.Length > 0)
 					await SubscriptionRepository.AddPropertiesAsync(subscription, toAdd.ToDictionary(x => x.Key, x => x.Value), GetCancellationToken(cancellationToken));

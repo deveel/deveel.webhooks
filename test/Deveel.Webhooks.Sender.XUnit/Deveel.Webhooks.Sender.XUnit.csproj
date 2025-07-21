@@ -19,8 +19,4 @@
   <ItemGroup>
     <None Include="..\..\apl-2.licenseheader" Link="apl-2.licenseheader" />
   </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Update="Bogus" Version="35.5.0" />
-  </ItemGroup>
 </Project>

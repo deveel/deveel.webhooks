@@ -21,6 +21,9 @@ namespace Deveel.Webhooks {
 	/// <typeparam name="TResult">
 	/// The type of the result of the delivery of a webhook
 	/// </typeparam>
+	/// <typeparam name="TKey">
+	/// The type of the unique identifier of the delivery result
+	/// </typeparam>
 	public interface IWebhookDeliveryResultRepository<TResult, TKey> : IRepository<TResult, TKey> where TResult : class, IWebhookDeliveryResult {
 		/// <summary>
 		/// Finds a single delivery result by the identifier of the webhook

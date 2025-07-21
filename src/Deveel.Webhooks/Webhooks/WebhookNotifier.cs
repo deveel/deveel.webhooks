@@ -57,7 +57,7 @@ namespace Deveel.Webhooks {
 			IWebhookSubscriptionResolver<TWebhook>? subscriptionResolver = null,
 			IEnumerable<IWebhookFilterEvaluator<TWebhook>>? filterEvaluators = null, 
 			IWebhookDeliveryResultLogger<TWebhook>? deliveryResultLogger = null, 
-			ILogger<TenantWebhookNotifier<TWebhook>>? logger = null) 
+			ILogger<WebhookNotifier<TWebhook>>? logger = null) 
 			: base(options.Value, sender, webhookFactory, filterEvaluators, deliveryResultLogger, logger) {
 			this.subscriptionResolver = subscriptionResolver;
 		}

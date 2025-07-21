@@ -17,6 +17,9 @@ using System.Configuration;
 using Deveel.Data;
 
 using Finbuckle.MultiTenant;
+#if NET7_0_OR_GREATER
+using Finbuckle.MultiTenant.Abstractions;
+#endif
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -88,65 +91,6 @@ namespace Deveel.Webhooks {
 
 			return this;
 		}
-
-		/// <summary>
-		/// Configures the storage system to use the connection
-		/// string of the tenant that is resolved by the current
-		/// context of the application.
-		/// </summary>
-		/// <param name="configure">
-		/// The action to configure the connection string of the tenant.
-		/// </param>
-		/// <returns>
-		/// Returns the current instance of the builder for chaining.
-		/// </returns>
-		public MongoDbWebhookStorageBuilder<TSubscription> WithTenantConnection(Action<ITenantInfo?, MongoConnectionBuilder> configure) {
-			Services.AddMongoDbContext<MongoDbWebhookContext>(configure);
-
-			return this;
-		}
-
-		/// <summary>
-		/// Changes the scope of the storage to use multi-tenant
-		/// infrastructure for connecting to the MongoDB databases
-		/// of each tenant.
-		/// </summary>
-		/// <typeparam name="TTenantInfo">
-		/// The type of tenant information resolved, that is holding
-		/// the connection string to the MongoDB database of each tenant.
-		/// </typeparam>
-		/// <returns>
-		/// Returns the current instance of the builder for chaining.
-		/// </returns>
-		public MongoDbWebhookStorageBuilder<TSubscription> UseMultiTenant<TTenantInfo>() where TTenantInfo : class, ITenantInfo, new() {
-			Services.RemoveAll<IMongoDbWebhookContext>();
-			Services.RemoveAll<MongoDbWebhookContext>();
-			Services.RemoveAll<IRepositoryProvider<TSubscription>>();
-
-			Services.AddRepositoryTenantResolver<TTenantInfo>();
-
-			Services.AddMongoDbContext<MongoDbWebhookTenantContext>((tenant, builder) => {
-				if (tenant == null)
-					throw new Exception("No tenant information was provided");
-
-				builder.UseConnection(tenant.ConnectionString!);
-			});
-
-			Services.AddScoped<IMongoDbWebhookContext>(sp => sp.GetRequiredService<MongoDbWebhookTenantContext>());
-			Services.AddRepositoryProvider<MongoDbWebhookSubscriptionRepositoryProvider<MongoDbWebhookTenantContext>>();
-			Services.AddRepositoryProvider<MongoDbWebhookDeliveryResultRepositoryProvider>();
-
-            return this;
-		}
-
-		/// <summary>
-		/// Changes the scope of the storage to use multi-tenant
-		/// infrastructure for connecting to the MongoDB databases
-		/// of each tenant.
-		/// </summary>
-		/// <returns></returns>
-		public MongoDbWebhookStorageBuilder<TSubscription> UseMultiTenant()
-			=> UseMultiTenant<TenantInfo>();
 
 		/// <summary>
 		/// Registers the given type of storage to be used for

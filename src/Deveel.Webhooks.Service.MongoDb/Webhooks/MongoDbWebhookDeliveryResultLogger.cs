@@ -49,7 +49,7 @@ namespace Deveel.Webhooks {
 		/// An optional logger to use to log messages emitted by this service.
 		/// </param>
 		public MongoDbWebhookDeliveryResultLogger(
-			IWebhookDeliveryResultRepositoryProvider<TResult, ObjectId> storeProvider, 
+			IWebhookDeliveryResultRepository<TResult, ObjectId> storeProvider, 
 			IMongoWebhookConverter<TWebhook>? webhookConverter = null,
 			ILogger<MongoDbWebhookDeliveryResultLogger<TWebhook, TResult>>? logger = null) {
 			RepositoryProvider = storeProvider;
@@ -61,7 +61,7 @@ namespace Deveel.Webhooks {
 		/// Gets the provider used to resolve the MongoDB storage where to log
 		/// the delivery results.
 		/// </summary>
-		protected IWebhookDeliveryResultRepositoryProvider<TResult, ObjectId> RepositoryProvider { get; }
+		protected IWebhookDeliveryResultRepository<TResult, ObjectId> RepositoryProvider { get; }
 
 		/// <summary>
 		/// Gets the logger used to log messages emitted by this service.
@@ -197,9 +197,7 @@ namespace Deveel.Webhooks {
 			try {
 				var results = notification.Select(e => ConvertResult(notification, e, subscription, result));
 
-				var repository = await RepositoryProvider.GetRepositoryAsync(subscription.TenantId, cancellationToken);
-
-				await repository.AddRangeAsync(results, cancellationToken);
+				await RepositoryProvider.AddRangeAsync(results, cancellationToken);
 			} catch (Exception ex) {
 				Logger.LogError(ex, "Could not log the result of the delivery of the Webhook of type '{WebhookType}' for tenant '{TenantId}' because of an error",
 					typeof(TWebhook), subscription.TenantId);

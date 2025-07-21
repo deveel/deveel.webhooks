@@ -15,6 +15,9 @@
 using Deveel.Data;
 
 using Finbuckle.MultiTenant;
+#if NET7_0_OR_GREATER
+using Finbuckle.MultiTenant.Abstractions;
+#endif
 
 using MongoFramework;
 

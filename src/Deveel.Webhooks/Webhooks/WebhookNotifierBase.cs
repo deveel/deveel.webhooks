@@ -35,13 +35,13 @@ namespace Deveel.Webhooks {
 			IWebhookFactory<TWebhook> webhookFactory,
 			IEnumerable<IWebhookFilterEvaluator<TWebhook>>? filterEvaluators = null,
 			IWebhookDeliveryResultLogger<TWebhook>? deliveryResultLogger = null,
-			ILogger<TenantWebhookNotifier<TWebhook>>? logger = null) {
+			ILogger<WebhookNotifier<TWebhook>>? logger = null) {
 			NotificationOptions = notificationOptions;
 			this.sender = sender;
 			this.webhookFactory = webhookFactory;
 			this.filterEvaluators = GetFilterEvaluators(filterEvaluators);
 			this.deliveryResultLogger = deliveryResultLogger ?? NullWebhookDeliveryResultLogger<TWebhook>.Instance;
-			Logger = logger ?? NullLogger<TenantWebhookNotifier<TWebhook>>.Instance;
+			Logger = logger ?? NullLogger<WebhookNotifier<TWebhook>>.Instance;
 		}
 
 		/// <summary>

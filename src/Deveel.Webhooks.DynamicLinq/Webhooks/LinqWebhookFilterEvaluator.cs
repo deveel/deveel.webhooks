@@ -54,7 +54,12 @@ namespace Deveel.Webhooks {
 		private Func<object, bool> Compile(Type objType, string filter) {
 			var key = new FilterKey(objType.FullName!, filter);
 			if (!filterCache.TryGetValue(key, out var compiled)) {
-				var config = ParsingConfig.Default;
+				var config = new ParsingConfig{
+					// Use the default options for parsing
+					// LINQ expressions
+					IsCaseSensitive = false,
+					AllowEqualsAndToStringMethodsOnObject = true,
+				};
 
 				var parameters = new[] {
 					Expression.Parameter(objType, "hook")

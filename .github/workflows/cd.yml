@@ -6,7 +6,14 @@ permissions:
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+env:
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+  DOTNET_NOLOGO: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
 
 jobs:
   build:
@@ -14,61 +21,85 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        dotnet: [ '6.0.x', '7.0.x' ]
+        include:
+          - dotnet: '6.0.x'
+            dotnet-framework: 'net6.0'
+          - dotnet: '7.0.x'
+            dotnet-framework: 'net7.0'
+          - dotnet: '8.0.x'
+            dotnet-framework: 'net8.0'
         os: [ ubuntu-latest, windows-latest ]
     
     runs-on: ${{ matrix.os }}
+    
+    outputs:
+      version: ${{ steps.gitversion.outputs.SemVer }}
+      nuget-version: ${{ steps.gitversion.outputs.NuGetVersion }}
+      assembly-version: ${{ steps.gitversion.outputs.AssemblySemVer }}
+      file-version: ${{ steps.gitversion.outputs.AssemblySemFileVer }}
+      informational-version: ${{ steps.gitversion.outputs.InformationalVersion }}
 
     steps:
     - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Install GitVersion
+      uses: gittools/actions/gitversion/setup@v3.0.0
+      with:
+        versionSpec: '6.x'
+    
+    - name: Determine Version
+      id: gitversion
+      uses: gittools/actions/gitversion/execute@v3.0.0
+      with:
+        useConfigFile: true
+
+    - name: Display GitVersion outputs
+      run: |
+        echo "Version: ${{ steps.gitversion.outputs.SemVer }}"
+        echo "NuGet Version: ${{ steps.gitversion.outputs.NuGetVersion }}"
+        echo "Assembly Version: ${{ steps.gitversion.outputs.AssemblySemVer }}"
+        echo "File Version: ${{ steps.gitversion.outputs.AssemblySemFileVer }}"
+        echo "Informational Version: ${{ steps.gitversion.outputs.InformationalVersion }}"
 
     - name: Setup .NET ${{ matrix.dotnet }}
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: ${{ matrix.dotnet }}
-
-    - name: Set the TFM in Ubuntu
-      if: startsWith(matrix.os, 'ubuntu')
-      run: |
-          VERSION=$(echo "${{ matrix.dotnet }}" | sed 's/[^0-9.]*//g')
-          VERSION=$(echo "${VERSION}" | sed 's/\.$//')
-          DOTNET_TFM="net${VERSION}"
-          echo "DOTNET_TFM=$DOTNET_TFM" >> $GITHUB_ENV
-
-    - name: Set the TFM in Windows
-      if: startsWith(matrix.os, 'windows')
-      run: |
-          $VERSION = "${{ matrix.dotnet }}".Substring(0, "${{ matrix.dotnet }}".LastIndexOf('.'))
-          $DOTNET_TFM = "net$VERSION"
-          echo "DOTNET_TFM=$DOTNET_TFM" | Out-File -FilePath $env:GITHUB_ENV -Append
           
     - name: Restore dependencies
       run: dotnet restore
       
     - name: Build
-      run: dotnet build --no-restore -c Release -f ${{ env.DOTNET_TFM }}
+      run: dotnet build --no-restore -c Release -f ${{ matrix.dotnet-framework }}
+      env:
+        GitVersion_SemVer: ${{ steps.gitversion.outputs.SemVer }}
+        GitVersion_AssemblySemVer: ${{ steps.gitversion.outputs.AssemblySemVer }}
+        GitVersion_AssemblySemFileVer: ${{ steps.gitversion.outputs.AssemblySemFileVer }}
+        GitVersion_InformationalVersion: ${{ steps.gitversion.outputs.InformationalVersion }}
+        GitVersion_NuGetVersion: ${{ steps.gitversion.outputs.NuGetVersion }}
     
     - name: Test
-      run: dotnet test --no-build --verbosity normal -c  Release -f ${{ env.DOTNET_TFM }} /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:Exclude="[*.XUnit]*"
-      
+      run: dotnet test --no-build --verbosity normal -c Release -f ${{ matrix.dotnet-framework }} /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:Exclude="[*.XUnit]*"
+
     - name: Collect to Codecov
-      uses: codecov/codecov-action@v4
+      uses: codecov/codecov-action@v5
       with:
-        token: ${{ secrets.OCM_CODECOV_TOKEN }}
+        token: ${{ secrets.CODECOV_TOKEN }}
 
   publish:
     needs: build
-    name: "Pack"
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v4
-    - name: Pack
-      run: dotnet pack --configuration Release --include-symbols --version-suffix $GITHUB_RUN_ID --output ./nuget
-
-    - name: Push Packages to GitHub NuGet
-      run: dotnet nuget push ./nuget/**/*.nupkg --skip-duplicate --api-key ${{secrets.GITHUB_TOKEN}} --source "https://nuget.pkg.github.com/deveel/index.json"
+    name: "Publish Packages (Development)"
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'
+    uses: ./.github/workflows/publish.yml
+    with:
+      publish-to-nuget: false
+    secrets:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   clean:
     needs: publish
     name: "Clean Old Packages"
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'
     uses: ./.github/workflows/clean-packages.yml

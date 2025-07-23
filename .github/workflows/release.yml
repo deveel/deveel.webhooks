@@ -1,77 +1,238 @@
-name: "Webhooks Release"
+﻿name: Release Workflow
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Release version (e.g., 1.0.0 or v1.0.0)'
+        required: true
+        type: string
+      publish-to-nuget:
+        description: 'Publish to NuGet.org'
+        required: false
+        type: boolean
+        default: true
 
 permissions:
   contents: read
   packages: write
 
-on:
-  release:
-    types: [published]
+env:
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+  DOTNET_NOLOGO: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
 
 jobs:
-  build:
-    name: "Build and Test"
+  validate-release:
+    name: "Validate Release"
     runs-on: ubuntu-latest
+    outputs:
+      should-publish: ${{ steps.validate.outputs.should-publish }}
+      tag-name: ${{ steps.validate.outputs.tag-name }}
+      version: ${{ steps.validate.outputs.version }}
+      is-manual: ${{ steps.validate.outputs.is-manual }}
+    
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Validate Release
+      id: validate
+      run: |
+        if [ "${{ github.event_name }}" == "push" ] && [[ "${{ github.ref }}" == refs/tags/* ]]; then
+          # Triggered by tag push
+          TAG_NAME="${{ github.ref_name }}"
+          VERSION="${TAG_NAME#v}"  # Remove 'v' prefix if present
+          SHOULD_PUBLISH="true"
+          IS_MANUAL="false"
+          echo "🏷️ Triggered by tag: $TAG_NAME"
+        elif [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+          # Triggered manually
+          INPUT_VERSION="${{ inputs.version }}"
+          # Ensure version has 'v' prefix for tag
+          if [[ "$INPUT_VERSION" == v* ]]; then
+            TAG_NAME="$INPUT_VERSION"
+            VERSION="${INPUT_VERSION#v}"
+          else
+            TAG_NAME="v$INPUT_VERSION"
+            VERSION="$INPUT_VERSION"
+          fi
+          SHOULD_PUBLISH="${{ inputs.publish-to-nuget }}"
+          IS_MANUAL="true"
+          echo "🖱️ Triggered manually with version: $VERSION"
+        else
+          echo "❌ Invalid trigger event: ${{ github.event_name }}"
+          exit 1
+        fi
+        
+        # Validate version format (basic semver validation)
+        if ! [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9.-]+)?(\+[a-zA-Z0-9.-]+)?$ ]]; then
+          echo "❌ Invalid version format: $VERSION"
+          echo "Expected format: X.Y.Z[-prerelease][+build]"
+          exit 1
+        fi
+        
+        echo "🏷️ Release tag: $TAG_NAME"
+        echo "🔢 Version: $VERSION"
+        echo "🚀 Should publish to NuGet: $SHOULD_PUBLISH"
+        echo "🖱️ Is manual trigger: $IS_MANUAL"
+        
+        echo "tag-name=$TAG_NAME" >> $GITHUB_OUTPUT
+        echo "version=$VERSION" >> $GITHUB_OUTPUT
+        echo "should-publish=$SHOULD_PUBLISH" >> $GITHUB_OUTPUT
+        echo "is-manual=$IS_MANUAL" >> $GITHUB_OUTPUT
+
+  check-tag-exists:
+    needs: validate-release
+    name: "Check Tag Exists"
+    runs-on: ubuntu-latest
+    if: needs.validate-release.outputs.is-manual == 'true'
+    outputs:
+      tag-exists: ${{ steps.check.outputs.exists }}
+    
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        
+    - name: Check if tag exists
+      id: check
+      run: |
+        TAG_NAME="${{ needs.validate-release.outputs.tag-name }}"
+        if git rev-parse --verify "refs/tags/$TAG_NAME" >/dev/null 2>&1; then
+          echo "⚠️ Tag $TAG_NAME already exists"
+          echo "exists=true" >> $GITHUB_OUTPUT
+        else
+          echo "✅ Tag $TAG_NAME does not exist"
+          echo "exists=false" >> $GITHUB_OUTPUT
+        fi
+
+  build:
+    needs: [validate-release, check-tag-exists]
+    name: "Build and Test (Release)"
+    if: always() && needs.validate-release.result == 'success' && (needs.check-tag-exists.result == 'skipped' || needs.check-tag-exists.outputs.tag-exists == 'false')
     strategy:
       fail-fast: true
       matrix:
-         dotnet: [ '6.0.x', '7.0.x', '8.x.0' ]
+        include:
+          - dotnet: '6.0.x'
+            dotnet-framework: 'net6.0'
+          - dotnet: '7.0.x'
+            dotnet-framework: 'net7.0'
+          - dotnet: '8.0.x'
+            dotnet-framework: 'net8.0'
+        os: [ ubuntu-latest, windows-latest ]
+    
+    runs-on: ${{ matrix.os }}
 
     steps:
     - uses: actions/checkout@v4
-  
-    - name: Set VERSION variable from tag
-      run: |
-        TAG=${{ github.event.release.tag_name }}
-        echo "VERSION=${TAG#v}" >> $GITHUB_ENV
+      with:
+        fetch-depth: 0
+
+    - name: Install GitVersion
+      uses: gittools/actions/gitversion/setup@v3.0.0
+      with:
+        versionSpec: '6.x'
+    
+    - name: Determine Version
+      id: gitversion
+      uses: gittools/actions/gitversion/execute@v3.0.0
+      with:
+        useConfigFile: true
+        overrideConfig: |
+          next-version=${{ needs.validate-release.outputs.version }}
 
     - name: Setup .NET ${{ matrix.dotnet }}
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: ${{ matrix.dotnet }}
-
-    - name: Set the TFM in Ubuntu
-      if: startsWith(matrix.os, 'ubuntu')
-      run: |
-          VERSION=$(echo "${{ matrix.dotnet }}" | sed 's/[^0-9.]*//g')
-          VERSION=$(echo "${VERSION}" | sed 's/\.$//')
-          DOTNET_TFM="net${VERSION}"
-          echo "DOTNET_TFM=$DOTNET_TFM" >> $GITHUB_ENV
-
-    - name: Set the TFM in Windows
-      if: startsWith(matrix.os, 'windows')
-      run: |
-          $VERSION = "${{ matrix.dotnet }}".Substring(0, "${{ matrix.dotnet }}".LastIndexOf('.'))
-          $DOTNET_TFM = "net$VERSION"
-          echo "DOTNET_TFM=$DOTNET_TFM" | Out-File -FilePath $env:GITHUB_ENV -Append
           
     - name: Restore dependencies
       run: dotnet restore
       
     - name: Build
-      run: dotnet build --no-restore -c Release /p:Version=$VERSION -f ${{ env.DOTNET_TFM }}
+      run: dotnet build --no-restore -c Release -f ${{ matrix.dotnet-framework }}
+      env:
+        GitVersion_SemVer: ${{ steps.gitversion.outputs.SemVer }}
+        GitVersion_AssemblySemVer: ${{ steps.gitversion.outputs.AssemblySemVer }}
+        GitVersion_AssemblySemFileVer: ${{ steps.gitversion.outputs.AssemblySemFileVer }}
+        GitVersion_InformationalVersion: ${{ steps.gitversion.outputs.InformationalVersion }}
+        GitVersion_NuGetVersion: ${{ steps.gitversion.outputs.NuGetVersion }}
     
     - name: Test
-      run: dotnet test --no-build --verbosity normal -c Release -f ${{ env.DOTNET_TFM }} /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:Exclude="[*.XUnit]*"
-      
-    - name: Collect to Codecov
-      uses: codecov/codecov-action@v4
-      with:
-        token: ${{ secrets.OCM_CODECOV_TOKEN }}
+      run: dotnet test --no-build --verbosity normal -c Release -f ${{ matrix.dotnet-framework }} /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:Exclude="[*.XUnit]*"
 
-  pack:
-    needs: build
-
+  create-tag:
+    needs: [validate-release, check-tag-exists, build]
+    name: "Create Tag"
     runs-on: ubuntu-latest
-    name: "Pack"
+    if: needs.validate-release.outputs.is-manual == 'true' && needs.check-tag-exists.outputs.tag-exists == 'false'
+    
     steps:
-    - uses: actions/checkout@v4
-  
-    - name: Pack
-      run: dotnet pack --configuration Release --include-symbols -p:PackageVersion=$VERSION --output ./nuget
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        token: ${{ secrets.GITHUB_TOKEN }}
+        
+    - name: Create and push tag
+      run: |
+        TAG_NAME="${{ needs.validate-release.outputs.tag-name }}"
+        git config user.name "github-actions[bot]"
+        git config user.email "github-actions[bot]@users.noreply.github.com"
+        
+        echo "📝 Creating tag: $TAG_NAME"
+        git tag -a "$TAG_NAME" -m "Release $TAG_NAME"
+        
+        echo "📤 Pushing tag: $TAG_NAME"
+        git push origin "$TAG_NAME"
+        
+        echo "✅ Tag $TAG_NAME created and pushed successfully"
 
-    - name: Push Packages to GitHub NuGet
-      run: dotnet nuget push ./nuget/**/*.nupkg --skip-duplicate --api-key ${{secrets.GITHUB_TOKEN}} --source "https://nuget.pkg.github.com/deveel/index.json"
+  publish:
+    needs: [validate-release, build]
+    name: "Publish Packages (Release)"
+    if: always() && needs.build.result == 'success'
+    uses: ./.github/workflows/publish.yml
+    with:
+      publish-to-nuget: ${{ needs.validate-release.outputs.should-publish == 'true' }}
+      build-configuration: 'Release'
+    secrets:
+      NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Push Packages to NuGet
-      run: dotnet nuget push ./nuget/**/*.nupkg --skip-duplicate --api-key ${{secrets.NUGET_API_KEY}} --source https://api.nuget.org/v3/index.json
+  summary:
+    needs: [validate-release, publish, create-tag]
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+    - name: Release Summary
+      run: |
+        echo "## 📦 Release Package Summary" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "| Property | Value |" >> $GITHUB_STEP_SUMMARY
+        echo "|----------|-------|" >> $GITHUB_STEP_SUMMARY
+        echo "| Tag | \`${{ needs.validate-release.outputs.tag-name }}\` |" >> $GITHUB_STEP_SUMMARY
+        echo "| Version | \`${{ needs.validate-release.outputs.version }}\` |" >> $GITHUB_STEP_SUMMARY
+        echo "| Trigger | ${{ needs.validate-release.outputs.is-manual == 'true' && '🖱️ Manual' || '🏷️ Tag Push' }} |" >> $GITHUB_STEP_SUMMARY
+        echo "| NuGet.org | ${{ needs.validate-release.outputs.should-publish == 'true' && '✅ Published' || '❌ Skipped' }} |" >> $GITHUB_STEP_SUMMARY
+        echo "| GitHub Packages | ✅ Published |" >> $GITHUB_STEP_SUMMARY
+        echo "| Tag Created | ${{ needs.create-tag.result == 'success' && '✅ Yes' || (needs.create-tag.result == 'skipped' && '⏭️ Skipped' || '❌ Failed') }} |" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        
+        if [ "${{ needs.validate-release.outputs.is-manual }}" == "true" ]; then
+          echo "🖱️ **Manual Release**: This release was triggered manually with version \`${{ needs.validate-release.outputs.version }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "📝 **Note**: This workflow only handles package publishing. GitHub releases should be created manually if needed." >> $GITHUB_STEP_SUMMARY
+        else
+          echo "🏷️ **Tag Release**: This release was triggered by pushing tag \`${{ needs.validate-release.outputs.tag-name }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "📝 **Note**: This workflow only handles package publishing. GitHub releases should be created manually if needed." >> $GITHUB_STEP_SUMMARY
+        fi

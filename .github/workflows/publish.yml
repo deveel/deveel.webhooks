@@ -1,0 +1,150 @@
+﻿name: Publish Packages
+
+on:
+  workflow_call:
+    inputs:
+      publish-to-nuget:
+        description: 'Whether to publish packages to NuGet.org'
+        required: true
+        type: boolean
+        default: false
+      build-configuration:
+        description: 'Build configuration to use'
+        required: false
+        type: string
+        default: 'Release'
+    secrets:
+      NUGET_API_KEY:
+        description: 'NuGet API key for publishing to NuGet.org'
+        required: false
+      GITHUB_TOKEN:
+        description: 'GitHub token for publishing to GitHub Packages'
+        required: true
+
+permissions:
+  contents: read
+  packages: write
+
+env:
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+  DOTNET_NOLOGO: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+
+jobs:
+  publish:
+    name: "Pack and Publish Packages"
+    runs-on: ubuntu-latest
+    
+    outputs:
+      version: ${{ steps.gitversion.outputs.SemVer }}
+      nuget-version: ${{ steps.gitversion.outputs.NuGetVersion }}
+      assembly-version: ${{ steps.gitversion.outputs.AssemblySemVer }}
+      file-version: ${{ steps.gitversion.outputs.AssemblySemFileVer }}
+      informational-version: ${{ steps.gitversion.outputs.InformationalVersion }}
+      packages-published-to-nuget: ${{ steps.publish-nuget.outputs.published }}
+    
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Install GitVersion
+      uses: gittools/actions/gitversion/setup@v3.0.0
+      with:
+        versionSpec: '6.x'
+    
+    - name: Determine Version
+      id: gitversion
+      uses: gittools/actions/gitversion/execute@v3.0.0
+      with:
+        useConfigFile: true
+
+    - name: Display Version Information
+      run: |
+        echo "🏷️ Version: ${{ steps.gitversion.outputs.SemVer }}"
+        echo "📦 NuGet Version: ${{ steps.gitversion.outputs.NuGetVersion }}"
+        echo "🔢 Assembly Version: ${{ steps.gitversion.outputs.AssemblySemVer }}"
+        echo "📄 File Version: ${{ steps.gitversion.outputs.AssemblySemFileVer }}"
+        echo "ℹ️ Informational Version: ${{ steps.gitversion.outputs.InformationalVersion }}"
+        echo "🚀 Publish to NuGet: ${{ inputs.publish-to-nuget }}"
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: |
+          6.0.x
+          7.0.x
+          8.0.x
+
+    - name: Restore Dependencies
+      run: dotnet restore
+
+    - name: Pack Packages
+      run: dotnet pack --configuration ${{ inputs.build-configuration }} --include-symbols --output ./nuget
+      env:
+        GitVersion_SemVer: ${{ steps.gitversion.outputs.SemVer }}
+        GitVersion_AssemblySemVer: ${{ steps.gitversion.outputs.AssemblySemVer }}
+        GitVersion_AssemblySemFileVer: ${{ steps.gitversion.outputs.AssemblySemFileVer }}
+        GitVersion_InformationalVersion: ${{ steps.gitversion.outputs.InformationalVersion }}
+        GitVersion_NuGetVersion: ${{ steps.gitversion.outputs.NuGetVersion }}
+
+    - name: List Generated Packages
+      run: |
+        echo "📋 Generated packages:"
+        ls -la ./nuget/
+
+    - name: Publish to GitHub Packages
+      run: |
+        echo "📤 Publishing packages to GitHub Packages..."
+        dotnet nuget push ./nuget/**/*.nupkg \
+          --skip-duplicate \
+          --api-key ${{ secrets.GITHUB_TOKEN }} \
+          --source "https://nuget.pkg.github.com/deveel/index.json"
+        echo "✅ Successfully published to GitHub Packages"
+
+    - name: Publish to NuGet.org
+      id: publish-nuget
+      if: inputs.publish-to-nuget == true
+      run: |
+        echo "📤 Publishing packages to NuGet.org..."
+        if [ -z "${{ secrets.NUGET_API_KEY }}" ]; then
+          echo "❌ NUGET_API_KEY secret is not set"
+          exit 1
+        fi
+        
+        dotnet nuget push ./nuget/**/*.nupkg \
+          --skip-duplicate \
+          --api-key ${{ secrets.NUGET_API_KEY }} \
+          --source https://api.nuget.org/v3/index.json
+        
+        echo "✅ Successfully published to NuGet.org"
+        echo "published=true" >> $GITHUB_OUTPUT
+
+    - name: Upload Package Artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: nuget-packages-${{ steps.gitversion.outputs.NuGetVersion }}
+        path: ./nuget/*.nupkg
+        retention-days: 7
+
+  summary:
+    needs: publish
+    runs-on: ubuntu-latest
+    steps:
+    - name: Publish Summary
+      run: |
+        echo "## 📦 Package Publishing Summary" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "| Property | Value |" >> $GITHUB_STEP_SUMMARY
+        echo "|----------|-------|" >> $GITHUB_STEP_SUMMARY
+        echo "| Version | \`${{ needs.publish.outputs.version }}\` |" >> $GITHUB_STEP_SUMMARY
+        echo "| NuGet Version | \`${{ needs.publish.outputs.nuget-version }}\` |" >> $GITHUB_STEP_SUMMARY
+        echo "| Published to GitHub | ✅ |" >> $GITHUB_STEP_SUMMARY
+        echo "| Published to NuGet.org | ${{ inputs.publish-to-nuget == true && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        if [ "${{ inputs.publish-to-nuget }}" == "true" ]; then
+          echo "🎉 Packages have been published to both GitHub Packages and NuGet.org!" >> $GITHUB_STEP_SUMMARY
+        else
+          echo "📦 Packages have been published to GitHub Packages only." >> $GITHUB_STEP_SUMMARY
+        fi

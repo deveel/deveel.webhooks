@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Microsoft.EntityFrameworkCore.Infrastructure;
+
 using System.Diagnostics.CodeAnalysis;
 
 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
@@ -22,6 +24,16 @@ namespace Deveel.Webhooks {
 	/// Represents a webhook receiver that is stored in a database
 	/// </summary>
     public class DbWebhookReceiver : IWebhookReceiver {
+		private readonly ILazyLoader lazyLoader;
+		private List<DbWebhookReceiverHeader> headers;
+
+		private DbWebhookReceiver(ILazyLoader lazyLoader) {
+			this.lazyLoader = lazyLoader;
+		}
+
+		public DbWebhookReceiver() {
+		}
+
 		/// <summary>
 		/// Gets or sets the database identifier of the 
 		/// receiver entity
@@ -41,7 +53,7 @@ namespace Deveel.Webhooks {
         public virtual DbWebhookSubscription? Subscription { get; set; }
 
 		/// <inheritdoc/>
-        public string? SubscriptionName { get; set; }
+		public string? SubscriptionName { get; set; }
 
 		/// <inheritdoc/>
         public string DestinationUrl { get; set; }
@@ -55,7 +67,10 @@ namespace Deveel.Webhooks {
 		/// to the receiver.
 		/// </summary>
 		/// <seealso cref="IWebhookReceiver.Headers"/>
-        public virtual List<DbWebhookReceiverHeader> Headers { get; set; }
+        public virtual List<DbWebhookReceiverHeader> Headers { 
+			get => lazyLoader.Load(this, ref headers);
+			set => headers = value;
+		}
 
 		/// <inheritdoc/>
         public string BodyFormat { get; set; }

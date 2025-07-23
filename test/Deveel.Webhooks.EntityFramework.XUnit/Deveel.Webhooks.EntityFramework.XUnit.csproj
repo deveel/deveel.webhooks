@@ -2,6 +2,7 @@
 
 	<PropertyGroup>
 		<IsTestProject>true</IsTestProject>
+		<RunSettingsFilePath>D:\deveel\deveel.webhooks\test\Deveel.Webhooks.EntityFramework.XUnit\bin\Debug\net6.0\fine-code-coverage\coverage-tool-output\Deveel.Webhooks.EntityFramework.XUnit %28net6.0%29-fcc-mscodecoverage-generated.runsettings</RunSettingsFilePath>
 	</PropertyGroup>
 
 	<ItemGroup Condition="'$(TargetFramework)' == 'net6.0'">

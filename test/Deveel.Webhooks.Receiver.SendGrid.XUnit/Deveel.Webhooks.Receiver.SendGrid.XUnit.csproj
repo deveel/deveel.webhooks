@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <IsTestProject>true</IsTestProject>
+    <RunSettingsFilePath>D:\deveel\deveel.webhooks\test\Deveel.Webhooks.Receiver.SendGrid.XUnit\bin\Debug\net7.0\fine-code-coverage\coverage-tool-output\Deveel.Webhooks.Receiver.SendGrid.XUnit %28net7.0%29-fcc-mscodecoverage-generated.runsettings</RunSettingsFilePath>
   </PropertyGroup>
 
   <ItemGroup>

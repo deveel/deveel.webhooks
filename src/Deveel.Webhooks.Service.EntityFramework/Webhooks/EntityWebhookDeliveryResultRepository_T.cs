@@ -43,32 +43,32 @@ namespace Deveel.Webhooks {
 			: base(context, logger) {
         }
 
-        /// <summary>
-        /// Gets a queryable object to query the delivery results,
-        /// including the related entities (webhook, event, delivery 
-        /// attempts, receiver).
-        /// </summary>
-        /// <returns>
-        /// Returns an <see cref="IQueryable{TResult}"/> object that can be used
-        /// to query the delivery results.
-        /// </returns>
-        public override IQueryable<TResult> AsQueryable()
-        {
-            return Entities
-                .Include(x => x.Webhook)
-                .Include(x => x.EventInfo)
-                .Include(x => x.DeliveryAttempts)
-                .Include(x => x.Receiver);
-        }
+        ///// <summary>
+        ///// Gets a queryable object to query the delivery results,
+        ///// including the related entities (webhook, event, delivery 
+        ///// attempts, receiver).
+        ///// </summary>
+        ///// <returns>
+        ///// Returns an <see cref="IQueryable{TResult}"/> object that can be used
+        ///// to query the delivery results.
+        ///// </returns>
+        //public override IQueryable<TResult> AsQueryable()
+        //{
+        //    return Entities
+        //        .Include(x => x.Webhook)
+        //        .Include(x => x.EventInfo)
+        //        .Include(x => x.DeliveryAttempts)
+        //        .Include(x => x.Receiver);
+        //}
 
-        /// <inheritdoc/>
-        public override async Task<TResult?> FindAsync(int key, CancellationToken cancellationToken = default)
-        {
-            // This overload to the identity key uses the 'FindAsync' method
-            // to include all the related entities
-            // TODO: find a better way to include the related entities through lazy loading
-            return await FindFirstAsync(Query.Where<TResult>(x => x.Id == key), cancellationToken);
-        }
+        ///// <inheritdoc/>
+        //public override async Task<TResult?> FindAsync(int key, CancellationToken cancellationToken = default)
+        //{
+        //    // This overload to the identity key uses the 'FindAsync' method
+        //    // to include all the related entities
+        //    // TODO: find a better way to include the related entities through lazy loading
+        //    return await FindFirstAsync(Query.Where<TResult>(x => x.Id == key), cancellationToken);
+        //}
 
         /// <inheritdoc/>
         public async Task<TResult?> FindByWebhookIdAsync(string webhookId, CancellationToken cancellationToken) {

@@ -3,7 +3,7 @@ branches:
   main:
     regex: ^main$
     mode: ContinuousDeployment
-    tag: ''
+    label: ''
     increment: Patch
     prevent-increment-of-merged-branch-version: true
     track-merge-target: false
@@ -14,7 +14,7 @@ branches:
   develop:
     regex: ^dev(elop)?(ment)?$
     mode: ContinuousDeployment
-    tag: 'alpha'
+    label: 'alpha'
     increment: Minor
     prevent-increment-of-merged-branch-version: false
     track-merge-target: true
@@ -25,10 +25,10 @@ branches:
   pull-request:
     regex: ^(pull|pull\-requests|pr)[/-]
     mode: ContinuousDeployment
-    tag: 'pr'
+    label: 'pr'
     increment: Inherit
     prevent-increment-of-merged-branch-version: true
-    tag-number-pattern: '[/-](?<number>\d+)[-/]'
+    label-number-pattern: '[/-](?<number>\d+)[-/]'
     track-merge-target: false
     tracks-release-branches: false
     is-release-branch: false
@@ -37,7 +37,7 @@ branches:
   feature:
     regex: ^(feature|feat|enhancement|add|new)[/-].*$
     mode: ContinuousDeployment
-    tag: useBranchName
+    label: '{BranchName}'
     increment: Inherit
     prevent-increment-of-merged-branch-version: false
     track-merge-target: false
@@ -48,7 +48,7 @@ branches:
   bugfix:
     regex: ^(bugfix|fix|bug|hotfix|patch)[/-].*$
     mode: ContinuousDeployment
-    tag: useBranchName
+    label: '{BranchName}'
     increment: Inherit
     prevent-increment-of-merged-branch-version: false
     track-merge-target: false
@@ -59,7 +59,7 @@ branches:
   improvement:
     regex: ^(improve|improvement|refactor|refactoring|optimize|optimization|perf|performance)[/-].*$
     mode: ContinuousDeployment
-    tag: useBranchName
+    label: '{BranchName}'
     increment: Inherit
     prevent-increment-of-merged-branch-version: false
     track-merge-target: false
@@ -70,7 +70,7 @@ branches:
   maintenance:
     regex: ^(chore|maint|maintenance|cleanup|update|upgrade|deps|dependencies|ci|build|test|tests|doc|docs)[/-].*$
     mode: ContinuousDeployment
-    tag: useBranchName
+    label: '{BranchName}'
     increment: Inherit
     prevent-increment-of-merged-branch-version: false
     track-merge-target: false
@@ -81,7 +81,7 @@ branches:
   experimental:
     regex: ^(experiment|experimental|spike|prototype|poc|proof-of-concept)[/-].*$
     mode: ContinuousDeployment
-    tag: useBranchName
+    label: '{BranchName}'
     increment: Inherit
     prevent-increment-of-merged-branch-version: false
     track-merge-target: false
@@ -92,7 +92,7 @@ branches:
   release:
     regex: ^releases?[/-].*$
     mode: ContinuousDeployment
-    tag: 'beta'
+    label: 'beta'
     increment: None
     prevent-increment-of-merged-branch-version: true
     track-merge-target: false
@@ -104,7 +104,7 @@ branches:
   unknown:
     regex: ^(?!(main|dev(elop)?(ment)?|(pull|pull\-requests|pr)[/-]|(feature|feat|enhancement|add|new)[/-]|(bugfix|fix|bug|hotfix|patch)[/-]|(improve|improvement|refactor|refactoring|optimize|optimization|perf|performance)[/-]|(chore|maint|maintenance|cleanup|update|upgrade|deps|dependencies|ci|build|test|tests|doc|docs)[/-]|(experiment|experimental|spike|prototype|poc|proof-of-concept)[/-]|releases?[/-])).*$
     mode: ContinuousDeployment
-    tag: useBranchName
+    label: '{BranchName}'
     increment: Inherit
     prevent-increment-of-merged-branch-version: false
     track-merge-target: false

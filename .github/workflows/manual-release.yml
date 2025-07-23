@@ -16,34 +16,53 @@ jobs:
   build:
     name: "Build and Test"
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+      matrix:
+         dotnet: [ '6.0.x', '7.0.x', '8.0.x' ]
 
     steps:
     - uses: actions/checkout@v3
   
+    - name: Set the TFM
+      run: |
+          VERSION=$(echo "${{ matrix.dotnet }}" | sed 's/[^0-9.]*//g')
+          VERSION=$(echo "${VERSION}" | sed 's/\.$//')
+          DOTNET_TFM="net${VERSION}"
+          echo "DOTNET_TFM=$DOTNET_TFM" >> $GITHUB_ENV
+
     - name: Setup .NET
-      uses: actions/setup-dotnet@v3
+      uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: '8.0.x'
-    
+        dotnet-version: ${{ matrix.dotnet }}
+        
     - name: Restore dependencies
       run: dotnet restore
       
     - name: Build
-      run: dotnet build --no-restore -c Release /p:Version=${{ inputs.version }}
+      run: dotnet build --no-restore -c Release /p:Version=${{ inputs.version }} -f ${{ env.DOTNET_TFM }}
     
     - name: Test
-      run: dotnet test --no-build --verbosity normal -c Release /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:Exclude="[*.XUnit]*"
+      run: dotnet test --no-build --verbosity normal -c Release /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:Exclude="[*.XUnit]*" -f ${{ env.DOTNET_TFM }}
       
     - name: Collect to Codecov
       uses: codecov/codecov-action@v3
       with:
         token: ${{ secrets.OCM_CODECOV_TOKEN }}
 
+  pack:
+    needs: build
+
+    runs-on: ubuntu-latest
+    name: "Pack"
+    steps:
+    - uses: actions/checkout@v4
+  
     - name: Pack
-      run: dotnet pack --configuration Release --no-restore --no-build --include-symbols -p:PackageVersion=${{ inputs.version }} --output ./nuget
+      run: dotnet pack --configuration Release --include-symbols -p:PackageVersion=${{ inputs.version }} --output ./nuget
 
     - name: Push Packages to GitHub NuGet
-      run: dotnet nuget push ./nuget/**/*.nupkg --skip-duplicate --api-key ${{secrets.GITHUB_TOKEN}} --source https://nu/v3/index.json
+      run: dotnet nuget push ./nuget/**/*.nupkg --skip-duplicate --api-key ${{secrets.GITHUB_TOKEN}} --source "https://nuget.pkg.github.com/deveel/index.json"
 
     - name: Push Packages to NuGet
       run: dotnet nuget push ./nuget/**/*.nupkg --skip-duplicate --api-key ${{secrets.NUGET_API_KEY}} --source https://api.nuget.org/v3/index.json

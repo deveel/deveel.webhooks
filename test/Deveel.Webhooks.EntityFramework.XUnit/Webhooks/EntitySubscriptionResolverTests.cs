@@ -4,12 +4,11 @@ using Microsoft.Extensions.DependencyInjection;
 
 using Xunit.Abstractions;
 
-using static System.Formats.Asn1.AsnWriter;
-
-namespace Deveel.Webhooks {
-	public class EntitySubscriptionResolverTests : EntityWebhookTestBase {
-		public EntitySubscriptionResolverTests(SqliteTestDatabase sqlite, ITestOutputHelper outputHelper) 
-			: base(sqlite, outputHelper) {
+namespace Deveel.Webhooks
+{
+    public abstract class EntitySubscriptionResolverTests : EntityWebhookTestBase {
+		protected EntitySubscriptionResolverTests(ITestOutputHelper outputHelper) 
+			: base(outputHelper) {
 		}
 
 		protected IList<DbWebhookSubscription> Subscriptions { get; private set; }

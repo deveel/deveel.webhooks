@@ -9,20 +9,14 @@ using Microsoft.Extensions.Logging;
 using Xunit.Abstractions;
 
 namespace Deveel.Webhooks {
-    [Collection(nameof(EntityTestCollection))]
     public abstract class EntityWebhookTestBase : IAsyncLifetime {
-        private readonly SqliteTestDatabase sqlite;
         private readonly ITestOutputHelper outputHelper;
 
-        protected EntityWebhookTestBase(SqliteTestDatabase sqlite, ITestOutputHelper outputHelper) {
-            this.sqlite = sqlite;
+        protected EntityWebhookTestBase(ITestOutputHelper outputHelper) {
             this.outputHelper = outputHelper;
-            Services = BuildServiceProvider();
         }
 
-        protected IServiceProvider Services { get; }
-
-		protected string ConnectionString => sqlite.ConnectionString;
+        protected IServiceProvider Services { get; private set; }
 
         private IServiceProvider BuildServiceProvider() {
             var services = new ServiceCollection();
@@ -45,7 +39,6 @@ namespace Deveel.Webhooks {
         }
 
 		protected virtual void ConfigureWebhookEntityFramework(EntityWebhookStorageBuilder<DbWebhookSubscription> builder) {
-			builder.UseContext(options => options.UseSqlite(sqlite.ConnectionString));
 		}
 
         protected virtual void ConfigureServices(IServiceCollection services) {
@@ -53,19 +46,18 @@ namespace Deveel.Webhooks {
         }
 
         public virtual async Task DisposeAsync() {
-            var context = Services.GetService<WebhookDbContext>()!;
-            await context.Database.EnsureDeletedAsync();
+            var options = Services.GetRequiredService<DbContextOptions<WebhookDbContext>>();
 
-            if (context.Database.GetDbConnection().State == System.Data.ConnectionState.Open)
-                await context.Database.CloseConnectionAsync();
+            using var context = new WebhookDbContext(options);
+            await context.Database.EnsureDeletedAsync();
         }
 
         public virtual async Task InitializeAsync() {
-            var context = Services.GetService<WebhookDbContext>()!;
-            if (context.Database.GetDbConnection().State == System.Data.ConnectionState.Closed)
-                await context.Database.OpenConnectionAsync();
+            Services = BuildServiceProvider();
 
-            // await context.Database.EnsureDeletedAsync();
+            var options = Services.GetRequiredService<DbContextOptions<WebhookDbContext>>();
+            using var context = new WebhookDbContext(options);
+
             await context.Database.EnsureCreatedAsync();
         }
     }

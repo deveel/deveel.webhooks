@@ -89,9 +89,16 @@ jobs:
         GitVersion_InformationalVersion: ${{ steps.gitversion.outputs.InformationalVersion }}
         GitVersion_NuGetVersion: ${{ steps.gitversion.outputs.NuGetVersion }}
     
-    - name: Test
-      run: dotnet test --no-build --verbosity normal -c Release -f ${{ matrix.dotnet-framework }} /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:Exclude="[*.XUnit]*"
 
+    - name: Test (Ubuntu)
+      if: matrix.os == 'ubuntu-latest'
+      run: dotnet test --no-build --verbosity normal -c  Release -f ${{ matrix.dotnet-framework }} /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:Exclude="[*.XUnit]*"
+
+    - name: Test (Windows)
+      if: matrix.os == 'windows-latest'
+      run: dotnet test --no-build --verbosity normal -c  Release -f ${{ matrix.dotnet-framework }} --filter DB!=SQLServer
+
+      
     - name: Collect to Codecov
       uses: codecov/codecov-action@v5
       with:

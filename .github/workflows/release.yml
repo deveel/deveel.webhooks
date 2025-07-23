@@ -156,7 +156,6 @@ jobs:
       id: gitversion
       uses: gittools/actions/gitversion/execute@v4.0.1
       with:
-        useConfigFile: true
         overrideConfig: |
           next-version=${{ needs.validate-release.outputs.version }}
 

@@ -6,27 +6,21 @@ using Microsoft.Extensions.DependencyInjection;
 using Xunit.Abstractions;
 
 namespace Deveel.Webhooks {
-	[Collection(nameof(EntityWebhookManagementTestCollection))]
-	public class EntityWebhookManagementTests : WebhookManagementTestSuite<DbWebhookSubscription, string> {
-		private readonly SqliteTestDatabase sql;
+	public abstract class EntityWebhookManagementTests : WebhookManagementTestSuite<DbWebhookSubscription, string> {
+        protected EntityWebhookManagementTests(ITestOutputHelper testOutput) : base(testOutput)
+        {
+        }
 
-		public EntityWebhookManagementTests(SqliteTestDatabase sql, ITestOutputHelper testOutput) : base(testOutput) {
-			this.sql = sql;
-		}
-
-		protected override Faker<DbWebhookSubscription> Faker => new DbWebhookSubscriptionFaker();
+        protected override Faker<DbWebhookSubscription> Faker => new DbWebhookSubscriptionFaker();
 
 		protected override string GenerateSubscriptionKey() => Guid.NewGuid().ToString();
-
-		protected override void ConfigureWebhookStorage(WebhookSubscriptionBuilder<DbWebhookSubscription, string> options)
-			=> options.UseEntityFramework(builder => builder.UseContext(ctx => ctx.UseSqlite(sql.Connection)));
 
 		protected override async Task InitializeAsync() {
 			var options = Services!.GetRequiredService<DbContextOptions<WebhookDbContext>>();
 
 			using var context = new WebhookDbContext(options);
 
-			await context.Database.EnsureDeletedAsync();
+			// await context.Database.EnsureDeletedAsync();
 			await context.Database.EnsureCreatedAsync();
 
 			await base.InitializeAsync();
@@ -39,7 +33,7 @@ namespace Deveel.Webhooks {
 			context.Subscriptions.RemoveRange(context.Subscriptions);
 			await context.SaveChangesAsync(true);
 
-			await context.Database.EnsureDeletedAsync();
+			//await context.Database.EnsureDeletedAsync();
 		}
 	}
 }

@@ -2,17 +2,19 @@
 
 using Deveel.Data;
 
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
 using Xunit.Abstractions;
 
 namespace Deveel.Webhooks {
-	public class EntityDeliveryResultRepositoryTests : EntityWebhookTestBase {
+	public abstract class EntityDeliveryResultRepositoryTests : EntityWebhookTestBase {
         private readonly Faker<DbWebhookDeliveryResult> resultFaker;
 		private readonly Faker<DbEventInfo> eventFaker;
         private List<DbWebhookDeliveryResult>? results;
 
-        public EntityDeliveryResultRepositoryTests(SqliteTestDatabase sqlite, ITestOutputHelper outputHelper) : base(sqlite, outputHelper) {
+        public EntityDeliveryResultRepositoryTests(ITestOutputHelper outputHelper) 
+            : base(outputHelper) {
 			resultFaker = new DbWebhookDeliveryResultFaker();
 			eventFaker = new DbEventInfoFaker();
         }
@@ -23,7 +25,10 @@ namespace Deveel.Webhooks {
 		public override async Task InitializeAsync() {
             await base.InitializeAsync();
 
-			var events = eventFaker.Generate(10).ToList();
+            var options = Services.GetRequiredService<DbContextOptions<WebhookDbContext>>();
+            using var context = new WebhookDbContext(options);
+
+            var events = eventFaker.Generate(10).ToList();
 			results = new List<DbWebhookDeliveryResult>(10 * 5);
 
 			foreach (var eventInfo in events) {
@@ -31,8 +36,23 @@ namespace Deveel.Webhooks {
 				var deliveryResults = resultFaker.Generate(5);
 				results.AddRange(deliveryResults);
 			}
+            
+            context.DeliveryResults.AddRange(results);
+            await context.SaveChangesAsync();
 
-			await Repository.AddRangeAsync(results);
+            // await Repository.AddRangeAsync(results);
+        }
+
+        public override async Task DisposeAsync()
+        {
+            var options = Services.GetRequiredService<DbContextOptions<WebhookDbContext>>();
+            using var context = new WebhookDbContext(options);
+
+            context.DeliveryResults.RemoveRange(context.DeliveryResults);
+            context.Webhooks.RemoveRange(context.Webhooks);
+            await context.SaveChangesAsync();
+
+            await base.DisposeAsync();
         }
 
         private DbWebhookDeliveryResult NextRandom()
@@ -117,6 +137,8 @@ namespace Deveel.Webhooks {
 
             Assert.NotNull(found);
             Assert.Equal(result.Id, found.Id);
+            Assert.NotNull(result.Webhook.WebhookId);
+            Assert.Equal(result.Webhook.WebhookId, found.Webhook.WebhookId);
         }
     }
 }

@@ -128,7 +128,7 @@ jobs:
           - dotnet: '8.0.x'
             dotnet-framework: 'net8.0'
         os: [ ubuntu-latest, windows-latest ]
-    
+
     runs-on: ${{ matrix.os }}
 
     steps:

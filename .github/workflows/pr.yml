@@ -50,11 +50,39 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+  
+    - name: Install GitVersion
+      uses: gittools/actions/gitversion/setup@v3.0.0
+      with:
+        versionSpec: '6.x'
+    
+    - name: Determine Version
+      id: gitversion
+      uses: gittools/actions/gitversion/execute@v3.0.0
+      with:
+        useConfigFile: true
+
+    - name: Display GitVersion outputs
+      run: |
+        echo "Version: ${{ steps.gitversion.outputs.SemVer }}"
+        echo "NuGet Version: ${{ steps.gitversion.outputs.NuGetVersion }}"
+        echo "Assembly Version: ${{ steps.gitversion.outputs.AssemblySemVer }}"
+        echo "File Version: ${{ steps.gitversion.outputs.AssemblySemFileVer }}"
+        echo "Informational Version: ${{ steps.gitversion.outputs.InformationalVersion }}"
+
 
     - name: Setup .NET ${{ matrix.dotnet }}
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: ${{ matrix.dotnet }}
+      env:
+        GitVersion_SemVer: ${{ steps.gitversion.outputs.SemVer }}
+        GitVersion_AssemblySemVer: ${{ steps.gitversion.outputs.AssemblySemVer }}
+        GitVersion_AssemblySemFileVer: ${{ steps.gitversion.outputs.AssemblySemFileVer }}
+        GitVersion_InformationalVersion: ${{ steps.gitversion.outputs.InformationalVersion }}
+        GitVersion_NuGetVersion: ${{ steps.gitversion.outputs.NuGetVersion }}
           
     - name: Restore dependencies
       run: dotnet restore -p:TargetFramework=${{ matrix.dotnet-framework }}

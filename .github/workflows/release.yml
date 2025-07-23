@@ -123,11 +123,22 @@ jobs:
         include:
           - dotnet: '6.0.x'
             dotnet-framework: 'net6.0'
+            os: ubuntu-latest
+          - dotnet: '6.0.x'
+            dotnet-framework: 'net6.0'
+            os: windows-latest
           - dotnet: '7.0.x'
             dotnet-framework: 'net7.0'
+            os: ubuntu-latest
+          - dotnet: '7.0.x'
+            dotnet-framework: 'net7.0'
+            os: windows-latest
           - dotnet: '8.0.x'
             dotnet-framework: 'net8.0'
-        os: [ ubuntu-latest, windows-latest ]
+            os: ubuntu-latest
+          - dotnet: '8.0.x'
+            dotnet-framework: 'net8.0'
+            os: ubuntu-latest
     
     runs-on: ${{ matrix.os }}
 

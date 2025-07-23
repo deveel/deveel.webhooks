@@ -88,11 +88,11 @@ jobs:
     
     - name: Test (Ubuntu)
       if: startsWith(matrix.os, 'ubuntu')
-      run: dotnet test --no-build --verbosity normal -c Release -f ${{ matrix.dotnet-framework }} /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:Exclude="[*.XUnit]*"
+      run: dotnet test --no-build --verbosity normal -c Release -f ${{ matrix.dotnet-framework }}
 
     - name: Test (Windows)
       if: startsWith(matrix.os, 'windows')
-      run: dotnet test --no-build --verbosity normal -c Release -f ${{ matrix.dotnet-framework }} --filter "DB!=SQLServer" /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:Exclude="[*.XUnit]*"
+      run: dotnet test --no-build --verbosity normal -c Release -f ${{ matrix.dotnet-framework }} --filter "DB!=SQLServer"
 
   summary:
     needs: build

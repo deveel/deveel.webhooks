@@ -13,7 +13,7 @@ namespace Deveel.Webhooks
         public MsSqlTestDatabase()
         {
             _container = new MsSqlBuilder()
-				.WithImage("mcr.microsoft.com/mssql/server:2022-CU10-ubuntu-22.04")
+				.WithImage("mcr.microsoft.com/mssql/server:2022-latest")
 				.Build();
         }
 

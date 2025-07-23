@@ -25,19 +25,6 @@ namespace Deveel.Webhooks {
 	/// allow the storage of the result of a delivery attempt in a database
 	/// </summary>
     public class DbWebhookDeliveryResult : IWebhookDeliveryResult {
-		private readonly ILazyLoader lazyLoader;
-		private DbEventInfo eventInfo;
-		private DbWebhook webhook;
-		private DbWebhookReceiver receiver;
-		private List<DbWebhookDeliveryAttempt>? deliveryAttempts;
-
-		private DbWebhookDeliveryResult(ILazyLoader lazyLoader) {
-			this.lazyLoader = lazyLoader;
-		}
-
-		public DbWebhookDeliveryResult() {
-		}
-
 		/// <summary>
 		/// Gets or sets the database identifier of the delivery result.
 		/// </summary>
@@ -51,16 +38,13 @@ namespace Deveel.Webhooks {
 		/// </summary>
 		public string? TenantId { get; set; }
 
-        IEventInfo IWebhookDeliveryResult.EventInfo => EventInfo;
+        IEventInfo IWebhookDeliveryResult.EventInfo => EventInfo!;
 
 		/// <summary>
 		/// Gets or sets the database entity that describes the event
 		/// that triggered the delivery of the webhook.
 		/// </summary>
-        public virtual DbEventInfo EventInfo { 
-			get => lazyLoader.Load(this, ref eventInfo);
-			set => eventInfo = value;
-		}
+        public virtual DbEventInfo EventInfo { get; set; }
 
 		/// <summary>
 		/// Gets or sets the database identifier of the event that triggered
@@ -72,15 +56,12 @@ namespace Deveel.Webhooks {
 		/// Gets or sets the database entity that describes the webhook
 		/// that was delivered.
 		/// </summary>
-        public virtual DbWebhook Webhook { 
-			get => lazyLoader.Load(this, ref webhook);
-			set => webhook = value;
-		}
+        public virtual DbWebhook Webhook { get; set; }
 
 		/// <summary>
 		/// Gets or sets the database identifier of the webhook that was delivered
 		/// </summary>
-        public int? WebhookId { get; set; }
+		public int? WebhookId { get; set; }
 
         IWebhook IWebhookDeliveryResult.Webhook => Webhook;
 
@@ -90,15 +71,12 @@ namespace Deveel.Webhooks {
 		/// Gets or sets the database entity that describes the receiver
 		/// of the webhook.
 		/// </summary>
-        public virtual DbWebhookReceiver Receiver { 
-			get => lazyLoader.Load(this, ref receiver);
-			set => receiver = value;
-		}
+        public virtual DbWebhookReceiver Receiver { get; set; }
 
 		/// <summary>
 		/// Gets or sets the database identifier of the receiver of the webhook.
 		/// </summary>
-        public int? ReceiverId { get; set; }
+		public int? ReceiverId { get; set; }
 
         IEnumerable<IWebhookDeliveryAttempt> IWebhookDeliveryResult.DeliveryAttempts 
 			=> DeliveryAttempts?.AsReadOnly() ?? new ReadOnlyCollection<DbWebhookDeliveryAttempt>(new List<DbWebhookDeliveryAttempt>());
@@ -107,9 +85,6 @@ namespace Deveel.Webhooks {
 		/// Gets or sets the list of delivery attempts that were made to deliver
 		/// the webhook.
 		/// </summary>
-        public virtual List<DbWebhookDeliveryAttempt>? DeliveryAttempts { 
-			get => lazyLoader.Load(this, ref deliveryAttempts);
-			set => deliveryAttempts = value;
-		}
-    }
+        public virtual List<DbWebhookDeliveryAttempt>? DeliveryAttempts { get; set; }
+	}
 }

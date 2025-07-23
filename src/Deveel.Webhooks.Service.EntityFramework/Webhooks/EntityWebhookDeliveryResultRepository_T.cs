@@ -43,40 +43,68 @@ namespace Deveel.Webhooks {
 			: base(context, logger) {
         }
 
-        ///// <summary>
-        ///// Gets a queryable object to query the delivery results,
-        ///// including the related entities (webhook, event, delivery 
-        ///// attempts, receiver).
-        ///// </summary>
-        ///// <returns>
-        ///// Returns an <see cref="IQueryable{TResult}"/> object that can be used
-        ///// to query the delivery results.
-        ///// </returns>
-        //public override IQueryable<TResult> AsQueryable()
-        //{
-        //    return Entities
-        //        .Include(x => x.Webhook)
-        //        .Include(x => x.EventInfo)
-        //        .Include(x => x.DeliveryAttempts)
-        //        .Include(x => x.Receiver);
-        //}
+        /// <summary>
+        /// Gets a queryable object to query the delivery results,
+        /// including the related entities (webhook, event, delivery 
+        /// attempts, receiver).
+        /// </summary>
+        /// <returns>
+        /// Returns an <see cref="IQueryable{TResult}"/> object that can be used
+        /// to query the delivery results.
+        /// </returns>
+        public override IQueryable<TResult> AsQueryable()
+        {
+            return Entities
+                .Include(x => x.Webhook)
+                .Include(x => x.EventInfo)
+                .Include(x => x.DeliveryAttempts)
+                .Include(x => x.Receiver);
+        }
 
-        ///// <inheritdoc/>
-        //public override async Task<TResult?> FindAsync(int key, CancellationToken cancellationToken = default)
-        //{
-        //    // This overload to the identity key uses the 'FindAsync' method
-        //    // to include all the related entities
-        //    // TODO: find a better way to include the related entities through lazy loading
-        //    return await FindFirstAsync(Query.Where<TResult>(x => x.Id == key), cancellationToken);
-        //}
+		///// <inheritdoc/>
+		//public override async Task<TResult?> FindAsync(int key, CancellationToken cancellationToken = default)
+		//{
+		//    // This overload to the identity key uses the 'FindAsync' method
+		//    // to include all the related entities
+		//    // TODO: find a better way to include the related entities through lazy loading
+		//    return await FindFirstAsync(Query.Where<TResult>(x => x.Id == key), cancellationToken);
+		//}
+
+		private async Task<TResult> EnsureLoadedAsync(TResult deliveryResult, CancellationToken cancellationToken)
+		{
+			var entry = Context.Entry(deliveryResult);
+
+			// Load related entities using explicit loading
+			if (!entry.Reference(x => x.Webhook).IsLoaded)
+				await entry.Reference(x => x.Webhook).LoadAsync(cancellationToken);
+
+			if (!entry.Reference(x => x.EventInfo).IsLoaded)
+				await entry.Reference(x => x.EventInfo).LoadAsync(cancellationToken);
+
+			if (!entry.Reference(x => x.Receiver).IsLoaded)
+				await entry.Reference(x => x.Receiver).LoadAsync(cancellationToken);
+
+			if (!entry.Collection(x => x.DeliveryAttempts).IsLoaded)
+				await entry.Collection(x => x.DeliveryAttempts).LoadAsync(cancellationToken);
+
+			return deliveryResult;
+		}
+
+		protected override Task<TResult> OnEntityFoundByKeyAsync(int key, TResult entity, CancellationToken cancellationToken = default)
+		{
+			return EnsureLoadedAsync(entity, cancellationToken);
+		}
 
         /// <inheritdoc/>
-        public async Task<TResult?> FindByWebhookIdAsync(string webhookId, CancellationToken cancellationToken) {
+        public async Task<TResult?> FindByWebhookIdAsync(string webhookId, CancellationToken cancellationToken)
+        {
             cancellationToken.ThrowIfCancellationRequested();
 
-            try {
+            try
+            {
                 return await FindFirstAsync(Query.Where<TResult>(x => x.Webhook.WebhookId == webhookId), cancellationToken);
-            } catch (Exception ex) {
+            } catch (Exception ex)
+            {
                 throw new WebhookEntityException("Unable to query the database for results", ex);
             }
         }

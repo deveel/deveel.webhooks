@@ -95,8 +95,6 @@ jobs:
     uses: ./.github/workflows/publish.yml
     with:
       publish-to-nuget: false
-    secrets:
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   clean:
     needs: publish

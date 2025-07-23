@@ -13,13 +13,6 @@ on:
         required: false
         type: string
         default: 'Release'
-    secrets:
-      NUGET_API_KEY:
-        description: 'NuGet API key for publishing to NuGet.org'
-        required: false
-      GITHUB_TOKEN:
-        description: 'GitHub token for publishing to GitHub Packages'
-        required: true
 
 permissions:
   contents: read

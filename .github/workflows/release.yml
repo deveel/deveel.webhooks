@@ -17,7 +17,7 @@ on:
         default: true
 
 permissions:
-  contents: read
+  contents: write
   packages: write
 
 env:
@@ -204,9 +204,6 @@ jobs:
     with:
       publish-to-nuget: ${{ needs.validate-release.outputs.should-publish == 'true' }}
       build-configuration: 'Release'
-    secrets:
-      NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   summary:
     needs: [validate-release, publish, create-tag]
@@ -215,7 +212,7 @@ jobs:
     steps:
     - name: Release Summary
       run: |
-        echo "## 📦 Release Package Summary" >> $GITHUB_STEP_SUMMARY
+        echo "## 🚀 Release Summary" >> $GITHUB_STEP_SUMMARY
         echo "" >> $GITHUB_STEP_SUMMARY
         echo "| Property | Value |" >> $GITHUB_STEP_SUMMARY
         echo "|----------|-------|" >> $GITHUB_STEP_SUMMARY
@@ -229,10 +226,8 @@ jobs:
         
         if [ "${{ needs.validate-release.outputs.is-manual }}" == "true" ]; then
           echo "🖱️ **Manual Release**: This release was triggered manually with version \`${{ needs.validate-release.outputs.version }}\`" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "📝 **Note**: This workflow only handles package publishing. GitHub releases should be created manually if needed." >> $GITHUB_STEP_SUMMARY
         else
           echo "🏷️ **Tag Release**: This release was triggered by pushing tag \`${{ needs.validate-release.outputs.tag-name }}\`" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "📝 **Note**: This workflow only handles package publishing. GitHub releases should be created manually if needed." >> $GITHUB_STEP_SUMMARY
         fi
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "📦 **Published Packages**: Check the [packages page](https://github.com/${{ github.repository }}/pkgs) for the published packages." >> $GITHUB_STEP_SUMMARY

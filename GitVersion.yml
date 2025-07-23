@@ -5,7 +5,7 @@ branches:
     mode: ContinuousDeployment
     label: ''
     increment: Patch
-    prevent-increment-of-merged-branch-version: true
+    prevent-increment-when-current-commit-has-been-merged: true
     track-merge-target: false
     tracks-release-branches: false
     is-release-branch: false
@@ -16,7 +16,7 @@ branches:
     mode: ContinuousDeployment
     label: 'alpha'
     increment: Minor
-    prevent-increment-of-merged-branch-version: false
+    prevent-increment-when-current-commit-has-been-merged: false
     track-merge-target: true
     tracks-release-branches: true
     is-release-branch: false
@@ -27,7 +27,7 @@ branches:
     mode: ContinuousDeployment
     label: 'pr'
     increment: Inherit
-    prevent-increment-of-merged-branch-version: true
+    prevent-increment-when-current-commit-has-been-merged: true
     label-number-pattern: '[/-](?<number>\d+)[-/]'
     track-merge-target: false
     tracks-release-branches: false
@@ -39,7 +39,7 @@ branches:
     mode: ContinuousDeployment
     label: '{BranchName}'
     increment: Inherit
-    prevent-increment-of-merged-branch-version: false
+    prevent-increment-when-current-commit-has-been-merged: false
     track-merge-target: false
     tracks-release-branches: false
     is-release-branch: false
@@ -50,7 +50,7 @@ branches:
     mode: ContinuousDeployment
     label: '{BranchName}'
     increment: Inherit
-    prevent-increment-of-merged-branch-version: false
+    prevent-increment-when-current-commit-has-been-merged: false
     track-merge-target: false
     tracks-release-branches: false
     is-release-branch: false
@@ -61,7 +61,7 @@ branches:
     mode: ContinuousDeployment
     label: '{BranchName}'
     increment: Inherit
-    prevent-increment-of-merged-branch-version: false
+    prevent-increment-when-current-commit-has-been-merged: false
     track-merge-target: false
     tracks-release-branches: false
     is-release-branch: false
@@ -72,7 +72,7 @@ branches:
     mode: ContinuousDeployment
     label: '{BranchName}'
     increment: Inherit
-    prevent-increment-of-merged-branch-version: false
+    prevent-increment-when-current-commit-has-been-merged: false
     track-merge-target: false
     tracks-release-branches: false
     is-release-branch: false
@@ -83,7 +83,7 @@ branches:
     mode: ContinuousDeployment
     label: '{BranchName}'
     increment: Inherit
-    prevent-increment-of-merged-branch-version: false
+    prevent-increment-when-current-commit-has-been-merged: false
     track-merge-target: false
     tracks-release-branches: false
     is-release-branch: false
@@ -94,19 +94,18 @@ branches:
     mode: ContinuousDeployment
     label: 'beta'
     increment: None
-    prevent-increment-of-merged-branch-version: true
+    prevent-increment-when-current-commit-has-been-merged: true
     track-merge-target: false
     tracks-release-branches: false
     is-release-branch: true
     is-mainline: false
     pre-release-weight: 25000
-  # Catch-all for any branch that doesn't match the above patterns
   unknown:
     regex: ^(?!(main|dev(elop)?(ment)?|(pull|pull\-requests|pr)[/-]|(feature|feat|enhancement|add|new)[/-]|(bugfix|fix|bug|hotfix|patch)[/-]|(improve|improvement|refactor|refactoring|optimize|optimization|perf|performance)[/-]|(chore|maint|maintenance|cleanup|update|upgrade|deps|dependencies|ci|build|test|tests|doc|docs)[/-]|(experiment|experimental|spike|prototype|poc|proof-of-concept)[/-]|releases?[/-])).*$
     mode: ContinuousDeployment
     label: '{BranchName}'
     increment: Inherit
-    prevent-increment-of-merged-branch-version: false
+    prevent-increment-when-current-commit-has-been-merged: false
     track-merge-target: false
     tracks-release-branches: false
     is-release-branch: false

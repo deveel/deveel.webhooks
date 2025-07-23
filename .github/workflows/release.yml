@@ -138,7 +138,7 @@ jobs:
             os: ubuntu-latest
           - dotnet: '8.0.x'
             dotnet-framework: 'net8.0'
-            os: ubuntu-latest
+            os: windows-latest
     
     runs-on: ${{ matrix.os }}
 
@@ -176,8 +176,13 @@ jobs:
         GitVersion_InformationalVersion: ${{ steps.gitversion.outputs.InformationalVersion }}
         GitVersion_NuGetVersion: ${{ steps.gitversion.outputs.NuGetVersion }}
     
-    - name: Test
+    - name: Test (Ubuntu)
+      if: startsWith(matrix.os, 'ubuntu')
       run: dotnet test --no-build --verbosity normal -c Release -f ${{ matrix.dotnet-framework }} /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:Exclude="[*.XUnit]*"
+
+    - name: Test (Windows)
+      if: startsWith(matrix.os, 'windows')
+      run: dotnet test --no-build --verbosity normal -c Release -f ${{ matrix.dotnet-framework }} --filter "DB!=SQLServer" /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:Exclude="[*.XUnit]*"
 
   create-tag:
     needs: [validate-release, check-tag-exists, build]
@@ -232,6 +237,11 @@ jobs:
         echo "| NuGet.org | ${{ needs.validate-release.outputs.should-publish == 'true' && '✅ Published' || '❌ Skipped' }} |" >> $GITHUB_STEP_SUMMARY
         echo "| GitHub Packages | ✅ Published |" >> $GITHUB_STEP_SUMMARY
         echo "| Tag Created | ${{ needs.create-tag.result == 'success' && '✅ Yes' || (needs.create-tag.result == 'skipped' && '⏭️ Skipped' || '❌ Failed') }} |" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        
+        echo "📋 **Test Execution Notes**:" >> $GITHUB_STEP_SUMMARY
+        echo "- **Ubuntu**: All tests including SQL Server tests executed" >> $GITHUB_STEP_SUMMARY
+        echo "- **Windows**: SQL Server tests excluded (DB!=SQLServer filter applied)" >> $GITHUB_STEP_SUMMARY
         echo "" >> $GITHUB_STEP_SUMMARY
         
         if [ "${{ needs.validate-release.outputs.is-manual }}" == "true" ]; then

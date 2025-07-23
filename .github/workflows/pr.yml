@@ -36,7 +36,7 @@ jobs:
             os: ubuntu-latest
           - dotnet: '8.0.x'
             dotnet-framework: 'net8.0'
-            os: ubuntu-latest
+            os: windows-latest
     
     runs-on: ${{ matrix.os }}
     
@@ -69,7 +69,6 @@ jobs:
         echo "File Version: ${{ steps.gitversion.outputs.AssemblySemFileVer }}"
         echo "Informational Version: ${{ steps.gitversion.outputs.InformationalVersion }}"
 
-
     - name: Setup .NET ${{ matrix.dotnet }}
       uses: actions/setup-dotnet@v4
       with:
@@ -87,8 +86,13 @@ jobs:
     - name: Build
       run: dotnet build --no-restore -c Release -f ${{ matrix.dotnet-framework }}
     
-    - name: Test
-      run: dotnet test --no-build --verbosity normal -c Release -f ${{ matrix.dotnet-framework }}
+    - name: Test (Ubuntu)
+      if: startsWith(matrix.os, 'ubuntu')
+      run: dotnet test --no-build --verbosity normal -c Release -f ${{ matrix.dotnet-framework }} /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:Exclude="[*.XUnit]*"
+
+    - name: Test (Windows)
+      if: startsWith(matrix.os, 'windows')
+      run: dotnet test --no-build --verbosity normal -c Release -f ${{ matrix.dotnet-framework }} --filter "DB!=SQLServer" /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:Exclude="[*.XUnit]*"
 
   summary:
     needs: build
@@ -110,6 +114,10 @@ jobs:
         
         if [ "${{ needs.build.result }}" == "success" ]; then
           echo "✅ **Build Successful**: All tests passed and code coverage was collected." >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "📋 **Test Execution Notes**:" >> $GITHUB_STEP_SUMMARY
+          echo "- **Ubuntu**: All tests including SQL Server tests executed" >> $GITHUB_STEP_SUMMARY
+          echo "- **Windows**: SQL Server tests excluded (DB!=SQLServer filter applied)" >> $GITHUB_STEP_SUMMARY
         else
           echo "❌ **Build Failed**: Please check the build logs for more details." >> $GITHUB_STEP_SUMMARY
         fi

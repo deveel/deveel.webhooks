@@ -36,7 +36,7 @@ jobs:
             os: ubuntu-latest
           - dotnet: '8.0.x'
             dotnet-framework: 'net8.0'
-            os: ubuntu-latest
+            os: windows-latest
     
     runs-on: ${{ matrix.os }}
     
@@ -69,7 +69,7 @@ jobs:
         echo "File Version: ${{ steps.gitversion.outputs.AssemblySemFileVer }}"
         echo "Informational Version: ${{ steps.gitversion.outputs.InformationalVersion }}"
 
-    - name: Setup .NET ${{ matrix.dotnet }}
+    - name: Setup .NET ${{ matrix.dotnot }}
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: ${{ matrix.dotnet }}
@@ -86,16 +86,14 @@ jobs:
         GitVersion_InformationalVersion: ${{ steps.gitversion.outputs.InformationalVersion }}
         GitVersion_NuGetVersion: ${{ steps.gitversion.outputs.NuGetVersion }}
     
-
     - name: Test (Ubuntu)
-      if: matrix.os == 'ubuntu-latest'
-      run: dotnet test --no-build --verbosity normal -c  Release -f ${{ matrix.dotnet-framework }} /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:Exclude="[*.XUnit]*"
+      if: startsWith(matrix.os, 'ubuntu')
+      run: dotnet test --no-build --verbosity normal -c Release -f ${{ matrix.dotnet-framework }} /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:Exclude="[*.XUnit]*"
 
     - name: Test (Windows)
-      if: matrix.os == 'windows-latest'
-      run: dotnet test --no-build --verbosity normal -c  Release -f ${{ matrix.dotnet-framework }} --filter DB!=SQLServer
+      if: startsWith(matrix.os, 'windows')
+      run: dotnet test --no-build --verbosity normal -c Release -f ${{ matrix.dotnet-framework }} --filter "DB!=SQLServer" /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:Exclude="[*.XUnit]*"
 
-      
     - name: Collect to Codecov
       uses: codecov/codecov-action@v5
       with:

@@ -35,7 +35,7 @@ branches:
     is-mainline: false
     pre-release-weight: 30000
   feature:
-    regex: ^features?[/-]
+    regex: ^(feature|feat|enhancement|add|new)[/-].*$
     mode: ContinuousDeployment
     tag: useBranchName
     increment: Inherit
@@ -45,8 +45,52 @@ branches:
     is-release-branch: false
     is-mainline: false
     pre-release-weight: 30000
+  bugfix:
+    regex: ^(bugfix|fix|bug|hotfix|patch)[/-].*$
+    mode: ContinuousDeployment
+    tag: useBranchName
+    increment: Inherit
+    prevent-increment-of-merged-branch-version: false
+    track-merge-target: false
+    tracks-release-branches: false
+    is-release-branch: false
+    is-mainline: false
+    pre-release-weight: 30000
+  improvement:
+    regex: ^(improve|improvement|refactor|refactoring|optimize|optimization|perf|performance)[/-].*$
+    mode: ContinuousDeployment
+    tag: useBranchName
+    increment: Inherit
+    prevent-increment-of-merged-branch-version: false
+    track-merge-target: false
+    tracks-release-branches: false
+    is-release-branch: false
+    is-mainline: false
+    pre-release-weight: 30000
+  maintenance:
+    regex: ^(chore|maint|maintenance|cleanup|update|upgrade|deps|dependencies|ci|build|test|tests|doc|docs)[/-].*$
+    mode: ContinuousDeployment
+    tag: useBranchName
+    increment: Inherit
+    prevent-increment-of-merged-branch-version: false
+    track-merge-target: false
+    tracks-release-branches: false
+    is-release-branch: false
+    is-mainline: false
+    pre-release-weight: 30000
+  experimental:
+    regex: ^(experiment|experimental|spike|prototype|poc|proof-of-concept)[/-].*$
+    mode: ContinuousDeployment
+    tag: useBranchName
+    increment: Inherit
+    prevent-increment-of-merged-branch-version: false
+    track-merge-target: false
+    tracks-release-branches: false
+    is-release-branch: false
+    is-mainline: false
+    pre-release-weight: 20000
   release:
-    regex: ^releases?[/-]
+    regex: ^releases?[/-].*$
     mode: ContinuousDeployment
     tag: 'beta'
     increment: None
@@ -56,17 +100,18 @@ branches:
     is-release-branch: true
     is-mainline: false
     pre-release-weight: 25000
-  hotfix:
-    regex: ^hotfix(es)?[/-]
+  # Catch-all for any branch that doesn't match the above patterns
+  unknown:
+    regex: ^(?!(main|dev(elop)?(ment)?|(pull|pull\-requests|pr)[/-]|(feature|feat|enhancement|add|new)[/-]|(bugfix|fix|bug|hotfix|patch)[/-]|(improve|improvement|refactor|refactoring|optimize|optimization|perf|performance)[/-]|(chore|maint|maintenance|cleanup|update|upgrade|deps|dependencies|ci|build|test|tests|doc|docs)[/-]|(experiment|experimental|spike|prototype|poc|proof-of-concept)[/-]|releases?[/-])).*$
     mode: ContinuousDeployment
-    tag: 'beta'
-    increment: Patch
+    tag: useBranchName
+    increment: Inherit
     prevent-increment-of-merged-branch-version: false
     track-merge-target: false
     tracks-release-branches: false
     is-release-branch: false
     is-mainline: false
-    pre-release-weight: 30000
+    pre-release-weight: 10000
 ignore:
   sha: []
 merge-message-formats: {}

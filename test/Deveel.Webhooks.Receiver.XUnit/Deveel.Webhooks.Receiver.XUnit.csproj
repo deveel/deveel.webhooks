@@ -3,7 +3,6 @@
   <PropertyGroup>
     <NoWarn>1701;1702;CS8618</NoWarn>
     <IsTestProject>true</IsTestProject>
-    <RunSettingsFilePath>D:\deveel\deveel.webhooks\test\Deveel.Webhooks.Receiver.XUnit\bin\Debug\net7.0\fine-code-coverage\coverage-tool-output\Deveel.Webhooks.Receiver.XUnit %28net7.0%29-fcc-mscodecoverage-generated.runsettings</RunSettingsFilePath>
   </PropertyGroup>
 
   <ItemGroup>

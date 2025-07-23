@@ -5,112 +5,56 @@ branches:
     mode: ContinuousDeployment
     label: ''
     increment: Patch
-    prevent-increment-when-current-commit-has-been-merged: true
-    track-merge-target: false
-    tracks-release-branches: false
-    is-release-branch: false
-    is-mainline: true
-    pre-release-weight: 55000
+    source-branches: ['develop', 'release']
   develop:
     regex: ^dev(elop)?(ment)?$
     mode: ContinuousDeployment
     label: 'alpha'
     increment: Minor
-    prevent-increment-when-current-commit-has-been-merged: false
-    track-merge-target: true
-    tracks-release-branches: true
-    is-release-branch: false
-    is-mainline: false
-    pre-release-weight: 0
+    source-branches: []
   pull-request:
     regex: ^(pull|pull\-requests|pr)[/-]
     mode: ContinuousDeployment
     label: 'pr'
     increment: Inherit
-    prevent-increment-when-current-commit-has-been-merged: true
     label-number-pattern: '[/-](?<number>\d+)[-/]'
-    track-merge-target: false
-    tracks-release-branches: false
-    is-release-branch: false
-    is-mainline: false
-    pre-release-weight: 30000
   feature:
     regex: ^(feature|feat|enhancement|add|new)[/-].*$
     mode: ContinuousDeployment
     label: '{BranchName}'
     increment: Inherit
-    prevent-increment-when-current-commit-has-been-merged: false
-    track-merge-target: false
-    tracks-release-branches: false
-    is-release-branch: false
-    is-mainline: false
-    pre-release-weight: 30000
+    source-branches: ['develop', 'main']
   bugfix:
     regex: ^(bugfix|fix|bug|hotfix|patch)[/-].*$
     mode: ContinuousDeployment
     label: '{BranchName}'
     increment: Inherit
-    prevent-increment-when-current-commit-has-been-merged: false
-    track-merge-target: false
-    tracks-release-branches: false
-    is-release-branch: false
-    is-mainline: false
-    pre-release-weight: 30000
+    source-branches: ['develop', 'main', 'release']
   improvement:
     regex: ^(improve|improvement|refactor|refactoring|optimize|optimization|perf|performance)[/-].*$
     mode: ContinuousDeployment
     label: '{BranchName}'
     increment: Inherit
-    prevent-increment-when-current-commit-has-been-merged: false
-    track-merge-target: false
-    tracks-release-branches: false
-    is-release-branch: false
-    is-mainline: false
-    pre-release-weight: 30000
+    source-branches: ['develop', 'main']
   maintenance:
     regex: ^(chore|maint|maintenance|cleanup|update|upgrade|deps|dependencies|ci|build|test|tests|doc|docs)[/-].*$
     mode: ContinuousDeployment
     label: '{BranchName}'
     increment: Inherit
-    prevent-increment-when-current-commit-has-been-merged: false
-    track-merge-target: false
-    tracks-release-branches: false
-    is-release-branch: false
-    is-mainline: false
-    pre-release-weight: 30000
+    source-branches: ['develop', 'main']
   experimental:
     regex: ^(experiment|experimental|spike|prototype|poc|proof-of-concept)[/-].*$
     mode: ContinuousDeployment
     label: '{BranchName}'
     increment: Inherit
-    prevent-increment-when-current-commit-has-been-merged: false
-    track-merge-target: false
-    tracks-release-branches: false
-    is-release-branch: false
-    is-mainline: false
-    pre-release-weight: 20000
+    source-branches: ['develop']
   release:
     regex: ^releases?[/-].*$
     mode: ContinuousDeployment
     label: 'beta'
     increment: None
-    prevent-increment-when-current-commit-has-been-merged: true
-    track-merge-target: false
-    tracks-release-branches: false
+    source-branches: ['develop']
     is-release-branch: true
-    is-mainline: false
-    pre-release-weight: 25000
-  unknown:
-    regex: ^(?!(main|dev(elop)?(ment)?|(pull|pull\-requests|pr)[/-]|(feature|feat|enhancement|add|new)[/-]|(bugfix|fix|bug|hotfix|patch)[/-]|(improve|improvement|refactor|refactoring|optimize|optimization|perf|performance)[/-]|(chore|maint|maintenance|cleanup|update|upgrade|deps|dependencies|ci|build|test|tests|doc|docs)[/-]|(experiment|experimental|spike|prototype|poc|proof-of-concept)[/-]|releases?[/-])).*$
-    mode: ContinuousDeployment
-    label: '{BranchName}'
-    increment: Inherit
-    prevent-increment-when-current-commit-has-been-merged: false
-    track-merge-target: false
-    tracks-release-branches: false
-    is-release-branch: false
-    is-mainline: false
-    pre-release-weight: 10000
 ignore:
   sha: []
 merge-message-formats: {}

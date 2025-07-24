@@ -1,4 +1,4 @@
-﻿// Copyright 2022-2024 Antonello Provenzano
+﻿// Copyright 2022-2025 Antonello Provenzano
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -43,7 +43,7 @@ namespace Deveel.Webhooks {
 		/// webhook that can be stored into the database.
 		/// </returns>
 		public MongoWebhook ConvertWebhook(EventNotification notification, TWebhook webhook) {
-			if (webhook is IWebhook obj) {
+			if (webhook is not null && webhook is IWebhook obj) {
 				return new MongoWebhook {
 					WebhookId = obj.Id,
 					EventType = obj.EventType,

@@ -1,4 +1,4 @@
-﻿// Copyright 2022-2024 Antonello Provenzano
+﻿// Copyright 2022-2025 Antonello Provenzano
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -25,6 +25,9 @@ namespace Deveel.Webhooks {
 	/// <typeparam name="TSubscription">
 	/// The type of the subscription to be resolved.
 	/// </typeparam>
+	/// <typeparam name="TKey">
+	/// The type of the key used to identify the subscription.
+	/// </typeparam>
 	public class WebhookSubscriptionResolver<TSubscription, TKey> : IWebhookSubscriptionResolver
 		where TSubscription : class, IWebhookSubscription 
 		where TKey : notnull {
@@ -49,10 +52,10 @@ namespace Deveel.Webhooks {
 		public WebhookSubscriptionResolver(
 			IWebhookSubscriptionRepository<TSubscription, TKey> repository,
 			IWebhookSubscriptionCache? cache = null,
-			ILogger<TenantWebhookSubscriptionResolver<TSubscription, TKey>>? logger = null) {
+			ILogger<WebhookSubscriptionResolver<TSubscription, TKey>>? logger = null) {
 			this.repository = repository;
 			this.cache = cache;
-			this.logger = logger ?? NullLogger<TenantWebhookSubscriptionResolver<TSubscription, TKey>>.Instance;
+			this.logger = logger ?? NullLogger<WebhookSubscriptionResolver<TSubscription, TKey>>.Instance;
 		}
 
 		private async Task<IList<IWebhookSubscription>?> GetCachedAsync(string eventType, CancellationToken cancellationToken) {

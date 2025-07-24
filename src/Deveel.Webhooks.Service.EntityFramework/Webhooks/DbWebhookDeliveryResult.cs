@@ -1,4 +1,4 @@
-﻿// Copyright 2022-2024 Antonello Provenzano
+﻿// Copyright 2022-2025 Antonello Provenzano
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,6 +14,10 @@
 
 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 #pragma warning disable CS8618
+
+using Microsoft.EntityFrameworkCore.Infrastructure;
+
+using System.Collections.ObjectModel;
 
 namespace Deveel.Webhooks {
 	/// <summary>
@@ -34,7 +38,7 @@ namespace Deveel.Webhooks {
 		/// </summary>
 		public string? TenantId { get; set; }
 
-        IEventInfo IWebhookDeliveryResult.EventInfo => EventInfo;
+        IEventInfo IWebhookDeliveryResult.EventInfo => EventInfo!;
 
 		/// <summary>
 		/// Gets or sets the database entity that describes the event
@@ -57,7 +61,7 @@ namespace Deveel.Webhooks {
 		/// <summary>
 		/// Gets or sets the database identifier of the webhook that was delivered
 		/// </summary>
-        public int? WebhookId { get; set; }
+		public int? WebhookId { get; set; }
 
         IWebhook IWebhookDeliveryResult.Webhook => Webhook;
 
@@ -72,14 +76,15 @@ namespace Deveel.Webhooks {
 		/// <summary>
 		/// Gets or sets the database identifier of the receiver of the webhook.
 		/// </summary>
-        public int? ReceiverId { get; set; }
+		public int? ReceiverId { get; set; }
 
-        IEnumerable<IWebhookDeliveryAttempt> IWebhookDeliveryResult.DeliveryAttempts => DeliveryAttempts.AsReadOnly();
+        IEnumerable<IWebhookDeliveryAttempt> IWebhookDeliveryResult.DeliveryAttempts 
+			=> DeliveryAttempts?.AsReadOnly() ?? new ReadOnlyCollection<DbWebhookDeliveryAttempt>(new List<DbWebhookDeliveryAttempt>());
 
 		/// <summary>
 		/// Gets or sets the list of delivery attempts that were made to deliver
 		/// the webhook.
 		/// </summary>
-        public virtual List<DbWebhookDeliveryAttempt> DeliveryAttempts { get; set; }
-    }
+        public virtual List<DbWebhookDeliveryAttempt>? DeliveryAttempts { get; set; }
+	}
 }

@@ -1,13 +1,9 @@
 ﻿using Deveel.Data;
 
-using Finbuckle.MultiTenant;
-
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 using MongoDB.Bson;
-
-using MongoFramework;
 
 namespace Deveel.Webhooks {
 	public static class MongoDbConfigurationTests {
@@ -37,7 +33,7 @@ namespace Deveel.Webhooks {
 			var provider = new ServiceCollection()
 				.AddSingleton<IConfiguration>(config.Build())
 				.AddWebhookSubscriptions<MongoWebhookSubscription, ObjectId>(webhooks => {
-					webhooks.UseMongoDb(mongo => mongo.WithConnectionStringName("MongoDb"));
+					webhooks.UseMongoDb(mongo => mongo.WithConnectionStringName(config.Build(), "MongoDb"));
 				})
 				.BuildServiceProvider();
 

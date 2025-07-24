@@ -1,4 +1,4 @@
-﻿// Copyright 2022-2024 Antonello Provenzano
+﻿// Copyright 2022-2025 Antonello Provenzano
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -29,19 +29,19 @@ namespace Deveel.Webhooks {
 		/// Gets or sets the set a <c>DbSet</c> that provides query access to
 		/// the <see cref="DbWebhookSubscription"/> entities.
 		/// </summary>
-        public virtual DbSet<DbWebhookSubscription> Subscriptions { get; set; }
+        public virtual DbSet<DbWebhookSubscription>? Subscriptions { get; set; }
 
 		/// <summary>
 		/// Gets or sets the set a <c>DbSet</c> that provides query access to
 		/// the <see cref="DbWebhookDeliveryResult"/> entities.
 		/// </summary>
-        public virtual DbSet<DbWebhookDeliveryResult> DeliveryResults { get; set; }
+        public virtual DbSet<DbWebhookDeliveryResult>? DeliveryResults { get; set; }
 
         /// <summary>
         /// Gets or sets the set a <c>DbSet</c> that provides query access to
         /// the <see cref="DbWebhookDeliveryAttempt"/> entities.
         /// </summary>
-        public virtual DbSet<DbWebhook> Webhooks { get; set; }
+        public virtual DbSet<DbWebhook>? Webhooks { get; set; }
 
         /// <inheritdoc/>
         protected override void OnModelCreating(ModelBuilder modelBuilder) {

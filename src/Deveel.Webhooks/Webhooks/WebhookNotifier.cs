@@ -1,4 +1,4 @@
-﻿// Copyright 2022-2024 Antonello Provenzano
+﻿// Copyright 2022-2025 Antonello Provenzano
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -57,7 +57,7 @@ namespace Deveel.Webhooks {
 			IWebhookSubscriptionResolver<TWebhook>? subscriptionResolver = null,
 			IEnumerable<IWebhookFilterEvaluator<TWebhook>>? filterEvaluators = null, 
 			IWebhookDeliveryResultLogger<TWebhook>? deliveryResultLogger = null, 
-			ILogger<TenantWebhookNotifier<TWebhook>>? logger = null) 
+			ILogger<WebhookNotifier<TWebhook>>? logger = null) 
 			: base(options.Value, sender, webhookFactory, filterEvaluators, deliveryResultLogger, logger) {
 			this.subscriptionResolver = subscriptionResolver;
 		}

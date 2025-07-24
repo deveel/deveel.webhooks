@@ -1,4 +1,4 @@
-﻿// Copyright 2022-2024 Antonello Provenzano
+﻿// Copyright 2022-2025 Antonello Provenzano
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -137,40 +137,6 @@ namespace Deveel.Webhooks {
 			=> UseNotifier<WebhookNotifier<TWebhook>>();
 
 
-
-		/// <summary>
-		/// Registers a notifier service to use.
-		/// </summary>
-		/// <typeparam name="TNotifier">
-		/// The type of the notifier to use.
-		/// </typeparam>
-		/// <param name="lifetime">
-		/// An optional value that specifies the lifetime of the service (by default
-		/// set to <see cref="ServiceLifetime.Scoped"/>).
-		/// </param>
-		/// <returns>
-		/// Returns an instance of the builder to allow chaining.
-		/// </returns>
-		public WebhookNotifierBuilder<TWebhook> UseTenantNotifier<TNotifier>(ServiceLifetime lifetime = ServiceLifetime.Scoped)
-			where TNotifier : class, ITenantWebhookNotifier<TWebhook> {
-
-			Services.RemoveAll<ITenantWebhookNotifier<TWebhook>>();
-
-			Services.Add(new ServiceDescriptor(typeof(ITenantWebhookNotifier<TWebhook>), typeof(TNotifier), lifetime));
-			Services.TryAdd(new ServiceDescriptor(typeof(TNotifier), typeof(TNotifier), lifetime));
-
-			return this;
-		}
-
-		/// <summary>
-		/// Registers the default notifier service to use.
-		/// </summary>
-		/// <returns>
-		/// Returns an instance of the builder to allow chaining.
-		/// </returns>
-		public WebhookNotifierBuilder<TWebhook> UseTenantNotifier()
-			=> UseTenantNotifier<TenantWebhookNotifier<TWebhook>>();
-
 		/// <summary>
 		/// Registers a factory service to use to create the webhook.
 		/// </summary>
@@ -261,51 +227,6 @@ namespace Deveel.Webhooks {
 		/// <returns>
 		/// Returns an instance of the builder to allow chaining.
 		/// </returns>
-		public WebhookNotifierBuilder<TWebhook> UseTenantSubscriptionResolver(Type resolverType, ServiceLifetime lifetime = ServiceLifetime.Scoped) {
-			if (typeof(ITenantWebhookSubscriptionResolver<TWebhook>).IsAssignableFrom(resolverType)) {
-				Services.Add(new ServiceDescriptor(typeof(ITenantWebhookSubscriptionResolver<TWebhook>), resolverType, lifetime));
-			} else {
-				Func<IServiceProvider, ITenantWebhookSubscriptionResolver<TWebhook>> factory = provider => {
-					var resolver = (ITenantWebhookSubscriptionResolver) provider.GetRequiredService(resolverType);
-					return new TenantWebhookSubscriptionResolverAdapter(resolver);
-				};
-				Services.Add(new ServiceDescriptor(typeof(ITenantWebhookSubscriptionResolver<TWebhook>), factory, lifetime));
-			}
-
-			Services.TryAdd(new ServiceDescriptor(resolverType, resolverType, lifetime));
-			return this;
-		}
-
-		/// <summary>
-		/// Registers a service that resolves the subscriptions to the
-		/// notification of events.
-		/// </summary>
-		/// <typeparam name="TResolver">
-		/// The type of the resolver to register.
-		/// </typeparam>
-		/// <param name="lifetime">
-		/// An optional value that specifies the lifetime of the service (by default
-		/// set to <see cref="ServiceLifetime.Scoped"/>).
-		/// </param>
-		/// <returns></returns>
-		public WebhookNotifierBuilder<TWebhook> UseTenantSubscriptionResolver<TResolver>(ServiceLifetime lifetime = ServiceLifetime.Scoped)
-			where TResolver : class, ITenantWebhookSubscriptionResolver
-			=> UseTenantSubscriptionResolver(typeof(TResolver), lifetime);
-
-		/// <summary>
-		/// Registers a service that resolves the subscriptions to the
-		/// notification of events.
-		/// </summary>
-		/// <param name="resolverType">
-		/// The type of the resolver to register.
-		/// </param>
-		/// <param name="lifetime">
-		/// An optional value that specifies the lifetime of the service (by default
-		/// set to <see cref="ServiceLifetime.Scoped"/>).
-		/// </param>
-		/// <returns>
-		/// Returns an instance of the builder to allow chaining.
-		/// </returns>
 		public WebhookNotifierBuilder<TWebhook> UseSubscriptionResolver(Type resolverType, ServiceLifetime lifetime = ServiceLifetime.Scoped) {
 			if (typeof(IWebhookSubscriptionResolver<TWebhook>).IsAssignableFrom(resolverType)) {
 				Services.Add(new ServiceDescriptor(typeof(IWebhookSubscriptionResolver<TWebhook>), resolverType, lifetime));
@@ -356,17 +277,6 @@ namespace Deveel.Webhooks {
 			Services.TryAdd(new ServiceDescriptor(typeof(TLogger), typeof(TLogger), lifetime));
 
 			return this;
-		}
-
-		class TenantWebhookSubscriptionResolverAdapter : ITenantWebhookSubscriptionResolver<TWebhook> {
-			private readonly ITenantWebhookSubscriptionResolver _resolver;
-
-			public TenantWebhookSubscriptionResolverAdapter(ITenantWebhookSubscriptionResolver resolver) {
-				_resolver = resolver;
-			}
-
-			public Task<IList<IWebhookSubscription>> ResolveSubscriptionsAsync(string tenantId, string eventType, bool activeOnly, CancellationToken cancellationToken) 
-				=> _resolver.ResolveSubscriptionsAsync(tenantId, eventType, activeOnly, cancellationToken);
 		}
 
 		class WebhookSubscriptionResolverAdapter : IWebhookSubscriptionResolver<TWebhook> {

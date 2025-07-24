@@ -1,4 +1,4 @@
-﻿// Copyright 2022-2024 Antonello Provenzano
+﻿// Copyright 2022-2025 Antonello Provenzano
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -23,6 +23,9 @@ namespace Deveel.Webhooks {
 	/// </summary>
 	/// <typeparam name="TSubscription">
 	/// The type of the subscription that is used to notify webhooks.
+	/// </typeparam>
+	/// <typeparam name="TKey">
+	/// The type of the key used to identify the subscription.
 	/// </typeparam>
 	public sealed class WebhookSubscriptionBuilder<TSubscription, TKey> 
 		where TSubscription : class, IWebhookSubscription 

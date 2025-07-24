@@ -133,7 +133,9 @@ namespace Deveel.Webhooks {
 
 		[Theory]
 		[InlineData("")]
+#pragma warning disable xUnit1012 // Null should only be used for nullable parameters
 		[InlineData(null)]
+#pragma warning restore xUnit1012 // Null should only be used for nullable parameters
 		[InlineData("ftp://dest.example.com")]
 		[InlineData("test data")]
 		public async Task AddSubscriptionWithInvalidDestination(string url) {
@@ -144,9 +146,9 @@ namespace Deveel.Webhooks {
 
 			Assert.False(result.IsSuccess());
 			Assert.True(result.IsError());
-			Assert.True(result.IsValidationError());
+			Assert.True(result.HasValidationErrors());
 
-			var error = Assert.IsType<EntityValidationError>(result.Error);
+			var error = Assert.IsAssignableFrom<IValidationError>(result.Error);
 
 			Assert.NotNull(error);
 			Assert.NotNull(error.ValidationResults);
@@ -182,9 +184,9 @@ namespace Deveel.Webhooks {
 
 			Assert.False(result.IsSuccess());
 			Assert.True(result.IsError());
-			Assert.True(result.IsValidationError());
+			Assert.True(result.HasValidationErrors());
 
-			var error = Assert.IsType<EntityValidationError>(result.Error);
+			var error = Assert.IsAssignableFrom<IValidationError>(result.Error);
 
 			Assert.NotNull(error);
 			Assert.NotNull(error.ValidationResults);
@@ -246,7 +248,7 @@ namespace Deveel.Webhooks {
 			var result = await Manager.SetEventTypesAsync(subscription, subscription.EventTypes.ToArray());
 
 			Assert.False(result.IsSuccess());
-			Assert.True(result.IsNotModified());
+			Assert.True(result.IsUnchanged());
 		}
 
 		[Fact]
@@ -274,7 +276,7 @@ namespace Deveel.Webhooks {
 			var result = await Manager.SetSecretAsync(subscription, subscription.Secret);
 
 			Assert.False(result.IsSuccess());
-			Assert.True(result.IsNotModified());
+			Assert.True(result.IsUnchanged());
 		}
 
 		[Fact]
@@ -375,7 +377,7 @@ namespace Deveel.Webhooks {
 			var result = await Manager.SetStatusAsync(subscription, WebhookSubscriptionStatus.Active);
 
 			Assert.False(result.IsSuccess());
-			Assert.True(result.IsNotModified());
+			Assert.True(result.IsUnchanged());
 		}
 
 		[Fact]
@@ -428,7 +430,7 @@ namespace Deveel.Webhooks {
 			var result = await Manager.SetHeadersAsync(subscription, headers);
 
 			Assert.False(result.IsSuccess());
-			Assert.True(result.IsNotModified());
+			Assert.True(result.IsUnchanged());
 		}
 
 		[Fact]
@@ -443,7 +445,7 @@ namespace Deveel.Webhooks {
 			var result = await Manager.SetPropertiesAsync(subscription, properties);
 
 			Assert.True(result.IsSuccess());
-			Assert.False(result.IsNotModified());
+			Assert.False(result.IsUnchanged());
 
 			var key = Repository.GetEntityKey(subscription);
 			var updated = await Repository.FindAsync(key!);

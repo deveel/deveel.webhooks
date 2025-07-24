@@ -1,4 +1,4 @@
-﻿// Copyright 2022-2024 Antonello Provenzano
+﻿// Copyright 2022-2025 Antonello Provenzano
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -29,6 +29,9 @@ namespace Deveel.Webhooks {
 	/// </summary>
 	/// <typeparam name="TResult">
 	/// The type of the result that is stored in the database.
+	/// </typeparam>
+	/// <typeparam name="TKey">
+	/// The type of the key used to identify the result in the database.
 	/// </typeparam>
 	public class MongoDbWebhookDeliveryResultRepository<TResult, TKey> : MongoRepository<TResult, TKey>,
 		IWebhookDeliveryResultRepository<TResult, TKey>

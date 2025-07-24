@@ -1,4 +1,4 @@
-﻿// Copyright 2022-2024 Antonello Provenzano
+﻿// Copyright 2022-2025 Antonello Provenzano
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@ using MongoDB.Bson;
 
 namespace Deveel.Webhooks {
 	/// <summary>
-	/// Provides extensions to the <see cref="WebhookSubscriptionBuilder{TSubscription}"/>
+	/// Provides extensions to the <see cref="WebhookSubscriptionBuilder{TSubscription,TKey}"/>
 	/// to register the MongoDB storage.
 	/// </summary>
     public static class WebhookSubscriptionBuilderExtensions {

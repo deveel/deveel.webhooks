@@ -30,16 +30,22 @@ namespace Deveel.Webhooks {
 
 		protected string ConnectionString => mongo.ConnectionString;
 
+		private const string DatabasseName = "webhooks";
+
 		protected MongoClient Client { get; }
 
 		public virtual async Task InitializeAsync() {
-			await Client.GetDatabase("webhooks").CreateCollectionAsync(MongoDbWebhookStorageConstants.SubscriptionCollectionName);
-			await Client.GetDatabase("webhooks").CreateCollectionAsync(MongoDbWebhookStorageConstants.DeliveryResultsCollectionName);
+			await Client.GetDatabase(DatabasseName)
+				.CreateCollectionAsync(MongoDbWebhookStorageConstants.SubscriptionCollectionName);
+			await Client.GetDatabase(DatabasseName)
+				.CreateCollectionAsync(MongoDbWebhookStorageConstants.DeliveryResultsCollectionName);
 		}
 
 		public virtual async Task DisposeAsync() {
-			await Client.GetDatabase("webhooks").DropCollectionAsync(MongoDbWebhookStorageConstants.SubscriptionCollectionName);
-			await Client.GetDatabase("webhooks").DropCollectionAsync(MongoDbWebhookStorageConstants.DeliveryResultsCollectionName);
+			await Client.GetDatabase(DatabasseName)
+				.DropCollectionAsync(MongoDbWebhookStorageConstants.SubscriptionCollectionName);
+			await Client.GetDatabase(DatabasseName)
+				.DropCollectionAsync(MongoDbWebhookStorageConstants.DeliveryResultsCollectionName);
 
 			Scope.Dispose();
 		}
@@ -61,7 +67,7 @@ namespace Deveel.Webhooks {
 
 		protected virtual void ConfigureWebhookService(WebhookSubscriptionBuilder<MongoWebhookSubscription, ObjectId> builder) {
 			builder.UseMongoDb(options => {
-				options.WithConnectionString($"{ConnectionString}webhooks");
+				options.WithConnectionString(mongo.GetConnectionString(DatabasseName));
 			});
 		}
 

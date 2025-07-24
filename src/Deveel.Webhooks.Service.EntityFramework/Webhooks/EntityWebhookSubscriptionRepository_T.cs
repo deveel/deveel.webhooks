@@ -1,4 +1,4 @@
-﻿// Copyright 2022-2024 Antonello Provenzano
+﻿// Copyright 2022-2025 Antonello Provenzano
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -181,7 +181,7 @@ namespace Deveel.Webhooks {
 			ThrowIfDisposed();
 			cancellationToken.ThrowIfCancellationRequested();
 
-			var headers = subscription.Headers.ToDictionary(x => x.Key, x => x.Value);
+			var headers = subscription.Headers?.ToDictionary(x => x.Key, x => x.Value) ?? new Dictionary<string, string>();
 
 			return Task.FromResult<IDictionary<string, string>>(headers);
 		}
@@ -190,6 +190,9 @@ namespace Deveel.Webhooks {
 		public Task AddHeadersAsync(TSubscription subscription, IDictionary<string, string> headers, CancellationToken cancellationToken = default) {
 			ThrowIfDisposed();
 			cancellationToken.ThrowIfCancellationRequested();
+
+			if (subscription.Headers == null)
+				subscription.Headers = new List<DbWebhookSubscriptionHeader>();
 
 			foreach (var header in headers) {
 				subscription.Headers.Add(new DbWebhookSubscriptionHeader {
@@ -206,10 +209,14 @@ namespace Deveel.Webhooks {
 			ThrowIfDisposed();
 			cancellationToken.ThrowIfCancellationRequested();
 
-			foreach (var headerKey in headerKeys) {
-				var found = subscription.Headers.FirstOrDefault(x => x.Key == headerKey);
-				if (found != null)
-					subscription.Headers.Remove(found);
+			if (subscription.Headers != null)
+			{
+				foreach (var headerKey in headerKeys)
+				{
+					var found = subscription.Headers.FirstOrDefault(x => x.Key == headerKey);
+					if (found != null)
+						subscription.Headers.Remove(found);
+				}
 			}
 
 			return Task.CompletedTask;
@@ -220,7 +227,7 @@ namespace Deveel.Webhooks {
 			ThrowIfDisposed();
 			cancellationToken.ThrowIfCancellationRequested();
 
-			var properties = subscription.Properties.ToDictionary(x => x.Key, x => DbWebhookValueConvert.Convert(x.Value, x.ValueType)!);
+			var properties = subscription.Properties?.ToDictionary(x => x.Key, x => DbWebhookValueConvert.Convert(x.Value, x.ValueType)!) ?? new Dictionary<string, object>();
 
 			return Task.FromResult<IDictionary<string, object>>(properties);
 		}
@@ -229,6 +236,9 @@ namespace Deveel.Webhooks {
 		public Task AddPropertiesAsync(TSubscription subscription, IDictionary<string, object> properties, CancellationToken cancellationToken = default) {
 			ThrowIfDisposed();
 			cancellationToken.ThrowIfCancellationRequested();
+
+			if (subscription.Properties == null)
+				subscription.Properties = new List<DbWebhookSubscriptionProperty>();
 
 			foreach (var property in properties) {
 				subscription.Properties.Add(new DbWebhookSubscriptionProperty {
@@ -242,14 +252,21 @@ namespace Deveel.Webhooks {
 		}
 
 		/// <inheritdoc/>
-		public Task RemovePropertiesAsync(TSubscription subscription, string[] propertyKeys, CancellationToken cancellationToken = default) {
+		public Task RemovePropertiesAsync(TSubscription subscription, string[] propertyKeys, CancellationToken cancellationToken = default)
+		{
 			ThrowIfDisposed();
 			cancellationToken.ThrowIfCancellationRequested();
 
-			foreach (var propertyKey in propertyKeys) {
-				var found = subscription.Properties.FirstOrDefault(x => x.Key == propertyKey);
-				if (found != null)
-					subscription.Properties.Remove(found);
+			if (subscription.Properties != null)
+			{
+				foreach (var propertyKey in propertyKeys)
+				{
+					var found = subscription.Properties.FirstOrDefault(x => x.Key == propertyKey);
+					if (found != null)
+						subscription.Properties.Remove(found);
+				}
+
+				return Task.CompletedTask;
 			}
 
 			return Task.CompletedTask;

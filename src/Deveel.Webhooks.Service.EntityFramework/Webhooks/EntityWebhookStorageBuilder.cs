@@ -1,4 +1,4 @@
-﻿// Copyright 2022-2024 Antonello Provenzano
+﻿// Copyright 2022-2025 Antonello Provenzano
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -13,8 +13,6 @@
 // limitations under the License.
 
 using Deveel.Data;
-
-using Finbuckle.MultiTenant;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -77,39 +75,6 @@ namespace Deveel.Webhooks {
 
             return this;
         }
-
-		/// <summary>
-		/// Registers the given type of DB context to be used for
-		/// backing the storage of webhook subscriptions.
-		/// </summary>
-		/// <typeparam name="TContext">
-		/// The type of the <see cref="WebhookDbContext"/> to use.
-		/// </typeparam>
-		/// <param name="options">
-		/// A configuration action that receives an instance of <see cref="ITenantInfo"/>
-		/// that can be used to configure the options of the context.
-		/// </param>
-		/// <param name="lifetime">
-		/// An optional value that specifies the lifetime of the context.
-		/// </param>
-		/// <returns>
-		/// Returns the current instance of the builder for chaining.
-		/// </returns>
-		public EntityWebhookStorageBuilder<TSubscription> UseContext<TContext>(Action<ITenantInfo?, DbContextOptionsBuilder> options, ServiceLifetime lifetime = ServiceLifetime.Scoped) 
-			where TContext : WebhookDbContext {
-			var factory = (IServiceProvider sp, DbContextOptionsBuilder builder) => {
-				var tenantInfo = sp.GetService<IMultiTenantContext>()?.TenantInfo;
-				options(tenantInfo, builder);
-			};
-
-			if (typeof(TContext) != typeof(WebhookDbContext)) {
-				Services.AddDbContext<WebhookDbContext, TContext>(factory, lifetime);
-			} else {
-				Services.AddDbContext<WebhookDbContext>(factory, lifetime);
-			}
-
-			return this;
-		}
 
         /// <summary>
         /// Registers the default type of DB context to be used for

@@ -8,7 +8,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="6.0.1" Condition="'$(TargetFramework)' == 'net6.0'" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="7.0.0" Condition="'$(TargetFramework)' == 'net7.0'" />
-    <PackageReference Include="Testcontainers.MongoDb" Version="3.7.0" />
+    <PackageReference Include="Testcontainers.MongoDb" Version="4.6.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -17,17 +17,5 @@
     <ProjectReference Include="..\Deveel.Webhooks.DeliveryResultLogging.Tests\Deveel.Webhooks.DeliveryResultLogging.Tests.csproj" />
     <ProjectReference Include="..\Deveel.Webhooks.Management.Tests\Deveel.Webhooks.Management.Tests.csproj" />
     <ProjectReference Include="..\Deveel.Webhooks.TestHttpClient\Deveel.Webhooks.TestHttpClient.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Update="Bogus" Version="35.5.0" />
-    <PackageReference Update="coverlet.collector" Version="6.0.2">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Update="coverlet.msbuild" Version="6.0.2">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
   </ItemGroup>
 </Project>

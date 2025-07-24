@@ -1,4 +1,4 @@
-﻿// Copyright 2022-2024 Antonello Provenzano
+﻿// Copyright 2022-2025 Antonello Provenzano
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,8 +15,6 @@
 using System.Configuration;
 
 using Deveel.Data;
-
-using Finbuckle.MultiTenant;
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -70,83 +68,26 @@ namespace Deveel.Webhooks {
 		/// Configures the storage system to use the connection
 		/// string with the given name from the application configuration.
 		/// </summary>
+		/// <param name="configuration">
+		/// The application configuration that contains the connection strings.
+		/// </param>
 		/// <param name="connectionStringName">
 		/// The name of the connection string to use from the application configuration.
 		/// </param>
 		/// <returns>
 		/// Returns the current instance of the builder for chaining.
 		/// </returns>
-		public MongoDbWebhookStorageBuilder<TSubscription> WithConnectionStringName(string connectionStringName) {
-			Services.AddMongoDbContext<MongoDbWebhookContext>((sp, builder) => {
-				var config = sp.GetRequiredService<IConfiguration>();
-				var connectionString = config.GetConnectionString(connectionStringName);
-				if (string.IsNullOrEmpty(connectionString))
-					throw new ConfigurationErrorsException($"No connection string named '{connectionStringName}' was found in the application configuration");
+		public MongoDbWebhookStorageBuilder<TSubscription> WithConnectionStringName(IConfiguration configuration, string connectionStringName) {
+			var connectionString = configuration.GetConnectionString(connectionStringName);
+			if (string.IsNullOrEmpty(connectionString))
+				throw new ConfigurationErrorsException($"No connection string named '{connectionStringName}' was found in the application configuration");
 
+			Services.AddMongoDbContext<MongoDbWebhookContext>(builder => {
 				builder.UseConnection(connectionString);
 			});
 
 			return this;
 		}
-
-		/// <summary>
-		/// Configures the storage system to use the connection
-		/// string of the tenant that is resolved by the current
-		/// context of the application.
-		/// </summary>
-		/// <param name="configure">
-		/// The action to configure the connection string of the tenant.
-		/// </param>
-		/// <returns>
-		/// Returns the current instance of the builder for chaining.
-		/// </returns>
-		public MongoDbWebhookStorageBuilder<TSubscription> WithTenantConnection(Action<ITenantInfo?, MongoConnectionBuilder> configure) {
-			Services.AddMongoDbContext<MongoDbWebhookContext>(configure);
-
-			return this;
-		}
-
-		/// <summary>
-		/// Changes the scope of the storage to use multi-tenant
-		/// infrastructure for connecting to the MongoDB databases
-		/// of each tenant.
-		/// </summary>
-		/// <typeparam name="TTenantInfo">
-		/// The type of tenant information resolved, that is holding
-		/// the connection string to the MongoDB database of each tenant.
-		/// </typeparam>
-		/// <returns>
-		/// Returns the current instance of the builder for chaining.
-		/// </returns>
-		public MongoDbWebhookStorageBuilder<TSubscription> UseMultiTenant<TTenantInfo>() where TTenantInfo : class, ITenantInfo, new() {
-			Services.RemoveAll<IMongoDbWebhookContext>();
-			Services.RemoveAll<MongoDbWebhookContext>();
-			Services.RemoveAll<IRepositoryProvider<TSubscription>>();
-
-			Services.AddRepositoryTenantResolver<TTenantInfo>();
-
-			Services.AddMongoDbContext<MongoDbWebhookTenantContext>((tenant, builder) => {
-				if (tenant == null)
-					throw new Exception("No tenant information was provided");
-
-				builder.UseConnection(tenant.ConnectionString!);
-			});
-
-			Services.AddScoped<IMongoDbWebhookContext>(sp => sp.GetRequiredService<MongoDbWebhookTenantContext>());
-			Services.AddRepositoryProvider<MongoDbWebhookSubscriptionRepositoryProvider<MongoDbWebhookTenantContext>>();
-			Services.AddRepositoryProvider<MongoDbWebhookDeliveryResultRepositoryProvider>();
-
-            return this;
-		}
-
-		/// <summary>
-		/// Changes the scope of the storage to use multi-tenant
-		/// infrastructure for connecting to the MongoDB databases
-		/// of each tenant.
-		/// </summary>
-		/// <returns></returns>
-		public MongoDbWebhookStorageBuilder<TSubscription> UseMultiTenant()
-			=> UseMultiTenant<TenantInfo>();
 
 		/// <summary>
 		/// Registers the given type of storage to be used for

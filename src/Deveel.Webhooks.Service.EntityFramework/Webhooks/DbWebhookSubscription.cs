@@ -1,4 +1,4 @@
-﻿// Copyright 2022-2024 Antonello Provenzano
+﻿// Copyright 2022-2025 Antonello Provenzano
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 #pragma warning disable CS8618
 
 using System.Diagnostics.CodeAnalysis;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace Deveel.Webhooks {
 	/// <summary>
@@ -23,6 +24,19 @@ namespace Deveel.Webhooks {
 	/// that is stored in a database.
 	/// </summary>
     public class DbWebhookSubscription : IWebhookSubscription {
+		private readonly ILazyLoader lazyLoader;
+		private List<DbWebhookSubscriptionEvent>? events;
+		private List<DbWebhookFilter>? filters;
+		private List<DbWebhookSubscriptionHeader>? headers;
+		private List<DbWebhookSubscriptionProperty>? properties;
+
+		private DbWebhookSubscription(ILazyLoader lazyLoader) {
+			this.lazyLoader = lazyLoader;
+		}
+
+		public DbWebhookSubscription() {
+		}
+
 		/// <summary>
 		/// Gets or sets the database identifier of the subscription entity.
 		/// </summary>
@@ -67,14 +81,20 @@ namespace Deveel.Webhooks {
 		/// <summary>
 		/// Gets or sets the list of events that are subscribed.
 		/// </summary>
-        public virtual List<DbWebhookSubscriptionEvent> Events { get; set; }
+        public virtual List<DbWebhookSubscriptionEvent>? Events { 
+			get => lazyLoader.Load(this, ref events);
+			set => events = value;
+		}
 
-        IEnumerable<IWebhookFilter>? IWebhookSubscription.Filters => Filters.AsReadOnly();
+        IEnumerable<IWebhookFilter>? IWebhookSubscription.Filters => Filters?.AsReadOnly();
 
 		/// <summary>
 		/// Gets or sets the list of filters that are applied to the subscription.
 		/// </summary>
-        public List<DbWebhookFilter> Filters { get; set; }
+        public List<DbWebhookFilter>? Filters { 
+			get => lazyLoader.Load(this, ref filters);
+			set => filters = value;
+		}
 
         IDictionary<string, string>? IWebhookSubscription.Headers =>
             Headers?.ToDictionary(x => x.Key, x => x.Value);
@@ -86,11 +106,17 @@ namespace Deveel.Webhooks {
 		/// <summary>
 		/// Gets or sets the list of headers that are applied to the subscription.
 		/// </summary>
-        public virtual List<DbWebhookSubscriptionHeader> Headers { get; set; }
+        public virtual List<DbWebhookSubscriptionHeader>? Headers { 
+			get => lazyLoader.Load(this, ref headers);
+			set => headers = value;
+		}
 
 		/// <summary>
 		/// Gets or sets the list of properties of the subscription.
 		/// </summary>
-        public virtual List<DbWebhookSubscriptionProperty> Properties { get; set; }
+        public virtual List<DbWebhookSubscriptionProperty>? Properties { 
+			get => lazyLoader.Load(this, ref properties);
+			set => properties = value;
+		}
     }
 }

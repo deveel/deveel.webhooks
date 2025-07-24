@@ -1,4 +1,4 @@
-﻿// Copyright 2022-2024 Antonello Provenzano
+﻿// Copyright 2022-2025 Antonello Provenzano
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -21,15 +21,18 @@ namespace Deveel.Webhooks {
 	/// </summary>
 	public class WebhookServiceException : OperationException {
 		/// <inheritdoc/>
-		public WebhookServiceException(string errorCode) : base(errorCode) {
+		public WebhookServiceException(string errorCode) 
+			: base(errorCode, WebhookServiceDefaults.ServiceDomain) {
 		}
 
 		/// <inheritdoc/>
-		public WebhookServiceException(string errorCode, string? message) : base(errorCode, message) {
+		public WebhookServiceException(string errorCode, string? message) 
+			: base(errorCode, WebhookServiceDefaults.ServiceDomain, message) {
 		}
 
 		/// <inheritdoc/>
-		public WebhookServiceException(string errorCode, string? message, Exception innerException) : base(errorCode, message, innerException) {
+		public WebhookServiceException(string errorCode, string? message, Exception innerException) 
+			: base(errorCode, WebhookServiceDefaults.ServiceDomain, message, innerException) {
 		}
 	}
 }

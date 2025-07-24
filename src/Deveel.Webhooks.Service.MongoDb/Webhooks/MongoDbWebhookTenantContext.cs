@@ -1,4 +1,4 @@
-﻿// Copyright 2022-2024 Antonello Provenzano
+﻿// Copyright 2022-2025 Antonello Provenzano
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,6 +15,9 @@
 using Deveel.Data;
 
 using Finbuckle.MultiTenant;
+#if NET7_0_OR_GREATER
+using Finbuckle.MultiTenant.Abstractions;
+#endif
 
 using MongoFramework;
 
@@ -23,19 +26,19 @@ namespace Deveel.Webhooks {
 	/// Represents a multi-tenant MongoDB context that can be used to
 	/// access to tenant-specific databases
 	/// </summary>
-	public class MongoDbWebhookTenantContext: MongoDbTenantContext, IMongoDbWebhookContext {
+	public class MongoDbWebhookTenantContext: MongoDbMultiTenantContext, IMongoDbWebhookContext {
 		/// <summary>
 		/// Constructs the context with the given options
 		/// </summary>
 		/// <param name="connection">
 		/// The connection to the MongoDB server.
 		/// </param>
-		/// <param name="tenantInfo">
+		/// <param name="multiTenantContextAccessor">
 		/// The information about the tenant that
 		/// owns the context.
 		/// </param>
-		public MongoDbWebhookTenantContext(IMongoDbConnection<MongoDbWebhookTenantContext> connection, ITenantInfo tenantInfo) 
-			: base(connection, tenantInfo.Id) {
+		public MongoDbWebhookTenantContext(IMongoDbConnection<MongoDbWebhookTenantContext> connection, IMultiTenantContextAccessor multiTenantContextAccessor) 
+			: base(connection, multiTenantContextAccessor) {
 		}
 
 		/// <inheritdoc/>

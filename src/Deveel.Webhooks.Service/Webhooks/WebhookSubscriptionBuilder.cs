@@ -24,6 +24,9 @@ namespace Deveel.Webhooks {
 	/// <typeparam name="TSubscription">
 	/// The type of the subscription that is used to notify webhooks.
 	/// </typeparam>
+	/// <typeparam name="TKey">
+	/// The type of the key used to identify the subscription.
+	/// </typeparam>
 	public sealed class WebhookSubscriptionBuilder<TSubscription, TKey> 
 		where TSubscription : class, IWebhookSubscription 
 		where TKey : notnull {

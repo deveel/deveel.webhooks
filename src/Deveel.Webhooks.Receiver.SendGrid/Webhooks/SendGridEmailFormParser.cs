@@ -62,8 +62,8 @@ namespace Deveel.Webhooks {
 				email.Attachments = new List<EmailAttachment>();
 
 				foreach (var attachment in attachments) {
-					var attachmentParts = attachment.Split(";", StringSplitOptions.RemoveEmptyEntries);
-					if (attachmentParts.Length != 3)
+					var attachmentParts = attachment?.Split(";", StringSplitOptions.RemoveEmptyEntries);
+					if (attachmentParts?.Length != 3)
 						continue;
 
 					var filename = attachmentParts[0];

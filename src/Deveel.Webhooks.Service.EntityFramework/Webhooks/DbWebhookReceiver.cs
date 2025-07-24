@@ -25,7 +25,7 @@ namespace Deveel.Webhooks {
 	/// </summary>
     public class DbWebhookReceiver : IWebhookReceiver {
 		private readonly ILazyLoader lazyLoader;
-		private List<DbWebhookReceiverHeader> headers;
+		private List<DbWebhookReceiverHeader>? headers;
 
 		private DbWebhookReceiver(ILazyLoader lazyLoader) {
 			this.lazyLoader = lazyLoader;
@@ -68,7 +68,7 @@ namespace Deveel.Webhooks {
 		/// </summary>
 		/// <seealso cref="IWebhookReceiver.Headers"/>
         public virtual List<DbWebhookReceiverHeader> Headers { 
-			get => lazyLoader.Load(this, ref headers);
+			get => lazyLoader.Load(this, ref headers) ?? new List<DbWebhookReceiverHeader>();
 			set => headers = value;
 		}
 

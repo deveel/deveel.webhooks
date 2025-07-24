@@ -16,11 +16,6 @@ using System.Configuration;
 
 using Deveel.Data;
 
-using Finbuckle.MultiTenant;
-#if NET7_0_OR_GREATER
-using Finbuckle.MultiTenant.Abstractions;
-#endif
-
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -73,19 +68,21 @@ namespace Deveel.Webhooks {
 		/// Configures the storage system to use the connection
 		/// string with the given name from the application configuration.
 		/// </summary>
+		/// <param name="configuration">
+		/// The application configuration that contains the connection strings.
+		/// </param>
 		/// <param name="connectionStringName">
 		/// The name of the connection string to use from the application configuration.
 		/// </param>
 		/// <returns>
 		/// Returns the current instance of the builder for chaining.
 		/// </returns>
-		public MongoDbWebhookStorageBuilder<TSubscription> WithConnectionStringName(string connectionStringName) {
-			Services.AddMongoDbContext<MongoDbWebhookContext>((sp, builder) => {
-				var config = sp.GetRequiredService<IConfiguration>();
-				var connectionString = config.GetConnectionString(connectionStringName);
-				if (string.IsNullOrEmpty(connectionString))
-					throw new ConfigurationErrorsException($"No connection string named '{connectionStringName}' was found in the application configuration");
+		public MongoDbWebhookStorageBuilder<TSubscription> WithConnectionStringName(IConfiguration configuration, string connectionStringName) {
+			var connectionString = configuration.GetConnectionString(connectionStringName);
+			if (string.IsNullOrEmpty(connectionString))
+				throw new ConfigurationErrorsException($"No connection string named '{connectionStringName}' was found in the application configuration");
 
+			Services.AddMongoDbContext<MongoDbWebhookContext>(builder => {
 				builder.UseConnection(connectionString);
 			});
 

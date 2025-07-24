@@ -22,6 +22,9 @@ namespace Deveel.Webhooks {
 	/// <typeparam name="TSubscription">
 	/// The type of the subscription to validate.
 	/// </typeparam>
+	/// <typeparam name="TKey">
+	/// The type of the key used to identify the subscription.
+	/// </typeparam>
 	public interface IWebhookSubscriptionValidator<TSubscription, TKey> : IEntityValidator<TSubscription, TKey>
 		where TKey : notnull
 		where TSubscription : class, IWebhookSubscription {

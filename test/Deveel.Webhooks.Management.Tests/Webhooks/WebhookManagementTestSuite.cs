@@ -133,7 +133,9 @@ namespace Deveel.Webhooks {
 
 		[Theory]
 		[InlineData("")]
+#pragma warning disable xUnit1012 // Null should only be used for nullable parameters
 		[InlineData(null)]
+#pragma warning restore xUnit1012 // Null should only be used for nullable parameters
 		[InlineData("ftp://dest.example.com")]
 		[InlineData("test data")]
 		public async Task AddSubscriptionWithInvalidDestination(string url) {

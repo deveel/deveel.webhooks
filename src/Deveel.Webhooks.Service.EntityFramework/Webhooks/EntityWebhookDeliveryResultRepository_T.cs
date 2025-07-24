@@ -90,6 +90,7 @@ namespace Deveel.Webhooks {
 			return deliveryResult;
 		}
 
+		/// <inheritdoc/>
 		protected override Task<TResult> OnEntityFoundByKeyAsync(int key, TResult entity, CancellationToken cancellationToken = default)
 		{
 			return EnsureLoadedAsync(entity, cancellationToken);

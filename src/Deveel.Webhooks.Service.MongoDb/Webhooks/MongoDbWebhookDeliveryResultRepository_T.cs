@@ -30,6 +30,9 @@ namespace Deveel.Webhooks {
 	/// <typeparam name="TResult">
 	/// The type of the result that is stored in the database.
 	/// </typeparam>
+	/// <typeparam name="TKey">
+	/// The type of the key used to identify the result in the database.
+	/// </typeparam>
 	public class MongoDbWebhookDeliveryResultRepository<TResult, TKey> : MongoRepository<TResult, TKey>,
 		IWebhookDeliveryResultRepository<TResult, TKey>
 		where TKey : notnull

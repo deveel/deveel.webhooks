@@ -48,6 +48,9 @@ namespace Deveel.Webhooks {
 			Options = options?.Value ?? new WebhookFactoryOptions<TWebhook>();
 		}
 
+		/// <summary>
+		/// Gets the configuration options for the webhook factory.
+		/// </summary>
 		protected WebhookFactoryOptions<TWebhook> Options { get; }
 
 		/// <summary>

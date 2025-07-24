@@ -26,19 +26,19 @@ namespace Deveel.Webhooks {
 	/// Represents a multi-tenant MongoDB context that can be used to
 	/// access to tenant-specific databases
 	/// </summary>
-	public class MongoDbWebhookTenantContext: MongoDbTenantContext, IMongoDbWebhookContext {
+	public class MongoDbWebhookTenantContext: MongoDbMultiTenantContext, IMongoDbWebhookContext {
 		/// <summary>
 		/// Constructs the context with the given options
 		/// </summary>
 		/// <param name="connection">
 		/// The connection to the MongoDB server.
 		/// </param>
-		/// <param name="tenantInfo">
+		/// <param name="multiTenantContextAccessor">
 		/// The information about the tenant that
 		/// owns the context.
 		/// </param>
-		public MongoDbWebhookTenantContext(IMongoDbConnection<MongoDbWebhookTenantContext> connection, ITenantInfo tenantInfo) 
-			: base(connection, tenantInfo.Id) {
+		public MongoDbWebhookTenantContext(IMongoDbConnection<MongoDbWebhookTenantContext> connection, IMultiTenantContextAccessor multiTenantContextAccessor) 
+			: base(connection, multiTenantContextAccessor) {
 		}
 
 		/// <inheritdoc/>

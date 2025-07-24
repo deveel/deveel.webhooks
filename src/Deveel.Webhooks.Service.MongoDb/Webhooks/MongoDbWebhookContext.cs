@@ -14,10 +14,6 @@
 
 using Deveel.Data;
 
-using Finbuckle.MultiTenant;
-
-using Microsoft.Extensions.Options;
-
 using MongoFramework;
 
 namespace Deveel.Webhooks {

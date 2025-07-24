@@ -35,6 +35,9 @@ namespace Deveel.Webhooks {
 		/// <returns>
 		/// Returns the collection where the webhook management service is registered.
 		/// </returns>
+		/// <typeparam name="TKey">
+		/// The type of the key used to identify the subscription.
+		/// </typeparam>
 		public static IServiceCollection AddWebhookSubscriptions<TSubscription, TKey>(this IServiceCollection services, Action<WebhookSubscriptionBuilder<TSubscription, TKey>>? configure = null) 
 			where TKey : notnull
 			where TSubscription : class, IWebhookSubscription {
@@ -58,6 +61,9 @@ namespace Deveel.Webhooks {
 		/// <returns>
 		/// Returns the builder used to configure the service.
 		/// </returns>
+		/// <typeparam name="TKey">
+		/// The type of the key used to identify the subscription.
+		/// </typeparam>
 		public static WebhookSubscriptionBuilder<TSubscription,TKey> AddWebhookSubscriptions<TSubscription,TKey>(this IServiceCollection services) 
 			where TSubscription : class, IWebhookSubscription
 			where TKey : notnull {

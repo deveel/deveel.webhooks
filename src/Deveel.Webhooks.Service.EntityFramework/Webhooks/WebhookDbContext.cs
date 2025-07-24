@@ -29,19 +29,19 @@ namespace Deveel.Webhooks {
 		/// Gets or sets the set a <c>DbSet</c> that provides query access to
 		/// the <see cref="DbWebhookSubscription"/> entities.
 		/// </summary>
-        public virtual DbSet<DbWebhookSubscription> Subscriptions { get; set; }
+        public virtual DbSet<DbWebhookSubscription>? Subscriptions { get; set; }
 
 		/// <summary>
 		/// Gets or sets the set a <c>DbSet</c> that provides query access to
 		/// the <see cref="DbWebhookDeliveryResult"/> entities.
 		/// </summary>
-        public virtual DbSet<DbWebhookDeliveryResult> DeliveryResults { get; set; }
+        public virtual DbSet<DbWebhookDeliveryResult>? DeliveryResults { get; set; }
 
         /// <summary>
         /// Gets or sets the set a <c>DbSet</c> that provides query access to
         /// the <see cref="DbWebhookDeliveryAttempt"/> entities.
         /// </summary>
-        public virtual DbSet<DbWebhook> Webhooks { get; set; }
+        public virtual DbSet<DbWebhook>? Webhooks { get; set; }
 
         /// <inheritdoc/>
         protected override void OnModelCreating(ModelBuilder modelBuilder) {

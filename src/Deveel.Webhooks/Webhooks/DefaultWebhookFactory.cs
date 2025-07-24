@@ -21,6 +21,10 @@ namespace Deveel.Webhooks {
 	/// provided by the subscription and the event.
 	/// </summary>
 	public sealed class DefaultWebhookFactory : DefaultWebhookFactory<Webhook> {
+		/// <summary>
+		/// Initializes a new instance of the <see cref="DefaultWebhookFactory"/> class with the specified options.
+		/// </summary>
+		/// <param name="options">The configuration options for the webhook factory. Cannot be null.</param>
 		public DefaultWebhookFactory(IOptions<WebhookFactoryOptions<Webhook>> options) : base(options) {
 		}
 	}

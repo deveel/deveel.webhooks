@@ -30,10 +30,14 @@ namespace Deveel.Webhooks {
 	/// The type of the webhook subscription, that is
 	/// derived from <see cref="MongoWebhookSubscription"/>.
 	/// </typeparam>
+	/// <typeparam name="TKey">
+	/// The type of the key used to identify the subscription in the database.
+	/// </typeparam>
 	public class MongoDbWebhookSubscriptionRepository<TSubscription, TKey> : 
 		MongoRepository<TSubscription, TKey>,
 		IWebhookSubscriptionRepository<TSubscription, TKey>
-		where TSubscription : MongoWebhookSubscription {
+		where TSubscription : MongoWebhookSubscription
+		where TKey : notnull {
 
 		/// <summary>
 		/// Constructs the store with the given context.

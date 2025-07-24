@@ -16,7 +16,7 @@ using MongoDB.Bson;
 
 namespace Deveel.Webhooks {
 	/// <summary>
-	/// Provides extensions to the <see cref="WebhookSubscriptionBuilder{TSubscription}"/>
+	/// Provides extensions to the <see cref="WebhookSubscriptionBuilder{TSubscription,TKey}"/>
 	/// to register the MongoDB storage.
 	/// </summary>
     public static class WebhookSubscriptionBuilderExtensions {

@@ -6,6 +6,7 @@
     <RootNamespace>Deveel</RootNamespace>
     <IsPackable>false</IsPackable>
     <NoWarn>CS8618</NoWarn>
+    <SonarQubeExclude>true</SonarQubeExclude>
   </PropertyGroup>
   
   <ItemGroup>

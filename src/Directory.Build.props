@@ -1,7 +1,7 @@
 <Project>
 	<PropertyGroup>
     <!-- Compilation Properties -->
-		<TargetFrameworks>net6.0;net7.0;net8.0</TargetFrameworks>
+		<TargetFrameworks>net8.0;net9.0;net10.0</TargetFrameworks>
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<RootNamespace>Deveel</RootNamespace>
@@ -12,7 +12,7 @@
 		<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
 		<Authors>antonello</Authors>
 		<Company>Deveel</Company>
-		<Copyright>Copyright (C) 2021-2025 Antonello Provenzano</Copyright>
+		<Copyright>Copyright (C) 2021-2026 Antonello Provenzano</Copyright>
 		<PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
 		<PackageProjectUrl>https://webhooks.deveel.org</PackageProjectUrl>
 		<PackageIcon>deveel-logo.png</PackageIcon>
@@ -29,11 +29,6 @@
 		<ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
 	</PropertyGroup>
 
-	<!-- GitVersion Integration -->
-	<ItemGroup>
-		<PackageReference Include="GitVersion.MsBuild" Version="6.0.5" PrivateAssets="All" Condition="'$(UseGitVersion)' != 'false'" />
-	</ItemGroup>
-
 	<PropertyGroup Condition="'$(UseGitVersion)' != 'false'">
 		<Version>$(GitVersion_SemVer)</Version>
 		<AssemblyVersion>$(GitVersion_AssemblySemVer)</AssemblyVersion>
@@ -41,10 +36,9 @@
 		<InformationalVersion>$(GitVersion_InformationalVersion)</InformationalVersion>
 		<PackageVersion>$(GitVersion_NuGetVersion)</PackageVersion>
 	</PropertyGroup>
-
+	
 	<ItemGroup>
-		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" Condition="$(TargetFramework) != 'net8.0'" />
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" Condition="$(TargetFramework) == 'net8.0'" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="10.0.202" PrivateAssets="All" />
 	</ItemGroup>
 
 	<ItemGroup>

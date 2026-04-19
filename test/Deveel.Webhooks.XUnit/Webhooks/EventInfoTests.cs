@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Collections.Generic;
+using System.Text.Json;
 using Xunit;
 
 namespace Deveel.Webhooks {
@@ -65,6 +67,107 @@ namespace Deveel.Webhooks {
 			Assert.Equal("ping", eventInfo.EventType);
 			Assert.Equal("0.1", eventInfo.DataVersion);
 			Assert.Null(eventInfo.GetValue<string?>("unknown"));
+		}
+
+		[Fact]
+		public static void AsEventInfo_NullInstance_ThrowsArgumentNullException() {
+			IEventInfo nullEventInfo = null!;
+			Assert.Throws<ArgumentNullException>(() => nullEventInfo.AsEventInfo());
+		}
+
+		[Fact]
+		public static void TryGetValue_NullEventInfo_ThrowsArgumentNullException() {
+			Assert.Throws<ArgumentNullException>(() => EventInfoExtensions.TryGetValue<string>(null!, "any", out _));
+		}
+
+		[Fact]
+		public static void TryGetValue_DataNull_ReturnsFalse() {
+			var eventInfo = new PingEvent();
+
+			var found = eventInfo.TryGetValue<string>("any", out var value);
+
+			Assert.False(found);
+			Assert.Null(value);
+		}
+
+		[Fact]
+		public static void TryGetValue_DictionaryPathMissing_ReturnsFalse() {
+			var eventInfo = new UserDeletedModel {
+				TenantId = "test",
+				UserId = "user1"
+			};
+
+			var found = eventInfo.TryGetValue<string>("missing", out var value);
+
+			Assert.False(found);
+			Assert.Null(value);
+		}
+
+		[Fact]
+		public static void TryGetValue_JsonDictionary_ThrowsNotSupportedException() {
+			var json = JsonSerializer.Deserialize<JsonElement>("{\"tenant\":\"test\"}");
+			var eventInfo = new GenericEventInfo {
+				Data = new Dictionary<string, JsonElement> {
+					["root"] = json
+				}
+			};
+
+			Assert.Throws<NotSupportedException>(() => eventInfo.TryGetValue<string>("root", out _));
+		}
+
+		[Fact]
+		public static void TryGetValue_NestedPropertyPath_ReturnsTrueAndValue() {
+			var eventInfo = new GenericEventInfo {
+				Data = new {
+					tenant = new {
+						id = "tenant-1"
+					}
+				}
+			};
+
+			var found = eventInfo.TryGetValue<string>("tenant.id", out var value);
+
+			Assert.True(found);
+			Assert.Equal("tenant-1", value);
+		}
+
+		[Fact]
+		public static void TryGetValue_FieldPath_ReturnsTrueAndValue() {
+			var eventInfo = new GenericEventInfo {
+				Data = new FieldContainer {
+					payload = new FieldPayload { id = 42 }
+				}
+			};
+
+			var found = eventInfo.TryGetValue<int>("payload.id", out var value);
+
+			Assert.True(found);
+			Assert.Equal(42, value);
+		}
+
+		[Fact]
+		public static void TryGetValue_ConvertibleValue_ConvertsInvariantCulture() {
+			var eventInfo = new GenericEventInfo {
+				Data = new Dictionary<string, object> {
+					["retryCount"] = 7
+				}
+			};
+
+			var found = eventInfo.TryGetValue<string>("retryCount", out var value);
+
+			Assert.True(found);
+			Assert.Equal("7", value);
+		}
+
+		[Fact]
+		public static void TryGetValue_NonConvertibleValue_Throws() {
+			var eventInfo = new GenericEventInfo {
+				Data = new Dictionary<string, object> {
+					["createdAt"] = "not-a-date"
+				}
+			};
+
+			Assert.ThrowsAny<Exception>(() => eventInfo.TryGetValue<DateTime>("createdAt", out _));
 		}
 
 		class UserCreatedModel : IEventInfo {
@@ -121,6 +224,28 @@ namespace Deveel.Webhooks {
 			string? IEventInfo.DataVersion => "0.1";
 
 			object? IEventInfo.Data => null;
+		}
+
+		private sealed class GenericEventInfo : IEventInfo {
+			public string Subject => "generic";
+
+			public string EventType => "test";
+
+			public string Id { get; } = Guid.NewGuid().ToString();
+
+			public DateTimeOffset TimeStamp => DateTimeOffset.UtcNow;
+
+			public string? DataVersion => "1.0";
+
+			public object? Data { get; set; }
+		}
+
+		private sealed class FieldContainer {
+			public FieldPayload payload = null!;
+		}
+
+		private sealed class FieldPayload {
+			public int id;
 		}
 	}
 }

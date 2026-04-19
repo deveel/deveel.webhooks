@@ -43,7 +43,7 @@ namespace Deveel.Webhooks {
 			Assert.NotNull(json);
 			Assert.NotEmpty(json);
 
-			var obj = JsonObject.Parse(json);
+			var obj = JsonNode.Parse(json);
 			Assert.NotNull(obj);
 			Assert.NotNull(obj["name"]);
 			Assert.NotNull(obj["event_type"]);

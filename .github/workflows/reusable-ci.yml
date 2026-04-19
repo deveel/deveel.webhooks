@@ -33,10 +33,6 @@ on:
         description: Optional Codecov token
         required: false
 
-permissions:
-  contents: read
-  packages: write
-
 env:
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
   DOTNET_NOLOGO: true
@@ -191,3 +187,5 @@ jobs:
       build-configuration: ${{ inputs.build-configuration }}
       version: ${{ inputs.version }}
     secrets: inherit
+    permissions:
+      packages: write

@@ -4,11 +4,6 @@ on:
   release:
     types: [published]
   workflow_dispatch:
-    inputs:
-      version:
-        description: Release version to force on assemblies and packages (for example 1.2.3 or 1.2.3-beta.1)
-        required: true
-        type: string
 
 permissions:
   contents: read
@@ -21,7 +16,6 @@ jobs:
       publish-to-github: true
       publish-to-nuget: true
       upload-codecov: false
-      version: ${{ github.event_name == 'workflow_dispatch' && inputs.version || '' }}
     secrets: inherit
 
 

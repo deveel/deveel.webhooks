@@ -23,11 +23,6 @@ on:
         required: false
         type: string
         default: Release
-      version:
-        description: Optional version override for assemblies and packages
-        required: false
-        type: string
-        default: ""
     secrets:
       codecov_token:
         description: Optional Codecov token
@@ -85,31 +80,11 @@ jobs:
         id: effective-version
         shell: pwsh
         run: |
-          $manualVersion = "${{ inputs.version }}".Trim()
-          if ($manualVersion.StartsWith('v')) {
-            $manualVersion = $manualVersion.Substring(1)
-          }
-
-          if ($manualVersion) {
-            if ($manualVersion -notmatch '^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?(\+[0-9A-Za-z.-]+)?$') {
-              throw "Invalid version format '$manualVersion'. Expected semantic version like 1.2.3 or 1.2.3-beta.1"
-            }
-
-            $assemblyBase = ($manualVersion -replace '[-+].*$', '')
-            $assemblyVersion = "$assemblyBase.0"
-
-            "semver=$manualVersion" >> $env:GITHUB_OUTPUT
-            "nuget_version=$manualVersion" >> $env:GITHUB_OUTPUT
-            "assembly_semver=$assemblyVersion" >> $env:GITHUB_OUTPUT
-            "assembly_filever=$assemblyVersion" >> $env:GITHUB_OUTPUT
-            "informational_version=$manualVersion" >> $env:GITHUB_OUTPUT
-          } else {
-            "semver=${{ steps.gitversion.outputs.SemVer }}" >> $env:GITHUB_OUTPUT
-            "nuget_version=${{ steps.gitversion.outputs.NuGetVersionV2 }}" >> $env:GITHUB_OUTPUT
-            "assembly_semver=${{ steps.gitversion.outputs.AssemblySemVer }}" >> $env:GITHUB_OUTPUT
-            "assembly_filever=${{ steps.gitversion.outputs.AssemblySemFileVer }}" >> $env:GITHUB_OUTPUT
-            "informational_version=${{ steps.gitversion.outputs.InformationalVersion }}" >> $env:GITHUB_OUTPUT
-          }
+          "semver=${{ steps.gitversion.outputs.SemVer }}" >> $env:GITHUB_OUTPUT
+          "nuget_version=${{ steps.gitversion.outputs.NuGetVersionV2 }}" >> $env:GITHUB_OUTPUT
+          "assembly_semver=${{ steps.gitversion.outputs.AssemblySemVer }}" >> $env:GITHUB_OUTPUT
+          "assembly_filever=${{ steps.gitversion.outputs.AssemblySemFileVer }}" >> $env:GITHUB_OUTPUT
+          "informational_version=${{ steps.gitversion.outputs.InformationalVersion }}" >> $env:GITHUB_OUTPUT
 
       - name: Setup .NET ${{ matrix.dotnet }}
         uses: actions/setup-dotnet@v5
@@ -134,7 +109,7 @@ jobs:
 
       - name: Test (Ubuntu, with coverage)
         if: startsWith(matrix.os, 'ubuntu') && inputs.upload-codecov == true
-        run: dotnet test --no-build --verbosity normal -c ${{ inputs.build-configuration }} -f ${{ matrix.dotnet-framework }} /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:CoverletOutput=./TestResults/Coverage/
+        run: dotnet test --no-build --verbosity normal -c ${{ inputs.build-configuration }} -f ${{ matrix.dotnet-framework }} /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:CoverletOutput=${{ github.workspace }}/TestResults/Coverage/ /p:Exclude="[*.XUnit]*,[*.Tests]*"
 
       - name: Test (Windows, no coverage)
         if: startsWith(matrix.os, 'windows') && inputs.upload-codecov == false
@@ -142,14 +117,28 @@ jobs:
 
       - name: Test (Windows, with coverage)
         if: startsWith(matrix.os, 'windows') && inputs.upload-codecov == true
-        run: dotnet test --no-build --verbosity normal -c ${{ inputs.build-configuration }} -f ${{ matrix.dotnet-framework }} --filter "DB!=SQLServer" /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:CoverletOutput=./TestResults/Coverage/
+        run: dotnet test --no-build --verbosity normal -c ${{ inputs.build-configuration }} -f ${{ matrix.dotnet-framework }} --filter "DB!=SQLServer" /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:CoverletOutput=${{ github.workspace }}/TestResults/Coverage/ /p:Exclude="[*.XUnit]*,[*.Tests]*"
+
+      - name: Verify coverage files
+        if: inputs.upload-codecov == true
+        shell: bash
+        run: |
+          echo "Checking for coverage files in TestResults/Coverage/..."
+          if [ -d "TestResults/Coverage" ]; then
+            echo "Directory exists, listing contents:"
+            find TestResults/Coverage -type f -name "*.xml" | head -20
+          else
+            echo "TestResults/Coverage directory not found"
+            echo "Searching for any coverage files in the workspace:"
+            find . -name "*.opencover.xml" 2>/dev/null | head -20
+          fi
 
       - name: Upload coverage artifact
         if: inputs.upload-codecov == true
         uses: actions/upload-artifact@v4
         with:
           name: coverage-${{ matrix.os }}-${{ matrix.dotnet-framework }}
-          path: '**/TestResults/Coverage/coverage.opencover.xml'
+          path: TestResults/Coverage/coverage.opencover.xml
           if-no-files-found: error
 
   coverage:
@@ -185,5 +174,4 @@ jobs:
     with:
       publish-to-nuget: ${{ inputs.publish-to-nuget }}
       build-configuration: ${{ inputs.build-configuration }}
-      version: ${{ inputs.version }}
     secrets: inherit

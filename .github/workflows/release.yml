@@ -15,7 +15,7 @@ jobs:
     with:
       publish-to-github: true
       publish-to-nuget: true
-      upload-codecov: false
+      upload-codecov: true
     secrets: inherit
 
 

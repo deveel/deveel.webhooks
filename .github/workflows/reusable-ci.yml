@@ -109,7 +109,7 @@ jobs:
 
       - name: Test (Ubuntu, with coverage)
         if: startsWith(matrix.os, 'ubuntu') && inputs.upload-codecov == true
-        run: dotnet test --no-build --verbosity normal -c ${{ inputs.build-configuration }} -f ${{ matrix.dotnet-framework }} /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:CoverletOutput="${{ github.workspace }}/TestResults/Coverage/"
+        run: dotnet test --no-build --verbosity normal -c ${{ inputs.build-configuration }} -f ${{ matrix.dotnet-framework }} /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
 
       - name: Test (Windows, no coverage)
         if: startsWith(matrix.os, 'windows') && inputs.upload-codecov == false
@@ -117,58 +117,17 @@ jobs:
 
       - name: Test (Windows, with coverage)
         if: startsWith(matrix.os, 'windows') && inputs.upload-codecov == true
-        run: dotnet test --no-build --verbosity normal -c ${{ inputs.build-configuration }} -f ${{ matrix.dotnet-framework }} --filter "DB!=SQLServer" /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:CoverletOutput="${{ github.workspace }}/TestResults/Coverage/"
-
-      - name: Verify coverage files
-        if: inputs.upload-codecov == true
-        shell: bash
-        run: |
-          echo "Checking for coverage files in TestResults/Coverage/..."
-          if [ -d "TestResults/Coverage" ]; then
-            echo "Directory exists, listing contents:"
-            find TestResults/Coverage -type f -name "*.xml" | head -20
-          else
-            echo "TestResults/Coverage directory not found"
-            echo "Searching for any coverage files in the workspace:"
-            find . -name "*.opencover.xml" 2>/dev/null | head -20
-          fi
-
-      - name: Upload coverage artifact
-        if: inputs.upload-codecov == true
-        uses: actions/upload-artifact@v4
-        with:
-          name: coverage-${{ matrix.os }}-${{ matrix.dotnet-framework }}
-          path: TestResults/Coverage/coverage.opencover.xml
-          if-no-files-found: error
-
-  coverage:
-    name: Coverage
-    needs: build-test
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Download coverage artifacts
-        if: inputs.upload-codecov == true
-        uses: actions/download-artifact@v4
-        with:
-          pattern: coverage-*
-          path: ./coverage
-          merge-multiple: true
+        run: dotnet test --no-build --verbosity normal -c ${{ inputs.build-configuration }} -f ${{ matrix.dotnet-framework }} --filter "DB!=SQLServer" /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
 
       - name: Upload to Codecov
         if: inputs.upload-codecov == true
         uses: codecov/codecov-action@v5
         with:
-          token: ${{ secrets.codecov_token || secrets.CODECOV_TOKEN || secrets.OCM_CODECOV_TOKEN }}
-          files: ./coverage/**/*.opencover.xml
+          token: ${{ secrets.WEBHOOKS_CODECOV_TOKEN }}
           fail_ci_if_error: true
-
-      - name: Coverage not requested
-        if: inputs.upload-codecov == false
-        run: echo "Coverage upload is disabled for this workflow run."
-
+          
   publish:
-    needs: [build-test, coverage]
+    needs: [build-test]
     if: inputs.publish-to-github == true || inputs.publish-to-nuget == true
     uses: ./.github/workflows/publish.yml
     with:

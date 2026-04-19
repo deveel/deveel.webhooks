@@ -124,7 +124,6 @@ jobs:
         uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.WEBHOOKS_CODECOV_TOKEN }}
-          fail_ci_if_error: true
           
   publish:
     needs: [build-test]

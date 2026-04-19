@@ -27,12 +27,12 @@ namespace Deveel.Webhooks
             }
         }
 
-        async Task IAsyncLifetime.DisposeAsync()
+        async ValueTask IAsyncDisposable.DisposeAsync()
         {
             await _container.DisposeAsync();
         }
 
-        async Task IAsyncLifetime.InitializeAsync()
+        async ValueTask IAsyncLifetime.InitializeAsync()
         {
             await _container.StartAsync();
         }

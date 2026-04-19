@@ -10,6 +10,7 @@ permissions:
 
 jobs:
   ci:
+    name: "Build and Test"
     uses: ./.github/workflows/reusable-ci.yml
     with:
       publish-to-github: false

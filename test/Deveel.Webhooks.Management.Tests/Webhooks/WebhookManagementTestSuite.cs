@@ -1,6 +1,4 @@
-﻿using System.Security.Principal;
-
-using Bogus;
+﻿using Bogus;
 
 using Deveel.Data;
 
@@ -8,7 +6,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 using Xunit;
-using Xunit.Abstractions;
 
 namespace Deveel.Webhooks {
 	public abstract class WebhookManagementTestSuite<TSubscription, TKey> : IAsyncLifetime 
@@ -82,7 +79,7 @@ namespace Deveel.Webhooks {
 			await repository.RemoveRangeAsync(Subscriptions!);
 		}
 
-		async Task IAsyncLifetime.InitializeAsync() {
+		async ValueTask IAsyncLifetime.InitializeAsync() {
 			Subscriptions = GenerateSubscriptions(120);
 
 			Services = BuildServices();
@@ -91,15 +88,15 @@ namespace Deveel.Webhooks {
 			await InitializeAsync();
 		}
 
-		protected virtual async Task InitializeAsync() {
+		protected virtual async ValueTask InitializeAsync() {
 			await SeedAsync(Repository);
 		}
 
-		protected async virtual Task DisposeAsync() {
+		protected async virtual ValueTask DisposeAsync() {
 			await ClearAsync(Repository);
 		}
 
-		async Task IAsyncLifetime.DisposeAsync() {
+		async ValueTask IAsyncDisposable.DisposeAsync() {
 			await DisposeAsync();
 
 			Scope?.Dispose();

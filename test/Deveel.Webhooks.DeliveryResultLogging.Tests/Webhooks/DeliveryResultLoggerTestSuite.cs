@@ -3,8 +3,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
-using Xunit.Abstractions;
-
 namespace Deveel.Webhooks {
 	public abstract class DeliveryResultLoggerTestSuite : IAsyncLifetime {
 		protected DeliveryResultLoggerTestSuite(ITestOutputHelper testOutput) {
@@ -37,7 +35,7 @@ namespace Deveel.Webhooks {
 			return services.BuildServiceProvider();
 		}
 
-		async Task IAsyncLifetime.InitializeAsync() {
+		async ValueTask IAsyncLifetime.InitializeAsync() {
 			Services = BuildServices();
 			Scope = Services.CreateScope();
 
@@ -48,7 +46,7 @@ namespace Deveel.Webhooks {
 			return Task.CompletedTask;
 		}
 
-		async Task IAsyncLifetime.DisposeAsync() {
+		async ValueTask IAsyncDisposable.DisposeAsync() {
 			await DisposeAsync();
 
 			Scope?.Dispose();
@@ -57,8 +55,8 @@ namespace Deveel.Webhooks {
 			Services = null;
 		}
 
-		protected virtual Task DisposeAsync() {
-			return Task.CompletedTask;
+		protected virtual ValueTask DisposeAsync() {
+			return ValueTask.CompletedTask;
 		}
 
 		protected virtual void ConfigureService(IServiceCollection services) {

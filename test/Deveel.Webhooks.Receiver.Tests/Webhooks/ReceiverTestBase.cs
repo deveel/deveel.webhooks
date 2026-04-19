@@ -20,7 +20,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Primitives;
 
-using Xunit.Abstractions;
+using Xunit;
 
 namespace Deveel.Webhooks {
 	public abstract class ReceiverTestBase<TWebhook> where TWebhook : class {

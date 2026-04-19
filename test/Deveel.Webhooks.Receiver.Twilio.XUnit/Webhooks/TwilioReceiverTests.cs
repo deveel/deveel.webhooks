@@ -18,8 +18,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Primitives;
 
-using Xunit.Abstractions;
-
 namespace Deveel.Webhooks {
 	public sealed class TwilioReceiverTests : ReceiverTestBase<TwilioWebhook> {
 		public TwilioReceiverTests(ITestOutputHelper outputHelper) : base(outputHelper) {

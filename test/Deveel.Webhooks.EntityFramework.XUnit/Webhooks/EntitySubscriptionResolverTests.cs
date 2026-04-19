@@ -2,8 +2,6 @@
 
 using Microsoft.Extensions.DependencyInjection;
 
-using Xunit.Abstractions;
-
 namespace Deveel.Webhooks
 {
     public abstract class EntitySubscriptionResolverTests : EntityWebhookTestBase {
@@ -18,7 +16,7 @@ namespace Deveel.Webhooks
 
 		public IWebhookSubscriptionResolver Resolver => Services.GetRequiredService<IWebhookSubscriptionResolver>();
 
-		public override async Task InitializeAsync() {
+		public override async ValueTask InitializeAsync() {
 			await base.InitializeAsync();
 
 			Subscriptions = new DbWebhookSubscriptionFaker().Generate(102);
@@ -26,7 +24,7 @@ namespace Deveel.Webhooks
 			await Repository.AddRangeAsync(Subscriptions);
 		}
 
-		public override async Task DisposeAsync() {
+		public override async ValueTask DisposeAsync() {
 			await Repository.RemoveRangeAsync(Subscriptions);
 
 			await base.DisposeAsync();

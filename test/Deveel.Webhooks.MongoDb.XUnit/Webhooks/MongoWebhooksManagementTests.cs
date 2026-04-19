@@ -3,8 +3,6 @@
 using MongoDB.Bson;
 using MongoDB.Driver;
 
-using Xunit.Abstractions;
-
 namespace Deveel.Webhooks {
 	[Collection(nameof(MongoWebhookManagementTestCollection))]
 	public class MongoWebhooksManagementTests : WebhookManagementTestSuite<MongoWebhookSubscription, ObjectId> {
@@ -30,7 +28,7 @@ namespace Deveel.Webhooks {
 			options.UseMongoDb(db => db.WithConnectionString(ConnectionString));
 		}
 
-		protected override async Task DisposeAsync() {
+		protected override async ValueTask DisposeAsync() {
 			await MongoClient.GetDatabase(MongoTestDatabase.DefaultDatabaseName)
 				.DropCollectionAsync(MongoDbWebhookStorageConstants.SubscriptionCollectionName);
 		}

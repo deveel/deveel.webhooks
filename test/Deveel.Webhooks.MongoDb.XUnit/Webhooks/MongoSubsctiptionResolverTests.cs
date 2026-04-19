@@ -3,9 +3,6 @@
 using Microsoft.Extensions.DependencyInjection;
 
 using MongoDB.Bson;
-using MongoDB.Driver;
-
-using Xunit.Abstractions;
 
 namespace Deveel.Webhooks {
 	public class MongoSubsctiptionResolverTests : MongoDbWebhookTestBase {
@@ -20,7 +17,7 @@ namespace Deveel.Webhooks {
 
 		public IWebhookSubscriptionResolver Resolver => Scope.ServiceProvider.GetRequiredService<IWebhookSubscriptionResolver>();
 
-		public override async Task InitializeAsync() {
+		public override async ValueTask InitializeAsync() {
 			await base.InitializeAsync();
 
 			Subscriptions = new MongoWebhookSubscriptionFaker().Generate(102);
@@ -28,7 +25,7 @@ namespace Deveel.Webhooks {
 			await Repository.AddRangeAsync(Subscriptions);
 		}
 
-		public override async Task DisposeAsync() {
+		public override async ValueTask DisposeAsync() {
 			await Repository.RemoveRangeAsync(Subscriptions);
 
 			await base.DisposeAsync();

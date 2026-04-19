@@ -3,8 +3,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
-using Xunit.Abstractions;
-
 namespace Deveel.Webhooks {
 	public abstract class EntityWebhookManagementTests : WebhookManagementTestSuite<DbWebhookSubscription, string> {
         protected EntityWebhookManagementTests(ITestOutputHelper testOutput) : base(testOutput)
@@ -15,7 +13,7 @@ namespace Deveel.Webhooks {
 
 		protected override string GenerateSubscriptionKey() => Guid.NewGuid().ToString();
 
-		protected override async Task InitializeAsync() {
+		protected override async ValueTask InitializeAsync() {
 			var options = Services!.GetRequiredService<DbContextOptions<WebhookDbContext>>();
 
 			using var context = new WebhookDbContext(options);
@@ -26,7 +24,7 @@ namespace Deveel.Webhooks {
 			await base.InitializeAsync();
 		}
 
-		protected override async Task DisposeAsync() {
+		protected override async ValueTask DisposeAsync() {
 			var options = Services!.GetRequiredService<DbContextOptions<WebhookDbContext>>();
 
 			using var context = new WebhookDbContext(options);

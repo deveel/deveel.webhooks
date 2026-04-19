@@ -15,16 +15,10 @@
 #pragma warning disable CS8604 // Possible null reference argument.
 #pragma warning disable CS8602 // Dereference of a possibly null reference.
 
-
-using System.Text.Json;
-
 using Deveel.Webhooks.Facebook;
 
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-
-using Xunit.Abstractions;
 
 namespace Deveel.Webhooks {
 	public class FacebookWebhookTests : ReceiverTestBase<FacebookWebhook> {

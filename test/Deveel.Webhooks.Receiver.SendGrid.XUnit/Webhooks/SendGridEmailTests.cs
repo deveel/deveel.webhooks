@@ -18,10 +18,7 @@ using System.Text;
 using Deveel.Webhooks.SendGrid;
 
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Primitives;
-
-using Xunit.Abstractions;
 
 namespace Deveel.Webhooks {
 	public sealed class SendGridEmailTests : ReceiverTestBase<SendGridEmail> {

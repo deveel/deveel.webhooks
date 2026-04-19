@@ -31,11 +31,11 @@ namespace Deveel.Webhooks {
 			return connectionString;
 		}
 
-		public async Task InitializeAsync() {
+		public async ValueTask InitializeAsync() {
 			await container.StartAsync();
 		}
 
-		public async Task DisposeAsync() {
+		public async ValueTask DisposeAsync() {
 			if (!disposed) {
 				await container.StopAsync();
 				await container.DisposeAsync();

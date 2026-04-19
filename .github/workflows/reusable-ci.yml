@@ -1,0 +1,189 @@
+name: Reusable CI
+
+on:
+  workflow_call:
+    inputs:
+      publish-to-github:
+        description: Publish packages to GitHub Packages
+        required: false
+        type: boolean
+        default: false
+      publish-to-nuget:
+        description: Publish packages to NuGet.org
+        required: false
+        type: boolean
+        default: false
+      upload-codecov:
+        description: Upload test coverage to Codecov
+        required: false
+        type: boolean
+        default: false
+      build-configuration:
+        description: Build configuration
+        required: false
+        type: string
+        default: Release
+      version:
+        description: Optional version override for assemblies and packages
+        required: false
+        type: string
+        default: ""
+    secrets:
+      codecov_token:
+        description: Optional Codecov token
+        required: false
+
+env:
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+  DOTNET_NOLOGO: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+
+jobs:
+  build-test:
+    name: Build and Test (${{ matrix.os }} - ${{ matrix.dotnet-framework }})
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: true
+      matrix:
+        include:
+          - dotnet: 8.0.x
+            dotnet-framework: net8.0
+            os: ubuntu-latest
+          - dotnet: 8.0.x
+            dotnet-framework: net8.0
+            os: windows-latest
+          - dotnet: 9.0.x
+            dotnet-framework: net9.0
+            os: ubuntu-latest
+          - dotnet: 9.0.x
+            dotnet-framework: net9.0
+            os: windows-latest
+          - dotnet: 10.0.x
+            dotnet-framework: net10.0
+            os: ubuntu-latest
+          - dotnet: 10.0.x
+            dotnet-framework: net10.0
+            os: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Install GitVersion
+        uses: gittools/actions/gitversion/setup@v4
+        with:
+          versionSpec: 6.x
+
+      - name: Determine Version
+        id: gitversion
+        uses: gittools/actions/gitversion/execute@v4
+
+      - name: Resolve effective version values
+        id: effective-version
+        shell: pwsh
+        run: |
+          $manualVersion = "${{ inputs.version }}".Trim()
+          if ($manualVersion.StartsWith('v')) {
+            $manualVersion = $manualVersion.Substring(1)
+          }
+
+          if ($manualVersion) {
+            if ($manualVersion -notmatch '^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?(\+[0-9A-Za-z.-]+)?$') {
+              throw "Invalid version format '$manualVersion'. Expected semantic version like 1.2.3 or 1.2.3-beta.1"
+            }
+
+            $assemblyBase = ($manualVersion -replace '[-+].*$', '')
+            $assemblyVersion = "$assemblyBase.0"
+
+            "semver=$manualVersion" >> $env:GITHUB_OUTPUT
+            "nuget_version=$manualVersion" >> $env:GITHUB_OUTPUT
+            "assembly_semver=$assemblyVersion" >> $env:GITHUB_OUTPUT
+            "assembly_filever=$assemblyVersion" >> $env:GITHUB_OUTPUT
+            "informational_version=$manualVersion" >> $env:GITHUB_OUTPUT
+          } else {
+            "semver=${{ steps.gitversion.outputs.SemVer }}" >> $env:GITHUB_OUTPUT
+            "nuget_version=${{ steps.gitversion.outputs.NuGetVersionV2 }}" >> $env:GITHUB_OUTPUT
+            "assembly_semver=${{ steps.gitversion.outputs.AssemblySemVer }}" >> $env:GITHUB_OUTPUT
+            "assembly_filever=${{ steps.gitversion.outputs.AssemblySemFileVer }}" >> $env:GITHUB_OUTPUT
+            "informational_version=${{ steps.gitversion.outputs.InformationalVersion }}" >> $env:GITHUB_OUTPUT
+          }
+
+      - name: Setup .NET ${{ matrix.dotnet }}
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: ${{ matrix.dotnet }}
+
+      - name: Restore dependencies
+        run: dotnet restore -p:TargetFramework=${{ matrix.dotnet-framework }}
+
+      - name: Build
+        run: dotnet build --no-restore -c ${{ inputs.build-configuration }} -f ${{ matrix.dotnet-framework }}
+        env:
+          GitVersion_SemVer: ${{ steps.effective-version.outputs.semver }}
+          GitVersion_AssemblySemVer: ${{ steps.effective-version.outputs.assembly_semver }}
+          GitVersion_AssemblySemFileVer: ${{ steps.effective-version.outputs.assembly_filever }}
+          GitVersion_InformationalVersion: ${{ steps.effective-version.outputs.informational_version }}
+          GitVersion_NuGetVersion: ${{ steps.effective-version.outputs.nuget_version }}
+
+      - name: Test (Ubuntu, no coverage)
+        if: startsWith(matrix.os, 'ubuntu') && inputs.upload-codecov == false
+        run: dotnet test --no-build --verbosity normal -c ${{ inputs.build-configuration }} -f ${{ matrix.dotnet-framework }}
+
+      - name: Test (Ubuntu, with coverage)
+        if: startsWith(matrix.os, 'ubuntu') && inputs.upload-codecov == true
+        run: dotnet test --no-build --verbosity normal -c ${{ inputs.build-configuration }} -f ${{ matrix.dotnet-framework }} /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:CoverletOutput=./TestResults/Coverage/
+
+      - name: Test (Windows, no coverage)
+        if: startsWith(matrix.os, 'windows') && inputs.upload-codecov == false
+        run: dotnet test --no-build --verbosity normal -c ${{ inputs.build-configuration }} -f ${{ matrix.dotnet-framework }} --filter "DB!=SQLServer"
+
+      - name: Test (Windows, with coverage)
+        if: startsWith(matrix.os, 'windows') && inputs.upload-codecov == true
+        run: dotnet test --no-build --verbosity normal -c ${{ inputs.build-configuration }} -f ${{ matrix.dotnet-framework }} --filter "DB!=SQLServer" /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:CoverletOutput=./TestResults/Coverage/
+
+      - name: Upload coverage artifact
+        if: inputs.upload-codecov == true
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-${{ matrix.os }}-${{ matrix.dotnet-framework }}
+          path: '**/TestResults/Coverage/coverage.opencover.xml'
+          if-no-files-found: error
+
+  coverage:
+    name: Coverage
+    needs: build-test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download coverage artifacts
+        if: inputs.upload-codecov == true
+        uses: actions/download-artifact@v4
+        with:
+          pattern: coverage-*
+          path: ./coverage
+          merge-multiple: true
+
+      - name: Upload to Codecov
+        if: inputs.upload-codecov == true
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.codecov_token || secrets.CODECOV_TOKEN || secrets.OCM_CODECOV_TOKEN }}
+          files: ./coverage/**/*.opencover.xml
+          fail_ci_if_error: true
+
+      - name: Coverage not requested
+        if: inputs.upload-codecov == false
+        run: echo "Coverage upload is disabled for this workflow run."
+
+  publish:
+    needs: [build-test, coverage]
+    if: inputs.publish-to-github == true || inputs.publish-to-nuget == true
+    uses: ./.github/workflows/publish.yml
+    with:
+      publish-to-nuget: ${{ inputs.publish-to-nuget }}
+      build-configuration: ${{ inputs.build-configuration }}
+      version: ${{ inputs.version }}
+    secrets: inherit

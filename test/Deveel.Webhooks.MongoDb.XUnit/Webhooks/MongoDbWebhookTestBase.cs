@@ -6,8 +6,6 @@ using Microsoft.Extensions.Logging;
 using MongoDB.Bson;
 using MongoDB.Driver;
 
-using Xunit.Abstractions;
-
 namespace Deveel.Webhooks {
 	[Collection(nameof(MongoTestCollection))]
 	public abstract class MongoDbWebhookTestBase : IAsyncLifetime {
@@ -34,14 +32,14 @@ namespace Deveel.Webhooks {
 
 		protected MongoClient Client { get; }
 
-		public virtual async Task InitializeAsync() {
+		public virtual async ValueTask InitializeAsync() {
 			await Client.GetDatabase(DatabasseName)
 				.CreateCollectionAsync(MongoDbWebhookStorageConstants.SubscriptionCollectionName);
 			await Client.GetDatabase(DatabasseName)
 				.CreateCollectionAsync(MongoDbWebhookStorageConstants.DeliveryResultsCollectionName);
 		}
 
-		public virtual async Task DisposeAsync() {
+		public virtual async ValueTask DisposeAsync() {
 			await Client.GetDatabase(DatabasseName)
 				.DropCollectionAsync(MongoDbWebhookStorageConstants.SubscriptionCollectionName);
 			await Client.GetDatabase(DatabasseName)

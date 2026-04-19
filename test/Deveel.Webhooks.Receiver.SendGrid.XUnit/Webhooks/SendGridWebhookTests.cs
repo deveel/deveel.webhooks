@@ -17,8 +17,6 @@ using Deveel.Webhooks.SendGrid;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 
-using Xunit.Abstractions;
-
 namespace Deveel.Webhooks {
 	public class SendGridWebhookTests : ReceiverTestBase<SendGridWebhook> {
 		public SendGridWebhookTests(ITestOutputHelper outputHelper) : base(outputHelper) {

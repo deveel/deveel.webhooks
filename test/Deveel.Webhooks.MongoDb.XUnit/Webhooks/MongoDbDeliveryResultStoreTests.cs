@@ -6,8 +6,6 @@ using Microsoft.Extensions.DependencyInjection;
 
 using MongoDB.Bson;
 
-using Xunit.Abstractions;
-
 namespace Deveel.Webhooks {
     public class MongoDbDeliveryResultStoreTests : MongoDbWebhookTestBase {
         private readonly Faker<MongoWebhookDeliveryResult> faker;
@@ -54,7 +52,7 @@ namespace Deveel.Webhooks {
         private IWebhookDeliveryResultRepository<MongoWebhookDeliveryResult, ObjectId> Repository
             => ScopeServices.GetRequiredService<IWebhookDeliveryResultRepository<MongoWebhookDeliveryResult, ObjectId>>();
 
-        public override async Task InitializeAsync() {
+        public override async ValueTask InitializeAsync() {
             await base.InitializeAsync();
 
             var fakes = faker.Generate(112).ToList();

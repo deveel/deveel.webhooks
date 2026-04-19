@@ -8,8 +8,4 @@
     <ProjectReference Include="..\..\src\Deveel.Webhooks.Receiver.SendGrid\Deveel.Webhooks.Receiver.SendGrid.csproj" />
     <ProjectReference Include="..\..\test\Deveel.Webhooks.Receiver.Tests\Deveel.Webhooks.Receiver.Tests.csproj" />
   </ItemGroup>
-
-  <ItemGroup>
-    <None Include="..\..\apl-2.licenseheader" Link="apl-2.licenseheader" />
-  </ItemGroup>
 </Project>

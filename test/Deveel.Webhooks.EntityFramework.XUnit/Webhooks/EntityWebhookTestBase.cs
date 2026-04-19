@@ -6,8 +6,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
-using Xunit.Abstractions;
-
 namespace Deveel.Webhooks {
     public abstract class EntityWebhookTestBase : IAsyncLifetime {
         private readonly ITestOutputHelper outputHelper;
@@ -45,14 +43,14 @@ namespace Deveel.Webhooks {
             
         }
 
-        public virtual async Task DisposeAsync() {
+        public virtual async ValueTask DisposeAsync() {
             var options = Services.GetRequiredService<DbContextOptions<WebhookDbContext>>();
 
             using var context = new WebhookDbContext(options);
             await context.Database.EnsureDeletedAsync();
         }
 
-        public virtual async Task InitializeAsync() {
+        public virtual async ValueTask InitializeAsync() {
             Services = BuildServiceProvider();
 
             var options = Services.GetRequiredService<DbContextOptions<WebhookDbContext>>();

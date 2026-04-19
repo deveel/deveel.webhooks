@@ -23,7 +23,6 @@ using Microsoft.Extensions.Logging;
 
 using RichardSzalay.MockHttp;
 
-using Xunit.Abstractions;
 
 namespace Deveel.Webhooks {
 	public class WebhookSenderTests : IDisposable {
@@ -47,7 +46,7 @@ namespace Deveel.Webhooks {
 				TestWebhook? webhook;
 
 				if (request.Content!.Headers!.ContentType!.MediaType == WebhookSenderDefaults.JsonContentType) {
-					webhook = await request.Content!.ReadFromJsonAsync<TestWebhook>();
+					webhook = await request.Content!.ReadFromJsonAsync<TestWebhook>(TestContext.Current.CancellationToken);
 				} else if (request.Content.Headers.ContentType.MediaType == WebhookSenderDefaults.XmlContentType) {
 					var xml = await request.Content!.ReadAsStringAsync();
 					var serializer = new XmlSerializer(typeof(TestWebhook));
@@ -79,7 +78,7 @@ namespace Deveel.Webhooks {
 				.Respond(async request => {
 					lastRequest = request;
 					lastWebhook = await readContent(request);
-					await Task.Delay(TimeSpan.FromMilliseconds(retryTimeoutMs + 100));
+					await Task.Delay(TimeSpan.FromMilliseconds(retryTimeoutMs + 100), TestContext.Current.CancellationToken);
 
 					return new HttpResponseMessage(HttpStatusCode.OK);
 				});

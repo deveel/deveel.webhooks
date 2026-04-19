@@ -1,7 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-using Xunit.Abstractions;
-
 namespace Deveel.Webhooks
 {
     [Collection(nameof(SqliteTestCollection))]

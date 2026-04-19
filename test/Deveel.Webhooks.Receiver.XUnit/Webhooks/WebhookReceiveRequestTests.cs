@@ -12,13 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
 using System.Net;
-using System.Net.Http;
 using System.Text;
-using System.Threading.Tasks;
 
-using Deveel.Webhooks.Handlers;
 using Deveel.Webhooks.Model;
 using Deveel.Webhooks.Receiver.TestApi;
 
@@ -32,7 +28,8 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
 using Xunit;
-using Xunit.Abstractions;
+
+using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace Deveel.Webhooks {
 	public class WebhookReceiveRequestTests : IDisposable {
@@ -64,7 +61,7 @@ namespace Deveel.Webhooks {
 			var client = CreateClient();
 
 			var response = await client.SendAsync(new HttpRequestMessage(HttpMethod.Post, "/webhook") {
-				Content = new StringContent(System.Text.Json.JsonSerializer.Serialize(new TestWebhook {
+				Content = new StringContent(JsonSerializer.Serialize(new TestWebhook {
 					Id = Guid.NewGuid().ToString("N"),
 					Event = "test",
 					TimeStamp = DateTimeOffset.Now,
@@ -83,7 +80,7 @@ namespace Deveel.Webhooks {
             var client = CreateClient();
 
             var response = await client.SendAsync(new HttpRequestMessage(HttpMethod.Post, "/webhook/seq") {
-                Content = new StringContent(System.Text.Json.JsonSerializer.Serialize(new TestWebhook {
+                Content = new StringContent(JsonSerializer.Serialize(new TestWebhook {
                     Id = Guid.NewGuid().ToString("N"),
                     Event = "test",
                     TimeStamp = DateTimeOffset.Now,
@@ -103,7 +100,7 @@ namespace Deveel.Webhooks {
 			var client = CreateClient();
 
 			var response = await client.SendAsync(new HttpRequestMessage(HttpMethod.Post, "/webhook/handled") {
-				Content = new StringContent(System.Text.Json.JsonSerializer.Serialize(new TestWebhook {
+				Content = new StringContent(JsonSerializer.Serialize(new TestWebhook {
 					Id = Guid.NewGuid().ToString("N"),
 					Event = "test",
 					TimeStamp = DateTimeOffset.Now,
@@ -121,7 +118,7 @@ namespace Deveel.Webhooks {
 			var client = CreateClient();
 
 			var response = await client.SendAsync(new HttpRequestMessage(HttpMethod.Post, "/webhook/handled/async") {
-				Content = new StringContent(System.Text.Json.JsonSerializer.Serialize(new TestWebhook {
+				Content = new StringContent(JsonSerializer.Serialize(new TestWebhook {
 					Id = Guid.NewGuid().ToString("N"),
 					Event = "test",
 					TimeStamp = DateTimeOffset.Now,

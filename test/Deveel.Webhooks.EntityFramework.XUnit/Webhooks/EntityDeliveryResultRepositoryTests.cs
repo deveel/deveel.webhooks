@@ -5,8 +5,6 @@ using Deveel.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
-using Xunit.Abstractions;
-
 namespace Deveel.Webhooks {
 	public abstract class EntityDeliveryResultRepositoryTests : EntityWebhookTestBase {
         private readonly Faker<DbWebhookDeliveryResult> resultFaker;
@@ -22,7 +20,7 @@ namespace Deveel.Webhooks {
         private IWebhookDeliveryResultRepository<DbWebhookDeliveryResult,int> Repository
             => Services.GetRequiredService<IWebhookDeliveryResultRepository<DbWebhookDeliveryResult, int>>();
 
-		public override async Task InitializeAsync() {
+		public override async ValueTask InitializeAsync() {
             await base.InitializeAsync();
 
             var options = Services.GetRequiredService<DbContextOptions<WebhookDbContext>>();
@@ -43,7 +41,7 @@ namespace Deveel.Webhooks {
             // await Repository.AddRangeAsync(results);
         }
 
-        public override async Task DisposeAsync()
+        public override async ValueTask DisposeAsync()
         {
             var options = Services.GetRequiredService<DbContextOptions<WebhookDbContext>>();
             using var context = new WebhookDbContext(options);

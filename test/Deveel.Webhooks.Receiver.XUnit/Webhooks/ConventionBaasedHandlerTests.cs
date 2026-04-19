@@ -25,7 +25,6 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
 using Xunit;
-using Xunit.Abstractions;
 
 namespace Deveel.Webhooks {
 	public sealed class ConventionBaasedHandlerTests : ReceiverTestBase<TestWebhook> {

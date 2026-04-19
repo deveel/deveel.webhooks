@@ -19,7 +19,6 @@ using System.Text.Json;
 using Microsoft.Extensions.DependencyInjection;
 
 using Xunit;
-using Xunit.Abstractions;
 
 namespace Deveel.Webhooks {
 	public class WebhookNotifierTests : WebhookServiceTestBase {

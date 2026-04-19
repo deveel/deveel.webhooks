@@ -13,10 +13,12 @@ on:
         required: false
         type: string
         default: 'Release'
+      version:
+        description: 'Optional version override to force package and assembly versions'
+        required: false
+        type: string
+        default: ''
 
-permissions:
-  contents: read
-  packages: write
 
 env:
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
@@ -29,11 +31,11 @@ jobs:
     runs-on: ubuntu-latest
     
     outputs:
-      version: ${{ steps.gitversion.outputs.SemVer }}
-      nuget-version: ${{ steps.gitversion.outputs.NuGetVersion }}
-      assembly-version: ${{ steps.gitversion.outputs.AssemblySemVer }}
-      file-version: ${{ steps.gitversion.outputs.AssemblySemFileVer }}
-      informational-version: ${{ steps.gitversion.outputs.InformationalVersion }}
+      version: ${{ steps.effective-version.outputs.semver }}
+      nuget-version: ${{ steps.effective-version.outputs.nuget_version }}
+      assembly-version: ${{ steps.effective-version.outputs.assembly_semver }}
+      file-version: ${{ steps.effective-version.outputs.assembly_filever }}
+      informational-version: ${{ steps.effective-version.outputs.informational_version }}
       packages-published-to-nuget: ${{ steps.publish-nuget.outputs.published }}
     
     steps:
@@ -53,22 +55,52 @@ jobs:
       with:
         useConfigFile: true
 
+    - name: Resolve effective version values
+      id: effective-version
+      shell: pwsh
+      run: |
+        $manualVersion = "${{ inputs.version }}".Trim()
+        if ($manualVersion.StartsWith('v')) {
+          $manualVersion = $manualVersion.Substring(1)
+        }
+
+        if ($manualVersion) {
+          if ($manualVersion -notmatch '^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?(\+[0-9A-Za-z.-]+)?$') {
+            throw "Invalid version format '$manualVersion'. Expected semantic version like 1.2.3 or 1.2.3-beta.1"
+          }
+
+          $assemblyBase = ($manualVersion -replace '[-+].*$', '')
+          $assemblyVersion = "$assemblyBase.0"
+
+          "semver=$manualVersion" >> $env:GITHUB_OUTPUT
+          "nuget_version=$manualVersion" >> $env:GITHUB_OUTPUT
+          "assembly_semver=$assemblyVersion" >> $env:GITHUB_OUTPUT
+          "assembly_filever=$assemblyVersion" >> $env:GITHUB_OUTPUT
+          "informational_version=$manualVersion" >> $env:GITHUB_OUTPUT
+        } else {
+          "semver=${{ steps.gitversion.outputs.SemVer }}" >> $env:GITHUB_OUTPUT
+          "nuget_version=${{ steps.gitversion.outputs.NuGetVersion }}" >> $env:GITHUB_OUTPUT
+          "assembly_semver=${{ steps.gitversion.outputs.AssemblySemVer }}" >> $env:GITHUB_OUTPUT
+          "assembly_filever=${{ steps.gitversion.outputs.AssemblySemFileVer }}" >> $env:GITHUB_OUTPUT
+          "informational_version=${{ steps.gitversion.outputs.InformationalVersion }}" >> $env:GITHUB_OUTPUT
+        }
+
     - name: Display Version Information
       run: |
-        echo "🏷️ Version: ${{ steps.gitversion.outputs.SemVer }}"
-        echo "📦 NuGet Version: ${{ steps.gitversion.outputs.NuGetVersion }}"
-        echo "🔢 Assembly Version: ${{ steps.gitversion.outputs.AssemblySemVer }}"
-        echo "📄 File Version: ${{ steps.gitversion.outputs.AssemblySemFileVer }}"
-        echo "ℹ️ Informational Version: ${{ steps.gitversion.outputs.InformationalVersion }}"
+        echo "🏷️ Version: ${{ steps.effective-version.outputs.semver }}"
+        echo "📦 NuGet Version: ${{ steps.effective-version.outputs.nuget_version }}"
+        echo "🔢 Assembly Version: ${{ steps.effective-version.outputs.assembly_semver }}"
+        echo "📄 File Version: ${{ steps.effective-version.outputs.assembly_filever }}"
+        echo "ℹ️ Informational Version: ${{ steps.effective-version.outputs.informational_version }}"
         echo "🚀 Publish to NuGet: ${{ inputs.publish-to-nuget }}"
 
     - name: Setup .NET
-      uses: actions/setup-dotnet@v4
+      uses: actions/setup-dotnet@v5
       with:
         dotnet-version: |
-          6.0.x
-          7.0.x
           8.0.x
+          9.0.x
+          10.0.x
 
     - name: Restore Dependencies
       run: dotnet restore
@@ -76,11 +108,11 @@ jobs:
     - name: Pack Packages
       run: dotnet pack --configuration ${{ inputs.build-configuration }} --include-symbols --output ./nuget
       env:
-        GitVersion_SemVer: ${{ steps.gitversion.outputs.SemVer }}
-        GitVersion_AssemblySemVer: ${{ steps.gitversion.outputs.AssemblySemVer }}
-        GitVersion_AssemblySemFileVer: ${{ steps.gitversion.outputs.AssemblySemFileVer }}
-        GitVersion_InformationalVersion: ${{ steps.gitversion.outputs.InformationalVersion }}
-        GitVersion_NuGetVersion: ${{ steps.gitversion.outputs.NuGetVersion }}
+        GitVersion_SemVer: ${{ steps.effective-version.outputs.semver }}
+        GitVersion_AssemblySemVer: ${{ steps.effective-version.outputs.assembly_semver }}
+        GitVersion_AssemblySemFileVer: ${{ steps.effective-version.outputs.assembly_filever }}
+        GitVersion_InformationalVersion: ${{ steps.effective-version.outputs.informational_version }}
+        GitVersion_NuGetVersion: ${{ steps.effective-version.outputs.nuget_version }}
 
     - name: List Generated Packages
       run: |
@@ -117,7 +149,7 @@ jobs:
     - name: Upload Package Artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: nuget-packages-${{ steps.gitversion.outputs.NuGetVersion }}
+        name: nuget-packages-${{ steps.effective-version.outputs.nuget_version }}
         path: ./nuget/*.nupkg
         retention-days: 7
 

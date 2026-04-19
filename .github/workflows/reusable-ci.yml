@@ -187,5 +187,3 @@ jobs:
       build-configuration: ${{ inputs.build-configuration }}
       version: ${{ inputs.version }}
     secrets: inherit
-    permissions:
-      packages: write

@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <IsTestProject>false</IsTestProject>
-    <TestProject>false</TestProject>
+    <OutputType>Library</OutputType>
   </PropertyGroup>
 
   <ItemGroup>

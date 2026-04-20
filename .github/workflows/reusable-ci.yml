@@ -113,11 +113,11 @@ jobs:
 
       - name: Test (Windows, no coverage)
         if: startsWith(matrix.os, 'windows') && inputs.upload-codecov == false
-        run: dotnet test --no-build -c ${{ inputs.build-configuration }} -f ${{ matrix.dotnet-framework }} --filter "DB!=SQLServer"
+        run: dotnet test --no-build --verbosity normal -c ${{ inputs.build-configuration }} -f ${{ matrix.dotnet-framework }} -- --filter-trait "DB!=SQLServer"
 
       - name: Test (Windows, with coverage)
         if: startsWith(matrix.os, 'windows') && inputs.upload-codecov == true
-        run: dotnet test --no-build -c ${{ inputs.build-configuration }} -f ${{ matrix.dotnet-framework }} --filter "DB!=SQLServer" -- --coverage --coverage-output-format cobertura
+        run: dotnet test --no-build --verbosity normal -c ${{ inputs.build-configuration }} -f ${{ matrix.dotnet-framework }} -- --filter-trait "DB!=SQLServer" --coverage --coverage-output-format cobertura
 
       - name: Upload to Codecov
         if: inputs.upload-codecov == true

@@ -105,25 +105,27 @@ jobs:
 
       - name: Test (Ubuntu, no coverage)
         if: startsWith(matrix.os, 'ubuntu') && inputs.upload-codecov == false
-        run: dotnet test --no-build --verbosity normal -c ${{ inputs.build-configuration }} -f ${{ matrix.dotnet-framework }}
+        run: dotnet test --no-build -c ${{ inputs.build-configuration }} -f ${{ matrix.dotnet-framework }}
 
       - name: Test (Ubuntu, with coverage)
         if: startsWith(matrix.os, 'ubuntu') && inputs.upload-codecov == true
-        run: dotnet test --no-build --verbosity normal -c ${{ inputs.build-configuration }} -f ${{ matrix.dotnet-framework }} -- --coverage --coverage-output-format cobertura
+        run: dotnet test --no-build -c ${{ inputs.build-configuration }} -f ${{ matrix.dotnet-framework }} -- --coverage --coverage-output-format cobertura
 
       - name: Test (Windows, no coverage)
         if: startsWith(matrix.os, 'windows') && inputs.upload-codecov == false
-        run: dotnet test --no-build --verbosity normal -c ${{ inputs.build-configuration }} -f ${{ matrix.dotnet-framework }} --filter "DB!=SQLServer"
+        run: dotnet test --no-build -c ${{ inputs.build-configuration }} -f ${{ matrix.dotnet-framework }} --filter "DB!=SQLServer"
 
       - name: Test (Windows, with coverage)
         if: startsWith(matrix.os, 'windows') && inputs.upload-codecov == true
-        run: dotnet test --no-build --verbosity normal -c ${{ inputs.build-configuration }} -f ${{ matrix.dotnet-framework }} --filter "DB!=SQLServer" -- --coverage --coverage-output-format cobertura
+        run: dotnet test --no-build -c ${{ inputs.build-configuration }} -f ${{ matrix.dotnet-framework }} --filter "DB!=SQLServer" -- --coverage --coverage-output-format cobertura
 
       - name: Upload to Codecov
         if: inputs.upload-codecov == true
         uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.WEBHOOKS_CODECOV_TOKEN }}
+          files: "**/TestResults/**/*.cobertura.xml"
+          fail_ci_if_error: false
           
   publish:
     needs: [build-test]

@@ -1,4 +1,4 @@
-﻿// Copyright 2022-2025 Antonello Provenzano
+// Copyright 2022-2025 Antonello Provenzano
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -88,7 +88,7 @@ namespace Deveel.Webhooks {
 				type = "test"
 			});
 
-			var result = await notifier.NotifyAsync(eventInfo, CancellationToken.None);
+			var result = await notifier.NotifyAsync(eventInfo, TestContext.Current.CancellationToken);
 
 			Assert.NotNull(result);
 			Assert.NotEmpty(result);
@@ -134,7 +134,7 @@ namespace Deveel.Webhooks {
 				})
 			};
 
-			var result = await notifier.NotifyAsync(notification, CancellationToken.None);
+			var result = await notifier.NotifyAsync(notification, TestContext.Current.CancellationToken);
 
 			Assert.NotNull(result);
 			Assert.NotEmpty(result);

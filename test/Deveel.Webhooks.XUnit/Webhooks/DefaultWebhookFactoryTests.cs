@@ -39,7 +39,7 @@ namespace Deveel.Webhooks {
 				TimeStamp = DateTimeOffset.UtcNow
 			};
 
-			var result = await factory.CreateAsync(subscription, notification, CancellationToken.None);
+			var result = await factory.CreateAsync(subscription, notification, TestContext.Current.CancellationToken);
 
 			Assert.Single(result);
 			var webhook = result[0];
@@ -66,7 +66,7 @@ namespace Deveel.Webhooks {
 				TimeStamp = DateTimeOffset.UtcNow
 			};
 
-			var result = await factory.CreateAsync(subscription, notification, CancellationToken.None);
+			var result = await factory.CreateAsync(subscription, notification, TestContext.Current.CancellationToken);
 
 			Assert.Single(result);
 			var webhook = result[0];
@@ -91,7 +91,7 @@ namespace Deveel.Webhooks {
 				TimeStamp = DateTimeOffset.UtcNow
 			};
 
-			var result = await factory.CreateAsync(subscription, notification, CancellationToken.None);
+			var result = await factory.CreateAsync(subscription, notification, TestContext.Current.CancellationToken);
 
 			Assert.Single(result);
 			var webhook = result[0];
@@ -118,7 +118,7 @@ namespace Deveel.Webhooks {
 				TimeStamp = DateTimeOffset.UtcNow
 			};
 
-			var result = await factory.CreateAsync(subscription, notification, CancellationToken.None);
+			var result = await factory.CreateAsync(subscription, notification, TestContext.Current.CancellationToken);
 
 			Assert.Equal(2, result.Count);
 			
@@ -221,7 +221,7 @@ namespace Deveel.Webhooks {
 			var eventInfo = new EventInfo("user", "user.created", "1.0", new { userId = 123 });
 			var notification = new EventNotification(eventInfo);
 
-			var result = await factory.CreateAsync(subscription, notification, CancellationToken.None);
+			var result = await factory.CreateAsync(subscription, notification, TestContext.Current.CancellationToken);
 
 			Assert.Single(result);
 			var webhook = result[0];

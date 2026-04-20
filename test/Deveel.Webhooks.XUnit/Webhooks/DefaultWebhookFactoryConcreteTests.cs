@@ -35,7 +35,7 @@ namespace Deveel.Webhooks {
 				TimeStamp = DateTimeOffset.UtcNow
 			};
 
-			var result = await factory.CreateAsync(subscription, notification, CancellationToken.None);
+			var result = await factory.CreateAsync(subscription, notification, TestContext.Current.CancellationToken);
 
 			Assert.Single(result);
 			Assert.Equal("notif-1", result[0].Id);

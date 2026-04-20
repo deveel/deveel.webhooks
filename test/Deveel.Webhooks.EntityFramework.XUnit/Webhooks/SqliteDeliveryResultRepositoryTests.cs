@@ -8,7 +8,8 @@ namespace Deveel.Webhooks
     {
         private readonly SqliteTestDatabase sqlite;
 
-        public SqliteDeliveryResultRepositoryTests(SqliteTestDatabase sqlite, ITestOutputHelper outputHelper) : base(outputHelper)
+        public SqliteDeliveryResultRepositoryTests(SqliteTestDatabase sqlite, ITestOutputHelper outputHelper) 
+            : base(outputHelper)
         {
             this.sqlite = sqlite;
         }

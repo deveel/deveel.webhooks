@@ -10,11 +10,14 @@ namespace Deveel.Webhooks {
     public abstract class EntityWebhookTestBase : IAsyncLifetime {
         private readonly ITestOutputHelper outputHelper;
 
-        protected EntityWebhookTestBase(ITestOutputHelper outputHelper) {
+        protected EntityWebhookTestBase(ITestOutputHelper outputHelper)
+        {
             this.outputHelper = outputHelper;
         }
 
         protected IServiceProvider Services { get; private set; }
+        
+        protected CancellationToken CancellationToken => TestContext.Current.CancellationToken;
 
         private IServiceProvider BuildServiceProvider() {
             var services = new ServiceCollection();

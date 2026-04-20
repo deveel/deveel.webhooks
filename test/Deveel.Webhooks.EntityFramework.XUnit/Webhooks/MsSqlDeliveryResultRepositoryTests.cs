@@ -8,7 +8,8 @@ namespace Deveel.Webhooks
     {
         private readonly MsSqlTestDatabase sql;
 
-        public MsSqlDeliveryResultRepositoryTests(MsSqlTestDatabase sql, ITestOutputHelper outputHelper) : base(outputHelper)
+        public MsSqlDeliveryResultRepositoryTests(MsSqlTestDatabase sql, ITestOutputHelper outputHelper) 
+            : base(outputHelper)
         {
             this.sql = sql;
         }

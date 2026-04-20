@@ -1,4 +1,4 @@
-﻿using Deveel.Data;
+using Deveel.Data;
 
 using Microsoft.Extensions.DependencyInjection;
 
@@ -51,7 +51,7 @@ namespace Deveel.Webhooks {
 			var subCount = Subscriptions.Count(x => x.EventTypes.Any(y => y == eventType) && 
 											   x.Status == WebhookSubscriptionStatus.Active);
 
-			var subscriptions = await Resolver.ResolveSubscriptionsAsync(eventType, true, CancellationToken.None);
+			var subscriptions = await Resolver.ResolveSubscriptionsAsync(eventType, true, TestContext.Current.CancellationToken);
 
 			Assert.NotNull(subscriptions);
 			Assert.NotEmpty(subscriptions);
@@ -66,7 +66,7 @@ namespace Deveel.Webhooks {
 
 			var subCount = Subscriptions.Count(x => x.EventTypes.Any(y => y == eventType));
 
-			var subscriptions = await Resolver.ResolveSubscriptionsAsync(eventType, false, CancellationToken.None);
+			var subscriptions = await Resolver.ResolveSubscriptionsAsync(eventType, false, TestContext.Current.CancellationToken);
 
 			Assert.NotNull(subscriptions);
 			Assert.NotEmpty(subscriptions);

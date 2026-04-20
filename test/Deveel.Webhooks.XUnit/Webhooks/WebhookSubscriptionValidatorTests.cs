@@ -1,4 +1,4 @@
-﻿// Copyright 2022-2025 Antonello Provenzano
+// Copyright 2022-2025 Antonello Provenzano
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -32,7 +32,7 @@ namespace Deveel.Webhooks {
 			var validator = new WebhookSubscriptionValidator<TestWebhookSubscription, string>();
 			var subscription = NewSubscription(" ");
 
-			var results = await CollectAsync(validator.ValidateAsync(null!, subscription, CancellationToken.None));
+			var results = await CollectAsync(validator.ValidateAsync(null!, subscription, TestContext.Current.CancellationToken));
 
 			Assert.Single(results);
 			Assert.Contains("missing", results[0].ErrorMessage, StringComparison.OrdinalIgnoreCase);
@@ -43,7 +43,7 @@ namespace Deveel.Webhooks {
 			var validator = new WebhookSubscriptionValidator<TestWebhookSubscription, string>();
 			var subscription = NewSubscription("not-a-url");
 
-			var results = await CollectAsync(validator.ValidateAsync(null!, subscription, CancellationToken.None));
+			var results = await CollectAsync(validator.ValidateAsync(null!, subscription, TestContext.Current.CancellationToken));
 
 			Assert.Single(results);
 			Assert.Contains("invalid", results[0].ErrorMessage, StringComparison.OrdinalIgnoreCase);
@@ -54,7 +54,7 @@ namespace Deveel.Webhooks {
 			var validator = new WebhookSubscriptionValidator<TestWebhookSubscription, string>();
 			var subscription = NewSubscription("ftp://example.test/webhooks");
 
-			var results = await CollectAsync(validator.ValidateAsync(null!, subscription, CancellationToken.None));
+			var results = await CollectAsync(validator.ValidateAsync(null!, subscription, TestContext.Current.CancellationToken));
 
 			Assert.Single(results);
 			Assert.Contains("not supported", results[0].ErrorMessage, StringComparison.OrdinalIgnoreCase);
@@ -67,7 +67,7 @@ namespace Deveel.Webhooks {
 			var validator = new WebhookSubscriptionValidator<TestWebhookSubscription, string>();
 			var subscription = NewSubscription(url);
 
-			var results = await CollectAsync(validator.ValidateAsync(null!, subscription, CancellationToken.None));
+			var results = await CollectAsync(validator.ValidateAsync(null!, subscription, TestContext.Current.CancellationToken));
 
 			Assert.Empty(results);
 		}

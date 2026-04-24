@@ -20,6 +20,12 @@ layout:
 
 The **Deveel Webhooks** framework is composed of a set of libraries that can be used, at different degrees, to implement a system that allows applications to send and receive webhooks.
 
+## Project Direction
+
+**This framework is maintained for the long term.**
+
+In parallel, part of its functionality is being gradually migrated to [Deveel Events](https://events.deveel.org/) ([GitHub repository](https://github.com/deveel/deveel.events)), which is closer to the broader Domain-Driven Design (DDD) concept of domain events. In that perspective, webhooks are one of multiple event integration patterns.
+
 * **[Sending Webhooks](send_webhooks/README.md)** - Using libraries of the framework you can send webhooks to receivers, based on your own logic and rules.
 * **[Receiving Webhooks](receivers/README.md)** - The framework provides a set of libraries implementing the capabilities for receiving webhooks from senders and reacting to events from external systems (such as Twilio, SendGrid, Facebook, etc.).
 * **[Notifications](notifications/README.md)** - The framework provides a set of libraries that can be used to manage subscriptions to events and notify subscribing applications of events that occurred in your system.

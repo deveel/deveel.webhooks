@@ -10,6 +10,12 @@ This project provides a set of .NET tools for the management of subscriptions to
 
 Although this integration model is widely adopted by major service providers (like _[SendGrid](https://docs.sendgrid.com/for-developers/tracking-events/getting-started-event-webhook)_, _[Twilio](https://www.twilio.com/docs/usage/webhooks)_, _[GitHub](https://docs.github.com/en/developers/webhooks-and-events/webhooks/about-webhooks)_, _[Slack](https://api.slack.com/messaging/webhooks)_, etc.), there is no formal protocol or authority that would enforce a compliance (like for other cases, such as OpenID, OpenAPI, etc.).
 
+## Project Direction
+
+**Deveel Webhooks is maintained for the long term.**
+
+At the same time, this project is progressively converging with [Deveel Events](https://events.deveel.org/) ([GitHub repository](https://github.com/deveel/deveel.events)): new and broader event-centric capabilities are being developed there, because that model aligns more closely with Domain-Driven Design (DDD) domain events, where webhooks represent one of the possible event delivery mechanisms.
+
 Anyway, a typical implementation consists of the following elements:
 
 * Webhooks are transported through _HTTP POST_ callbacks

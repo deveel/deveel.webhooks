@@ -14,6 +14,14 @@ A: Since the version 2.1.1, the framework supports both .NET 6.0 and .NET 7.0, a
 
 Previous versions are built on the .NET 6.0 framework only.
 
+## Q: Is Deveel Webhooks still maintained, and how does it relate to Deveel Events?
+
+A: Yes, **Deveel Webhooks is maintained for the long term**.
+
+At the same time, its functionality is being gradually migrated and expanded into [Deveel Events](https://events.deveel.org/) ([GitHub repository](https://github.com/deveel/deveel.events)), because that project is closer to the broader Domain-Driven Design (DDD) concept of domain events.
+
+In practical terms, Webhooks remains focused on webhook-specific capabilities, while Deveel Events provides a more general model where webhooks are one type of event integration mechanism.
+
 ## Q: Do you have any commercial plans for this framework?
 
 A: No. Not at the moment.
